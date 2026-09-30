@@ -1,0 +1,115 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 10
+---
+
+<Lead>
+Fifteen questions across the five administration areas. Aim for at least eleven before moving on to the review chapter.
+</Lead>
+
+<Quiz
+  id="chapter"
+  title="Chapter 9 knowledge check"
+  questions={[
+    {
+      q: 'Which task updates every installed package?',
+      options: ['`name: "*"` with `state: latest`', '`name: all` with `state: present`', '`update: true`'],
+      answer: 0,
+      explain: 'The wildcard with latest updates everything; present would only install missing packages.',
+    },
+    {
+      q: 'You add a repository with `gpgcheck: true`. What else is needed?',
+      options: ['Nothing', 'The repository’s signing key, imported with rpm_key or named in gpgkey', 'A subscription'],
+      answer: 1,
+      explain: 'dnf verifies packages against keys it trusts.',
+    },
+    {
+      q: "How do you run a task only on hosts where the httpd package is installed?",
+      options: [
+        "Gather package_facts, then `when: \"'httpd' in ansible_facts['packages']\"`",
+        "`when: httpd is installed`",
+        "`when: ansible_facts['httpd']`",
+      ],
+      answer: 0,
+      explain: 'package_facts adds the installed packages to the facts, keyed by name.',
+    },
+    {
+      q: 'What does `append: true` change in the user module?',
+      options: ['Adds the user to the listed groups without removing it from others', 'Appends to the password', 'Creates the home directory'],
+      answer: 0,
+      explain: 'Without it, groups replaces the whole list of supplementary groups.',
+    },
+    {
+      q: 'Why does a user task with `password_hash("sha512")` report changed on every run?',
+      options: ['A new random salt gives a new hash each time', 'Passwords always change', 'It does not'],
+      answer: 0,
+      explain: 'Use update_password: on_create or a fixed salt.',
+    },
+    {
+      q: 'Which module installs a public key for SSH logins?',
+      options: ['`ansible.builtin.copy` into ~/.ssh', '`ansible.posix.authorized_key`', '`ansible.builtin.known_hosts`'],
+      answer: 1,
+      explain: 'It creates ~/.ssh and authorized_keys with the right permissions. known_hosts is for host keys.',
+    },
+    {
+      q: 'Where should a sudo rule for a group go?',
+      options: ['Appended to /etc/sudoers', 'In its own file in /etc/sudoers.d/, validated with visudo', 'In ~/.sudo'],
+      answer: 1,
+      explain: 'Separate files are easy to manage, and validate prevents a broken rule from being installed.',
+    },
+    {
+      q: 'What does this task schedule?',
+      code: '- ansible.builtin.cron:\n    name: Report\n    minute: "0"\n    hour: "9"\n    weekday: "1-5"\n    job: /usr/local/bin/report',
+      options: ['09:00 on weekdays', 'Every 9 minutes', '09:00 on the first five days of the month'],
+      answer: 0,
+      explain: 'weekday 1-5 is Monday to Friday; minute 0, hour 9 is 09:00.',
+    },
+    {
+      q: 'How do you remove a cron job created by Ansible?',
+      options: ['Delete the crontab file', 'Same name, `state: absent`', 'Set the schedule to 0'],
+      answer: 1,
+      explain: 'The name is how the module identifies its entry.',
+    },
+    {
+      q: 'What makes `multi-user.target` the default boot target?',
+      options: [
+        'A link from /etc/systemd/system/default.target to the target unit',
+        'service: name=multi-user.target state=started',
+        'Rebooting with --target',
+      ],
+      answer: 0,
+      explain: 'systemctl set-default creates exactly that link; the file module does it idempotently.',
+    },
+    {
+      q: 'Why reboot from a handler rather than a normal task?',
+      options: ['Handlers are faster', 'The host reboots only when something changed, and only once', 'The reboot module only works in handlers'],
+      answer: 1,
+      explain: 'A normal task would reboot on every run.',
+    },
+    {
+      q: 'In which order are the storage modules needed for a new LVM file system?',
+      options: ['parted, lvg, lvol, filesystem, mount', 'lvol, lvg, parted, mount, filesystem', 'filesystem, parted, lvg, lvol, mount'],
+      answer: 0,
+      explain: 'Partition, volume group, logical volume, file system, mount.',
+    },
+    {
+      q: 'A logical volume is grown with lvol. What else is needed to use the space?',
+      options: ['Nothing', '`resizefs: true`, so the file system grows too', 'A reboot'],
+      answer: 1,
+      explain: 'Otherwise the volume is bigger but the file system is not.',
+    },
+    {
+      q: 'Which mount state mounts the file system now and at every boot?',
+      options: ['`present`', '`mounted`', '`enabled`'],
+      answer: 1,
+      explain: 'mounted mounts it and writes /etc/fstab; present only writes fstab.',
+    },
+    {
+      q: 'Why practise network changes on an extra interface?',
+      options: ['Dummy interfaces are faster', 'Changing the interface Ansible uses can cut off the connection mid-play', 'nmcli cannot change the main interface'],
+      answer: 1,
+      explain: 'A lost connection can leave the host half-configured and unreachable.',
+    },
+  ]}
+/>

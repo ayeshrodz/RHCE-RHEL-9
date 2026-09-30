@@ -1,10 +1,8 @@
 title: Automating Linux Administration Tasks
-goal: "Automate common system administration tasks: software, users, boot, storage and networking."
-status: planned
-topics:
-  - Managing software and subscriptions
-  - Managing users and authentication
-  - Managing the boot process and scheduled processes
-  - Managing storage
-  - Managing network configuration
-  - Chapter lab
+goal: "Automate common system administration tasks: software, users, boot and scheduling, storage and networking."
+objectives:
+  - Install and update software, configure repositories and check what is installed.
+  - Manage users, groups, SSH keys and sudo rights.
+  - Manage services, the boot target, reboots and scheduled jobs.
+  - Partition disks and manage LVM, file systems and mounts.
+  - Inspect and change network configuration.

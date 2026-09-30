@@ -1,0 +1,154 @@
+---
+title: "Guided exercise: Managing storage"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will build an LVM-backed file system on servera's spare disk, mount it persistently, then grow it by changing a single variable.
+</Lead>
+
+The project `~/system-storage` has an `ansible.cfg` and an `inventory` with servera in `servers`. servera's spare disk is empty.
+
+<Lab
+  id="storage"
+  title="Managing storage"
+  classroom="lab start system-storage"
+  own
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Partition a disk and build LVM on it.', 'Create and mount a file system, then grow it.']}
+>
+  <HomeSetup>
+    The spare disk is `/dev/sdb`. Classroom machines usually call it `/dev/vdb`: the playbook takes it from a variable so only one line differs.
+  </HomeSetup>
+
+  <Task title="Look at the disk">
+
+```console
+[student@workstation ~]$ cd ~/system-storage
+[student@workstation system-storage]$ ansible servers -m ansible.builtin.command -a 'lsblk /dev/sdb'
+servera.lab.example.com | CHANGED | rc=0 >>
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+sdb    8:16   0   5G  0 disk
+```
+  </Task>
+
+  <Task title="Write the playbook">
+    Create `storage.yml` for `servers` with variables `storage_disk: /dev/sdb` and `storage_lv_size: 500m`, and tasks that:
+
+    1. create partition 1 on the disk, GPT, from 1 MiB to 1 GiB, flagged for LVM;
+    2. create the volume group `apps` on that partition;
+    3. create the logical volume `data` of `storage_lv_size`, growing its file system when it grows;
+    4. put XFS on `/dev/apps/data`;
+    5. mount it on `/srv/data`, now and at every boot.
+
+    <Reveal title="Show storage.yml">
+
+```yaml title="storage.yml"
+---
+- name: Application storage on the spare disk
+  hosts: servers
+  vars:
+    storage_disk: /dev/sdb
+    storage_lv_size: 500m
+  tasks:
+    - name: The disk has one partition for LVM
+      community.general.parted:
+        device: "{{ storage_disk }}"
+        number: 1
+        label: gpt
+        part_start: 1MiB
+        part_end: 1GiB
+        flags: [lvm]
+        state: present
+
+    - name: The volume group exists
+      community.general.lvg:
+        vg: apps
+        pvs: "{{ storage_disk }}1"
+        state: present
+
+    - name: The logical volume exists
+      community.general.lvol:
+        vg: apps
+        lv: data
+        size: "{{ storage_lv_size }}"
+        resizefs: true
+        state: present
+
+    - name: The logical volume has an XFS file system
+      community.general.filesystem:
+        dev: /dev/apps/data
+        fstype: xfs
+        state: present
+
+    - name: The file system is mounted on /srv/data
+      ansible.posix.mount:
+        path: /srv/data
+        src: /dev/apps/data
+        fstype: xfs
+        state: mounted
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Run it twice">
+
+```console
+[student@workstation system-storage]$ ansible-navigator run -m stdout storage.yml
+...output omitted...
+servera.lab.example.com    : ok=6    changed=5    unreachable=0    failed=0  ...
+[student@workstation system-storage]$ ansible-navigator run -m stdout storage.yml
+...output omitted...
+servera.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Check the result">
+
+```console
+[student@workstation system-storage]$ ssh devops@servera 'lsblk /dev/sdb; df -h /srv/data; grep /srv/data /etc/fstab'
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sdb             8:16   0    5G  0 disk
+└─sdb1          8:17   0 1023M  0 part
+  └─apps-data 253:0    0  500M  0 lvm  /srv/data
+Filesystem             Size  Used Avail Use% Mounted on
+/dev/mapper/apps-data  436M   29M  408M   7% /srv/data
+/dev/apps/data /srv/data xfs defaults 0 0
+```
+
+    The whole stack is visible in `lsblk`, and the `fstab` line means it comes back after a reboot.
+  </Task>
+
+  <Task title="Grow it">
+    The application needs more room. Override the size for one run:
+
+```console
+[student@workstation system-storage]$ ansible-navigator run -m stdout storage.yml -e storage_lv_size=800m
+...output omitted...
+TASK [The logical volume exists] ***********************************************
+changed: [servera.lab.example.com]
+...output omitted...
+servera.lab.example.com    : ok=6    changed=1    unreachable=0    failed=0  ...
+[student@workstation system-storage]$ ssh devops@servera 'df -h /srv/data | tail -1'
+/dev/mapper/apps-data  736M   31M  706M   5% /srv/data
+```
+
+    Only the logical volume task changed. It grew the volume and, with `resizefs: true`, the XFS file system too, while mounted.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean servera the way your classroom provides before the next exercise.
+      </Classroom>
+      <HomeLab>
+        Two steps. On workstation, `lab finish system-storage` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts servera, spare disk included, back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Make the playbook safe to run on hosts without the spare disk: put the five tasks in a `block` with `when: "storage_disk | basename in ansible_facts['devices']"`, and run it against a group that includes workstation, which has no `sdb`. Every task should be skipped there.

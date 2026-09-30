@@ -1,0 +1,126 @@
+/* Chapter 9 widgets: administration tasks. */
+
+.amf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
+}
+.amf-goals {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.amf-goals li {
+  margin: 0;
+}
+.amf-goals button {
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 0 7px 7px 0;
+  background: none;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.amf-goals button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.amf-goals button.is-active {
+  border-left-color: var(--accent);
+  background: var(--bg-active);
+  color: var(--text);
+  font-weight: 500;
+}
+.amf-module {
+  margin: 0 0 8px !important;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.amf-yaml {
+  margin: 0;
+}
+.amf-hint {
+  margin: 8px 0 0 !important;
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.cron-fields {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.cron-fields label,
+.cron-job {
+  display: grid;
+  gap: 3px;
+}
+.cron-fields span,
+.cron-job span {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.cron-fields input,
+.cron-job input {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--code-size-sm);
+}
+.cron-fields small {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.cron-job {
+  margin-top: 8px;
+}
+.cron-say {
+  margin: 12px 0 !important;
+  font-size: 14.5px;
+}
+.cron-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+.cron-grid .terminal {
+  margin: 0;
+}
+.cron-cap {
+  margin: 0 0 5px !important;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+.cron-note {
+  margin: 8px 0 0 !important;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .amf-grid,
+  .cron-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cron-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

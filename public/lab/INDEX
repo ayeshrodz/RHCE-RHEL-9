@@ -26,3 +26,9 @@ role-review          7.8   Chapter lab: Roles and collections
 troubleshoot-playbook 8.2   Troubleshooting a playbook
 troubleshoot-host     8.4   Troubleshooting managed hosts
 troubleshoot-review   8.5   Chapter lab: Troubleshooting Ansible
+system-software       9.2   Managing software
+system-users          9.4   Managing users and authentication
+system-process        9.6   Managing the boot process and scheduled processes
+system-storage        9.8   Managing storage
+system-network        9.10  Managing network configuration
+system-review         9.11  Chapter lab: Automating Linux administration tasks
