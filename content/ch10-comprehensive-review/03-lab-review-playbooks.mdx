@@ -1,0 +1,257 @@
+---
+title: "Review lab: Creating playbooks"
+kind: lab
+minutes: 45
+---
+
+<Lead>
+One playbook, three plays: web servers that publish a page built from their own facts, a user for each environment created only where it belongs, and a final play that checks every page from the control node. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+This lab covers chapters 2 to 5: multiple plays, variables and facts, loops, conditions, handlers and templates. The project `~/review-playbooks` has an `ansible.cfg` and the review `inventory` (`dev`, `test`, `prod`, and `webservers` containing `prod`). Put all three plays in `site.yml`.
+
+<Lab
+  id="review-playbooks"
+  title="Creating playbooks"
+  classroom="lab start review-playbooks"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com', 'serverd.lab.example.com']}
+  outcomes={[
+    'Deploy a web server with packages, services, a firewall rule, templates and a handler.',
+    'Create users from a variables file with a loop and a condition.',
+    'Test the result from the control node with the uri module.',
+  ]}
+>
+  <HomeSetup>
+    Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host.
+  </HomeSetup>
+
+  <Task title="The web server">
+    Start `site.yml` with a play for `webservers` that:
+
+    - installs `httpd` and `firewalld`,
+    - starts both services and enables them at boot,
+    - opens the `http` service in the firewall, now and permanently.
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: Web servers publish a page
+  hosts: webservers
+  tasks:
+    - name: Web packages are installed
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - firewalld
+        state: present
+
+    - name: Services are running
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - firewalld
+        - httpd
+
+    - name: http is allowed
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+```
+
+    `dnf` takes a list of packages in one task, which is faster than a loop. `service` takes one name at a time, so it loops.
+    </Reveal>
+  </Task>
+
+  <Task title="Settings from a template, restart only on change">
+    Add a play variable `web_admin` with the value `webmaster@example.com`. Create `templates/site.conf.j2` that produces this file, and deploy it as `/etc/httpd/conf.d/site.conf`, mode `0644`:
+
+```text title="/etc/httpd/conf.d/site.conf"
+# Ansible managed
+ServerAdmin webmaster@example.com
+```
+
+    `httpd` must restart when, and only when, this file changes.
+
+    <Reveal title="Show solution">
+
+```jinja title="templates/site.conf.j2"
+# {{ ansible_managed }}
+ServerAdmin {{ web_admin }}
+```
+
+```yaml
+- name: Web servers publish a page
+  hosts: webservers
+  vars:
+    web_admin: webmaster@example.com
+  tasks:
+    # ...the three tasks above...
+
+    - name: Site settings are in place
+      ansible.builtin.template:
+        src: templates/site.conf.j2
+        dest: /etc/httpd/conf.d/site.conf
+        mode: "0644"
+      notify: restart httpd
+
+  handlers:
+    - name: restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+```
+
+    The name after `notify` must match the handler's name exactly. The handler runs once, at the end of the play, however many tasks notify it.
+    </Reveal>
+  </Task>
+
+  <Task title="A page built from facts">
+    Create `templates/index.html.j2` and deploy it as `/var/www/html/index.html`, mode `0644`. The page on each host must show:
+
+    - the host's fully qualified domain name, as a heading,
+    - its default IPv4 address,
+    - the inventory groups it belongs to, separated by commas.
+
+    <Reveal title="Show solution">
+
+```jinja title="templates/index.html.j2"
+<h1>{{ ansible_facts['fqdn'] }}</h1>
+<p>Address: {{ ansible_facts['default_ipv4']['address'] }}</p>
+<p>Groups: {{ group_names | join(', ') }}</p>
+```
+
+```yaml
+    - name: The page is built from facts
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: "0644"
+```
+
+    `group_names` is a magic variable, not a fact: it lists the groups of the current host, including parent groups such as `webservers`.
+    </Reveal>
+  </Task>
+
+  <Task title="One user per environment">
+    Create `vars/users.yml`:
+
+```yaml title="vars/users.yml"
+---
+users:
+  - name: ana
+    env: dev
+  - name: ben
+    env: test
+  - name: cara
+    env: prod
+```
+
+    Add a second play for all hosts that creates each user only on the hosts of its environment: `ana` on the `dev` host, `ben` on `test`, `cara` on both `prod` hosts. Use one task.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: Each environment has its own user
+  hosts: all
+  vars_files:
+    - vars/users.yml
+  tasks:
+    - name: The user for this environment exists
+      ansible.builtin.user:
+        name: "{{ item['name'] }}"
+        state: present
+      loop: "{{ users }}"
+      when: item['env'] in group_names
+```
+
+    The condition is tested for every item on every host, so each host keeps only the users of the groups it is in. Adding a user later means one more entry in the variables file and no change to the play.
+    </Reveal>
+  </Task>
+
+  <Task title="Check the pages from the control node">
+    Add a third play that runs on `localhost`, without privilege escalation and without gathering facts. It must request `http://HOST` for every host in `webservers`, and fail if the page does not contain that host's name.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: The pages answer
+  hosts: localhost
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Every web server returns its own page
+      ansible.builtin.uri:
+        url: "http://{{ item }}"
+        return_content: true
+      register: page
+      failed_when: item not in page.content
+      loop: "{{ groups['webservers'] }}"
+```
+
+    `groups['webservers']` is the list of host names in the group, so the loop needs no hard-coded names. `become: false` matters here: the configuration turns privilege escalation on for every play, and there is no reason to use sudo on workstation to fetch a web page. Inside a loop, `register` and `failed_when` apply to each item in turn.
+    </Reveal>
+  </Task>
+
+  <Task title="Check the syntax, then run it twice">
+
+```console
+[student@workstation ~]$ cd ~/review-playbooks
+[student@workstation review-playbooks]$ ansible-navigator run -m stdout site.yml --syntax-check
+playbook: /home/student/review-playbooks/site.yml
+[student@workstation review-playbooks]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=9    changed=7    unreachable=0    failed=0  ...
+serverd.lab.example.com    : ok=9    changed=7    unreachable=0    failed=0  ...
+[student@workstation review-playbooks]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=8    changed=0    unreachable=0    failed=0  ...
+serverd.lab.example.com    : ok=8    changed=0    unreachable=0    failed=0  ...
+```
+
+    The web servers report one `ok` fewer on the second run: nothing changed, so nothing notified the handler.
+  </Task>
+
+  <Task title="Verify">
+
+```console
+[student@workstation review-playbooks]$ curl http://serverc.lab.example.com
+<h1>serverc.lab.example.com</h1>
+<p>Address: 172.25.250.12</p>
+<p>Groups: prod, webservers</p>
+[student@workstation review-playbooks]$ for h in servera serverb serverc serverd; do printf "%s: " $h; ssh devops@$h 'getent passwd ana ben cara | cut -d: -f1 | tr "\n" " "'; echo; done
+servera: ana
+serverb: ben
+serverc: cara
+serverd: cara
+```
+
+    Each host has exactly one of the three users, and the page lists both groups serverc belongs to.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset the servers the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish review-playbooks` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+<Callout type="exam" title="What this lab rehearses">
+Plays aimed at different groups in one file, facts and magic variables in a template, a handler that fires only on change, a loop filtered by a condition, and a test play that fails loudly when the result is wrong.
+</Callout>

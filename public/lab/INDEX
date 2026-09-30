@@ -32,3 +32,7 @@ system-process        9.6   Managing the boot process and scheduled processes
 system-storage        9.8   Managing storage
 system-network        9.10  Managing network configuration
 system-review         9.11  Chapter lab: Automating Linux administration tasks
+review-deploy         10.2  Review lab: Deploying Ansible
+review-playbooks      10.3  Review lab: Creating playbooks
+review-admin          10.4  Review lab: Managing Linux hosts and using system roles
+review-roles          10.5  Review lab: Creating roles

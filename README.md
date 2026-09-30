@@ -20,7 +20,9 @@ A free, interactive study guide and home-lab build for people working towards th
 | 5. Deploying Files to Managed Hosts | Complete |
 | 6. Managing Complex Plays and Playbooks | Complete |
 | 7. Simplifying Playbooks with Roles and Collections | Complete |
-| 8–10 | Planned (listed as "coming soon" in the site) |
+| 8. Troubleshooting Ansible | Complete |
+| 9. Automating Linux Administration Tasks | Complete |
+| 10. Comprehensive Review | Complete |
 
 ## Quick start
 
