@@ -1,0 +1,189 @@
+---
+title: Getting roles and modules from collections
+kind: lesson
+minutes: 12
+---
+
+<Lead>
+Every module name you have typed so far has three parts, such as `ansible.posix.firewalld`. The first two name a collection: a versioned package of modules, roles and plug-ins. Collections are how almost all Ansible content is distributed, so installing and pinning them is an everyday skill.
+</Lead>
+
+<Objectives>
+- Read a fully qualified collection name and say where its content lives.
+- Install collections for a project, from a requirements file, with pinned versions.
+- Check which collections Ansible can see, and read a module's documentation.
+- Recognise and fix the two common errors: a missing collection and a missing Python library.
+</Objectives>
+
+## What a collection is
+
+`ansible-core` itself contains only the essentials, in the built-in collection `ansible.builtin`. Everything else (firewalld, LVM, SELinux tools, cloud providers, network devices) lives in separate **collections**, each released on its own schedule by whoever maintains it.
+
+A collection can contain modules, roles, plug-ins such as filters, and documentation. You refer to anything inside it by its **fully qualified collection name**, the FQCN:
+
+<FqcnExplorer />
+
+Using the full name in every task means a playbook says exactly which module it wants, and keeps working when two collections each have a module called, say, `user`.
+
+<Callout type="note" title="Short names and the collections keyword">
+A play can list collections under a `collections:` keyword so that tasks may use short module names. It saves typing and costs clarity. Write the full name; it is what `ansible-navigator doc` and error messages use.
+</Callout>
+
+## Which collections can Ansible see?
+
+```console
+[student@workstation project]$ ansible-galaxy collection list
+
+# /usr/share/ansible/collections/ansible_collections
+Collection               Version
+------------------------ -------
+ansible.posix            1.5.4
+community.general        9.5.13
+redhat.rhel_system_roles 1.120.5
+```
+
+Ansible searches the directories of the **`collections_path`** setting in order, and the first copy of a collection it finds wins. A project usually puts its own directory first:
+
+```ini title="ansible.cfg"
+[defaults]
+collections_path = ./collections:~/.ansible/collections:/usr/share/ansible/collections
+```
+
+Remember from chapter 0 that this setting **replaces** the default list. Leave the system directory off and the collections installed there disappear from view.
+
+<Env>
+  <Classroom>
+    In a classroom that uses an execution environment, most collections come inside the container image. `ansible-navigator collections` lists what the image contains.
+  </Classroom>
+  <HomeLab>
+    The home lab runs without an execution environment, so every collection is a directory on workstation. Section 0.6 put `ansible.posix` and `community.general` in `/usr/share/ansible/collections`; a project's own go in `./collections`.
+  </HomeLab>
+</Env>
+
+## Installing collections
+
+`ansible-galaxy collection install` downloads a collection and its dependencies. `-p collections` installs into the project.
+
+```console
+[student@workstation project]$ ansible-galaxy collection install community.crypto:2.26.0 -p collections
+```
+
+The source can be:
+
+| Source | Example |
+| --- | --- |
+| A name on Ansible Galaxy, with a version | `community.crypto:2.26.0` |
+| An archive on disk | `./community-crypto-2.26.0.tar.gz` |
+| An archive at a URL | `http://utility.lab.example.com/files/ansible-posix-1.5.4.tar.gz` |
+| A Git repository | `git+https://git.example.com/ops/acme.tools.git,v1.0` |
+
+### Pin the version
+
+A collection declares which versions of `ansible-core` it supports. The newest release of a collection often needs a newer `ansible-core` than RHEL 9 provides, and Ansible then refuses to load it. Decide on a version that supports your `ansible-core`, and write it down.
+
+### The requirements file
+
+As with roles, record what a project needs. For collections the list sits under a `collections:` key:
+
+```yaml title="collections/requirements.yml"
+---
+collections:
+  - name: community.crypto
+    version: 2.26.0
+
+  - name: http://utility.lab.example.com/files/ansible-posix-1.5.4.tar.gz
+```
+
+```console
+[student@workstation project]$ ansible-galaxy collection install -r collections/requirements.yml -p collections
+...output omitted...
+community.crypto:2.26.0 was installed successfully
+```
+
+One file may hold both a `roles:` and a `collections:` list. `ansible-galaxy collection install -r` installs the collections from it; `ansible-galaxy role install -r` installs the roles.
+
+<Callout type="note" title="Other content servers">
+By default `ansible-galaxy` downloads from the public Ansible Galaxy site. An organisation can run its own server, and Red Hat customers can use automation hub for certified content. Those are configured in a `[galaxy]` section of `ansible.cfg` with a `server_list` and one section, with a URL and a token, for each server.
+</Callout>
+
+## Using what you installed
+
+Nothing else is needed: use the full name in a task.
+
+```yaml
+- name: The private key exists
+  community.crypto.openssl_privatekey:
+    path: /etc/pki/tls/private/site.key
+    size: 2048
+```
+
+A role from a collection is named the same way, in `roles:` or with `include_role`:
+
+```yaml
+  roles:
+    - redhat.rhel_system_roles.timesync
+```
+
+Documentation works for any collection Ansible can see:
+
+```console
+[student@workstation project]$ ansible-navigator doc community.crypto.openssl_privatekey -m stdout
+```
+
+## Two errors you will meet
+
+<Cards cols={2}>
+  <Card title="The collection is not installed" kicker="On the control node" tone="red">
+    `ERROR! couldn't resolve module/action 'community.crypto.openssl_privatekey'. This often indicates a misspelling, missing collection, or incorrect module path.`
+
+    Check the spelling, then `ansible-galaxy collection list`. If the collection is installed but not listed, `collections_path` does not include its directory.
+  </Card>
+  <Card title="A Python library is missing" kicker="On the managed host" tone="amber">
+    `Cannot detect the required Python library cryptography (>= 1.2.3)`
+
+    The collection is fine. The module runs on the managed host and needs a library there. The module's documentation lists its requirements; install the package in an earlier task.
+  </Card>
+</Cards>
+
+The first stops the playbook before it starts. The second fails one task on one host, which is a useful clue to which side the problem is on.
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'In `community.general.parted`, what is `general`?',
+      options: ['The namespace', 'The collection', 'The module'],
+      answer: 1,
+      explain: 'namespace.collection.module: community is the namespace, general the collection, parted the module.',
+    },
+    {
+      q: 'Which collection never needs installing?',
+      options: ['`ansible.posix`', '`ansible.builtin`', '`community.general`'],
+      answer: 1,
+      explain: 'ansible.builtin is part of ansible-core itself.',
+    },
+    {
+      q: 'Where does `ansible-galaxy collection install -p collections NAME` put the collection?',
+      options: ['In `./collections/ansible_collections/…`', 'On every managed host', 'In `/usr/share/ansible/collections`'],
+      answer: 0,
+      explain: '-p sets the target directory; the ansible_collections level is added automatically.',
+    },
+    {
+      q: 'A playbook fails at once with "couldn’t resolve module/action". Where is the problem?',
+      options: ['On the managed host', 'On the control node: the collection is missing or not on the collections path', 'In the inventory'],
+      answer: 1,
+      explain: 'Ansible could not find the module’s code at all, so nothing was sent to any host.',
+    },
+    {
+      q: 'Why write a version in `collections/requirements.yml`?',
+      options: [
+        'Newer releases may not support your ansible-core, and everyone should get the same one',
+        'Versions are mandatory',
+        'Unversioned collections cannot be listed',
+      ],
+      answer: 0,
+      explain: 'A collection states the ansible-core versions it supports; pinning keeps the project working and repeatable.',
+    },
+  ]}
+/>

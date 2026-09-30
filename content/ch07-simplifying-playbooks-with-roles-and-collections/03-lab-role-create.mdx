@@ -1,0 +1,214 @@
+---
+title: "Guided exercise: Creating a role"
+kind: lab
+minutes: 25
+---
+
+<Lead>
+You will build a role from an empty skeleton: tasks, defaults, a handler and two templates. Then you will use it in a play, override one of its settings, and watch the handler run only when the configuration really changes.
+</Lead>
+
+The project `~/role-create` has an `ansible.cfg` and an `inventory` with a `web` group containing `servera` and `serverb`. You write everything else.
+
+<Lab
+  id="role"
+  title="Creating a role"
+  classroom="lab start role-create"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={['Create a role with ansible-galaxy role init and fill in its parts.', 'Use the role in a play and override its defaults.']}
+>
+  <Task title="Create the skeleton">
+    Create a role called `web_site` in a `roles` directory, then remove the directories this role will not use.
+
+```console
+[student@workstation ~]$ cd ~/role-create
+[student@workstation role-create]$ ansible-galaxy role init roles/web_site
+- Role roles/web_site was created successfully
+[student@workstation role-create]$ rm -rf roles/web_site/{tests,files,vars}
+[student@workstation role-create]$ ls roles/web_site
+defaults  handlers  meta  README.md  tasks  templates
+```
+  </Task>
+
+  <Task title="Set the defaults">
+    The role has two settings: the page heading and the administrator's address.
+
+```yaml title="roles/web_site/defaults/main.yml"
+---
+web_site_title: Welcome
+web_site_admin: root@localhost
+```
+  </Task>
+
+  <Task title="Write the templates">
+    One template for an Apache configuration snippet, one for the page.
+
+```jinja title="roles/web_site/templates/site.conf.j2"
+# {{ ansible_managed }}
+ServerAdmin {{ web_site_admin }}
+ServerName {{ ansible_facts['fqdn'] }}
+```
+
+```jinja title="roles/web_site/templates/index.html.j2"
+<h1>{{ web_site_title }}</h1>
+<p>Served by {{ ansible_facts['fqdn'] }}</p>
+```
+  </Task>
+
+  <Task title="Write the handler">
+
+```yaml title="roles/web_site/handlers/main.yml"
+---
+- name: restart httpd
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
+```
+  </Task>
+
+  <Task title="Write the tasks">
+    In `roles/web_site/tasks/main.yml`, make sure that: `httpd` and `firewalld` are installed; `firewalld` is running and allows `http`; both templates are deployed, to `/etc/httpd/conf.d/site.conf` and `/var/www/html/index.html`; and `httpd` is running. Only the configuration template should notify the handler.
+
+    <Reveal title="Show roles/web_site/tasks/main.yml">
+
+```yaml title="roles/web_site/tasks/main.yml"
+---
+- name: Web packages are installed
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - firewalld
+    state: present
+
+- name: firewalld is running
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: http is allowed through the firewall
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Site configuration is in place
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: /etc/httpd/conf.d/site.conf
+    mode: "0644"
+  notify: restart httpd
+
+- name: Home page is in place
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"
+
+- name: httpd is running
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true
+```
+    </Reveal>
+
+    Notice there is no `hosts`, no `become` and no path in front of the template names.
+  </Task>
+
+  <Task title="Use the role in a play">
+    Create `site.yml`. It applies the role to the `web` group and overrides the heading.
+
+```yaml title="site.yml"
+---
+- name: Web servers run the site
+  hosts: web
+  roles:
+    - role: web_site
+      vars:
+        web_site_title: Staff intranet
+```
+  </Task>
+
+  <Task title="List the tasks, then run">
+
+```console
+[student@workstation role-create]$ ansible-navigator run -m stdout site.yml --list-tasks
+
+playbook: /home/student/role-create/site.yml
+
+  play #1 (web): Web servers run the site	TAGS: []
+    tasks:
+      web_site : Web packages are installed	TAGS: []
+      web_site : firewalld is running	TAGS: []
+      web_site : http is allowed through the firewall	TAGS: []
+      web_site : Site configuration is in place	TAGS: []
+      web_site : Home page is in place	TAGS: []
+      web_site : httpd is running	TAGS: []
+[student@workstation role-create]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+RUNNING HANDLER [web_site : restart httpd] *************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=8    changed=6    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=8    changed=6    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Check the result">
+
+```console
+[student@workstation role-create]$ curl http://servera.lab.example.com
+<h1>Staff intranet</h1>
+<p>Served by servera.lab.example.com</p>
+[student@workstation role-create]$ ssh devops@servera cat /etc/httpd/conf.d/site.conf
+# Ansible managed
+ServerAdmin root@localhost
+ServerName servera.lab.example.com
+```
+
+    The heading came from the play; the administrator address is still the role's default. Run the playbook again: `ok=7 changed=0`, and no handler.
+  </Task>
+
+  <Task title="Override a default from the command line">
+    Change only the administrator address, without editing any file:
+
+```console
+[student@workstation role-create]$ ansible-navigator run -m stdout site.yml \
+> -e web_site_admin=webmaster@example.com
+...output omitted...
+TASK [web_site : Site configuration is in place] *******************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+...output omitted...
+RUNNING HANDLER [web_site : restart httpd] *************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
+```
+
+    Two changes per host: the configuration file, and the restart it triggered. The home page task reported `ok`, because its template does not use that variable.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean the two web servers the way your classroom provides before the next exercise.
+      </Classroom>
+      <HomeLab>
+        Two steps. On workstation, `lab finish role-create` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Move `web_site_admin` from `defaults/main.yml` to a new `vars/main.yml` in the role and run the play with `vars: web_site_admin: someone@example.com` on the role entry. The role's own value wins. Then pass it with `-e`: now yours does. Move it back to `defaults` when you have seen both.
