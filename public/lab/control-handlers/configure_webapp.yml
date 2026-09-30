@@ -1,0 +1,16 @@
+---
+- name: Web application server is deployed
+  hosts: webapp
+  vars:
+    packages:
+      - nginx
+      - php-fpm
+    web_service: nginx
+    app_service: php-fpm
+    resources_dir: /home/student/control-handlers/files
+    web_config_src: "{{ resources_dir }}/nginx.conf.standard"
+    web_config_dst: /etc/nginx/nginx.conf
+    app_config_src: "{{ resources_dir }}/php-fpm.conf.standard"
+    app_config_dst: /etc/php-fpm.conf
+
+  tasks:

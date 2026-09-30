@@ -12,11 +12,19 @@ In this exercise you turn `workstation` into a working control node: install aut
   id="install"
   title="Installing Ansible"
   classroom="lab start intro-install"
+  starter={false}
   hosts={['workstation', 'utility.lab.example.com']}
   outcomes={['Install automation content navigator on a control node.', 'Download an execution environment image and list it.']}
 >
+  <HomeSetup>
+    There is nothing to download for this exercise. Workstation already has everything from [section 0.6](#/ch00/control-node); each task below shows what to run at home to confirm it.
+  </HomeSetup>
+
   <Task title="Install the ansible-navigator package">
-    As the `student` user on `workstation`, install the RPM that provides automation content navigator.
+    As the `student` user on `workstation`, install automation content navigator.
+
+    <Env>
+      <Classroom>
 
 ```console
 [student@workstation ~]$ sudo dnf install ansible-navigator
@@ -25,6 +33,19 @@ In this exercise you turn `workstation` into a working control node: install aut
 Is this ok [y/d/N]: y
 ...output omitted...
 ```
+      </Classroom>
+      <HomeLab>
+        You installed it in section 0.6, from `pip` into a virtual environment, because Rocky Linux has no RPM for it. Confirm where it lives and which Ansible it will run:
+
+```console
+[student@workstation ~]$ which ansible-navigator ansible
+~/.local/bin/ansible-navigator
+/usr/bin/ansible
+[student@workstation ~]$ rpm -q ansible-core
+ansible-core-2.14.18-3.el9_8.1.x86_64
+```
+      </HomeLab>
+    </Env>
 
     <Callout type="note" title="Why no repository step?">
     The classroom already has the right package repository configured. On a production system you would first register it with `subscription-manager` and enable `ansible-automation-platform-2.2-for-rhel-9-x86_64-rpms`.
@@ -33,14 +54,32 @@ Is this ok [y/d/N]: y
 
   <Task title="Verify the installation">
 
+    <Env>
+      <Classroom>
+
 ```console
 [student@workstation ~]$ ansible-navigator --version
 ansible-navigator 2.1.0
 ```
+      </Classroom>
+      <HomeLab>
+
+```console
+[student@workstation ~]$ ansible-navigator --version
+ansible-navigator 26.9.0
+[student@workstation ~]$ ansible --version | head -1
+ansible [core 2.14.18]
+```
+
+        Navigator is newer than the classroom version, but it drives the same `ansible-core` generation as RHEL 9.
+      </HomeLab>
+    </Env>
   </Task>
 
   <Task title="Log in to the classroom registry">
-    The classroom's private automation hub runs on `utility.lab.example.com`. Log in with username `admin` and password `redhat`.
+    <Env>
+      <Classroom>
+        The classroom's private automation hub runs on `utility.lab.example.com`. Log in with username `admin` and password `redhat`.
 
 ```console
 [student@workstation ~]$ podman login utility.lab.example.com
@@ -48,9 +87,29 @@ Username: admin
 Password: redhat
 Login Succeeded!
 ```
+      </Classroom>
+      <HomeLab>
+        Skip this task. There is no private automation hub at home (`utility` only serves practice files), and Red Hat's registry needs a subscription. Navigator is configured not to need an image at all:
+
+```console
+[student@workstation ~]$ cat ~/.ansible-navigator.yml
+---
+ansible-navigator:
+  mode: stdout
+  playbook-artifact:
+    enable: false
+  execution-environment:
+    enabled: false
+```
+      </HomeLab>
+    </Env>
   </Task>
 
   <Task title="Download the execution environment">
+    <HomeLab title="Optional at home">
+    With the execution environment switched off there is nothing to download. To try the container workflow anyway, run `ansible-navigator images --ee true -m interactive`: navigator pulls the free community image (about 1.5 GB) and shows the same list. That image carries a much newer `ansible-core`, so keep using the default, container-free setup for the exercises.
+    </HomeLab>
+
     Run `ansible-navigator images`. Navigator notices the image is missing, pulls it, and then lists the images it can use.
 
 ```console
@@ -73,17 +132,24 @@ Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:late
   </Task>
 
   <Task title="Finish">
-    In the classroom, clean up so this exercise does not affect later ones:
-
-```console
-[student@workstation ~]$ lab finish intro-install
-```
+    <Env>
+      <Classroom>
+        Clean up so this exercise does not affect later ones: `lab finish intro-install`.
+      </Classroom>
+      <HomeLab>
+        Nothing to clean up: this exercise changed nothing on the servers.
+      </HomeLab>
+    </Env>
   </Task>
 </Lab>
 
 ## What just happened
 
 You now have the two things every later exercise relies on: the `ansible-navigator` command, and a local copy of the `ee-supported-rhel8` execution environment. When you run a playbook, navigator starts that image with Podman, mounts your project directory into it, and runs Ansible from inside the container.
+
+<HomeLab>
+At home, navigator skips the container and runs `/usr/bin/ansible-playbook` directly on workstation. The playbooks, the output and the results on the managed hosts are the same; only where Ansible itself runs differs. One practical consequence: `localhost` in a play is workstation itself, not a container.
+</HomeLab>
 
 <Callout type="tip" title="Explore the image">
 In the images view, selecting an image lets you browse the Ansible version, the collections, and the Python packages it contains. It is a quick way to check whether a module you need is available before you write the task.

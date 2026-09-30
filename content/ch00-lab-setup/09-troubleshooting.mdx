@@ -55,6 +55,8 @@ Temporarily remove the lab firewall with `sudo systemctl stop rhce-isolate`. If 
 | Same, straight after an SELinux exercise | A playbook purged local SELinux changes (for example `selinux_fcontexts_purge: true` in the SELinux system role) | `rht-vmctl reset` the VM; in your own playbooks, leave purging off |
 | *"couldn't resolve module/action 'ansible.posix.firewalld'"* | Collections not installed, or `collections_path` in `ansible.cfg` lists only `./collections` | Install them as in [section 0.6](#/ch00/control-node), step 2, and use the three-path line from [section 0.8](#/ch00/first-project-and-daily-use) |
 | *"Collection … does not support Ansible version 2.14"* | An unpinned `ansible-galaxy` install picked the newest release | Pin `ansible.posix:1.5.4` and `community.general:9.5.13` |
+| `lab: command not found`, or `lab start` says there is no such exercise | The `lab` command is not installed, or workstation has no internet | [Section 0.6](#/ch00/control-node), step 7. `lab list` shows the exercise names |
+| A playbook with `remote_user: root` (or none) fails with *Permission denied (publickey…)* | The SSH key is only installed for `devops` | [Section 0.6](#/ch00/control-node), step 6 |
 | `curl http://servera` from workstation fails, but the web server is running | firewalld on the server, as in the classroom | Open the port in your playbook with `ansible.posix.firewalld` (`service: http`, `permanent: true`, `immediate: true`) |
 | `lsblk` doesn't show the 5 GiB disk | Volume made as filesystem, not block | Recreate it with *Content type: block*; attach it with the VM stopped |
 | VM-to-VM SSH: "Permission denied (publickey)" | Password login disabled | Check `ssh_pwauth: true` in the profile, or on the VM: `sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config.d/*.conf && sudo systemctl restart sshd` |
@@ -77,7 +79,7 @@ For a lab whose first boot missed its packages, or one built before the profile 
 for vm in workstation servera serverb serverc serverd utility; do
   lxc info --project rhce "$vm" >/dev/null 2>&1 || continue
   lxc exec --project rhce "$vm" -- bash -c '
-    dnf install -y python3 python3-libselinux vim-enhanced bash-completion lvm2 tar \
+    dnf install -y python3 python3-libselinux vim-enhanced bash-completion lvm2 tar rsync \
       selinux-policy-targeted policycoreutils-python-utils firewalld chrony
     semanage fcontext -a -t bin_t "/var/run/lxd_agent(/.*)?" 2>/dev/null || true
     systemctl enable --now firewalld chronyd' </dev/null
@@ -90,7 +92,7 @@ lxc restart --project rhce --all      # each VM boots twice while SELinux labels
 Without it, SELinux starts enforcing and blocks the LXD agent, so `lxc exec` and `rht-vmctl ws` stop working for that VM. If that happens, SSH in from workstation as `devops` and run `sudo semanage fcontext -a -t bin_t "/var/run/lxd_agent(/.*)?" && sudo restorecon -R /run/lxd_agent && sudo systemctl restart lxd-agent`.
 </Callout>
 
-Then install the current `rht-vmctl` from [section 0.7](#/ch00/snapshots-and-rht-vmctl) (it also snapshots the extra disks), and on workstation add the collections from [section 0.6](#/ch00/control-node), step 2, and if utility serves collections, download the pinned versions there too. After about two minutes, run the verification in [section 0.7](#/ch00/snapshots-and-rht-vmctl). When every line passes, replace the baseline with `rht-vmctl save`: the old `clean` doesn't have these fixes.
+Then install the current `rht-vmctl` from [section 0.7](#/ch00/snapshots-and-rht-vmctl) (it also snapshots the extra disks), and on workstation run steps 1, 2, 5, 6 and 7 of [section 0.6](#/ch00/control-node) (packages, collections, SSH keys for `devops`, `student` and `root`, and the `lab` command), and if utility serves collections, download the pinned versions there too. After about two minutes, run the verification in [section 0.7](#/ch00/snapshots-and-rht-vmctl). When every line passes, replace the baseline with `rht-vmctl save`: the old `clean` doesn't have these fixes.
 
 ## Record your versions
 
@@ -169,5 +171,5 @@ sudo systemctl disable --now rhce-isolate
 ```
 
 <div className="platform-disclaimer">
-The home lab is built on Rocky Linux 9 VMs on LXD 5.21 LTS, sealed behind an nftables firewall on Ubuntu Server 26.04 LTS, and modelled on the RH294 (RHEL 9.0) classroom. UI labels can differ slightly between LXD versions; the YAML shown is the same everywhere.
+The home lab is built on Rocky Linux 9 VMs on LXD 5.21 LTS, sealed behind an nftables firewall on Ubuntu Server 26.04 LTS, and laid out like a conventional RHEL 9 training classroom. UI labels can differ slightly between LXD versions; the YAML shown is the same everywhere.
 </div>

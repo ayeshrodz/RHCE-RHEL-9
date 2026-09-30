@@ -1,0 +1,6 @@
+---
+- name: Validate inventory hosts
+  hosts: intranetweb
+  tasks:
+    - name: Ping intranetweb
+      ansible.builtin.ping:

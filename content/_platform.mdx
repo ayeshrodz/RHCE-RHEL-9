@@ -1,12 +1,12 @@
 {/* Shown in the dialog behind the "RHEL 9.0" badge in the header. */}
 
-This guide follows the **RHEL 9.0 edition of the RH294 course** and prepares you for the **EX294** exam. The versions below are the ones the course and its labs were written against. Commands, output and defaults throughout the guide assume them.
+This guide is written for **Red Hat Enterprise Linux 9** and the Ansible versions that ship with it, and is meant to help you prepare for the **RHCE** certification. Commands, output and defaults throughout the guide assume the versions below.
 
 ## The operating system: Red Hat Enterprise Linux 9
 
 <Cards>
   <Card title="Red Hat Enterprise Linux 9.0" kicker="Released May 2022" tone="red">
-    Red Hat's enterprise Linux distribution, built from CentOS Stream 9. The course's control node and managed hosts all run it.
+    Red Hat's enterprise Linux distribution, built from CentOS Stream 9. The control node and managed hosts in this guide's examples all run it, or a compatible rebuild.
   </Card>
   <Card title="What matters for Ansible" kicker="Platform details" tone="gray">
     - Linux kernel 5.14
@@ -27,26 +27,26 @@ RHEL 9 is a long-term release: each major version gets about ten years of suppor
 | Ansible Core | 2.13 | The engine and language; roughly equivalent to community "Ansible 6". |
 | ansible-navigator | 2.1 | The command-line tool you use to run playbooks, browse inventory and read docs. |
 | Execution environment | `ee-supported-rhel8` | The container image navigator runs your playbooks in. It includes Ansible Core and Red Hat certified collections. |
-| Automation controller and hub | AAP 2.2 | Web UI/API and content server. Explained in the course, but not installed or used in the labs. |
+| Automation controller and hub | AAP 2.2 | Web UI/API and content server. Explained in chapter 1, but not installed or used in the exercises. |
 
-## The course and the exam
+## The certification
 
 <Cards>
-  <Card title="RH294" kicker="The course" tone="purple">
-    *Red Hat Enterprise Linux Automation with Ansible*. Ten chapters, from installing Ansible through roles, collections and system administration tasks. This guide follows its structure.
+  <Card title="This guide" kicker="Community notes" tone="purple">
+    Ten chapters, from installing Ansible through roles, collections and system administration tasks. Written and maintained by learners, for learners. It is a companion to Red Hat's official training and documentation, not a replacement for them.
   </Card>
-  <Card title="EX294" kicker="The exam" tone="teal">
-    A hands-on, performance-based exam: you complete real automation tasks on live systems rather than answer multiple-choice questions. Passing EX294 while holding an RHCSA certification earns the **RHCE**.
+  <Card title="The RHCE exam" kicker="Red Hat's certification" tone="teal">
+    A hands-on, performance-based exam: you complete real automation tasks on live systems rather than answer multiple-choice questions. Red Hat publishes the current objectives and requirements on its website.
   </Card>
 </Cards>
 
 <Callout type="important" title="Check the current objectives">
-Red Hat updates exams over time. Before you book, read the current EX294 objectives on Red Hat's website and check which RHEL and Ansible versions the exam uses. If they are newer than those listed here, most of this guide still applies, but tool output and defaults may differ.
+Red Hat updates exams over time. Before you book, read the current RHCE exam objectives on Red Hat's website and check which RHEL and Ansible versions the exam uses. If they are newer than those listed here, most of this guide still applies, but tool output and defaults may differ.
 </Callout>
 
 ## The practice environment
 
-The labs use the machine names from the classroom:
+The exercises use a conventional training layout:
 
 | Host | Role |
 | --- | --- |

@@ -1184,3 +1184,179 @@
   color: var(--accent-text);
   text-underline-offset: 2px;
 }
+
+/* ---------- Classroom / home-lab switch ---------- */
+
+.callout-homelab {
+  --c-bg: var(--teal-50);
+  --c-fg: var(--teal-600);
+}
+.env {
+  margin: 1.2em 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.env-switch {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+}
+.env-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.env-switch button:hover {
+  color: var(--text);
+}
+.env-switch button.is-active {
+  background: var(--bg-sunken);
+  color: var(--text);
+}
+.env-home .env-switch button.is-active {
+  background: var(--teal-50);
+  color: var(--teal-600);
+}
+.env-panel {
+  min-width: 0;
+  padding: 12px 14px;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.env-panel > :first-child {
+  margin-top: 0;
+}
+.env-panel > :last-child {
+  margin-bottom: 0;
+}
+.env-panel p {
+  margin: 0 0 0.6em;
+}
+.env-panel .code-block {
+  margin: 0.7em 0;
+}
+.env-same {
+  color: var(--text-3);
+}
+.lab-prep {
+  margin: 16px 0 0;
+  background: var(--bg-sunken);
+}
+.lab-prep-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 6px 6px 6px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.lab-prep-head .lab-meta-label {
+  margin: 0;
+}
+.lab-prep-head .env-switch {
+  padding: 0;
+  border: 0;
+}
+.lab-prep .env-switch button.is-active {
+  background: var(--bg);
+}
+.lab-prep .env-panel {
+  color: var(--text-2);
+  font-size: 14px;
+}
+.lab-prep-steps {
+  margin: 0;
+  padding-left: 20px;
+}
+.lab-prep-steps li + li {
+  margin-top: 6px;
+}
+.lab-prep-extra {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.lab-prep-extra > :last-child {
+  margin-bottom: 0;
+}
+.starter {
+  margin-top: 8px;
+}
+.starter-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.starter-files li {
+  margin: 0 !important;
+}
+.starter-files button,
+.starter-hook {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.starter-files button {
+  cursor: pointer;
+}
+.starter-files button:hover,
+.starter-files button.is-active {
+  border-color: var(--teal-400);
+  color: var(--teal-600);
+}
+.starter-hook {
+  border-style: dashed;
+  font-family: var(--font-sans);
+}
+.starter-view {
+  max-height: 320px;
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: var(--code-size-sm);
+  line-height: 1.55;
+}
+.starter-none {
+  margin: 6px 0 0 !important;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+:root[data-theme='dark'] .callout-homelab {
+  --c-bg: rgba(29, 158, 117, 0.14);
+  --c-fg: var(--teal-100);
+}
+:root[data-theme='dark'] .env-home .env-switch button.is-active {
+  background: rgba(29, 158, 117, 0.18);
+  color: var(--teal-100);
+}
+:root[data-theme='dark'] .starter-files button:hover,
+:root[data-theme='dark'] .starter-files button.is-active {
+  border-color: var(--teal-200);
+  color: var(--teal-100);
+}

@@ -312,3 +312,77 @@ a.page-eyebrow:hover {
 .platform-disclaimer > p {
   margin: 0;
 }
+
+/* On phones, a table becomes a stack of cards: one per row, each value under its column heading. */
+@media (max-width: 640px) {
+  .table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  .prose .table-wrap table,
+  .prose .table-wrap tbody,
+  .prose .table-wrap tr,
+  .prose .table-wrap td {
+    display: block;
+    width: auto;
+  }
+  .prose .table-wrap thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .prose .table-wrap tr {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+  .prose .table-wrap td {
+    display: grid;
+    grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
+    gap: 0 12px;
+    align-items: baseline;
+    padding: 0;
+    border: 0;
+  }
+  .prose .table-wrap td + td {
+    margin-top: 7px;
+    padding-top: 7px;
+    border-top: 1px dashed var(--border);
+  }
+  .prose .table-wrap td:has(.td-val:empty) {
+    display: none;
+  }
+  .prose .table-wrap td::before {
+    content: attr(data-label);
+    color: var(--text-3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .prose .table-wrap td[data-label=''] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .prose .table-wrap td[data-label='']::before {
+    display: none;
+  }
+  .prose .table-wrap .td-val {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .prose .table-wrap td:first-child .td-val {
+    font-weight: 500;
+  }
+  .prose .table-wrap td code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

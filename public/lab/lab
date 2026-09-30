@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# lab - starts exercises on the RHCE Field Guide home lab (same syntax as a classroom 'lab' command)
+# Runs on workstation as student. Install: see section 0.6 of the guide.
+# Version 1
+set -uo pipefail
+
+VERSION=1
+BASE="${LAB_URL:-https://ayeshrodz.github.io/RHCE-RHEL-9/lab}"
+
+say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
+die()  { printf '\033[1;31mxx\033[0m %s\n' "$*" >&2; exit 1; }
+fetch() { curl -fsSL --retry 2 "$BASE/$1"; }
+
+usage() {
+cat <<USAGE
+lab v$VERSION - RHCE Field Guide home lab exercises
+
+  lab start  NAME [--force]   create ~/NAME with the exercise's starter files
+  lab finish NAME             what to do when you are done
+  lab grade  NAME             (classroom only) how to check your work at home
+  lab list                    exercises that have starter files
+  lab version
+
+'lab start' only touches workstation. Reset the servers on the Ubuntu host
+first:  rht-vmctl reset servers
+--force replaces an existing ~/NAME; the old folder is kept as ~/NAME.old-DATE.
+Starter files come from: $BASE
+USAGE
+}
+
+need_name() { [[ -n ${1:-} ]] || die "which exercise? e.g. 'lab $SUB playbook-basic' (see: lab list)"; }
+valid_name() { [[ $1 =~ ^[a-z0-9][a-z0-9-]*$ ]] || die "'$1' is not an exercise name"; }
+
+cmd_start() {
+  need_name "${1:-}"; valid_name "$1"
+  local name="$1" force="${2:-}" dir="$HOME/$1" manifest line dest src hooks=() h tmp
+  manifest=$(fetch "$name/MANIFEST" 2>/dev/null) || die "no exercise called '$name', or no connection to $BASE (see: lab list)"
+  [[ $manifest == \#* ]] || die "unexpected answer from $BASE/$name/MANIFEST"
+
+  if [[ -e $dir ]]; then
+    [[ $force == --force ]] || die "~/$name already exists. Keep working in it, or start over with: lab start $name --force"
+    mv "$dir" "$dir.old-$(date +%Y%m%d-%H%M%S)" && warn "kept your previous folder as ~/$name.old-*"
+  fi
+  mkdir -p "$dir" || die "cannot create ~/$name"
+
+  while IFS= read -r line; do
+    line="${line%%#*}"; line="${line//[[:space:]]/}"
+    [[ -z $line ]] && continue
+    if [[ $line == @* ]]; then hooks+=("${line#@}"); continue; fi
+    dest="${line%%=*}"; src="${line#*=}"
+    [[ $dest == /* || $dest == *..* || $src == *..* ]] && die "refusing unsafe path in manifest: $line"
+    mkdir -p "$dir/$(dirname "$dest")"
+    fetch "$name/$src" > "$dir/$dest" || die "could not download $src"
+    echo "  $dest"
+  done <<< "$manifest"
+
+  for h in "${hooks[@]:-}"; do
+    [[ -n $h ]] || continue
+    tmp=$(mktemp)
+    fetch "$name/$h" > "$tmp" || die "could not download $h"
+    (cd "$dir" && bash "$tmp") || warn "$h reported a problem"
+    rm -f "$tmp"
+  done
+
+  say "~/$name is ready:  cd ~/$name"
+  echo "  If you have not yet, reset the servers on the Ubuntu host: rht-vmctl reset servers"
+}
+
+cmd_finish() {
+  need_name "${1:-}"
+  say "finishing $1"
+  echo "  On the Ubuntu host: rht-vmctl reset servers   (puts the managed hosts back to 'clean')"
+  echo "  Your work stays in ~/$1. Delete it with: rm -rf ~/$1"
+}
+
+cmd_grade() {
+  need_name "${1:-}"
+  warn "grading scripts exist only in the Red Hat classroom"
+  echo "  Check your work with the verification tasks at the end of the exercise,"
+  echo "  then run the playbook a second time: it should report changed=0."
+}
+
+cmd_list() { fetch INDEX || die "no connection to $BASE"; }
+
+SUB="${1:-help}"; shift || true
+case "$SUB" in
+  start)             cmd_start "$@" ;;
+  finish)            cmd_finish "$@" ;;
+  grade)             cmd_grade "$@" ;;
+  list)              cmd_list ;;
+  version|--version) echo "lab $VERSION" ;;
+  help|-h|--help)    usage ;;
+  *)                 usage; exit 1 ;;
+esac

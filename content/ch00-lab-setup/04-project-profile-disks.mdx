@@ -20,7 +20,7 @@ Phases 05 to 07: give the lab its own LXD project, turn the project's default pr
     | Field | Value | Why |
     | --- | --- | --- |
     | Project name | rhce | |
-    | Description | RHCE / RH294 practice lab | |
+    | Description | RHCE practice lab | |
     | Features | Customised | |
     | Allow custom profiles | ✓ on | The lab gets its own template |
     | Allow storage volumes | ✓ on | The extra disks belong to the lab |
@@ -73,7 +73,7 @@ A **profile** is a template every VM inherits. The rhce project's `default` prof
 
 ```yaml title="rhce project: default profile"
 name: default
-description: RH294 lab machine template
+description: RHCE lab machine template
 config:
   limits.cpu: "1"
   limits.memory: 1GiB
@@ -109,6 +109,7 @@ config:
       - bash-completion
       - lvm2
       - tar
+      - rsync                         # ansible.posix.synchronize needs it on both ends
       - selinux-policy-targeted       # the image ships without SELinux; RHEL runs it enforcing
       - policycoreutils-python-utils  # semanage; Ansible's SELinux modules need it too
       - firewalld                     # running by default, as on a RHEL server

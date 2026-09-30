@@ -138,13 +138,25 @@ This is a test page.
 [student@workstation playbook-basic]$ curl serverd.lab.example.com
 This is a test page.
 ```
+
+    <HomeLab title="curl hangs or is refused at home">
+    The home-lab servers run `firewalld` from the first boot, as a standard RHEL installation does, and this playbook never opens the HTTP port. The play itself succeeds; only the test fails. Add a fourth task and run the playbook again:
+
+```yaml
+    - name: firewalld permits http service
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+```
+
+    You meet this module properly in the next sections. A web server that is running but unreachable is almost always this.
+    </HomeLab>
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish playbook-basic
-```
+    <Finish name="playbook-basic" />
   </Task>
 </Lab>
 

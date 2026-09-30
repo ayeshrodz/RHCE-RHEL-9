@@ -4,9 +4,9 @@
 
 **Read it online: https://ayeshrodz.github.io/RHCE-RHEL-9/**
 
-A free, interactive study guide and home-lab build for the **Red Hat Certified Engineer (EX294)** exam: Ansible automation on RHEL 9, following the structure of the RH294 course. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
+A free, interactive study guide and home-lab build for people working towards the **RHCE** certification: Ansible automation on RHEL 9. It is written by learners, for learners, as a way to study together. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
 
-> An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.
+> An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 
 ## Status
 
@@ -17,7 +17,8 @@ A free, interactive study guide and home-lab build for the **Red Hat Certified E
 | 2. Implementing an Ansible Playbook | Complete |
 | 3. Managing Variables and Facts | Complete |
 | 4. Implementing Task Control | Complete |
-| 5–10 | Planned (listed as "coming soon" in the site) |
+| 5. Deploying Files to Managed Hosts | Complete |
+| 6–10 | Planned (listed as "coming soon" in the site) |
 
 ## Quick start
 
@@ -54,7 +55,8 @@ src/
   components/interactive/        Quiz, Lab/Task, Flashcards
   components/search/             client-side search (built lazily from MDX)
   diagrams/kit/                  SVG diagram primitives (Diagram, Node, Arrow…)
-  diagrams/ch01, ch02/           chapter diagrams and interactive widgets
+  diagrams/chNN/                 chapter diagrams and interactive widgets
+public/lab/                      the home-lab `lab` command and each exercise's starter files
   pages/                         home, chapter overview, section, 404
   styles/                        design tokens, layout, prose, components
 docs/AUTHORING.md                how to write new sections and diagrams

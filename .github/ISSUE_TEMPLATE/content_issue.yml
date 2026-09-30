@@ -20,4 +20,4 @@ body:
     id: suggestion
     attributes:
       label: Suggested fix
-      description: Optional. In your own words, please, and not copied from the RH294 book.
+      description: Optional. In your own words, please, and not copied from training materials or books.

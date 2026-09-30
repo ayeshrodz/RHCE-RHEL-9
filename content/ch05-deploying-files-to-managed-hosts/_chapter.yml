@@ -1,7 +1,5 @@
 title: Deploying Files to Managed Hosts
-goal: Deploy, manage and adjust files on managed hosts, including templated files built with Jinja2.
-status: planned
-topics:
-  - Modifying and copying files to hosts
-  - Deploying custom files with Jinja2 templates
-  - Chapter lab
+goal: Deploy, manage and adjust files on hosts managed by Ansible.
+objectives:
+  - Create, install, edit and remove files on managed hosts, and manage their permissions, ownership and SELinux context.
+  - Deploy files that are customised for each host by using Jinja2 templates.

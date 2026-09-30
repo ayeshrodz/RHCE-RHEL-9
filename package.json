@@ -2,7 +2,7 @@
   "name": "rhce-study-guide",
   "private": true,
   "version": "1.0.0",
-  "description": "A free, interactive study guide and home-lab build for the Red Hat EX294 (RHCE) exam",
+  "description": "A free, interactive study guide and home-lab build for the RHCE certification, made by the community",
   "license": "MIT",
   "repository": {
     "type": "git",

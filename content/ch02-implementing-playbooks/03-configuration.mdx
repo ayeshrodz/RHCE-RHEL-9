@@ -137,8 +137,24 @@ ansible-navigator:
 - **`pull.policy: missing`** pulls the image only if it is not already present locally.
 - **`playbook-artifact.enable: false`** stops navigator writing a JSON log of each run. You must disable artifacts whenever a playbook needs to **prompt for a password**.
 
+<HomeLab title="The home-lab navigator file">
+At home there is no image to name. The file from [section 0.6](#/ch00/control-node) switches the execution environment off instead, so navigator runs workstation's own `ansible-core`:
+
+```yaml title="~/.ansible-navigator.yml"
+---
+ansible-navigator:
+  mode: stdout
+  playbook-artifact:
+    enable: false
+  execution-environment:
+    enabled: false
+```
+
+A project-level `ansible-navigator.yml` replaces this file rather than adding to it. If an exercise has you create one, keep the `execution-environment: enabled: false` lines in it.
+</HomeLab>
+
 <Callout type="note">
-Navigator has many more settings, covered in the more advanced course DO374 and in the navigator documentation.
+Navigator has many more settings; see the navigator documentation.
 </Callout>
 
 ## Configuring connections

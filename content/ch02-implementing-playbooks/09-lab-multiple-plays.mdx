@@ -90,7 +90,7 @@ The project `~/playbook-multi` already has an `ansible.cfg` and an `inventory` t
   </Task>
 
   <Task title="Add the test play">
-    Start a second play at the left margin (no indentation). It targets `localhost`, which with navigator is the execution environment, and does not need privilege escalation.
+    Start a second play at the left margin (no indentation). It targets `localhost`, which with navigator is the execution environment (on the home lab, where no container is used, it is workstation itself), and does not need privilege escalation.
 
 ```yaml
 - name: Test intranet web server
@@ -192,9 +192,6 @@ Welcome to the example.com intranet!
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish playbook-multi
-```
+    <Finish name="playbook-multi" />
   </Task>
 </Lab>

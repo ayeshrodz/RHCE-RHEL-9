@@ -147,14 +147,7 @@ workstation                : ok=2    changed=0    unreachable=0    failed=0  ...
   </Task>
 
   <Task title="Grade and finish">
-    In the classroom, grade your work and fix anything reported, then clean up:
-
-```console
-[student@workstation ~]$ lab grade playbook-review
-[student@workstation ~]$ lab finish playbook-review
-```
-
-    On your own lab, grade yourself: run the playbook a second time and confirm `changed=0`, then `curl http://serverb.lab.example.com` from the workstation.
+    <Finish name="playbook-review" grade />
   </Task>
 </Lab>
 

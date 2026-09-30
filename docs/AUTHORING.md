@@ -58,7 +58,7 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 
 ## 3. Writing style
 
-- **Write in your own words.** Use the course PDF to check facts and structure, never copy its prose. Commands, file contents and directive names are fine to reproduce.
+- **Write in your own words, from open sources:** the public exam objectives, the Ansible and RHEL documentation, and your own testing on the lab. Do not copy or closely paraphrase training materials or books. Commands, file contents and directive names are fine to reproduce.
 - Short sentences, second person ("you"), active voice. Explain *why* before *how*.
 - Use the classroom host names (`workstation`, `servera`–`serverd`, `utility.lab.example.com`) and documentation IP ranges (`192.0.2.0/24`). Never real personal hosts, users or addresses.
 - Always use FQCNs in examples (`ansible.builtin.copy`).
@@ -139,6 +139,33 @@ Reusable pieces from chapter 3 that later chapters can use directly in MDX: `<Pr
 ### Lab placeholders
 
 Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (chapter 0.1), including in copied text. Add new placeholder keys in `src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
+
+### Classroom and home lab
+
+Readers follow the guide either in the Red Hat classroom or on the home lab from Chapter 0. Where the two differ, show both. The reader's choice is one site-wide preference.
+
+| Component | Use |
+| --- | --- |
+| `<Env><Classroom>…</Classroom><HomeLab>…</HomeLab></Env>` | Two versions of a command, file or output. A switch shows one at a time. |
+| `<HomeLab title="…">…</HomeLab>` on its own | An always-visible note for home-lab readers (teal callout). |
+| `<Lab classroom="lab start NAME">` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `public/lab/NAME/`. Pass `starter={false}` if there are none. |
+| `<HomeSetup>…</HomeSetup>` inside `<Lab>` | Extra home-lab preparation notes for that exercise. |
+| `<Finish name="NAME" />` (add `grade` for chapter labs) | The body of an exercise's last task, for both environments. |
+
+Keep the classroom commands as the default text of an exercise, and use these only where the home lab really differs (no execution environment, Rocky facts, firewalld running, `sdb` for `vdb`).
+
+### Exercise starter files
+
+Every exercise that starts with `lab start NAME` needs a folder `public/lab/NAME/`:
+
+```text
+public/lab/NAME/
+  MANIFEST        first line "# title"; then one path per line; "dest=src" to rename (for dotfiles); "@setup.sh" runs a script
+  ansible.cfg, inventory, files/…
+  setup.sh        optional: generates files on the reader's workstation (certificates, Vault files)
+```
+
+Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/lab`, installed in section 0.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/public/lab bash public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
 
 ## 6. Code font
 

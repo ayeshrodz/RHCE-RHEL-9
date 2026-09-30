@@ -117,6 +117,10 @@ servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
       when: ansible_facts['distribution'] == "RedHat"
 ```
     </Reveal>
+
+    <HomeLab title="Use Rocky here">
+    serverb runs Rocky Linux at home, so with `"RedHat"` the condition is false and both items are skipped. Write `when: ansible_facts['distribution'] == "Rocky"` to get the output in the next task. Then try it once with `"RedHat"` on purpose: seeing `skipping:` for each item is the other half of this exercise.
+    </HomeLab>
   </Task>
 
   <Task title="Run it again">
@@ -132,14 +136,17 @@ PLAY RECAP *********************************************************************
 serverb.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
 ```
 
-    serverb runs RHEL, so the condition is true and the task runs. On a non-RHEL host, each item would show `skipping:` instead.
+    In the classroom serverb runs RHEL, so the condition is true and the task runs. On a host where the condition is false, each item shows `skipping:` instead:
+
+```text
+TASK [MariaDB packages are installed] ******************************************
+skipping: [serverb.lab.example.com] => (item=mariadb-server)
+skipping: [serverb.lab.example.com] => (item=python3-PyMySQL)
+```
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish control-flow
-```
+    <Finish name="control-flow" />
   </Task>
 </Lab>
 

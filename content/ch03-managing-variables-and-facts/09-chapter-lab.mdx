@@ -40,6 +40,10 @@ Notice that `secrets_dest` is built from another variable.
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Define variables and use facts in a playbook, and use variables defined in an encrypted file.']}
 >
+  <HomeSetup>
+    `files/httpd.conf` is Rocky's stock Apache configuration with one change: `AllowOverride AuthConfig` for the document root, so that `.htaccess` can require a login. `files/htpasswd` is generated on your workstation with one user, `guest`, password `redhat`.
+  </HomeSetup>
+
   <Task title="Start the play and its variables">
     In `~/data-review`, create `playbook.yml` with a play named `install and configure webserver with basic auth` for the `webserver` group, and define all the variables from the table.
 
@@ -270,13 +274,7 @@ workstation                : ok=3    changed=0    unreachable=0    failed=0  ...
   </Task>
 
   <Task title="Grade and finish">
-
-```console
-[student@workstation ~]$ lab grade data-review
-[student@workstation ~]$ lab finish data-review
-```
-
-    On your own lab: run the playbook a second time and confirm `changed=0` for serverb.
+    <Finish name="data-review" grade />
   </Task>
 </Lab>
 

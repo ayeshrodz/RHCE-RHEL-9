@@ -31,7 +31,6 @@ RHCE/
 ├── docs/
 │   ├── ARCHITECTURE.md             # This technical architecture document
 │   ├── AUTHORING.md                # Style guide and component reference
-│   └── EXAM_BLUEPRINT.md           # EX294 syllabus mapping and exam guidance
 ├── src/
 │   ├── App.jsx                     # Top-level routing and MDXProvider wrapper
 │   ├── main.jsx                    # Application entrypoint and theme bootstrap

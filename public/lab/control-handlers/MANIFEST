@@ -1,0 +1,6 @@
+# Implementing handlers
+ansible.cfg
+inventory
+configure_webapp.yml
+files/nginx.conf.standard
+files/php-fpm.conf.standard
