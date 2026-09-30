@@ -122,10 +122,6 @@ function Full({ chapterId, onCollapse }) {
           );
         })}
       </ol>
-
-      <div className="sidebar-foot">
-        <p>An independent, community study guide for the RHCE exam. Not affiliated with or endorsed by Red Hat.</p>
-      </div>
     </div>
   );
 }

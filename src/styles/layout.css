@@ -174,7 +174,7 @@
   padding: 7px 10px;
   border-radius: 8px;
   color: var(--text-2);
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 500;
   text-decoration: none;
 }
@@ -211,7 +211,7 @@
   min-width: 0;
   padding: 8px 4px 8px 10px;
   color: var(--text);
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.35;
   text-decoration: none;
@@ -219,12 +219,12 @@
 .nav-chapter-num {
   display: inline-grid;
   place-items: center;
-  flex: 0 0 20px;
-  height: 20px;
+  flex: 0 0 22px;
+  height: 22px;
   border-radius: 6px;
   background: var(--bg-sunken);
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 .nav-chapter.is-current .nav-chapter-num {
@@ -241,7 +241,7 @@
 .nav-soon {
   margin-right: 8px;
   color: var(--text-3);
-  font-size: 11px;
+  font-size: 12px;
 }
 .nav-expand {
   display: flex;
@@ -261,7 +261,7 @@
   transform: rotate(90deg);
 }
 .nav-count {
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 .nav-sections {
@@ -277,7 +277,7 @@
   padding: 6px 8px;
   border-radius: 7px;
   color: var(--text-2);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.4;
   text-decoration: none;
 }
@@ -293,8 +293,8 @@
 .nav-section-icon {
   display: grid;
   place-items: center;
-  flex: 0 0 18px;
-  height: 18px;
+  flex: 0 0 20px;
+  height: 20px;
   margin-top: 0;
   color: var(--text-3);
 }
@@ -306,26 +306,12 @@
 .nav-section-num {
   flex: 0 0 auto;
   color: var(--text-3);
-  font-size: 12px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
-  line-height: 18px;
+  line-height: 20px;
 }
 .nav-section-title {
-  line-height: 18px;
-}
-.sidebar-foot {
-  margin-top: auto;
-  padding: 20px 10px 0;
-  color: var(--text-3);
-  font-size: 12px;
-  line-height: 1.5;
-}
-.sidebar-foot p {
-  margin: 0 0 10px;
-}
-.sidebar-foot .btn {
-  margin-left: -10px;
-  color: var(--text-3);
+  line-height: 20px;
 }
 .scrim {
   display: none;
@@ -439,6 +425,12 @@
   }
   .page-grid {
     padding: 32px 20px 72px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-name {
+    display: none;
   }
 }
 
