@@ -4,3 +4,4 @@ course: RH294
 rhel: "9.0"
 aap: "2.2"
 ansibleCore: "2.13"
+repo: https://github.com/ayeshrodz/RHCE-RHEL-9
