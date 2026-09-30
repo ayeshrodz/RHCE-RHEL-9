@@ -1,0 +1,142 @@
+/* Chapter 6 widgets: host patterns, imports and includes. */
+
+.hp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
+  align-items: start;
+}
+.hp-inv {
+  margin: 0;
+}
+.hp-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hp-field span {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: var(--code-size-sm);
+}
+.hp-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--code-size);
+}
+.hp-field input:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+.hp-presets {
+  margin-top: 8px;
+}
+.hp-hosts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 14px;
+}
+.hp-host {
+  padding: 9px 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-align: center;
+  opacity: 0.55;
+}
+.hp-host.is-on {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+  color: var(--text);
+  font-weight: 600;
+  opacity: 1;
+}
+.hp-count {
+  margin: 8px 0 0 !important;
+  color: var(--text-2);
+  font-size: 13px;
+}
+.hp-terms {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.hp-terms li {
+  margin: 0;
+}
+.hp-terms span,
+.hp-terms em {
+  color: var(--text-3);
+}
+.hp-warn {
+  margin: 8px 0 0 !important;
+  color: var(--changed);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.hp-quote {
+  margin: 10px 0 0 !important;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.reuse-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.reuse-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+.reuse-grid .terminal {
+  margin: 0 0 10px;
+}
+.reuse-cap {
+  margin: 0 0 5px !important;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+.terminal.reuse-run {
+  min-height: 96px;
+  white-space: pre;
+}
+.terminal.reuse-run .term-fail {
+  white-space: pre-wrap;
+}
+.reuse-notes {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.reuse-notes li {
+  margin: 0;
+}
+.pm-code {
+  margin: 10px 0 0;
+}
+
+@media (max-width: 760px) {
+  .hp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

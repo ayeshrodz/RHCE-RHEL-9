@@ -1,0 +1,4 @@
+# Chapter lab: Managing complex plays and playbooks
+ansible.cfg
+inventory
+tasks/install.yml

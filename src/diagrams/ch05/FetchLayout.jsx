@@ -44,13 +44,17 @@ ${bar}           └── secure`;
       </div>
       {flat ? (
         <p className="fetch-note is-warn">
-          <AlertTriangle size={14} /> With <code>flat: true</code> every host's file is saved under the same name, so each one overwrites
-          the last. Put the host name in <code>dest</code> yourself, for example{' '}
-          <code>{'dest: "secure-backups/{{ inventory_hostname }}-secure"'}</code>.
+          <AlertTriangle size={14} />
+          <span>
+            With <code>flat: true</code> every host's file is saved under the same name, so each one overwrites the last. Put the host name
+            in <code>dest</code> yourself, for example <code>{'dest: "secure-backups/{{ inventory_hostname }}-secure"'}</code>.
+          </span>
         </p>
       ) : (
         <p className="fetch-note">
-          The default adds the host name and the file's full path under <code>dest</code>, so files from different hosts never collide.
+          <span>
+            The default adds the host name and the file's full path under <code>dest</code>, so files from different hosts never collide.
+          </span>
         </p>
       )}
     </div>

@@ -36,7 +36,9 @@ export default function Quiz({ id = 'quiz', title, questions }) {
             <li key={qi} className="quiz-item">
               <p className="quiz-q">
                 {single ? <span className="quiz-q-kicker">Quick check</span> : <span className="quiz-q-num">{qi + 1}</span>}
-                <Inline text={item.q} />
+                <span className="quiz-q-text">
+                  <Inline text={item.q} />
+                </span>
               </p>
               {item.code && <pre className="quiz-code">{item.code}</pre>}
               <div className="quiz-options" role="radiogroup">

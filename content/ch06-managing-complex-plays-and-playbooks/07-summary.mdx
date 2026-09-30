@@ -1,0 +1,117 @@
+---
+title: Summary and cheat sheet
+kind: summary
+minutes: 6
+---
+
+<Lead>
+The chapter on one page: the pattern syntax in one place, the difference between importing and including, and flashcards for quick revision.
+</Lead>
+
+## The chapter in six sentences
+
+- A **host pattern** selects hosts from the inventory by name: a host, a group, a wildcard, or a comma-separated list of those.
+- **`&`** keeps only hosts that are also in a group and **`!`** removes hosts; whatever the order, plain terms are added first, then intersections, then exclusions.
+- **`--limit`** narrows the hosts of every play for one run, and **`--list-hosts`** shows the result without running anything.
+- **`import_playbook`** combines whole playbooks; **task files** hold a plain list of tasks that many plays can reuse.
+- **`import_tasks`** is static: the file is read when the playbook is parsed. **`include_tasks`** is dynamic: the file is read when the task runs.
+- Pass **`vars:`** to an import or include so that one task file can do different work each time it is used.
+
+## Cheat sheet
+
+<Tabs>
+  <Tab label="Patterns">
+
+```yaml
+hosts: all                          # everything
+hosts: web                          # a group (and its children)
+hosts: web,db                       # union
+hosts: 'web,&production'            # in web AND in production
+hosts: 'web,!staging'               # web except staging
+hosts: '*.lab.example.com'          # wildcard: host and group names
+hosts: '~server[ab]\.'              # regular expression
+hosts: 'web[0]'                     # first host of web; [-1] last; [0:1] first two
+```
+
+  </Tab>
+  <Tab label="Command line">
+
+```bash
+ansible 'web,!staging' --list-hosts                  # test a pattern
+ansible-navigator run -m stdout site.yml --list-hosts  # hosts of each play
+ansible-navigator run -m stdout site.yml --list-tasks  # tasks (imports expanded)
+ansible-navigator run -m stdout site.yml --limit canary
+ansible-navigator run -m stdout site.yml --limit 'all,!canary'
+```
+
+  </Tab>
+  <Tab label="Playbooks">
+
+```yaml
+# site.yml: top level only
+- name: Web tier
+  ansible.builtin.import_playbook: web.yml
+
+- name: Database tier
+  ansible.builtin.import_playbook: db.yml
+```
+
+  </Tab>
+  <Tab label="Task files">
+
+```yaml
+# tasks/install.yml: a list of tasks, nothing else
+- name: Packages are installed
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: present
+```
+
+```yaml
+tasks:
+  - name: Packages                          # static
+    ansible.builtin.import_tasks: tasks/install.yml
+    vars:
+      packages: [httpd, firewalld]
+
+  - name: Firewall services                 # dynamic, once per item
+    ansible.builtin.include_tasks: tasks/firewall.yml
+    loop: [http, https]
+
+  - name: TLS                               # dynamic, loaded only if true
+    ansible.builtin.include_tasks: tasks/tls.yml
+    when: enable_tls | bool
+```
+
+  </Tab>
+</Tabs>
+
+| | `import_tasks` | `include_tasks` |
+| --- | --- | --- |
+| Read | At parse time | At run time |
+| `when` | Applied to each task inside | Decides once whether to load the file |
+| `loop` | Error | Yes |
+| File name from facts | No | Yes |
+| `--list-tasks`, `--start-at-task` | See inside | See only the include |
+
+<Flashcards
+  title="Chapter 6 flashcards"
+  cards={[
+    { front: 'What are host patterns matched against?', back: 'The host and group **names in the inventory**. Nothing is resolved through DNS.' },
+    { front: 'Pattern for "in web AND in production"?', back: "`'web,&production'`" },
+    { front: 'Pattern for "all except the db group"?', back: "`'all,!db'`" },
+    { front: 'In what order are pattern terms applied?', back: 'Plain terms are added, then `&` intersections, then `!` exclusions, whatever order they are written in.' },
+    { front: 'What does `--limit` do to a play\'s `hosts`?', back: 'Narrows it: the play runs on hosts matching **both**. It never adds hosts.' },
+    { front: 'How do you preview the hosts of each play?', back: '`ansible-navigator run -m stdout site.yml --list-hosts`' },
+    { front: 'What happens when a pattern term matches nothing?', back: 'A warning, "Could not match supplied host pattern", and the run continues.' },
+    { front: 'Where does `import_playbook` go?', back: 'At the **top level** of a playbook, in place of a play.' },
+    { front: 'What is in a task file?', back: 'A YAML **list of tasks** only: no `hosts`, no `tasks:` keyword.' },
+    { front: 'Static or dynamic: `import_tasks`?', back: '**Static**: read at parse time. `include_tasks` is dynamic: read when the task runs.' },
+    { front: 'Which one can take a `loop`?', back: '`include_tasks`. A loop on `import_tasks` is an error.' },
+    { front: 'How does `when` behave on `import_tasks`?', back: 'It is copied to **every task** in the file, and each one tests it.' },
+  ]}
+/>
+
+<Callout type="exam" title="Speed drill">
+In 15 minutes: write `tasks/user.yml` that creates one user from a variable `username`, a playbook `users.yml` that includes it in a loop over three names for the hosts in `'web,!staging'`, and a `site.yml` that imports `users.yml`. Show the affected hosts with `--list-hosts` before you run it, and run it twice; the second run must show `changed=0`.
+</Callout>

@@ -1,0 +1,202 @@
+---
+title: "Guided exercise: Selecting hosts with host patterns"
+kind: lab
+minutes: 15
+---
+
+<Lead>
+You will explore one inventory with a series of patterns, predicting each result before you check it, then use a pattern in a play and narrow a run with `--limit`. Nothing in this exercise changes the managed hosts.
+</Lead>
+
+The project `~/pattern-hosts` has an `ansible.cfg`, a small playbook `who.yml`, and this inventory:
+
+```ini title="inventory"
+[web]
+servera.lab.example.com
+serverb.lab.example.com
+
+[db]
+serverc.lab.example.com
+serverd.lab.example.com
+
+[staging]
+servera.lab.example.com
+serverc.lab.example.com
+
+[production]
+serverb.lab.example.com
+serverd.lab.example.com
+
+[site:children]
+web
+db
+```
+
+Each host is in one *role* group (`web` or `db`) and one *environment* group (`staging` or `production`).
+
+<Lab
+  id="patterns"
+  title="Selecting hosts with host patterns"
+  classroom="lab start pattern-hosts"
+  own
+  hosts={['workstation']}
+  outcomes={['Predict and verify which hosts a pattern selects.', 'Use patterns in a play and with --limit.']}
+>
+  <Task title="List a group and a list of groups">
+    Move into the project and ask Ansible which hosts two simple patterns select.
+
+```console
+[student@workstation ~]$ cd ~/pattern-hosts
+[student@workstation pattern-hosts]$ ansible web --list-hosts
+  hosts (2):
+    servera.lab.example.com
+    serverb.lab.example.com
+[student@workstation pattern-hosts]$ ansible web,db --list-hosts
+  hosts (4):
+    servera.lab.example.com
+    serverb.lab.example.com
+    serverc.lab.example.com
+    serverd.lab.example.com
+```
+  </Task>
+
+  <Task title="Exclude and intersect">
+    Before running each command, decide from the inventory which hosts you expect.
+
+```console
+[student@workstation pattern-hosts]$ ansible 'web,!staging' --list-hosts
+  hosts (1):
+    serverb.lab.example.com
+[student@workstation pattern-hosts]$ ansible 'web,&production' --list-hosts
+  hosts (1):
+    serverb.lab.example.com
+```
+
+    Two different patterns, one answer: serverb is the only web server that is not in staging, and the only one in production.
+  </Task>
+
+  <Task title="Use wildcards and a regular expression">
+
+```console
+[student@workstation pattern-hosts]$ ansible 'prod*' --list-hosts
+  hosts (2):
+    serverb.lab.example.com
+    serverd.lab.example.com
+[student@workstation pattern-hosts]$ ansible '~server[ab]' --list-hosts
+  hosts (2):
+    servera.lab.example.com
+    serverb.lab.example.com
+```
+
+    `prod*` matched no host name. It matched the **group** `production` and selected its members.
+  </Task>
+
+  <Task title="Select by position">
+
+```console
+[student@workstation pattern-hosts]$ ansible 'db[0]' --list-hosts
+  hosts (1):
+    serverc.lab.example.com
+[student@workstation pattern-hosts]$ ansible 'site[1:2]' --list-hosts
+  hosts (2):
+    serverb.lab.example.com
+    serverc.lab.example.com
+```
+
+    `site` contains `web` then `db`, so its hosts are in the order a, b, c, d; positions 1 to 2 are serverb and serverc.
+  </Task>
+
+  <Task title="Make a typo on purpose">
+
+```console
+[student@workstation pattern-hosts]$ ansible 'web,nosuch' --list-hosts
+[WARNING]: Could not match supplied host pattern, ignoring: nosuch
+  hosts (2):
+    servera.lab.example.com
+    serverb.lab.example.com
+```
+
+    A warning, not an error. The rest of the pattern still applies.
+  </Task>
+
+  <Task title="Narrow a play with --limit">
+    `who.yml` has one play for `all` hosts that prints each host's groups. Run it for the web servers that are not in staging:
+
+```console
+[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --limit 'web,!staging'
+
+PLAY [Show which hosts a pattern selects] **************************************
+
+TASK [Say hello from each selected host] ***************************************
+ok: [serverb.lab.example.com] => {
+    "msg": "serverb.lab.example.com is in: production, site, web"
+}
+
+PLAY RECAP *********************************************************************
+serverb.lab.example.com    : ok=1    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Put a pattern in the play">
+    Edit `who.yml` so the play itself targets the staging database servers. The value starts with a letter, but it contains `&`, so quote it anyway.
+
+```yaml title="who.yml"
+---
+- name: Show which hosts a pattern selects
+  hosts: 'staging,&db'
+  gather_facts: false
+  tasks:
+    - name: Say hello from each selected host
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is in: {{ group_names | join(', ') }}"
+```
+
+    Check what the play would run on, then run it:
+
+```console
+[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --list-hosts
+
+playbook: /home/student/pattern-hosts/who.yml
+
+  play #1 (staging,&db): Show which hosts a pattern selects	TAGS: []
+    pattern: ['staging,&db']
+    hosts (1):
+      serverc.lab.example.com
+[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml
+...output omitted...
+ok: [serverc.lab.example.com] => {
+    "msg": "serverc.lab.example.com is in: db, site, staging"
+}
+```
+  </Task>
+
+  <Task title="Limit to hosts the play does not include">
+    The play now targets serverc only. Limit the run to `web`:
+
+```console
+[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --limit web
+
+PLAY [Show which hosts a pattern selects] **************************************
+skipping: no hosts matched
+
+PLAY RECAP *********************************************************************
+```
+
+    `--limit` can only narrow a play. It cannot make it run on hosts its own pattern left out.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        Nothing to clean up: this exercise only read the inventory.
+      </Classroom>
+      <HomeLab>
+        Nothing to reset: this exercise changed nothing on the servers. Your project stays in `~/pattern-hosts`.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Without running anything first, write down the hosts for each of these, then check with `--list-hosts`: `'all,!site[0]'`, `'staging,production,&db'`, `'*a.lab.example.com,*d.lab.example.com'`, `'~server[a-c]\.,!web'`.

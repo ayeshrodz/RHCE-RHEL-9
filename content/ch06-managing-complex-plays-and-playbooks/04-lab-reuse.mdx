@@ -1,0 +1,272 @@
+---
+title: "Guided exercise: Including and importing files"
+kind: lab
+minutes: 25
+---
+
+<Lead>
+You start with one long playbook that sets up two web servers and tests them. You will take it apart into task files and small playbooks, put it back together with imports, and add an optional piece with an include that only loads when it is needed.
+</Lead>
+
+The project `~/reuse-tasks` has an `ansible.cfg`, an `inventory` with a `web` group (`servera` and `serverb`), and `webserver.yml`: two plays, eight tasks, all in one file.
+
+<Lab
+  id="reuse"
+  title="Including and importing files"
+  classroom="lab start reuse-tasks"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={[
+    'Move tasks into task files and reuse them with import_tasks.',
+    'Combine playbooks with import_playbook.',
+    'Load a task file only when needed with include_tasks.',
+  ]}
+>
+  <Task title="Read the starting point">
+    Open `webserver.yml` and find the repetition: two nearly identical firewall tasks, and a package list that is fixed inside the play.
+
+```console
+[student@workstation ~]$ cd ~/reuse-tasks
+[student@workstation reuse-tasks]$ ansible-navigator run -m stdout webserver.yml --list-tasks
+```
+  </Task>
+
+  <Task title="Create a task file for packages">
+    Make a `tasks` directory and move the package task into it. The file is a plain list: no `hosts`, no `tasks:`.
+
+```console
+[student@workstation reuse-tasks]$ mkdir tasks
+```
+
+```yaml title="tasks/packages.yml"
+---
+- name: Packages are installed
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: present
+```
+  </Task>
+
+  <Task title="Create a task file for the firewall">
+    One file replaces both firewall rule tasks. It expects a list called `fw_services` from whoever imports it.
+
+    <Reveal title="Show tasks/firewall.yml">
+
+```yaml title="tasks/firewall.yml"
+---
+- name: firewalld is running
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Services are allowed through the firewall
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ fw_services }}"
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Write web.yml with imports">
+    Create `web.yml`: the first play of the original, with the package and firewall tasks replaced by imports. Open only `http` for now, and add a variable `enable_tls: false` that a later task uses.
+
+    <Reveal title="Show web.yml so far">
+
+```yaml title="web.yml"
+---
+- name: Web servers are configured
+  hosts: web
+  vars:
+    packages:
+      - httpd
+      - firewalld
+    enable_tls: false
+  tasks:
+    - name: Packages
+      ansible.builtin.import_tasks: tasks/packages.yml
+
+    - name: Firewall
+      ansible.builtin.import_tasks: tasks/firewall.yml
+      vars:
+        fw_services:
+          - http
+
+    - name: Home page is in place
+      ansible.builtin.copy:
+        content: "Served by {{ inventory_hostname }}\n"
+        dest: /var/www/html/index.html
+
+    - name: httpd is running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Move the test play into verify.yml">
+    Cut the second play out of `webserver.yml` into its own playbook.
+
+```yaml title="verify.yml"
+---
+- name: The site answers
+  hosts: localhost
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Every web server returns its page
+      ansible.builtin.uri:
+        url: "http://{{ item }}"
+        status_code: 200
+      loop: "{{ groups['web'] }}"
+```
+  </Task>
+
+  <Task title="Tie them together in site.yml">
+
+```yaml title="site.yml"
+---
+- name: Configure the web servers
+  ansible.builtin.import_playbook: web.yml
+
+- name: Check the result
+  ansible.builtin.import_playbook: verify.yml
+```
+
+    You can now delete `webserver.yml`: everything it did is in the new files.
+  </Task>
+
+  <Task title="Add an optional TLS step with an include">
+    HTTPS is wanted on some runs only. Put its tasks in a file of their own:
+
+```yaml title="tasks/tls.yml"
+---
+- name: mod_ssl is installed
+  ansible.builtin.dnf:
+    name: mod_ssl
+    state: present
+  notify: restart httpd
+
+- name: https is allowed through the firewall
+  ansible.posix.firewalld:
+    service: https
+    permanent: true
+    immediate: true
+    state: enabled
+```
+
+    At the end of the tasks in `web.yml`, include that file only when `enable_tls` is true, and give the play the handler the file notifies:
+
+```yaml
+    - name: TLS is set up
+      ansible.builtin.include_tasks: tasks/tls.yml
+      when: enable_tls | bool
+
+  handlers:
+    - name: restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+```
+
+    `handlers` lines up with `tasks`. The `| bool` matters: a value given with `-e` on the command line arrives as text.
+  </Task>
+
+  <Task title="See what Ansible knows before it runs">
+
+```console
+[student@workstation reuse-tasks]$ ansible-navigator run -m stdout site.yml --list-tasks
+
+playbook: /home/student/reuse-tasks/site.yml
+
+  play #1 (web): Web servers are configured	TAGS: []
+    tasks:
+      Packages are installed	TAGS: []
+      firewalld is running	TAGS: []
+      Services are allowed through the firewall	TAGS: []
+      Home page is in place	TAGS: []
+      httpd is running	TAGS: []
+      TLS is set up	TAGS: []
+
+  play #2 (localhost): The site answers	TAGS: []
+    tasks:
+      Every web server returns its page	TAGS: []
+```
+
+    The imported tasks are listed by their own names; the lines `Packages` and `Firewall` are gone, replaced by what they imported. The include shows only as `TLS is set up`: what is inside `tasks/tls.yml` is not known yet.
+  </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation reuse-tasks]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+TASK [TLS is set up] ***********************************************************
+skipping: [servera.lab.example.com]
+skipping: [serverb.lab.example.com]
+
+PLAY [The site answers] ********************************************************
+
+TASK [Every web server returns its page] ***************************************
+ok: [localhost] => (item=servera.lab.example.com)
+ok: [localhost] => (item=serverb.lab.example.com)
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0  ...
+servera.lab.example.com    : ok=6    changed=4    unreachable=0    failed=0    skipped=1  ...
+serverb.lab.example.com    : ok=6    changed=4    unreachable=0    failed=0    skipped=1  ...
+[student@workstation reuse-tasks]$ curl http://servera.lab.example.com
+Served by servera.lab.example.com
+```
+
+    One skipped task per host: the include. The two tasks inside `tls.yml` were never loaded, so they are not even counted. Run the playbook again and confirm `changed=0`.
+  </Task>
+
+  <Task title="Run it with TLS switched on">
+
+```console
+[student@workstation reuse-tasks]$ ansible-navigator run -m stdout site.yml -e enable_tls=true
+...output omitted...
+TASK [TLS is set up] ***********************************************************
+included: /home/student/reuse-tasks/tasks/tls.yml for servera.lab.example.com, serverb.lab.example.com
+
+TASK [mod_ssl is installed] ****************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [https is allowed through the firewall] ***********************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+RUNNING HANDLER [restart httpd] ************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+...output omitted...
+servera.lab.example.com    : ok=10   changed=3    unreachable=0    failed=0    skipped=0  ...
+[student@workstation reuse-tasks]$ curl -k https://servera.lab.example.com
+Served by servera.lab.example.com
+```
+
+    The `included:` line is the file being loaded at run time. A task inside it notified a handler that lives in `web.yml`, and the handler ran once at the end of the play.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean the two web servers the way your classroom provides before the next exercise.
+      </Classroom>
+      <HomeLab>
+        On the Ubuntu host, run `rht-vmctl reset servers` to put every managed host back to the clean baseline. Your project stays in `~/reuse-tasks` on workstation.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Change the `Firewall` import in `web.yml` to `include_tasks` and run `--list-tasks` again: two task names disappear from the list. Then put `when: enable_tls | bool` on the `Packages` **import** and run without `-e`: the task inside is listed and skipped, where an include would have skipped once and loaded nothing.

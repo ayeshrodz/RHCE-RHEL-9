@@ -1,0 +1,8 @@
+---
+- name: Show which hosts a pattern selects
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Say hello from each selected host
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is in: {{ group_names | join(', ') }}"

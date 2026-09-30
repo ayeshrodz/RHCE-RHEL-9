@@ -18,7 +18,8 @@ A free, interactive study guide and home-lab build for people working towards th
 | 3. Managing Variables and Facts | Complete |
 | 4. Implementing Task Control | Complete |
 | 5. Deploying Files to Managed Hosts | Complete |
-| 6–10 | Planned (listed as "coming soon" in the site) |
+| 6. Managing Complex Plays and Playbooks | Complete |
+| 7–10 | Planned (listed as "coming soon" in the site) |
 
 ## Quick start
 

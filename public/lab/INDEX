@@ -16,3 +16,6 @@ control-review       4.8   Chapter lab: Implementing task control
 file-manage          5.2   Modifying and copying files to hosts
 file-template        5.4   Deploying custom files with Jinja2 templates
 file-review          5.5   Chapter lab: Deploying files to managed hosts
+pattern-hosts        6.2   Selecting hosts with host patterns
+reuse-tasks          6.4   Including and importing files
+complex-review       6.5   Chapter lab: Managing complex plays and playbooks
