@@ -1,0 +1,28 @@
+name: Site bug
+description: Something on the website is broken (layout, search, progress saving, a diagram or widget)
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you expected, and what you saw instead. Add a screenshot if it helps.
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 130 on Linux, Safari on iPhone…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce

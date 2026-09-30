@@ -1,0 +1,23 @@
+name: Content correction or suggestion
+description: A wrong command, unclear explanation, outdated step, or a topic that is missing
+labels: [content]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The page URL, or chapter and section number (for example "2.5 Writing and running playbooks").
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing?
+      description: Include the command or text in question, and what happened when you tried it.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix
+      description: Optional. In your own words, please, and not copied from the RH294 book.

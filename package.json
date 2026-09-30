@@ -2,12 +2,21 @@
   "name": "rhce-study-guide",
   "private": true,
   "version": "1.0.0",
+  "description": "A free, interactive study guide and home-lab build for the Red Hat EX294 (RHCE) exam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayeshrodz/RHCE-RHEL-9.git"
+  },
+  "homepage": "https://ayeshrodz.github.io/RHCE-RHEL-9/",
+  "bugs": "https://github.com/ayeshrodz/RHCE-RHEL-9/issues",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,jsx,css}\" plugins vite.config.js"
+    "format": "prettier --write \"src/**/*.{js,jsx,css}\" plugins vite.config.js",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" plugins vite.config.js"
   },
   "devDependencies": {
     "@mdx-js/react": "^3.1.1",
