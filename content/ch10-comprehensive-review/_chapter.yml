@@ -1,0 +1,8 @@
+title: Comprehensive Review
+goal: Review and practise everything in the course with end-to-end labs.
+status: planned
+topics:
+  - "Lab: Deploying Ansible"
+  - "Lab: Creating playbooks"
+  - "Lab: Managing Linux hosts and using system roles"
+  - "Lab: Creating roles"

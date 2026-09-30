@@ -1,0 +1,533 @@
+/* ------------------------------------------------------------------
+   Diagram kit styles. Each tone maps a colour ramp onto four variables:
+   --f (fill), --s (stroke), --tt (title text), --ts (subtitle text).
+   Generated tone blocks are at the bottom of this file.
+   ------------------------------------------------------------------ */
+
+.diagram {
+  margin: 28px 0;
+}
+.diagram-canvas {
+  position: relative;
+  padding: 20px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elev);
+}
+.diagram-zoom {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+}
+.diagram-canvas:hover .diagram-zoom,
+.diagram-zoom:focus-visible {
+  opacity: 1;
+}
+.diagram-zoom:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.diagram figcaption,
+.widget-caption {
+  margin-top: 10px;
+  color: var(--text-3);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--font-sans);
+  --line: var(--gray-400);
+  --hot: var(--accent);
+  --label: var(--text-3);
+}
+:root[data-theme='dark'] .dg {
+  --line: var(--gray-400);
+}
+
+/* Nodes */
+.dg-node rect {
+  fill: var(--f);
+  stroke: var(--s);
+  stroke-width: 0.75;
+  transition:
+    fill 0.2s,
+    stroke 0.2s,
+    stroke-width 0.2s,
+    opacity 0.2s;
+}
+.dg-node text {
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.dg-title {
+  fill: var(--tt);
+  font-size: 14px;
+  font-weight: 500;
+}
+.dg-title.is-mono,
+.dg-label.is-mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.dg-sub {
+  fill: var(--ts);
+  font-size: 12px;
+}
+.dg-node.is-clickable {
+  cursor: pointer;
+  outline: none;
+}
+.dg-node.is-clickable:hover rect {
+  stroke-width: 1.5;
+}
+.dg-node.is-clickable:focus-visible rect {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.dg-node.is-active rect {
+  stroke-width: 2;
+}
+.dg-node.is-dim rect,
+.dg-node.is-dim text,
+.dg-group.is-dim,
+.dg-arrow.is-dim {
+  opacity: 0.32;
+}
+
+/* Groups */
+.dg-group rect {
+  fill: var(--f);
+  fill-opacity: 0.35;
+  stroke: var(--s);
+  stroke-width: 0.75;
+  stroke-dasharray: 4 4;
+  transition:
+    opacity 0.2s,
+    stroke-width 0.2s;
+}
+.dg-group.is-solid rect {
+  stroke-dasharray: none;
+  fill-opacity: 0.5;
+}
+.dg-group.is-active rect {
+  stroke-width: 1.75;
+  stroke-dasharray: none;
+}
+.dg-group-label {
+  fill: var(--tt);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.dg-group-sub {
+  fill: var(--ts);
+  font-size: 11.5px;
+}
+
+/* Arrows */
+.dg-arrow path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.25;
+  transition:
+    stroke 0.2s,
+    opacity 0.2s;
+}
+.dg-arrow path.is-dashed {
+  stroke-dasharray: 5 4;
+}
+.dg-arrow.is-hot path {
+  stroke: var(--hot);
+  stroke-width: 1.75;
+}
+.dg-head {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dg-head.is-hot {
+  stroke: var(--hot);
+}
+.dg-arrow-label {
+  fill: var(--label);
+  font-size: 11.5px;
+  paint-order: stroke;
+  stroke: var(--bg-elev);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.dg-arrow.is-hot .dg-arrow-label {
+  fill: var(--accent-text);
+}
+
+/* Free labels + badges */
+.dg-label {
+  fill: var(--text-2);
+  font-size: 13px;
+}
+.dg-label.is-muted {
+  fill: var(--text-3);
+  font-size: 12px;
+}
+.dg-badge circle {
+  fill: var(--bg-elev);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.dg-badge text {
+  fill: var(--text-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+.dg-badge.is-hot circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.dg-badge.is-hot text {
+  fill: #fff;
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(20, 20, 19, 0.55);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.15s ease;
+}
+.lightbox-body {
+  position: relative;
+  width: min(1200px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 40px 32px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-lg);
+}
+.lightbox-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+.lightbox-caption {
+  margin: 16px 0 0;
+  color: var(--text-3);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Step-through controls under staged diagrams */
+.step-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans);
+}
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 300px;
+  min-height: 62px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.step-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.step-index {
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.step-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-dots {
+  display: flex;
+  gap: 5px;
+  margin-right: 6px;
+}
+.step-dots button {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--border-strong);
+  cursor: pointer;
+}
+.step-dots button.is-past {
+  background: var(--text-3);
+}
+.step-dots button.is-active {
+  width: 18px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- tones ---------- */
+
+.t-purple {
+  --f: var(--purple-50);
+  --s: var(--purple-600);
+  --tt: var(--purple-800);
+  --ts: var(--purple-600);
+}
+.t-teal {
+  --f: var(--teal-50);
+  --s: var(--teal-600);
+  --tt: var(--teal-800);
+  --ts: var(--teal-600);
+}
+.t-coral {
+  --f: var(--coral-50);
+  --s: var(--coral-600);
+  --tt: var(--coral-800);
+  --ts: var(--coral-600);
+}
+.t-pink {
+  --f: var(--pink-50);
+  --s: var(--pink-600);
+  --tt: var(--pink-800);
+  --ts: var(--pink-600);
+}
+.t-gray {
+  --f: var(--gray-50);
+  --s: var(--gray-600);
+  --tt: var(--gray-800);
+  --ts: var(--gray-600);
+}
+.t-blue {
+  --f: var(--blue-50);
+  --s: var(--blue-600);
+  --tt: var(--blue-800);
+  --ts: var(--blue-600);
+}
+.t-green {
+  --f: var(--green-50);
+  --s: var(--green-600);
+  --tt: var(--green-800);
+  --ts: var(--green-600);
+}
+.t-amber {
+  --f: var(--amber-50);
+  --s: var(--amber-600);
+  --tt: var(--amber-800);
+  --ts: var(--amber-600);
+}
+.t-red {
+  --f: var(--red-50);
+  --s: var(--red-600);
+  --tt: var(--red-800);
+  --ts: var(--red-600);
+}
+
+:root[data-theme='dark'] .t-purple {
+  --f: var(--purple-800);
+  --s: var(--purple-200);
+  --tt: var(--purple-50);
+  --ts: var(--purple-100);
+}
+:root[data-theme='dark'] .t-teal {
+  --f: var(--teal-800);
+  --s: var(--teal-200);
+  --tt: var(--teal-50);
+  --ts: var(--teal-100);
+}
+:root[data-theme='dark'] .t-coral {
+  --f: var(--coral-800);
+  --s: var(--coral-200);
+  --tt: var(--coral-50);
+  --ts: var(--coral-100);
+}
+:root[data-theme='dark'] .t-pink {
+  --f: var(--pink-800);
+  --s: var(--pink-200);
+  --tt: var(--pink-50);
+  --ts: var(--pink-100);
+}
+:root[data-theme='dark'] .t-gray {
+  --f: var(--gray-800);
+  --s: var(--gray-200);
+  --tt: var(--gray-50);
+  --ts: var(--gray-100);
+}
+:root[data-theme='dark'] .t-blue {
+  --f: var(--blue-800);
+  --s: var(--blue-200);
+  --tt: var(--blue-50);
+  --ts: var(--blue-100);
+}
+:root[data-theme='dark'] .t-green {
+  --f: var(--green-800);
+  --s: var(--green-200);
+  --tt: var(--green-50);
+  --ts: var(--green-100);
+}
+:root[data-theme='dark'] .t-amber {
+  --f: var(--amber-800);
+  --s: var(--amber-200);
+  --tt: var(--amber-50);
+  --ts: var(--amber-100);
+}
+:root[data-theme='dark'] .t-red {
+  --f: var(--red-800);
+  --s: var(--red-200);
+  --tt: var(--red-50);
+  --ts: var(--red-100);
+}
+
+/* Group containers read better a notch lighter in dark mode. */
+:root[data-theme='dark'] .dg-group.t-purple {
+  --f: var(--purple-900);
+  --s: var(--purple-400);
+  --tt: var(--purple-100);
+  --ts: var(--purple-200);
+}
+:root[data-theme='dark'] .dg-group.t-teal {
+  --f: var(--teal-900);
+  --s: var(--teal-400);
+  --tt: var(--teal-100);
+  --ts: var(--teal-200);
+}
+:root[data-theme='dark'] .dg-group.t-coral {
+  --f: var(--coral-900);
+  --s: var(--coral-400);
+  --tt: var(--coral-100);
+  --ts: var(--coral-200);
+}
+:root[data-theme='dark'] .dg-group.t-pink {
+  --f: var(--pink-900);
+  --s: var(--pink-400);
+  --tt: var(--pink-100);
+  --ts: var(--pink-200);
+}
+:root[data-theme='dark'] .dg-group.t-gray {
+  --f: var(--gray-900);
+  --s: var(--gray-400);
+  --tt: var(--gray-100);
+  --ts: var(--gray-200);
+}
+:root[data-theme='dark'] .dg-group.t-blue {
+  --f: var(--blue-900);
+  --s: var(--blue-400);
+  --tt: var(--blue-100);
+  --ts: var(--blue-200);
+}
+:root[data-theme='dark'] .dg-group.t-green {
+  --f: var(--green-900);
+  --s: var(--green-400);
+  --tt: var(--green-100);
+  --ts: var(--green-200);
+}
+:root[data-theme='dark'] .dg-group.t-amber {
+  --f: var(--amber-900);
+  --s: var(--amber-400);
+  --tt: var(--amber-100);
+  --ts: var(--amber-200);
+}
+:root[data-theme='dark'] .dg-group.t-red {
+  --f: var(--red-900);
+  --s: var(--red-400);
+  --tt: var(--red-100);
+  --ts: var(--red-200);
+}
+
+/* Explanation panel under clickable diagrams */
+.dg-info {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 72px;
+}
+.dg-info[class*='t-'] {
+  background: color-mix(in srgb, var(--f) 70%, var(--bg-elev));
+  border-left: 3px solid var(--s);
+}
+.dg-info-title {
+  margin: 0 0 3px;
+  color: var(--text);
+  font-weight: 600;
+}
+.dg-info-text {
+  margin: 0;
+  color: var(--text-2);
+}
+.dg-info-hint {
+  margin: 0;
+  color: var(--text-3);
+}
+:root[data-theme='dark'] .dg-info[class*='t-'] {
+  background: color-mix(in srgb, var(--f) 40%, var(--bg-elev));
+}
+
+/* Allowed / blocked flows (Arrow variant="ok" | "bad") */
+.dg-arrow.is-ok path {
+  stroke: var(--ok);
+  stroke-width: 2;
+}
+.dg-arrow.is-bad path {
+  stroke: var(--fail);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+.dg-head.is-ok {
+  stroke: var(--ok);
+}
+.dg-head.is-bad {
+  stroke: var(--fail);
+  stroke-width: 2.2;
+}
+.dg-arrow.is-ok .dg-arrow-label {
+  fill: var(--ok);
+}
+.dg-arrow.is-bad .dg-arrow-label {
+  fill: var(--fail);
+}

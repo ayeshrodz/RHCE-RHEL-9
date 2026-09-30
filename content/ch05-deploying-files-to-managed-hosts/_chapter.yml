@@ -1,0 +1,7 @@
+title: Deploying Files to Managed Hosts
+goal: Deploy, manage and adjust files on managed hosts, including templated files built with Jinja2.
+status: planned
+topics:
+  - Modifying and copying files to hosts
+  - Deploying custom files with Jinja2 templates
+  - Chapter lab

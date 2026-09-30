@@ -1,0 +1,145 @@
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Check, Clock } from 'lucide-react';
+import { findPage, kindLabel, loaderFor, neighbours } from '@/lib/course';
+import { useProgress } from '@/hooks/useProgress';
+import { useStored } from '@/lib/storage';
+import { PageContext } from '@/lib/pageContext';
+import { kindIcon } from '@/components/layout/Sidebar';
+import TableOfContents from '@/components/layout/TableOfContents';
+import NotFound from './NotFound';
+
+export default function SectionPage() {
+  const { chapterId, slug } = useParams();
+  const page = findPage(chapterId, slug);
+  if (!page) return <NotFound />;
+  return <Section key={page.key} page={page} />;
+}
+
+function Section({ page }) {
+  const [Content, setContent] = useState(null);
+  const [error, setError] = useState(null);
+  const articleRef = useRef(null);
+  const { isDone, toggle } = useProgress();
+  const [, setLastVisited] = useStored('lastVisited', null);
+  const { prev, next } = neighbours(page);
+  const done = isDone(page.key);
+  const Icon = kindIcon[page.section.kind];
+  const scrollTo = useLocation().state?.scrollTo;
+
+  useEffect(() => {
+    let alive = true;
+    const load = loaderFor(page);
+    if (!load) {
+      setError('This section has not been written yet.');
+      return;
+    }
+    load()
+      .then((mod) => alive && setContent(() => mod.default))
+      .catch((e) => alive && setError(e.message));
+    return () => {
+      alive = false;
+    };
+  }, [page]);
+
+  // Arriving from search: jump to the matching heading once content renders.
+  useEffect(() => {
+    if (!Content || !scrollTo) return;
+    const id = requestAnimationFrame(() => document.getElementById(scrollTo)?.scrollIntoView());
+    return () => cancelAnimationFrame(id);
+  }, [Content, scrollTo]);
+
+  useEffect(() => {
+    document.title = `${page.number} ${page.section.title} · RHCE Field Guide`;
+    setLastVisited(page.key);
+  }, [page, setLastVisited]);
+
+  return (
+    <PageContext.Provider value={page}>
+      <div className="page-grid">
+        <article className="page-article" ref={articleRef}>
+          <header className="page-header">
+            <Link to={`/${page.chapter.id}`} className="page-eyebrow">
+              Chapter {page.chapter.number} · {page.chapter.title}
+            </Link>
+            <h1 className="page-title">
+              <span className="page-num">{page.number}</span> {page.section.title}
+            </h1>
+            <div className="page-meta">
+              <span className={`pill kind-${page.section.kind}`}>
+                <Icon size={12} /> {kindLabel[page.section.kind]}
+              </span>
+              <span className="pill">
+                <Clock size={12} /> {page.section.minutes} min
+              </span>
+              {done && (
+                <span className="pill pill-done">
+                  <Check size={12} /> Completed
+                </span>
+              )}
+            </div>
+          </header>
+
+          <div className="prose">{error ? <p className="load-error">{error}</p> : Content ? <Content /> : <PageSkeleton />}</div>
+
+          <footer className="page-footer">
+            <button className={`complete-btn ${done ? 'is-done' : ''}`} onClick={() => toggle(page.key)}>
+              <span className="complete-check">
+                <Check size={14} strokeWidth={3} />
+              </span>
+              {done ? 'Completed. Nice work!' : 'Mark this section complete'}
+            </button>
+
+            <nav className="pager" aria-label="Section navigation">
+              {prev ? (
+                <Link className="pager-link" to={prev.path}>
+                  <span className="pager-dir">
+                    <ArrowLeft size={14} /> Previous
+                  </span>
+                  <span className="pager-title">
+                    {prev.number} {prev.section.title}
+                  </span>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {next ? (
+                <Link className="pager-link is-next" to={next.path}>
+                  <span className="pager-dir">
+                    Next <ArrowRight size={14} />
+                  </span>
+                  <span className="pager-title">
+                    {next.number} {next.section.title}
+                  </span>
+                </Link>
+              ) : (
+                <Link className="pager-link is-next" to="/">
+                  <span className="pager-dir">
+                    Back to overview <ArrowRight size={14} />
+                  </span>
+                  <span className="pager-title">More chapters are on the way</span>
+                </Link>
+              )}
+            </nav>
+          </footer>
+        </article>
+
+        <aside className="page-aside">
+          <TableOfContents articleRef={articleRef} contentKey={Content ? page.key : null} />
+        </aside>
+      </div>
+    </PageContext.Provider>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <div className="skeleton" aria-label="Loading">
+      <span style={{ width: '92%' }} />
+      <span style={{ width: '86%' }} />
+      <span style={{ width: '60%' }} />
+      <span className="skeleton-block" />
+      <span style={{ width: '80%' }} />
+    </div>
+  );
+}

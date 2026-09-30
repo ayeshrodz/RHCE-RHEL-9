@@ -1,0 +1,186 @@
+---
+title: "Guided exercise: Managing variables"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will rewrite a web server play so that every package and service name comes from a variable, then add a second play that checks the site is reachable.
+</Lead>
+
+The play targets the `webserver` group, which contains `servera.lab.example.com`. Define these variables in the play's `vars` section:
+
+| Variable | Value | Used for |
+| --- | --- | --- |
+| `web_pkg` | `httpd` | Web server package to install |
+| `firewall_pkg` | `firewalld` | Firewall package to install |
+| `web_service` | `httpd` | Web service to manage |
+| `firewall_service` | `firewalld` | Firewall service to manage |
+| `python_pkg` | `python3-PyMySQL` | Extra Python package the course installs alongside the others |
+| `rule` | `http` | firewalld service to open |
+
+<Lab
+  id="variables"
+  title="Managing variables"
+  classroom="lab start data-variables"
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Define variables in a playbook.', 'Create tasks that use those variables.']}
+>
+  <Task title="Move into the project directory">
+
+```console
+[student@workstation ~]$ cd ~/data-variables
+[student@workstation data-variables]$
+```
+  </Task>
+
+  <Task title="Start the play and define its variables">
+    Create `playbook.yml` with a play named `Deploy and start Apache HTTPD service` for the `webserver` group, and a `vars` section holding the six variables from the table.
+
+    <Reveal title="Show solution">
+
+```yaml
+---
+- name: Deploy and start Apache HTTPD service
+  hosts: webserver
+  vars:
+    web_pkg: httpd
+    firewall_pkg: firewalld
+    web_service: httpd
+    firewall_service: firewalld
+    python_pkg: python3-PyMySQL
+    rule: http
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Install the packages with one task">
+    Add a `tasks` section and a first task that uses `ansible.builtin.dnf` to make sure the latest versions of the three packages are installed. The module's `name` accepts a list, so one task is enough. Remember to quote each list item, because each one starts with `{{`.
+
+    <Reveal title="Show solution">
+
+```yaml
+  tasks:
+    - name: Required packages are installed and up to date
+      ansible.builtin.dnf:
+        name:
+          - "{{ web_pkg }}"
+          - "{{ firewall_pkg }}"
+          - "{{ python_pkg }}"
+        state: latest
+```
+    </Reveal>
+
+    <Callout type="tip">
+    Check the module's options any time with `ansible-navigator doc ansible.builtin.dnf -m stdout`.
+    </Callout>
+  </Task>
+
+  <Task title="Start and enable both services">
+    `ansible.builtin.service` manages exactly one service per task, so write two tasks. Variables work in task names too.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: The {{ firewall_service }} service is started and enabled
+      ansible.builtin.service:
+        name: "{{ firewall_service }}"
+        enabled: true
+        state: started
+
+    - name: The {{ web_service }} service is started and enabled
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        enabled: true
+        state: started
+```
+    </Reveal>
+
+    In chapter 4 you will learn to do both with a single looping task.
+  </Task>
+
+  <Task title="Deploy some web content">
+
+```yaml
+    - name: Web content is in place
+      ansible.builtin.copy:
+        content: "Example web content"
+        dest: /var/www/html/index.html
+```
+  </Task>
+
+  <Task title="Open the firewall">
+    Use `ansible.posix.firewalld` to allow the service named in `rule`, permanently and immediately.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: The firewall port for {{ rule }} is open
+      ansible.posix.firewalld:
+        service: "{{ rule }}"
+        permanent: true
+        immediate: true
+        state: enabled
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Add a verification play">
+    Add a second play, `Verify the Apache service`, that runs on `workstation` without privilege escalation, and uses `ansible.builtin.uri` to check that `http://servera.lab.example.com` returns status 200.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: Verify the Apache service
+  hosts: workstation
+  become: false
+  tasks:
+    - name: Ensure the webserver is reachable
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        status_code: 200
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Check the syntax">
+
+```console
+[student@workstation data-variables]$ ansible-navigator run \
+> -m stdout playbook.yml --syntax-check
+playbook: /home/student/data-variables/playbook.yml
+```
+  </Task>
+
+  <Task title="Run the playbook">
+    Watch the variable values appear in the task names:
+
+```console
+[student@workstation data-variables]$ ansible-navigator run -m stdout playbook.yml
+...output omitted...
+TASK [The firewalld service is started and enabled] ****************************
+ok: [servera.lab.example.com]
+
+TASK [The httpd service is started and enabled] ********************************
+changed: [servera.lab.example.com]
+...output omitted...
+TASK [The firewall port for http is open] **************************************
+changed: [servera.lab.example.com]
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=6    changed=4    unreachable=0    failed=0  ...
+workstation                : ok=2    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish data-variables
+```
+  </Task>
+</Lab>
+
+<Callout type="exam" title="Try it with an extra variable">
+Run the playbook once more with `-e "rule=https"`. The extra variable overrides the play's `rule`, and the task name changes to "The firewall port for https is open". It is a quick way to feel precedence in action.
+</Callout>

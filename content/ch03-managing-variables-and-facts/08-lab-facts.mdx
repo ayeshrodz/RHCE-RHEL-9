@@ -1,0 +1,214 @@
+---
+title: "Guided exercise: Managing facts"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will print a host's facts, pick out specific ones, then create a custom fact file on servera and write a play that decides what to install and start purely from that file.
+</Lead>
+
+<Lab
+  id="facts"
+  title="Managing facts"
+  classroom="lab start data-facts"
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Gather facts from a host.', 'Create tasks that use the gathered facts, including custom facts.']}
+>
+  <Task title="Move into the project directory">
+
+```console
+[student@workstation ~]$ cd ~/data-facts
+[student@workstation data-facts]$
+```
+  </Task>
+
+  <Task title="Print every fact">
+    Create `display_facts.yml` for the `webserver` host and run it. Scroll through the output and find a few facts you recognise.
+
+```yaml title="display_facts.yml"
+---
+- name: Display ansible_facts
+  hosts: webserver
+  tasks:
+    - name: Display facts
+      ansible.builtin.debug:
+        var: ansible_facts
+```
+
+```console
+[student@workstation data-facts]$ ansible-navigator run \
+> -m stdout display_facts.yml
+...output omitted...
+        "system": "Linux",
+        "system_vendor": "Red Hat",
+        "user_dir": "/root",
+...output omitted...
+```
+
+    The `user_*` facts describe the account that ran `setup`. Here they show `root`, which means this project escalates privileges.
+  </Task>
+
+  <Task title="Print specific facts">
+    Create `display_specific_facts.yml` that prints one sentence built from four facts: the FQDN, the Python version, the processor count and the total memory in MiB.
+
+    <Reveal title="Show solution">
+
+```yaml title="display_specific_facts.yml"
+---
+- name: Display specific ansible_facts
+  hosts: webserver
+  tasks:
+    - name: Display specific facts
+      ansible.builtin.debug:
+        msg: >
+          Host "{{ ansible_facts['fqdn'] }}" with Python
+          version "{{ ansible_facts['python_version'] }}" has
+          "{{ ansible_facts['processor_count'] }}" processors and
+          "{{ ansible_facts['memtotal_mb'] }}" MiB of total system memory.
+```
+    </Reveal>
+
+```text
+ok: [servera.lab.example.com] => {
+    "msg": "Host \"servera.lab.example.com\" with Python version \"3.9.10\" has
+            \"1\" processors and \"960\" MiB of total system memory.\n"
+}
+```
+  </Task>
+
+  <Task title="Check for custom facts">
+    Add a second task to `display_specific_facts.yml` that prints `ansible_facts['ansible_local']`, and run it again. It is empty, because no custom facts exist yet.
+
+```yaml
+    - name: Display ansible_local variable
+      ansible.builtin.debug:
+        msg: The ansible_local variable is set to "{{ ansible_facts['ansible_local'] }}"
+```
+
+```text
+    "msg": "The ansible_local variable is set to \"{}\""
+```
+  </Task>
+
+  <Task title="Create a custom fact file on servera">
+    Log in to servera, create the facts directory, and write `custom.fact` describing what the host should run.
+
+```console
+[student@workstation data-facts]$ ssh servera
+[student@servera ~]$ sudo mkdir -p /etc/ansible/facts.d
+[sudo] password for student: student
+[student@servera ~]$ sudo vim /etc/ansible/facts.d/custom.fact
+```
+
+```ini title="/etc/ansible/facts.d/custom.fact"
+[general]
+package = httpd
+service = httpd
+state = started
+enabled = true
+```
+
+    Log out of servera when done.
+  </Task>
+
+  <Task title="Write a play driven by custom facts">
+    Create `playbook.yml` with a play, `Install Apache and starts the service`, for the `webserver` group. It has two tasks:
+    1. install the latest version of the package named by the custom fact `package`;
+    2. manage the service named by `service`, using the `state` and `enabled` custom facts.
+
+    <Reveal title="Show solution">
+
+```yaml title="playbook.yml"
+---
+- name: Install Apache and starts the service
+  hosts: webserver
+
+  tasks:
+    - name: Install the required package
+      ansible.builtin.dnf:
+        name: "{{ ansible_facts['ansible_local']['custom']['general']['package'] }}"
+        state: latest
+
+    - name: Start the service
+      ansible.builtin.service:
+        name: "{{ ansible_facts['ansible_local']['custom']['general']['service'] }}"
+        state: "{{ ansible_facts['ansible_local']['custom']['general']['state'] }}"
+        enabled: "{{ ansible_facts['ansible_local']['custom']['general']['enabled'] }}"
+```
+    </Reveal>
+
+    Nothing in the playbook says "httpd": change the fact file on a host and the same playbook installs something else there.
+  </Task>
+
+  <Task title="Check the syntax">
+
+```console
+[student@workstation data-facts]$ ansible-navigator run \
+> -m stdout playbook.yml --syntax-check
+playbook: /home/student/data-facts/playbook.yml
+```
+  </Task>
+
+  <Task title="Confirm httpd is not running yet">
+    Create `check_httpd.yml`, which runs `systemctl status httpd`, registers the result and prints it. Run it: it fails, because httpd is not installed yet.
+
+```yaml title="check_httpd.yml"
+---
+- name: Check httpd status
+  hosts: webserver
+  tasks:
+    - name: Check httpd status
+      ansible.builtin.command: systemctl status httpd
+      register: result
+
+    - name: Display http status
+      ansible.builtin.debug:
+        var: result
+```
+
+```text
+fatal: [servera.lab.example.com]: FAILED! => {"changed": false, "msg": "Could not
+find the requested service httpd: host"}
+```
+  </Task>
+
+  <Task title="Run the fact-driven playbook">
+
+```console
+[student@workstation data-facts]$ ansible-navigator run -m stdout playbook.yml
+...output omitted...
+TASK [Install the required package] ********************************************
+changed: [servera.lab.example.com]
+
+TASK [Start the service] *******************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Check again">
+    Run `check_httpd.yml` once more. The registered `result` now shows the service loaded, enabled and `active (running)`.
+
+```text
+        "stdout_lines": [
+            "● httpd.service - The Apache HTTP Server",
+            "     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; ...)",
+            "     Active: active (running) since ...",
+...output omitted...
+```
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish data-facts
+```
+  </Task>
+</Lab>
+
+<Callout type="tip" title="Write the fact file with Ansible">
+Here you created `custom.fact` by hand to see how it works. In practice you would deploy it with a task (`ansible.builtin.copy` with `content:` or `src:`) and then run `ansible.builtin.setup` again so the new facts are picked up in the same play.
+</Callout>

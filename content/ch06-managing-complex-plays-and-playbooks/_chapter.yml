@@ -1,0 +1,7 @@
+title: Managing Complex Plays and Playbooks
+goal: Write playbooks for larger, more complex plays using host patterns, includes and imports.
+status: planned
+topics:
+  - Selecting hosts with host patterns
+  - Including and importing files
+  - Chapter lab

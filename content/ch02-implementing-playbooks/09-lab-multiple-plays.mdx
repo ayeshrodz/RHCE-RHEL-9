@@ -1,0 +1,200 @@
+---
+title: "Guided exercise: Implementing multiple plays"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will write `intranet.yml`, a playbook with two plays. The first configures `servera` as an intranet web server with root privileges. The second runs unprivileged on localhost and checks that the site answers.
+</Lead>
+
+The project `~/playbook-multi` already has an `ansible.cfg` and an `inventory` that defines `servera.lab.example.com`.
+
+<MultiPlayFlow />
+
+<Lab
+  id="multi"
+  title="Implementing multiple plays"
+  classroom="lab start playbook-multi"
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Build and run a playbook with two plays.', 'Enable privilege escalation for one play and disable it for another.']}
+>
+  <Task title="Start the first play">
+    In `~/playbook-multi`, create `intranet.yml` with the document marker and a play named `Enable intranet services` for `servera.lab.example.com`, with privilege escalation on and an empty task list to fill in.
+
+```yaml title="intranet.yml"
+---
+- name: Enable intranet services
+  hosts: servera.lab.example.com
+  become: true
+  tasks:
+```
+  </Task>
+
+  <Task title="Install the latest httpd and firewalld">
+    One `ansible.builtin.dnf` task can handle both packages: give `name` a list.
+
+```yaml
+    - name: Latest version of httpd and firewalld installed
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - firewalld
+        state: latest
+```
+
+    The task starts at four spaces, the module at six, its arguments at eight, and the package list items at ten.
+  </Task>
+
+  <Task title="Deploy a test page">
+    Use `ansible.builtin.copy` with inline `content` rather than a source file.
+
+```yaml
+    - name: Test html page is installed
+      ansible.builtin.copy:
+        content: "Welcome to the example.com intranet!\n"
+        dest: /var/www/html/index.html
+```
+  </Task>
+
+  <Task title="Start firewalld and open HTTP">
+    Two tasks: make sure `firewalld` is enabled and running, then allow the `http` service permanently **and** immediately.
+
+```yaml
+    - name: Firewall enabled and running
+      ansible.builtin.service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: Firewall permits access to httpd service
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+```
+
+    Note that `firewalld` comes from the `ansible.posix` collection, not `ansible.builtin`.
+  </Task>
+
+  <Task title="Start the web server">
+
+```yaml
+    - name: Web server enabled and running
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+        state: started
+```
+  </Task>
+
+  <Task title="Add the test play">
+    Start a second play at the left margin (no indentation). It targets `localhost`, which with navigator is the execution environment, and does not need privilege escalation.
+
+```yaml
+- name: Test intranet web server
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Connect to intranet web server
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        return_content: true
+        status_code: 200
+```
+
+    `return_content: true` adds the server's response to the task result, and `status_code: 200` makes the task fail if the page does not load.
+
+    <Reveal title="Show the complete intranet.yml">
+
+```yaml title="intranet.yml"
+---
+- name: Enable intranet services
+  hosts: servera.lab.example.com
+  become: true
+  tasks:
+    - name: Latest version of httpd and firewalld installed
+      ansible.builtin.dnf:
+        name:
+          - httpd
+          - firewalld
+        state: latest
+
+    - name: Test html page is installed
+      ansible.builtin.copy:
+        content: "Welcome to the example.com intranet!\n"
+        dest: /var/www/html/index.html
+
+    - name: Firewall enabled and running
+      ansible.builtin.service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: Firewall permits access to httpd service
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Web server enabled and running
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+        state: started
+
+- name: Test intranet web server
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Connect to intranet web server
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        return_content: true
+        status_code: 200
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Check the syntax">
+
+```console
+[student@workstation playbook-multi]$ ansible-navigator run \
+> -m stdout intranet.yml --syntax-check
+playbook: /home/student/playbook-multi/intranet.yml
+```
+  </Task>
+
+  <Task title="Run it and read the recap">
+
+```console
+[student@workstation playbook-multi]$ ansible-navigator run -m stdout intranet.yml
+PLAY [Enable intranet services] ************************************************
+...output omitted...
+PLAY [Test intranet web server] ************************************************
+...output omitted...
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=0    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=6    changed=5    unreachable=0    failed=0  ...
+```
+
+    Both plays appear in order, and each host gets its own line in the recap.
+  </Task>
+
+  <Task title="Confirm from the workstation">
+
+```console
+[student@workstation playbook-multi]$ curl http://servera.lab.example.com
+Welcome to the example.com intranet!
+```
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish playbook-multi
+```
+  </Task>
+</Lab>

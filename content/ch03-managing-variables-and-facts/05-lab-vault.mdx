@@ -1,0 +1,136 @@
+---
+title: "Guided exercise: Managing secrets"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will unlock an encrypted variables file, use its secrets in a playbook that creates a user, run the playbook first with a password prompt and then with a password file, and finally log in as the new user to prove the password was set.
+</Lead>
+
+The project `~/data-secret` contains `secret.yml`, a Vault-encrypted file (password `redhat`) with two commented-out variables: `username` and `pwhash`, a hashed password.
+
+<Lab
+  id="vault"
+  title="Managing secrets"
+  classroom="lab start data-secret"
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Run a playbook that uses variables defined in an encrypted file.']}
+>
+  <Task title="Move into the project directory">
+
+```console
+[student@workstation ~]$ cd ~/data-secret
+[student@workstation data-secret]$
+```
+  </Task>
+
+  <Task title="Edit the encrypted file">
+    Open `secret.yml` with `ansible-vault edit` and enter `redhat` when asked. In the editor, remove the `#` in front of the `username` and `pwhash` lines, then save and quit.
+
+```console
+[student@workstation data-secret]$ ansible-vault edit secret.yml
+Vault password: redhat
+```
+
+    After saving, run `cat secret.yml`: the file on disk is still ciphertext.
+  </Task>
+
+  <Task title="Write the playbook">
+    Create `create_users.yml` with one play, `create user accounts for all our servers`, that:
+    - targets the `devservers` group, as the remote user `devops`, with privilege escalation;
+    - loads `secret.yml` with `vars_files`;
+    - creates the user named by `username` (its value is `ansibleuser1`), with the password hash in `pwhash`.
+
+    <Reveal title="Show solution">
+
+```yaml title="create_users.yml"
+---
+- name: create user accounts for all our servers
+  hosts: devservers
+  become: true
+  remote_user: devops
+  vars_files:
+    - secret.yml
+  tasks:
+    - name: Creating user from secret.yml
+      ansible.builtin.user:
+        name: "{{ username }}"
+        password: "{{ pwhash }}"
+```
+    </Reveal>
+
+    <Callout type="note">
+    The `password` option of `ansible.builtin.user` expects a **hash**, not a plain password. That is why the secret file stores `pwhash`.
+    </Callout>
+  </Task>
+
+  <Task title="Check the syntax with a password prompt">
+    The playbook reads an encrypted file, so even a syntax check needs the Vault password. Use `--vault-id @prompt`, and disable playbook artifacts so navigator can prompt you.
+
+```console
+[student@workstation data-secret]$ ansible-navigator run -m stdout \
+> --playbook-artifact-enable false create_users.yml \
+> --syntax-check --vault-id @prompt
+Vault password (default): redhat
+
+playbook: /home/student/data-secret/create_users.yml
+```
+  </Task>
+
+  <Task title="Create a password file">
+    Store the Vault password in `vault-pass` and make it readable only by you:
+
+```console
+[student@workstation data-secret]$ echo 'redhat' > vault-pass
+[student@workstation data-secret]$ chmod 0600 vault-pass
+```
+  </Task>
+
+  <Task title="Run the playbook with the password file">
+    No prompt this time, so playbook artifacts can stay enabled.
+
+```console
+[student@workstation data-secret]$ ansible-navigator run \
+> -m stdout create_users.yml --vault-password-file=vault-pass
+
+PLAY [create user accounts for all our servers] ********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Creating user from secret.yml] *******************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Log in as the new user">
+    Force SSH to use a password rather than a key, and log in as `ansibleuser1` with the password `redhat`:
+
+```console
+[student@workstation data-secret]$ ssh -o PreferredAuthentications=password \
+> ansibleuser1@servera.lab.example.com
+ansibleuser1@servera.lab.example.com's password: redhat
+...output omitted...
+[ansibleuser1@servera ~]$ exit
+```
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish data-secret
+```
+  </Task>
+</Lab>
+
+<Callout type="warning" title="Never commit the password file">
+In a real repository, add `vault-pass` to `.gitignore`. An encrypted secrets file next to its own plain-text password protects nothing.
+</Callout>
+
+<Callout type="exam" title="Generating a password hash">
+If a task asks you to set a user's password, remember that `ansible.builtin.user` needs a hash. A common approach is the `password_hash` filter: `password: "{{ 'redhat' | password_hash('sha512') }}"`. Filters come up again in later chapters.
+</Callout>

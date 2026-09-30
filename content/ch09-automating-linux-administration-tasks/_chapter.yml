@@ -1,0 +1,10 @@
+title: Automating Linux Administration Tasks
+goal: "Automate common system administration tasks: software, users, boot, storage and networking."
+status: planned
+topics:
+  - Managing software and subscriptions
+  - Managing users and authentication
+  - Managing the boot process and scheduled processes
+  - Managing storage
+  - Managing network configuration
+  - Chapter lab

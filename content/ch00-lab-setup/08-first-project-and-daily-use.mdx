@@ -1,0 +1,147 @@
+---
+title: First project and daily use
+kind: lab
+minutes: 15
+---
+
+<Lead>
+Phases 13 and 14. With the baseline saved, everything from here on is your own work. Create the base Ansible project the exercises copy from, prove it reaches every server, and set up a one-command way into the lab from your own computer.
+</Lead>
+
+<Lab
+  id="project"
+  title="Phase 13 · Your first Ansible project (~10 min)"
+  hosts={['workstation']}
+  outcomes={['Create ~/ansible with ansible.cfg and an inventory.', 'Prove SSH, the devops user and sudo work on every server.']}
+>
+  <Task title="VM: create the project folder">
+    It lives on workstation, so resetting the servers never touches it. Get there with `rht-vmctl ws`.
+
+```bash title="student@workstation"
+mkdir -p ~/ansible/{roles,collections} && cd ~/ansible
+```
+  </Task>
+
+  <Task title="VM: write ansible.cfg">
+
+```ini title="~/ansible/ansible.cfg"
+[defaults]
+inventory          = ./inventory
+remote_user        = devops
+roles_path         = ./roles:/usr/share/ansible/roles
+collections_path   = ./collections:~/.ansible/collections:/usr/share/ansible/collections
+host_key_checking  = False
+interpreter_python = auto_silent     # stops the "discovered Python interpreter" warning
+
+[privilege_escalation]
+become          = True
+become_method   = sudo
+become_user     = root
+become_ask_pass = False
+```
+
+    Every setting here is explained in [chapter 2](#/ch02/configuration).
+
+    <Callout type="warning" title="Keep all three collection paths">
+    `collections_path` *replaces* Ansible's search list rather than adding to it. With only `./collections`, Ansible can no longer see `ansible.posix`, `community.general` or `redhat.rhel_system_roles` in `/usr/share/ansible/collections`, and tasks fail with *"couldn't resolve module/action"*. The three-path line is the one RH294 uses.
+    </Callout>
+  </Task>
+
+  <Task title="VM: write the inventory">
+    The groups match the EX294 practice workbook:
+
+```ini title="~/ansible/inventory"
+[dev]
+servera.lab.example.com
+
+[test]
+serverb.lab.example.com
+
+[prod]
+serverc.lab.example.com
+serverd.lab.example.com
+
+[webservers:children]
+prod
+```
+  </Task>
+
+  <Task title="VM: prove it reaches every server">
+
+```bash title="student@workstation:~/ansible"
+ansible-inventory --graph
+ansible all -m ping                  # every server: "pong"
+ansible all -m command -a id         # uid=0(root) everywhere
+ansible --version | head -1          # ansible [core 2.14.18]
+```
+
+    <Callout type="note" title="Reading the output">
+    Each server should print `uid=0(root)`, which proves SSH, the `devops` user and sudo all work. The yellow **CHANGED** is normal: the `command` module can't tell whether a command changed anything, so it always reports changed ([chapter 1](#/ch01/architecture) explains why). Without the `interpreter_python` line you would also see a harmless *"discovered Python interpreter"* warning per host. Don't point it at `python3.11`: that exists only on workstation, for `ansible-navigator`.
+    </Callout>
+  </Task>
+
+  <Task title="VM: put it under Git">
+    Restoring workstation to `clean` removes `~/ansible`, so keep your work in Git and commit as you go:
+
+```bash title="student@workstation"
+cd ~/ansible && git init
+```
+  </Task>
+</Lab>
+
+## Daily use
+
+### Getting in
+
+<AccessPaths />
+
+On the host, `rht-vmctl ws` drops you at the student prompt on workstation. From your own computer, one SSH alias takes you straight there:
+
+```text title="~/.ssh/config on your computer"
+Host rhce
+    HostName <HOST_LAN_IP>
+    User <HOST_USER>
+    RequestTTY yes
+    RemoteCommand lxc exec --project rhce workstation -- su - student
+```
+
+```bash title="your computer"
+ssh rhce            # lands on [student@workstation ~]$
+```
+
+### Starting and stopping the lab
+
+```bash title="Ubuntu host"
+rht-vmctl stop all       # frees ~7 GiB of RAM
+rht-vmctl start all
+```
+
+### Moving files in and out
+
+Because the host can't reach the VMs over the network, copy files through LXD instead:
+
+```bash title="Ubuntu host"
+lxc file push notes.txt workstation/home/student/            # host → VM
+lxc file pull workstation/home/student/ansible/site.yml .     # VM → host
+```
+
+### Before each exercise in this guide
+
+<Steps>
+  <Step title="Reset the servers">
+    `rht-vmctl reset servers` on the host.
+  </Step>
+  <Step title="Make the exercise folder">
+    Copy your base `ansible.cfg` and `inventory` into the folder the exercise names, and adjust the inventory to the groups it lists.
+  </Step>
+  <Step title="Remember the firewall">
+    firewalld runs on every server, as in the classroom. If an exercise sets up a web server, the playbook has to open the port (`ansible.posix.firewalld`) before `curl` from workstation works.
+  </Step>
+  <Step title="Work, then check twice">
+    Run the playbook, verify the result, then run it again: the second run should report `changed=0`.
+  </Step>
+</Steps>
+
+<Callout type="exam" title="You are ready">
+The lab now matches the classroom closely enough to follow every chapter of this guide. Head to [chapter 1](#/ch01) and start practising.
+</Callout>

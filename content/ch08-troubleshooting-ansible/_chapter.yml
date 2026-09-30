@@ -1,0 +1,7 @@
+title: Troubleshooting Ansible
+goal: Troubleshoot playbooks and managed hosts.
+status: planned
+topics:
+  - Troubleshooting playbooks
+  - Troubleshooting managed hosts
+  - Chapter lab

@@ -1,0 +1,58 @@
+---
+title: Summary and cheat sheet
+kind: summary
+minutes: 5
+---
+
+<Lead>
+The chapter on one page: the ideas to remember, the commands to have at your fingertips, and a deck of flashcards for quick revision.
+</Lead>
+
+## The chapter in eight sentences
+
+- **Automation** reduces human error and keeps your infrastructure in a consistent, correct state.
+- **Infrastructure as Code** means describing that state in readable text files kept in version control, and changing systems only by changing the code.
+- **Ansible** is an open source automation platform that adapts to many workflows and environments.
+- It is **agentless**: Ansible is installed only on the control node (and in its execution environments), and it reaches managed hosts over SSH or WinRM.
+- **Playbooks** are human-readable YAML files describing the desired state. A playbook holds plays, a play holds tasks, and each task runs a module.
+- Modules are **idempotent**: they change a host only when it differs from the desired state, so playbooks are safe to re-run.
+- **Red Hat Ansible Automation Platform** is the fully supported distribution, adding certified collections, execution environments, navigator, controller and hub.
+- **`ansible-navigator`** is the key tool for developing and running automation, and it runs playbooks inside an execution environment container.
+
+## Cheat sheet
+
+| Task | Command |
+| --- | --- |
+| Install navigator | `sudo dnf install ansible-navigator` |
+| Install classic tools (`ansible-playbook`) | `sudo dnf install ansible-core` |
+| Check the version | `ansible-navigator --version` |
+| Log in to a registry | `podman login utility.lab.example.com` |
+| Pull an EE by hand | `podman pull <registry>/ee-supported-rhel8:latest` |
+| List available EEs | `ansible-navigator images` |
+| Leave interactive mode | <kbd>Esc</kbd> (repeat to go back further) or `:q` |
+
+| Managed host type | Needs |
+| --- | --- |
+| Linux / UNIX | SSH, Python 3.8+, sudo for the remote user, `python3-libselinux` if SELinux is on |
+| Windows | WinRM, PowerShell 3.0+, .NET Framework 4.0+ |
+| Network device | Nothing extra; modules run on the control node |
+
+<Flashcards
+  title="Chapter 1 flashcards"
+  cards={[
+    { front: 'What are the two types of machine in an Ansible architecture?', back: 'The **control node**, where Ansible runs, and **managed hosts**, which Ansible configures.' },
+    { front: 'Playbook, play, task, module: how do they nest?', back: 'A playbook contains plays; a play is an ordered list of tasks for some hosts; each task runs one module.' },
+    { front: 'What does idempotent mean for a playbook?', back: 'Running it again on hosts already in the desired state makes **no changes** (`changed=0`).' },
+    { front: 'Why are `command` and `shell` tasks risky?', back: 'Ansible cannot tell whether the command was needed, so they report `changed` every run and are easy to make non-idempotent.' },
+    { front: 'What is an automation execution environment?', back: 'A **container image** with Ansible Core, collections and dependencies, used by ansible-navigator and automation controller.' },
+    { front: 'Which tool builds custom execution environments?', back: '`ansible-builder`' },
+    { front: 'Automation controller used to be called…', back: 'Red Hat Ansible **Tower**.' },
+    { front: 'Which collection always ships with Ansible Core?', back: '`ansible.builtin`' },
+    { front: 'What does a Linux managed host need for most modules?', back: 'SSH access and **Python 3.8 or later** (plus sudo for privilege escalation).' },
+    { front: 'Where do network device modules usually run?', back: 'On the **control node**, talking to the device via CLI over SSH, XML over SSH or an HTTP(S) API.' },
+  ]}
+/>
+
+<Callout type="exam" title="Before you move on">
+Make sure you can install `ansible-navigator`, log in to a registry and list an execution environment **without looking at notes**. Everything in chapter 2 assumes this works.
+</Callout>

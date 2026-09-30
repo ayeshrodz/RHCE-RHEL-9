@@ -1,0 +1,147 @@
+/* ------------------------------------------------------------------
+   Design tokens. Warm neutrals, one clay accent, and nine flat colour
+   ramps used by the diagram kit (50 → 900).
+   ------------------------------------------------------------------ */
+
+:root {
+  --font-sans: 'Ubuntu Sans', 'Ubuntu', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-reading: var(--font-sans);
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --code-size: 13px; /* code blocks, terminals */
+  --code-size-sm: 12.5px; /* widgets, compact panels */
+  --code-inline: 0.86em; /* inline code inside text */
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --header-h: 56px;
+  --sidebar-w: 288px;
+  --toc-w: 220px;
+  --content-w: 740px;
+
+  /* Colour ramps */
+  --purple-50: #eeedfe;
+  --purple-100: #cecbf6;
+  --purple-200: #afa9ec;
+  --purple-400: #7f77dd;
+  --purple-600: #534ab7;
+  --purple-800: #3c3489;
+  --purple-900: #26215c;
+  --teal-50: #e1f5ee;
+  --teal-100: #9fe1cb;
+  --teal-200: #5dcaa5;
+  --teal-400: #1d9e75;
+  --teal-600: #0f6e56;
+  --teal-800: #085041;
+  --teal-900: #04342c;
+  --coral-50: #faece7;
+  --coral-100: #f5c4b3;
+  --coral-200: #f0997b;
+  --coral-400: #d85a30;
+  --coral-600: #993c1d;
+  --coral-800: #712b13;
+  --coral-900: #4a1b0c;
+  --pink-50: #fbeaf0;
+  --pink-100: #f4c0d1;
+  --pink-200: #ed93b1;
+  --pink-400: #d4537e;
+  --pink-600: #993556;
+  --pink-800: #72243e;
+  --pink-900: #4b1528;
+  --gray-50: #f2f2f2;
+  --gray-100: #d2d2d2;
+  --gray-200: #b8bbbe;
+  --gray-400: #8a8d90;
+  --gray-600: #6a6e73;
+  --gray-800: #3c3f42;
+  --gray-900: #212427;
+  --blue-50: #e6f1fb;
+  --blue-100: #b5d4f4;
+  --blue-200: #85b7eb;
+  --blue-400: #378add;
+  --blue-600: #185fa5;
+  --blue-800: #0c447c;
+  --blue-900: #042c53;
+  --green-50: #eaf3de;
+  --green-100: #c0dd97;
+  --green-200: #97c459;
+  --green-400: #639922;
+  --green-600: #3b6d11;
+  --green-800: #27500a;
+  --green-900: #173404;
+  --amber-50: #faeeda;
+  --amber-100: #fac775;
+  --amber-200: #ef9f27;
+  --amber-400: #ba7517;
+  --amber-600: #854f0b;
+  --amber-800: #633806;
+  --amber-900: #412402;
+  --red-50: #fcebeb;
+  --red-100: #f7c1c1;
+  --red-200: #f09595;
+  --red-400: #e24b4a;
+  --red-600: #a32d2d;
+  --red-800: #791f1f;
+  --red-900: #501313;
+}
+
+:root,
+:root[data-theme='light'] {
+  /* Red Hat-style neutrals with Red Hat red as the single accent. */
+  color-scheme: light;
+  --bg: #f8f8f8;
+  --bg-elev: #ffffff;
+  --bg-sunken: #ededed;
+  --bg-hover: rgba(21, 21, 21, 0.05);
+  --bg-active: rgba(21, 21, 21, 0.08);
+  --border: rgba(21, 21, 21, 0.12);
+  --border-strong: rgba(21, 21, 21, 0.24);
+  --text: #151515;
+  --text-2: #3c3f42;
+  --text-3: #6a6e73;
+  --accent: #ee0000;
+  --accent-hover: #cc0000;
+  --accent-soft: #fce3e3;
+  --accent-text: #a60000;
+  --code-bg: #f2f2f2;
+  --code-inline-bg: rgba(21, 21, 21, 0.06);
+  --shadow: 0 1px 2px rgba(21, 21, 21, 0.05), 0 4px 16px rgba(21, 21, 21, 0.06);
+  --shadow-lg: 0 12px 48px rgba(21, 21, 21, 0.18);
+
+  --ok: var(--green-600);
+  --ok-soft: var(--green-50);
+  --changed: var(--amber-600);
+  --changed-soft: var(--amber-50);
+  --fail: var(--red-600);
+  --fail-soft: var(--red-50);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #151515;
+  --bg-elev: #1f1f1f;
+  --bg-sunken: #0e0e0e;
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.24);
+  --text: #f0f0f0;
+  --text-2: #c7c7c7;
+  --text-3: #8a8d90;
+  --accent: #ee0000;
+  --accent-hover: #ff3b3b;
+  --accent-soft: rgba(238, 0, 0, 0.18);
+  --accent-text: #f56e6e;
+  --code-bg: #0e0e0e;
+  --code-inline-bg: rgba(255, 255, 255, 0.08);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.6);
+
+  --ok: var(--green-200);
+  --ok-soft: rgba(99, 153, 34, 0.18);
+  --changed: var(--amber-100);
+  --changed-soft: rgba(186, 117, 23, 0.2);
+  --fail: var(--red-200);
+  --fail-soft: rgba(226, 75, 74, 0.18);
+}

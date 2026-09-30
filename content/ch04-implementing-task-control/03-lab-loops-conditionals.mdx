@@ -1,0 +1,148 @@
+---
+title: "Guided exercise: Loops and conditional tasks"
+kind: lab
+minutes: 15
+---
+
+<Lead>
+You will install MariaDB with a looping task, then add a condition so the installation only happens on Red Hat Enterprise Linux, and run it against a second group.
+</Lead>
+
+The inventory in `~/control-flow` has two groups:
+
+```ini title="inventory"
+[database_dev]
+servera.lab.example.com
+
+[database_prod]
+serverb.lab.example.com
+```
+
+<Lab
+  id="loops"
+  title="Writing loops and conditional tasks"
+  classroom="lab start control-flow"
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={['Implement conditionals with the when keyword.', 'Iterate a task with loop, together with conditionals.']}
+>
+  <Task title="Move into the project directory">
+
+```console
+[student@workstation ~]$ cd ~/control-flow
+[student@workstation control-flow]$ cat inventory
+```
+  </Task>
+
+  <Task title="Start the play with a list variable">
+    Create `playbook.yml` with a play, `MariaDB server is running`, for `database_dev`. Define `mariadb_packages` as a list containing `mariadb-server` and `python3-PyMySQL`.
+
+    <Reveal title="Show solution">
+
+```yaml
+---
+- name: MariaDB server is running
+  hosts: database_dev
+  vars:
+    mariadb_packages:
+      - mariadb-server
+      - python3-PyMySQL
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Install the packages with a loop">
+    Add a task that installs each package in `mariadb_packages`, one loop item at a time.
+
+    <Reveal title="Show solution">
+
+```yaml
+  tasks:
+    - name: MariaDB packages are installed
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ mariadb_packages }}"
+```
+    </Reveal>
+
+    <Callout type="tip">
+    `ansible.builtin.dnf` also accepts the whole list at once (`name: "{{ mariadb_packages }}"`), which is faster because it runs one transaction. The loop is here to practise loops.
+    </Callout>
+  </Task>
+
+  <Task title="Start the service">
+
+```yaml
+    - name: Start MariaDB service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+```
+  </Task>
+
+  <Task title="Run it and read the per-item output">
+
+```console
+[student@workstation control-flow]$ ansible-navigator run -m stdout playbook.yml
+...output omitted...
+TASK [MariaDB packages are installed] ******************************************
+changed: [servera.lab.example.com] => (item=mariadb-server)
+changed: [servera.lab.example.com] => (item=python3-PyMySQL)
+
+TASK [Start MariaDB service] ***************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
+```
+
+    Each loop item gets its own line, tagged `(item=...)`.
+  </Task>
+
+  <Task title="Add a condition and target production">
+    Change the play to target `database_prod`, and make the install task run only when the host's distribution is Red Hat Enterprise Linux.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: MariaDB server is running
+  hosts: database_prod
+  ...output omitted...
+    - name: MariaDB packages are installed
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ mariadb_packages }}"
+      when: ansible_facts['distribution'] == "RedHat"
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Run it again">
+
+```console
+[student@workstation control-flow]$ ansible-navigator run -m stdout playbook.yml
+...output omitted...
+TASK [MariaDB packages are installed] ******************************************
+ok: [serverb.lab.example.com] => (item=mariadb-server)
+ok: [serverb.lab.example.com] => (item=python3-PyMySQL)
+...output omitted...
+PLAY RECAP *********************************************************************
+serverb.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
+```
+
+    serverb runs RHEL, so the condition is true and the task runs. On a non-RHEL host, each item would show `skipping:` instead.
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish control-flow
+```
+  </Task>
+</Lab>
+
+<Callout type="exam" title="See a skip for yourself">
+Change the condition to `== "Fedora"` and run again. Every item reports `skipping`, and the recap counts `skipped=1` for the task. Knowing what a skip looks like helps you spot conditions that never match.
+</Callout>

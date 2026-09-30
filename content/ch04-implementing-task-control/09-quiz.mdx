@@ -1,0 +1,98 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 8
+---
+
+<Lead>
+Twelve questions on loops, conditionals, handlers and failure handling. Aim for at least nine before moving on to chapter 5.
+</Lead>
+
+<Quiz
+  id="chapter"
+  title="Chapter 4 knowledge check"
+  questions={[
+    {
+      q: 'What is wrong with this task?',
+      code: '- name: Services are running\n  ansible.builtin.service:\n    name: "{{ item }}"\n    state: started\n    loop:\n      - httpd\n      - firewalld',
+      options: ['Nothing', '`loop` is indented under the module; it must be at task level', '`item` must be written `{{ items }}`'],
+      answer: 1,
+      explain: '`loop` is a task keyword. Indented under the module, it is passed to the service module as an unknown argument.',
+    },
+    {
+      q: 'Each entry in `loop` is `{name: jane, groups: wheel}`. How do you pass the group to the user module?',
+      options: ["`groups: \"{{ item['groups'] }}\"`", '`groups: "{{ groups }}"`', '`groups: "{{ item }}"`'],
+      answer: 0,
+      explain: 'item is the whole dictionary; read the key with brackets (or item.groups).',
+    },
+    {
+      q: 'Which older keyword behaves like `loop` for a simple list?',
+      options: ['`with_file`', '`with_items`', '`with_sequence`'],
+      answer: 1,
+      explain: 'with_items is the most common legacy loop. Unlike loop, it flattens a list of lists.',
+    },
+    {
+      q: 'Which condition runs the task only when `max_retries` has been set?',
+      options: ['`when: max_retries`', '`when: max_retries is defined`', '`when: defined(max_retries)`'],
+      answer: 1,
+      explain: '`is defined` tests for existence; the plain variable would fail if undefined, or be false if it is 0.',
+    },
+    {
+      q: 'Which condition is true for a host running RHEL or Fedora?',
+      options: [
+        '`ansible_facts[\'distribution\'] == "RedHat" and ansible_facts[\'distribution\'] == "Fedora"`',
+        '`ansible_facts[\'distribution\'] in ["RedHat", "Fedora"]`',
+        '`ansible_facts[\'distribution\'] == "RedHat, Fedora"`',
+      ],
+      answer: 1,
+      explain: 'The in test checks list membership. The `and` version can never be true.',
+    },
+    {
+      q: 'What does this `when` mean?',
+      code: 'when:\n  - ansible_facts[\'distribution\'] == "RedHat"\n  - ansible_facts[\'memtotal_mb\'] > 1024',
+      options: ['Either condition', 'Both conditions', 'Only the first; the second is ignored'],
+      answer: 1,
+      explain: 'A list of conditions is combined with and.',
+    },
+    {
+      q: 'With Ansible Core 2.13, `do_it: "no"` (quoted) and `when: do_it`. Does the task run?',
+      options: ['No', 'Yes, a non-empty string is true', 'It errors'],
+      answer: 1,
+      explain: 'Use `when: do_it | bool` to interpret the string as a Boolean.',
+    },
+    {
+      q: 'A task has `notify: restart httpd` and reports `ok`. What happens to the handler?',
+      options: ['It runs at the end of the play', 'It is not notified and does not run', 'It runs immediately'],
+      answer: 1,
+      explain: 'Only tasks that report changed notify handlers.',
+    },
+    {
+      q: 'Which play setting runs already-notified handlers even when a later task fails?',
+      options: ['`ignore_errors: true`', '`force_handlers: true`', '`any_errors_fatal: false`'],
+      answer: 1,
+      explain: 'force_handlers makes pending handlers run before the host is marked failed.',
+    },
+    {
+      q: 'Which keyword makes a task report failure based on its output?',
+      options: ['`changed_when`', '`failed_when`', '`register`'],
+      answer: 1,
+      explain: 'failed_when replaces the default failure rule with your own condition.',
+    },
+    {
+      q: 'In a block with rescue and always, the block succeeds. What runs next?',
+      options: ['rescue, then always', 'always only', 'Nothing more'],
+      answer: 1,
+      explain: 'rescue runs only on failure; always runs every time.',
+    },
+    {
+      q: 'Which task keeps the second run at `changed=0`?',
+      options: [
+        '`ansible.builtin.command: date` with `register: now`',
+        '`ansible.builtin.command: date` with `changed_when: false`',
+        '`ansible.builtin.command: date` with `ignore_errors: true`',
+      ],
+      answer: 1,
+      explain: 'command always reports changed unless you override it with changed_when.',
+    },
+  ]}
+/>

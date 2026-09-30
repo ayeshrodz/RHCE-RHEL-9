@@ -1,0 +1,6 @@
+title: Implementing Task Control
+goal: Manage task control, handlers and task errors in Ansible Playbooks.
+objectives:
+  - Use loops to write efficient tasks, and use conditions to control when tasks run.
+  - Implement a task that runs only when another task changes the managed host.
+  - Control what happens when a task fails, and what conditions cause a task to fail.

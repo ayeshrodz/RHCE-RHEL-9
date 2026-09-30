@@ -1,0 +1,160 @@
+---
+title: "Guided exercise: Configuration files"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will give a project its own navigator settings, its own `ansible.cfg` and its own inventory, then use small ping playbooks to prove each piece works, finishing with sudo escalation that prompts for a password.
+</Lead>
+
+<Lab
+  id="config"
+  title="Managing Ansible configuration files"
+  classroom="lab start playbook-manage"
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={['Create project-level configuration files for ansible-navigator and Ansible.', 'Build an inventory with a nested group and verify it with playbooks.', 'Configure privilege escalation with a sudo password prompt.']}
+>
+  <Task title="Move into the project directory">
+
+```console
+[student@workstation ~]$ cd ~/playbook-manage
+[student@workstation playbook-manage]$
+```
+  </Task>
+
+  <Task title="Configure automation content navigator">
+    Create `ansible-navigator.yml` so navigator uses the classroom EE image, pulls it only if it is missing, and does not write playbook artifacts.
+
+```yaml title="ansible-navigator.yml"
+---
+ansible-navigator:
+  execution-environment:
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  playbook-artifact:
+    enable: false
+```
+
+    Check it with `ansible-navigator images`. The first run prints the pull policy it read from your file and pulls the image:
+
+```text
+Execution environment image name:     utility.lab.example.com/ee-supported-rhel8:latest
+Execution environment pull policy:    missing
+Execution environment pull needed:    True
+...output omitted...
+Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:latest
+```
+
+    Press <kbd>Esc</kbd> to leave the image list.
+  </Task>
+
+  <Task title="Point Ansible at a project inventory">
+    Create `ansible.cfg` with a `[defaults]` section that makes `./inventory` the default inventory.
+
+```ini title="ansible.cfg"
+[defaults]
+inventory = ./inventory
+```
+  </Task>
+
+  <Task title="Write the inventory">
+    Create `inventory` with four groups:
+
+    - `myself` contains the `workstation` host.
+    - `intranetweb` contains `servera.lab.example.com`.
+    - `internetweb` contains `serverb.lab.example.com`.
+    - `web` contains the `intranetweb` and `internetweb` groups.
+
+    <Reveal title="Show the finished inventory">
+
+```ini title="inventory"
+[myself]
+workstation
+
+[intranetweb]
+servera.lab.example.com
+
+[internetweb]
+serverb.lab.example.com
+
+[web:children]
+intranetweb
+internetweb
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Test each group with the provided playbooks">
+    The project already contains playbooks that run `ansible.builtin.ping` against one group each. `ping` checks that Ansible can connect and run Python on the host; it does not use ICMP. Notice you no longer need `-i inventory`: `ansible.cfg` supplies it.
+
+```console
+[student@workstation playbook-manage]$ ansible-navigator run -m stdout ping-myself.yml
+...output omitted...
+[student@workstation playbook-manage]$ ansible-navigator run -m stdout ping-intranetweb.yml
+...output omitted...
+[student@workstation playbook-manage]$ ansible-navigator run -m stdout ping-internetweb.yml
+...output omitted...
+[student@workstation playbook-manage]$ ansible-navigator run -m stdout ping-web.yml
+...output omitted...
+[student@workstation playbook-manage]$ ansible-navigator run -m stdout ping-all.yml
+```
+
+    The last one should report `ok=1` for all three machines:
+
+```text
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=1    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=1    changed=0    unreachable=0    failed=0  ...
+workstation                : ok=1    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Add privilege escalation that prompts for the sudo password">
+    Add a `[privilege_escalation]` section so Ansible uses `sudo` to become `root`, and asks for the password that `student` uses with sudo.
+
+    <Reveal title="Show the finished ansible.cfg">
+
+```ini title="ansible.cfg"
+[defaults]
+inventory = ./inventory
+
+[privilege_escalation]
+become = true
+become_method = sudo
+become_user = root
+become_ask_pass = true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Prove the prompt works">
+    Run a ping playbook again. You are now asked for the `BECOME password`; enter `student`.
+
+```console
+[student@workstation playbook-manage]$ ansible-navigator run \
+> -m stdout ping-intranetweb.yml
+BECOME password: student
+
+PLAY [Validate inventory hosts] ************************************************
+
+TASK [Ping intranetweb] ********************************************************
+ok: [servera.lab.example.com]
+...output omitted...
+```
+
+    This only works because you disabled playbook artifacts in task 2 and used `-m stdout`.
+  </Task>
+
+  <Task title="Finish">
+
+```console
+[student@workstation ~]$ lab finish playbook-manage
+```
+  </Task>
+</Lab>
+
+<Callout type="exam" title="Build this from memory">
+On the exam you are likely to start from an empty project directory. Practise writing `ansible.cfg` (inventory, remote_user and the four privilege escalation directives) and a grouped inventory quickly and without typos. Then prove them with a ping playbook before writing anything bigger.
+</Callout>

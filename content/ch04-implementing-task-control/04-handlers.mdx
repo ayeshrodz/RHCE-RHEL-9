@@ -1,0 +1,133 @@
+---
+title: Implementing handlers
+kind: lesson
+minutes: 10
+---
+
+<Lead>
+When a configuration file changes, the service that reads it must be restarted, but only then. Restarting on every run would interrupt users for no reason. Handlers are tasks that run only when another task reports that it changed something.
+</Lead>
+
+<Objectives>
+- Write handlers and trigger them with `notify`.
+- Predict when handlers run, in which order, and how many times.
+- Know what happens to handlers when a play fails.
+</Objectives>
+
+## What handlers are
+
+Modules are idempotent: they change a host only when it differs from the desired state. But a change sometimes requires a follow-up action. A new configuration file means the service must be reloaded; a kernel update may mean a reboot.
+
+**Handlers** are tasks that respond to a notification from other tasks. A task notifies a handler, by name, only when the task **changes** something. Notified handlers run once, **after all the tasks** in the play have finished. If nothing notifies a handler, it does not run at all.
+
+Handlers use the same modules as any other task. In practice they mostly restart services and reboot hosts.
+
+## Writing a handler
+
+```yaml
+tasks:
+  - name: copy demo.example.conf configuration template
+    ansible.builtin.template:
+      src: /var/lib/templates/demo.example.conf.template
+      dest: /etc/httpd/conf.d/demo.example.conf
+    notify:
+      - restart apache
+
+handlers:
+  - name: restart apache
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+```
+
+- **`notify`** on a task lists the handlers to trigger if the task reports `changed`. Its value is a list, so a task can notify several handlers.
+- **`handlers`** is a play-level section, at the same indentation as `tasks`. Each handler is a normal task, identified by its `name`.
+
+A task can notify more than one handler:
+
+```yaml
+tasks:
+  - name: copy demo.example.conf configuration template
+    ansible.builtin.template:
+      src: /var/lib/templates/demo.example.conf.template
+      dest: /etc/httpd/conf.d/demo.example.conf
+    notify:
+      - restart mysql
+      - restart apache
+
+handlers:
+  - name: restart mysql
+    ansible.builtin.service:
+      name: mariadb
+      state: restarted
+
+  - name: restart apache
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+```
+
+## How handlers behave
+
+Try it: flip tasks between `ok` and `changed`, and add a failure:
+
+<HandlerTimeline />
+
+The rules the simulator follows:
+
+<Steps>
+  <Step title="Only changed tasks notify">
+    If the task reports `ok` (for example, the package was already installed) or `failed`, its handlers are **not** notified.
+  </Step>
+  <Step title="Handlers run after all tasks">
+    A handler notified by the first task still waits until every task in the `tasks` section has run. (There are a few advanced exceptions.)
+  </Step>
+  <Step title="Each handler runs once">
+    Even if five tasks notify the same handler, it runs a single time. That is exactly what you want for a service restart.
+  </Step>
+  <Step title="In handlers-section order">
+    Handlers run in the order they are listed under `handlers`, not in the order they were notified, and not in the order of a task's `notify` list.
+  </Step>
+  <Step title="A failed play drops them">
+    If a task fails and the play stops on that host, notified handlers do not run, unless the play sets `force_handlers: true` (covered in the task failure section).
+  </Step>
+</Steps>
+
+<Callout type="note" title="Give handlers unique names">
+Handler names live in one namespace per play. If two handlers share a name, only one of them runs.
+</Callout>
+
+<Callout type="important" title="Handlers are not a shortcut for tasks">
+Handlers exist to perform an extra action when a task makes a change. Do not use them to replace normal tasks that should always run.
+</Callout>
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'Three tasks notify `restart web`. Two report `changed`, one reports `ok`. How many times does the handler run?',
+      options: ['0', '1', '2', '3'],
+      answer: 1,
+      explain: 'A notified handler runs exactly once, no matter how many tasks notified it.',
+    },
+    {
+      q: 'When does a notified handler run?',
+      options: ['Immediately after the task that notified it', 'After all tasks in the play have completed', 'At the very end of the playbook'],
+      answer: 1,
+      explain: 'Handlers run at the end of the play they belong to, after its tasks.',
+    },
+    {
+      q: 'The handlers section lists `restart A` then `restart B`. A task notifies B first, then another task notifies A. In which order do they run?',
+      options: ['B then A', 'A then B', 'At the same time'],
+      answer: 1,
+      explain: 'Handlers run in the order they are defined in the handlers section.',
+    },
+    {
+      q: 'Where is the `handlers` keyword placed?',
+      options: ['Inside a task, under notify', 'At play level, aligned with tasks', 'In ansible.cfg'],
+      answer: 1,
+      explain: '`handlers:` is a play keyword, like `tasks:` and `vars:`.',
+    },
+  ]}
+/>

@@ -1,0 +1,154 @@
+# Authoring guide
+
+How to add sections, diagrams and exercises so they match the rest of the guide.
+
+## 1. How content is organised
+
+The `content/` folder is the single source of truth. A Vite plugin (`plugins/content-manifest.js`) reads it and builds the navigation, so you never edit JavaScript to add material.
+
+```
+content/
+  _course.yml                      site title, exam, RHEL / AAP / Ansible Core versions
+  _platform.mdx                    text of the "RHEL 9.0" dialog in the header
+  ch02-implementing-playbooks/
+    _chapter.yml                   title, goal, objectives
+    01-inventory.mdx               section 2.1
+    02-lab-inventory.mdx           section 2.2
+  ch03-managing-variables-and-facts/
+    _chapter.yml                   status: planned + topics → shown as "coming soon"
+```
+
+- **Order** comes from the numeric filename prefix (`01-`, `02-`…).
+- **URL slug** is the filename without its prefix: `03-configuration.mdx` → `#/ch02/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
+- **Frontmatter** at the top of each `.mdx`:
+
+  ```yaml
+  ---
+  title: Managing Ansible configuration files
+  kind: lesson        # lesson | lab | quiz | summary (inferred from the filename if omitted)
+  minutes: 14         # estimated from word count if omitted
+  draft: true         # optional: hide the section from the site
+  ---
+  ```
+
+- **A new chapter**: create `content/chNN-name/` with a `_chapter.yml`. Once it contains `.mdx` files and has no `status: planned`, it becomes a normal chapter.
+
+While `npm run dev` is running, everything updates live. Body edits hot-reload in place; adding, removing or renaming files, or changing frontmatter and `_chapter.yml`, reloads the page with the new navigation.
+
+The page title, number, breadcrumb, reading time, table of contents, "mark complete" button and previous/next links are generated. **Do not** put an `# H1` in the MDX file.
+
+## 2. Page shape
+
+Every lesson follows the same rhythm:
+
+```mdx
+<Lead>One or two sentences on why this matters.</Lead>
+
+<Objectives>
+- Three or four things the reader will be able to do.
+</Objectives>
+
+## First topic
+...prose, a diagram, a code block...
+
+<Quiz id="check" questions={[ ... ]} />
+```
+
+Use `##` for topics and `###` for sub-topics; both appear in the table of contents.
+
+## 3. Writing style
+
+- **Write in your own words.** Use the course PDF to check facts and structure, never copy its prose. Commands, file contents and directive names are fine to reproduce.
+- Short sentences, second person ("you"), active voice. Explain *why* before *how*.
+- Use the classroom host names (`workstation`, `servera`–`serverd`, `utility.lab.example.com`) and documentation IP ranges (`192.0.2.0/24`). Never real personal hosts, users or addresses.
+- Always use FQCNs in examples (`ansible.builtin.copy`).
+- Only state exam facts you can back up. Phrase advice as practice habits, not as claims about how the exam is graded.
+
+## 4. Components available in MDX
+
+No imports needed. They are registered in `src/components/mdx/index.jsx`.
+
+| Component | Use |
+| --- | --- |
+| `<Lead>` | Opening paragraph, larger text. |
+| `<Objectives>` | "In this section" box. Put a Markdown list inside. |
+| `<Callout type="note|tip|important|warning|exam" title="…">` | Asides. `exam` is for exam-specific advice. |
+| `<Cards cols={2|3}>` + `<Card title kicker tone>` | Side-by-side comparisons. |
+| `<Columns>` + `<Column title tone>` | Two-column contrasts (bad vs good). |
+| `<Tabs>` + `<Tab label>` | Alternatives, for example file templates. |
+| `<Steps>` + `<Step title>` | Numbered procedures inside a lesson. |
+| `<Glossary>` + `<Term name>` | Definition lists. |
+| `<Reveal title="Show solution">` | Hidden answers. |
+| `<Quiz id questions={[{ q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
+| `<Lab id title outcomes hosts classroom>` + `<Task title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
+| `<Flashcards cards={[{ front, back }]}>` | Revision cards. |
+
+Strings passed as props (quiz text, card text) support `` `code` ``, `**bold**` and `*italic*`.
+
+`tone` is one of `purple`, `teal`, `coral`, `pink`, `gray`, `blue`, `green`, `amber`, `red`.
+
+### Code blocks
+
+````mdx
+```yaml title="site.yml"
+- name: Example
+```
+````
+
+- `title="…"` shows a filename in the header.
+- `console` blocks render as a terminal; their copy button copies only the commands, without prompts or output.
+- `text` is for command output.
+- Add `# [!code highlight]` at the end of a line to highlight it.
+
+### MDX gotchas
+
+- Keep fenced code blocks at column 0, even inside components.
+- MDX **dedents multi-line template literals** inside JSX props. For multi-line strings (such as YAML for `AnnotatedYaml`), declare them with `export const` at the top of the file and pass the variable in.
+- `{` and `<` in prose are JSX. Put them in inline code or escape them.
+
+## 5. Diagrams
+
+Diagrams are React components that draw SVG with the kit in `src/diagrams/kit`. They share one visual language: flat pastel boxes, hairline borders, 14px titles, 12px subtitles, thin grey arrows, and a `680`-wide coordinate space that scales to fit.
+
+```jsx
+import { Arrow, Diagram, Group, Node } from '../kit';
+
+export default function Example() {
+  return (
+    <Diagram height={200} title="Accessible description" caption="Shown under the figure.">
+      <Group x={10} y={10} w={300} h={180} tone="gray" label="Control node" />
+      <Node x={30} y={50} w={140} h={56} tone="purple" title="site.yml" sub="desired state" />
+      <Arrow points={[[170, 78], [240, 78]]} label="runs" />
+    </Diagram>
+  );
+}
+```
+
+- **`Node`** takes `tone`, `title`, `sub` (string or array of lines), `mono`, `align="start"`, and for interactive diagrams `onClick`, `active` and `dim`.
+- **`Arrow`** takes a list of points; corners are rounded automatically. Options: `label`, `labelAt`, `labelDx`, `labelDy`, `dashed`, `hot` (accent colour), `dim`.
+- **`Group`** is a dashed container; `solid` makes it solid.
+- **`InfoPanel`** (pass it through `below`) explains the selected node in clickable diagrams.
+- **`useStepper` + `StepControls`** build step-through diagrams (see `TaskLifecycle`).
+
+Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
+
+Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the registry globs every chapter folder). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+
+Reusable pieces from chapter 3 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
+
+### Lab placeholders
+
+Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (chapter 0.1), including in copied text. Add new placeholder keys in `src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
+
+## 6. Code font
+
+All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turned off so `!=` and `->` show as typed). Sizes come from `--code-size` (blocks and terminals), `--code-size-sm` (compact widgets) and `--code-inline` (inline code in text). Use these tokens rather than hard-coded values.
+
+## 7. Before you commit
+
+```bash
+npm run build    # must pass: catches MDX syntax errors
+npm run format
+```
+
+Then open the page in both light and dark mode, and at phone width.

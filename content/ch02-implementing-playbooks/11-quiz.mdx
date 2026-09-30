@@ -1,0 +1,97 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 8
+---
+
+<Lead>
+Twelve questions covering inventories, configuration, playbook structure and running playbooks. Aim for at least nine before moving on.
+</Lead>
+
+<Quiz
+  id="chapter"
+  title="Chapter 2 knowledge check"
+  questions={[
+    {
+      q: 'Which inventory line matches `server01.example.com` through `server20.example.com`, but not `server7.example.com`?',
+      options: ['`server[1:20].example.com`', '`server[01:20].example.com`', '`server[01-20].example.com`'],
+      answer: 1,
+      explain: 'Ranges use a colon and are inclusive. The leading zero is part of the pattern, so it matches server07 but not server7.',
+    },
+    {
+      q: 'Which inventory section makes the group `prod` contain the groups `web` and `db`?',
+      options: ['`[prod:hosts]`', '`[prod:children]`', '`[prod:groups]`', '`[prod:vars]`'],
+      answer: 1,
+      explain: 'The `:children` suffix lists child groups. `:vars` sets group variables.',
+    },
+    {
+      q: 'Which two groups exist in every inventory without being defined?',
+      options: ['`all` and `ungrouped`', '`all` and `localhost`', '`default` and `ungrouped`'],
+      answer: 0,
+      explain: '`all` contains every host; `ungrouped` contains hosts that are in no other group.',
+    },
+    {
+      q: 'Which command shows the hosts in group `us`, including those inherited from child groups, as a tree?',
+      options: [
+        '`ansible-navigator inventory -m stdout --list us`',
+        '`ansible-navigator inventory -m stdout --graph us`',
+        '`ansible-navigator inventory -m stdout --host us`',
+      ],
+      answer: 1,
+      explain: '`--graph` prints a tree; `--list` prints JSON for the whole inventory; `--host` shows variables for one host.',
+    },
+    {
+      q: 'You run ansible-navigator from `/home/student/project`, which contains `ansible.cfg`. `ANSIBLE_CONFIG` is unset. Which file is used?',
+      options: ['`/etc/ansible/ansible.cfg`', '`~/.ansible.cfg`', '`/home/student/project/ansible.cfg`'],
+      answer: 2,
+      explain: 'After the ANSIBLE_CONFIG variable, the current directory comes first. Only that one file is read.',
+    },
+    {
+      q: 'In `ansible.cfg`, which section holds `become`, `become_method` and `become_user`?',
+      options: ['`[defaults]`', '`[privilege_escalation]`', '`[ssh_connection]`'],
+      answer: 1,
+      explain: 'Connection defaults such as inventory and remote_user go in `[defaults]`; sudo settings go in `[privilege_escalation]`.',
+    },
+    {
+      q: 'Which `ansible-navigator.yml` setting must be disabled so navigator can prompt you for a password?',
+      options: ['`execution-environment.pull`', '`playbook-artifact.enable`', '`mode`'],
+      answer: 1,
+      explain: 'Set `playbook-artifact: enable: false`, and run with `-m stdout`.',
+    },
+    {
+      q: 'Why is this task a syntax error?',
+      code: '- name:Install httpd\n  ansible.builtin.dnf:\n    name: httpd',
+      options: ['Task names cannot contain spaces', 'There is no space after `name:`', '`dnf` needs a `state` argument'],
+      answer: 1,
+      explain: 'YAML needs a space after the colon in a key-value pair. `state` is optional (it defaults to present).',
+    },
+    {
+      q: 'What does `ansible-navigator run -m stdout site.yml --check` do?',
+      options: ['Checks the YAML syntax only', 'Runs the playbook and reports what would change, without changing anything', 'Runs the playbook twice to check idempotency'],
+      answer: 1,
+      explain: 'That is check mode, a dry run. `--syntax-check` only parses the file.',
+    },
+    {
+      q: 'The second run of a playbook shows `changed=1` on every run for the same task. What is the most likely cause?',
+      options: [
+        'The host is unreachable',
+        'The task uses `ansible.builtin.command` or `shell` without `creates`/`removes`',
+        'Gathering Facts failed',
+      ],
+      answer: 1,
+      explain: 'Command-style modules report changed every time. Use a purpose-built module, or add creates/removes.',
+    },
+    {
+      q: 'A playbook has two plays. Play 1 has `become: true`; play 2 has `become: false`. `ansible.cfg` has `become = true`. How does play 2 run?',
+      options: ['As root, because ansible.cfg wins', 'Without privilege escalation', 'It fails with a conflict error'],
+      answer: 1,
+      explain: 'Play keywords override ansible.cfg for that play.',
+    },
+    {
+      q: 'Which option gives the most detailed output, including connection plug-in debugging?',
+      options: ['`-v`', '`-vv`', '`-vvv`', '`-vvvv`'],
+      answer: 3,
+      explain: 'Each extra v adds more. -vvv adds connection details; -vvvv adds connection plug-in verbosity.',
+    },
+  ]}
+/>

@@ -1,0 +1,90 @@
+---
+title: "Guided exercise: Installing Ansible"
+kind: lab
+minutes: 15
+---
+
+<Lead>
+In this exercise you turn `workstation` into a working control node: install automation content navigator, log in to the classroom registry, and download the execution environment that later chapters use.
+</Lead>
+
+<Lab
+  id="install"
+  title="Installing Ansible"
+  classroom="lab start intro-install"
+  hosts={['workstation', 'utility.lab.example.com']}
+  outcomes={['Install automation content navigator on a control node.', 'Download an execution environment image and list it.']}
+>
+  <Task title="Install the ansible-navigator package">
+    As the `student` user on `workstation`, install the RPM that provides automation content navigator.
+
+```console
+[student@workstation ~]$ sudo dnf install ansible-navigator
+[sudo] password for student: student
+...output omitted...
+Is this ok [y/d/N]: y
+...output omitted...
+```
+
+    <Callout type="note" title="Why no repository step?">
+    The classroom already has the right package repository configured. On a production system you would first register it with `subscription-manager` and enable `ansible-automation-platform-2.2-for-rhel-9-x86_64-rpms`.
+    </Callout>
+  </Task>
+
+  <Task title="Verify the installation">
+
+```console
+[student@workstation ~]$ ansible-navigator --version
+ansible-navigator 2.1.0
+```
+  </Task>
+
+  <Task title="Log in to the classroom registry">
+    The classroom's private automation hub runs on `utility.lab.example.com`. Log in with username `admin` and password `redhat`.
+
+```console
+[student@workstation ~]$ podman login utility.lab.example.com
+Username: admin
+Password: redhat
+Login Succeeded!
+```
+  </Task>
+
+  <Task title="Download the execution environment">
+    Run `ansible-navigator images`. Navigator notices the image is missing, pulls it, and then lists the images it can use.
+
+```console
+[student@workstation ~]$ ansible-navigator images
+...output omitted...
+Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:latest
+...output omitted...
+```
+
+    Once the download finishes, navigator shows the list in interactive mode:
+
+```text
+  Image                 Tag      Execution environment   Created       Size
+0│ee-supported-rhel8    latest   True                    5 weeks ago   1.32 GB
+
+^b/PgUp page up   ^f/PgDn page down   ↑↓ scroll   esc back   [0-9] goto   :help help
+```
+
+    Type `:0` to inspect the image (its Ansible version, collections and Python packages), then press <kbd>Esc</kbd> until you are back at the shell.
+  </Task>
+
+  <Task title="Finish">
+    In the classroom, clean up so this exercise does not affect later ones:
+
+```console
+[student@workstation ~]$ lab finish intro-install
+```
+  </Task>
+</Lab>
+
+## What just happened
+
+You now have the two things every later exercise relies on: the `ansible-navigator` command, and a local copy of the `ee-supported-rhel8` execution environment. When you run a playbook, navigator starts that image with Podman, mounts your project directory into it, and runs Ansible from inside the container.
+
+<Callout type="tip" title="Explore the image">
+In the images view, selecting an image lets you browse the Ansible version, the collections, and the Python packages it contains. It is a quick way to check whether a module you need is available before you write the task.
+</Callout>
