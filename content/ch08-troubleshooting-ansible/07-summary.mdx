@@ -1,0 +1,109 @@
+---
+title: Summary and cheat sheet
+kind: summary
+minutes: 6
+---
+
+<Lead>
+The chapter on one page: which tool answers which question, the messages you will meet most, and flashcards for quick revision.
+</Lead>
+
+## The chapter in six sentences
+
+- An `ERROR!` before any play means the playbook could not be read; `UNREACHABLE!` means Ansible could not connect; `FAILED!` means it connected and the task failed.
+- **`--syntax-check`** finds reading problems in a second, without touching any host; variables, values and templates are only tested when tasks run.
+- **Verbosity** (`-v` to `-vvvv`), **`debug`** tasks and a **`log_path`** show what Ansible did and with which values.
+- **`--start-at-task`**, **`--step`** and **`--limit`** rerun only the part you are fixing; **`--check`** and **`--diff`** preview a change without making it.
+- Connection problems are solved with **`ansible … -m ansible.builtin.ping`**, **`ansible-navigator inventory --host`** and `-vvv`; privilege problems show up as `FAILED`, not `UNREACHABLE`.
+- A successful run is not a working service: test the result with **`uri`**, **`stat`**, **`assert`** or ad hoc commands.
+
+## Cheat sheet
+
+<Tabs>
+  <Tab label="Playbook tools">
+
+```bash
+ansible-navigator run -m stdout site.yml --syntax-check
+ansible-navigator run -m stdout site.yml -v              # up to -vvvv
+ansible-navigator run -m stdout site.yml --list-tasks
+ansible-navigator run -m stdout site.yml --start-at-task "Task name"
+ansible-navigator run -m stdout site.yml --check --diff
+ansible-navigator run -m stdout site.yml --limit servera.lab.example.com
+```
+
+```ini
+# ansible.cfg
+[defaults]
+log_path = ./ansible.log
+```
+
+  </Tab>
+  <Tab label="Host tools">
+
+```bash
+ansible all -m ansible.builtin.ping
+ansible-navigator inventory -m stdout --host serverb.lab.example.com
+ansible serverc.lab.example.com -m ansible.builtin.ping -vvv
+ansible web -m ansible.builtin.command -a id --become
+ansible web -m ansible.builtin.setup -a 'filter=ansible_default_ipv4'
+ansible web -m ansible.builtin.command -a 'systemctl is-active httpd'
+```
+
+  </Tab>
+  <Tab label="Checks in playbooks">
+
+```yaml
+- ansible.builtin.debug:
+    var: web_service
+    verbosity: 2                  # only shown with -vv or more
+
+- ansible.builtin.assert:
+    that:
+      - ansible_facts['memtotal_mb'] >= 512
+    fail_msg: Not enough memory
+
+- ansible.builtin.uri:
+    url: http://servera.lab.example.com
+    return_content: true
+  register: page
+  failed_when: "'Welcome' not in page.content"
+```
+
+  </Tab>
+</Tabs>
+
+| Message contains | Look at |
+| --- | --- |
+| `found unacceptable key` … `{{ }}` | Quote a value that starts with `{{` |
+| `conflicting action statements` | Indentation of the task's arguments |
+| `couldn't resolve module/action` | Module spelling, collection, `collections_path` |
+| `Could not match supplied host pattern` | The play's `hosts` against the inventory |
+| `Could not resolve hostname` / `No route to host` | Inventory name, `ansible_host` |
+| `Permission denied (publickey…)` | `remote_user`, `ansible_user`, SSH keys |
+| `Missing sudo password` / `not writable` | `become` and sudo rights |
+| `is undefined` | Variable name, where it is defined |
+| `must be one of` | The argument's value; the module's documentation |
+| `template error while templating string` | Braces and tags in the template |
+| `handler … was not found` | `notify` against the handler's `name` |
+
+<Flashcards
+  title="Chapter 8 flashcards"
+  cards={[
+    { front: '`ERROR!` before any PLAY line means…', back: 'Ansible could not read the playbook. Nothing ran.' },
+    { front: 'UNREACHABLE vs FAILED?', back: 'UNREACHABLE: no connection. FAILED: connected, and the task failed.' },
+    { front: 'What does `--syntax-check` not catch?', back: 'Undefined variables, invalid argument values, template errors, connection problems.' },
+    { front: 'Why does `name: {{ pkg }}` fail?', back: 'A value starting with `{{` must be quoted: `name: "{{ pkg }}"`.' },
+    { front: 'Which verbosity shows the SSH command?', back: '`-vvv`' },
+    { front: 'How do you keep a debug task quiet by default?', back: '`verbosity: 2` on the task: shown only with `-vv` or more.' },
+    { front: 'Write every run to a file?', back: '`log_path = ./ansible.log` in `[defaults]`.' },
+    { front: 'Rerun from one task?', back: '`--start-at-task "Task name"` (copy names from `--list-tasks`).' },
+    { front: 'What does check mode do to `command` tasks?', back: 'Skips them.' },
+    { front: 'Can a clean `--check` run still fail for real?', back: 'Yes, for example permission problems only happen when a write is attempted.' },
+    { front: 'Show connection variables for one host?', back: '`ansible-navigator inventory -m stdout --host NAME`' },
+    { front: 'Test privilege escalation alone?', back: '`ansible HOST -m ansible.builtin.command -a id --become`' },
+  ]}
+/>
+
+<Callout type="exam" title="Speed drill">
+Ask someone to break one of your earlier projects in three places without telling you where, or break it yourself and wait a day. Find all three in under ten minutes using only the messages and the tools on this page.
+</Callout>

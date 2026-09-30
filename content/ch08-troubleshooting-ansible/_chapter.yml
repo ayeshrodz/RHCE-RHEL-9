@@ -1,7 +1,6 @@
 title: Troubleshooting Ansible
-goal: Troubleshoot playbooks and managed hosts.
-status: planned
-topics:
-  - Troubleshooting playbooks
-  - Troubleshooting managed hosts
-  - Chapter lab
+goal: Find and fix problems in playbooks and on managed hosts, methodically.
+objectives:
+  - Read Ansible's error messages and tell at which stage of a run a problem happened.
+  - Use syntax checks, verbosity, debug output, logs, check mode and diffs to find problems in playbooks.
+  - Find and fix connection and privilege problems with managed hosts, and use Ansible to test their state.

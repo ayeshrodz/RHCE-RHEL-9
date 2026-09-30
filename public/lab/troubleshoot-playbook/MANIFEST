@@ -1,0 +1,4 @@
+# Troubleshooting a playbook (site.yml has five mistakes)
+ansible.cfg
+inventory
+site.yml

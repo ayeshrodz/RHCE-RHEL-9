@@ -1,0 +1,5 @@
+# Troubleshooting managed hosts (three problems outside the playbook)
+ansible.cfg
+inventory
+motd.yml
+templates/motd.j2

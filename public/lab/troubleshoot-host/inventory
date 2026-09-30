@@ -1,0 +1,4 @@
+[web]
+servera.lab.example.com
+serverb.lab.example.com ansible_host=172.25.250.211
+serverc.lab.example.com ansible_user=operator1

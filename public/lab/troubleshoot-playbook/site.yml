@@ -1,0 +1,42 @@
+---
+- name: Web server is deployed
+  hosts: web
+  vars:
+    web_package: httpd
+    web_service: httpd
+    web_root: /var/www
+  tasks:
+    - name: Web package is installed
+      ansible.builtin.dnf:
+        name: {{ web_package }}
+        state: present
+
+    - name: Firewall allows http
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Home page is in place
+      ansible.builtin.copy:
+        content: "Deployed by Ansible\n"
+        dest: "{{ web_root }}/index.html"
+
+    - name: Web service is running
+      ansible.builtin.service:
+      name: "{{ web_srv }}"
+      state: start
+      enabled: true
+
+- name: The site answers
+  hosts: localhost
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Home page returns our text
+      ansible.builtin.uri:
+        url: http://servera.lab.example.com
+        return_content: true
+      register: page
+      failed_when: "'Deployed by Ansible' not in page.content"
