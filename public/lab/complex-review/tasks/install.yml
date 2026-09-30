@@ -1,0 +1,6 @@
+---
+# Task file: installs whatever list the caller passes in "packages".
+- name: Packages are installed
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: present

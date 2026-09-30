@@ -1,0 +1,243 @@
+---
+title: "Chapter lab: Managing complex plays and playbooks"
+kind: lab
+minutes: 30
+---
+
+<Lead>
+Build a small two-tier project from reusable pieces, then roll it out the careful way: first to one canary host, then to everything else. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+The project `~/complex-review` has an `ansible.cfg`, one ready-made task file, `tasks/install.yml`, which installs whatever list it is given in `packages`, and this inventory:
+
+```ini title="inventory"
+[web]
+servera.lab.example.com
+serverb.lab.example.com
+
+[db]
+serverc.lab.example.com
+
+[canary]
+servera.lab.example.com
+```
+
+<Lab
+  id="review"
+  title="Managing complex plays and playbooks"
+  classroom="lab start complex-review"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com']}
+  outcomes={[
+    'Reuse task files with imports and a looped include.',
+    'Combine playbooks with import_playbook.',
+    'Stage a roll-out with host patterns and --limit.',
+  ]}
+>
+  <Task title="Write a task file for one firewall service">
+    Create `tasks/firewall.yml`. It makes sure `firewalld` is started and enabled, then allows **one** firewalld service, permanently and immediately. The service name arrives as `item`, because the file will be included in a loop.
+
+    <Reveal title="Show solution">
+
+```yaml title="tasks/firewall.yml"
+---
+- name: firewalld is running
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: "{{ item }} is allowed through the firewall"
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Write the web playbook">
+    Create `web.yml` with one play for the `web` group that:
+
+    1. imports `tasks/install.yml`, passing `httpd` and `firewalld` as `packages`;
+    2. includes `tasks/firewall.yml` in a loop over a list containing `http`;
+    3. writes `/var/www/html/index.html` containing `HOSTNAME is a member of: GROUPS`, from `inventory_hostname` and `group_names`;
+    4. makes sure `httpd` is started and enabled.
+
+    <Reveal title="Show solution">
+
+```yaml title="web.yml"
+---
+- name: Web servers are configured
+  hosts: web
+  tasks:
+    - name: Web packages
+      ansible.builtin.import_tasks: tasks/install.yml
+      vars:
+        packages:
+          - httpd
+          - firewalld
+
+    - name: Firewall services
+      ansible.builtin.include_tasks: tasks/firewall.yml
+      loop:
+        - http
+
+    - name: Home page is in place
+      ansible.builtin.copy:
+        content: "{{ inventory_hostname }} is a member of: {{ group_names | join(', ') }}\n"
+        dest: /var/www/html/index.html
+
+    - name: httpd is running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Write the database playbook">
+    Create `db.yml` with one play for the `db` group. It imports the **same** `tasks/install.yml` with `mariadb-server`, then starts and enables `mariadb`.
+
+    <Reveal title="Show solution">
+
+```yaml title="db.yml"
+---
+- name: Database servers are configured
+  hosts: db
+  tasks:
+    - name: Database packages
+      ansible.builtin.import_tasks: tasks/install.yml
+      vars:
+        packages:
+          - mariadb-server
+
+    - name: mariadb is running
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Combine them in site.yml">
+    Create `site.yml`, which runs the web playbook and then the database playbook.
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: Web tier
+  ansible.builtin.import_playbook: web.yml
+
+- name: Database tier
+  ansible.builtin.import_playbook: db.yml
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Check the syntax and preview the canary run">
+    Check the syntax, then list which hosts each play would touch if the run is limited to the `canary` group.
+
+```console
+[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --syntax-check
+
+playbook: /home/student/complex-review/site.yml
+[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit canary --list-hosts
+
+playbook: /home/student/complex-review/site.yml
+
+  play #1 (web): Web servers are configured	TAGS: []
+    pattern: ['web']
+    hosts (1):
+      servera.lab.example.com
+
+  play #2 (db): Database servers are configured	TAGS: []
+    pattern: ['db']
+    hosts (0):
+```
+
+    Only servera is both in `web` and in `canary`. No database server is a canary, so the second play has nothing to do.
+  </Task>
+
+  <Task title="Roll out to the canary">
+
+```console
+[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit canary
+...output omitted...
+TASK [Firewall services] *******************************************************
+included: /home/student/complex-review/tasks/firewall.yml for servera.lab.example.com => (item=http)
+
+TASK [firewalld is running] ****************************************************
+ok: [servera.lab.example.com]
+
+TASK [http is allowed through the firewall] ************************************
+changed: [servera.lab.example.com]
+...output omitted...
+PLAY [Database servers are configured] *****************************************
+skipping: no hosts matched
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=4    unreachable=0    failed=0  ...
+```
+
+    Test the canary, and confirm the other web server is untouched:
+
+```console
+[student@workstation complex-review]$ curl http://servera.lab.example.com
+servera.lab.example.com is a member of: canary, web
+[student@workstation complex-review]$ curl -m 4 http://serverb.lab.example.com
+curl: (7) Failed to connect to serverb.lab.example.com port 80: No route to host
+```
+
+    *No route to host* is serverb's firewall rejecting the connection: nothing has opened port 80 there yet. On a host without a firewall you would see *Connection refused* instead.
+  </Task>
+
+  <Task title="Roll out to everything else">
+    The canary is healthy. Run the same playbook on every host **except** the canary.
+
+    <Reveal title="Show solution">
+
+```console
+[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit 'all,!canary'
+...output omitted...
+PLAY RECAP *********************************************************************
+serverb.lab.example.com    : ok=7    changed=4    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
+[student@workstation complex-review]$ curl http://serverb.lab.example.com
+serverb.lab.example.com is a member of: web
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Prove the whole project is idempotent">
+    Run `site.yml` once more with no limit. Every host should report `changed=0`.
+
+```console
+[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset or clean the three servers the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. On the Ubuntu host, run `rht-vmctl reset servers` to put every managed host back to the clean baseline. Your project stays in `~/complex-review`.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+<Callout type="exam" title="Why stage a roll-out">
+`--limit` with a small group, a check, then `--limit 'all,!thatgroup'` is the everyday way to make a risky change safely. It works because the playbook is idempotent: the final run over everything costs nothing and proves nothing was missed.
+</Callout>

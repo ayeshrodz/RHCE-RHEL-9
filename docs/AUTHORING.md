@@ -149,6 +149,7 @@ Readers follow the guide either in the Red Hat classroom or on the home lab from
 | `<Env><Classroom>…</Classroom><HomeLab>…</HomeLab></Env>` | Two versions of a command, file or output. A switch shows one at a time. |
 | `<HomeLab title="…">…</HomeLab>` on its own | An always-visible note for home-lab readers (teal callout). |
 | `<Lab classroom="lab start NAME">` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `public/lab/NAME/`. Pass `starter={false}` if there are none. |
+| `<Lab classroom="lab start NAME" own>` | For an exercise that exists only in this guide: the classroom tab then tells readers to create the folder themselves. |
 | `<HomeSetup>…</HomeSetup>` inside `<Lab>` | Extra home-lab preparation notes for that exercise. |
 | `<Finish name="NAME" />` (add `grade` for chapter labs) | The body of an exercise's last task, for both environments. |
 

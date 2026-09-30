@@ -15,8 +15,18 @@ const EMPTY = [];
  *   <Task title="...">...</Task>
  * </Lab>
  * `starter={false}` for exercises that have no starter project (nothing for `lab start` to create at home).
+ * `own` for exercises that exist only in this guide (no classroom equivalent).
  */
-export function Lab({ id = 'lab', title = 'Hands-on exercise', outcomes = [], classroom, starter = true, hosts = [], children }) {
+export function Lab({
+  id = 'lab',
+  title = 'Hands-on exercise',
+  outcomes = [],
+  classroom,
+  starter = true,
+  own = false,
+  hosts = [],
+  children,
+}) {
   const pageKey = usePageKey();
   const [done, setDone] = useStored(`lab:${pageKey}:${id}`, EMPTY);
 
@@ -82,6 +92,7 @@ export function Lab({ id = 'lab', title = 'Hands-on exercise', outcomes = [], cl
               name={exerciseName(classroom)}
               classroom={classroom}
               starter={starter}
+              own={own}
               extra={homeSetup.length > 0 ? <div className="lab-prep-extra">{homeSetup}</div> : null}
             />
           )}

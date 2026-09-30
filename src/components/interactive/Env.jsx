@@ -176,7 +176,7 @@ export function HomeSetup({ children }) {
   return children;
 }
 
-export function LabPrep({ name, classroom, starter, extra }) {
+export function LabPrep({ name, classroom, starter, own, extra }) {
   const [env] = useLabEnv();
   return (
     <div className={`env env-${env} lab-prep`}>
@@ -186,10 +186,17 @@ export function LabPrep({ name, classroom, starter, extra }) {
       </div>
       <div className="env-panel">
         {env === 'classroom' ? (
-          <p>
-            As <code>student</code> on workstation, run <code>{classroom}</code>. It creates <code>~/{name}</code> with the exercise's
-            starter files and prepares the managed hosts.
-          </p>
+          own ? (
+            <p>
+              This exercise is this guide's own, so a classroom <code>lab</code> command does not know it. Create <code>~/{name}</code> on
+              workstation yourself and copy in the starter files listed under <em>Home lab</em>; they use the usual classroom host names.
+            </p>
+          ) : (
+            <p>
+              As <code>student</code> on workstation, run <code>{classroom}</code>. It creates <code>~/{name}</code> with the exercise's
+              starter files and prepares the managed hosts.
+            </p>
+          )
         ) : (
           <>
             <ol className="lab-prep-steps">
@@ -198,8 +205,9 @@ export function LabPrep({ name, classroom, starter, extra }) {
               </li>
               {starter && (
                 <li>
-                  On workstation: <code>{classroom}</code>, the same command as in a classroom. The{' '}
-                  <Link to="/ch00/control-node">home-lab version of lab</Link> creates <code>~/{name}</code> with these starter files:
+                  On workstation: <code>{classroom}</code>
+                  {!own && ', the same command as in a classroom'}. The <Link to="/ch00/control-node">home-lab lab command</Link> creates{' '}
+                  <code>~/{name}</code> with these starter files:
                   <StarterFiles name={name} />
                 </li>
               )}

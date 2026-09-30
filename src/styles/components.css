@@ -644,6 +644,10 @@
   font-weight: 500;
   line-height: 1.5;
 }
+.quiz-q-text {
+  flex: 1;
+  min-width: 0;
+}
 .quiz-q-num {
   flex: 0 0 22px;
   height: 22px;
