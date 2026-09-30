@@ -232,7 +232,7 @@ serverc.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
         This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset or clean the three servers the way your classroom provides.
       </Classroom>
       <HomeLab>
-        There is no grading script: the checks above are the test. On the Ubuntu host, run `rht-vmctl reset servers` to put every managed host back to the clean baseline. Your project stays in `~/complex-review`.
+        There is no grading script: the checks above are the test. Then `lab finish complex-review` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
       </HomeLab>
     </Env>
   </Task>

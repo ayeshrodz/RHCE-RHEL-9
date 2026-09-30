@@ -162,18 +162,23 @@ ssh student@serverb hostname         # serverb.lab.example.com
 ```bash title="student@workstation"
 curl -fsSL https://ayeshrodz.github.io/RHCE-RHEL-9/lab/lab -o ~/.local/bin/lab
 chmod +x ~/.local/bin/lab
-lab version                          # lab 1
+lab version                          # lab 2
 lab list                             # every exercise that has starter files
+lab check                            # key logins, collections and starter files: every line PASS
 ```
 
-    | Command | What it does at home |
+    | Command | What it does |
     | --- | --- |
     | `lab start playbook-basic` | Creates `~/playbook-basic` with that exercise's `ansible.cfg`, inventory and other starter files |
-    | `lab start playbook-basic --force` | Starts over; your previous folder is kept as `~/playbook-basic.old-DATE` |
-    | `lab finish playbook-basic` | Reminds you to reset the servers; your work stays where it is |
-    | `lab grade playbook-basic` | Classroom only; tells you how to check your work instead |
+    | `lab finish playbook-basic` | Moves `~/playbook-basic` into `~/lab-archive/`, so your work is kept and your home directory is clear for the next exercise. Add `--delete` to remove it instead |
+    | `lab start playbook-basic --force` | Starts over in one step: archives the existing folder and creates a fresh one |
+    | `lab check` | Tests that the lab is ready: key logins to every machine, collections, starter files |
+    | `lab update` | Replaces the command with the newest version from this site |
+    | `lab grade playbook-basic` | No automatic grading at home; tells you how to check your work |
 
-    `lab` only ever touches workstation. Resetting the managed hosts is still `rht-vmctl reset servers`, on the Ubuntu host.
+    <Callout type="important" title="lab cannot reset the servers">
+    `lab` runs on workstation, inside the sealed lab network, which has no way to reach the Ubuntu host. Putting the managed hosts back to `clean` is always a second command, on the host: `rht-vmctl reset servers`. Finishing an exercise is therefore two steps: `lab finish NAME` on workstation, then the reset on the host.
+    </Callout>
   </Task>
 
   <Task title="VM: set up vim for YAML">

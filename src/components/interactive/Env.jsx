@@ -156,8 +156,9 @@ export function Finish({ name, grade = false }) {
       </Classroom>
       <HomeLab>
         <p>
-          On the Ubuntu host, run <code>rht-vmctl reset servers</code> to put every managed host back to the clean baseline. Your project
-          stays in <code>~/{name}</code> on workstation; <code>lab finish {name}</code> there just reminds you of this.
+          Two steps. On workstation, <code>lab finish {name}</code> moves your project to <code>~/lab-archive/</code> (add{' '}
+          <code>--delete</code> to remove it instead). Then, on the Ubuntu host, <code>rht-vmctl reset servers</code> puts every managed
+          host back to the clean baseline; <code>lab</code> cannot do that part from inside the lab network.
           {grade && (
             <>
               {' '}
