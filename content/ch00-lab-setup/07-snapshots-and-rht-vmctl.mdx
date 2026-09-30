@@ -529,7 +529,7 @@ Where classroom instructions run a command on the classroom's host machine, run 
 | `rht-vmctl view servera` | identical | Text console instead of a graphical window. Log in as `root` / `redhat` |
 | `rht-vmctl fullreset servera` | identical | Same as `reset` here; the classroom also re-fetches the original disk image |
 | `lab start NAME` | identical, on workstation | Creates the project folder and starter files. It does not reset the servers: run `rht-vmctl reset servers` first |
-| `lab finish NAME` | identical | Only a reminder; resetting the servers does the clean-up |
+| `lab finish NAME` | identical, on workstation | Moves `~/NAME` into `~/lab-archive/`. It cannot reset the servers: run `rht-vmctl reset servers` on the host afterwards |
 | `lab grade NAME` | not available | Grading scripts ship only with the classroom |
 
 ### lab start at home
@@ -544,7 +544,7 @@ In the classroom, `lab start` prepares each exercise: it creates the exercise fo
     On workstation: `lab start playbook-basic`, the same command as in a classroom. The home-lab `lab` command from [section 0.6](#/ch00/control-node) downloads that exercise's starter files into `~/playbook-basic`. Each exercise page lists them; click one to read it.
   </Step>
   <Step title="Finish">
-    Check your result with the exercise's own verification steps, run the playbook a second time to confirm `changed=0`, then reset the servers again before the next exercise. `lab grade` exists only in the classroom.
+    Check your result with the exercise's own verification steps and run the playbook a second time to confirm `changed=0`. Then `lab finish playbook-basic` on workstation, which moves your project into `~/lab-archive/`, and `rht-vmctl reset servers` on the host. There is no `lab grade` at home.
   </Step>
 </Steps>
 
