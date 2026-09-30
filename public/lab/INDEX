@@ -1,0 +1,18 @@
+# exercise            page  title
+intro-install        1.6   Installing Ansible (nothing to download: the tools are already installed)
+playbook-inventory   2.2   Building an inventory (empty project: you write the inventory)
+playbook-manage      2.4   Managing Ansible configuration files
+playbook-basic       2.6   Writing and running playbooks
+playbook-multi       2.9   Implementing multiple plays
+playbook-review      2.10  Chapter lab: Implementing an Ansible Playbook
+data-variables       3.3   Managing variables
+data-secret          3.5   Managing secrets
+data-facts           3.8   Managing facts
+data-review          3.9   Chapter lab: Managing variables and facts
+control-flow         4.3   Loops and conditional tasks
+control-handlers     4.5   Implementing handlers
+control-errors       4.7   Handling task failure
+control-review       4.8   Chapter lab: Implementing task control
+file-manage          5.2   Modifying and copying files to hosts
+file-template        5.4   Deploying custom files with Jinja2 templates
+file-review          5.5   Chapter lab: Deploying files to managed hosts

@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Password Protected Content"
+AuthUserFile /etc/httpd/secrets/htpasswd
+Require valid-user

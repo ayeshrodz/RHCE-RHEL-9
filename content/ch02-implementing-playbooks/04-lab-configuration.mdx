@@ -23,8 +23,16 @@ You will give a project its own navigator settings, its own `ansible.cfg` and it
 ```
   </Task>
 
+  <HomeSetup>
+    The starter folder has the five `ping-*.yml` playbooks and nothing else: you write the configuration files. The plays connect as `student`, which works because of the SSH key step in [section 0.6](#/ch00/control-node).
+  </HomeSetup>
+
   <Task title="Configure automation content navigator">
-    Create `ansible-navigator.yml` so navigator uses the classroom EE image, pulls it only if it is missing, and does not write playbook artifacts.
+    Create `ansible-navigator.yml`, a project-level settings file for navigator that does not write playbook artifacts.
+
+    <Env>
+      <Classroom>
+        Use the classroom EE image and pull it only if it is missing:
 
 ```yaml title="ansible-navigator.yml"
 ---
@@ -37,7 +45,7 @@ ansible-navigator:
     enable: false
 ```
 
-    Check it with `ansible-navigator images`. The first run prints the pull policy it read from your file and pulls the image:
+        Check it with `ansible-navigator images`. The first run prints the pull policy it read from your file and pulls the image:
 
 ```text
 Execution environment image name:     utility.lab.example.com/ee-supported-rhel8:latest
@@ -47,7 +55,31 @@ Execution environment pull needed:    True
 Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:latest
 ```
 
-    Press <kbd>Esc</kbd> to leave the image list.
+        Press <kbd>Esc</kbd> to leave the image list.
+      </Classroom>
+      <HomeLab>
+        There is no classroom image at home, so the project file keeps the execution environment off. A project file replaces `~/.ansible-navigator.yml` completely, so it has to repeat that setting:
+
+```yaml title="ansible-navigator.yml"
+---
+ansible-navigator:
+  execution-environment:
+    enabled: false
+  playbook-artifact:
+    enable: false
+```
+
+        Check that navigator took both settings from a settings file, not from its defaults:
+
+```console
+[student@workstation playbook-manage]$ ansible-navigator settings --sources -m stdout | grep -E 'enabled|artifact.enable'
+ansible-navigator.execution-environment.enabled: Settings file
+ansible-navigator.playbook-artifact.enable: Settings file
+```
+
+        This file does not set `mode: stdout`, which is why the commands below pass `-m stdout`, as in the book.
+      </HomeLab>
+    </Env>
   </Task>
 
   <Task title="Point Ansible at a project inventory">
@@ -148,10 +180,7 @@ ok: [servera.lab.example.com]
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish playbook-manage
-```
+    <Finish name="playbook-manage" />
   </Task>
 </Lab>
 

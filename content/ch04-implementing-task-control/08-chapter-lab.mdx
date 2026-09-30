@@ -26,6 +26,10 @@ Use everything in this chapter to deploy an HTTPS web server: stop early on unsu
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Define conditionals, loops and handlers in a playbook.', 'Handle task errors with a block.']}
 >
+  <HomeSetup>
+    `server.key` and `server.crt` are a self-signed certificate that `lab start` generates on your workstation for `serverb.lab.example.com`. `ssl.conf` is Rocky's stock file with its two certificate paths pointed at `/etc/httpd/conf.d/ssl/`.
+  </HomeSetup>
+
   <Task title="Fail fast on unsuitable hosts">
     Under `#Fail Fast Message`, add a task that uses `ansible.builtin.fail` to stop with the message `The <hostname> did not meet minimum reqs.` when the host has less memory than `min_ram_mb` **or** is not running Red Hat Enterprise Linux.
 
@@ -42,6 +46,18 @@ Use everything in this chapter to deploy an HTTPS web server: stop early on unsu
         ansible_facts['distribution'] != "RedHat"
 ```
     </Reveal>
+
+    <HomeLab title="At home this check stops the play">
+    serverb reports `Rocky`, so the condition as written is true and the play fails at once with *"did not meet minimum reqs"*. That is the task working correctly. To carry on with the rest of the lab, test the family instead:
+
+```yaml
+      when: >
+        ansible_facts['memtotal_mb'] < min_ram_mb or
+        ansible_facts['os_family'] != "RedHat"
+```
+
+    Run it once as the book has it first: watching a fail-fast task stop a play is worth seeing.
+    </HomeLab>
   </Task>
 
   <Task title="Install the packages">
@@ -191,11 +207,7 @@ Configured for both HTTP and HTTPS.
   </Task>
 
   <Task title="Grade and finish">
-
-```console
-[student@workstation ~]$ lab grade control-review
-[student@workstation ~]$ lab finish control-review
-```
+    <Finish name="control-review" grade />
   </Task>
 </Lab>
 

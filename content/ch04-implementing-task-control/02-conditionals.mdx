@@ -123,6 +123,15 @@ Combine conditions with **`or`** (either is enough) and **`and`** (both are need
 when: ansible_facts['distribution'] == "RedHat" or ansible_facts['distribution'] == "Fedora"
 ```
 
+<HomeLab title="Your servers answer Rocky">
+The home-lab VMs run Rocky Linux, so `ansible_facts['distribution']` is `"Rocky"` and a condition that tests for `"RedHat"` is **false** there. Two ways to practise these examples at home:
+
+- test for `"Rocky"` where the book says `"RedHat"`;
+- or test the family instead: `ansible_facts['os_family'] == "RedHat"` is true on RHEL, Rocky, AlmaLinux and CentOS Stream alike, which is usually what a real playbook wants.
+
+Check what your hosts report: `ansible all -m ansible.builtin.setup -a 'filter=ansible_distribution*'`.
+</HomeLab>
+
 ```yaml
 when: ansible_facts['distribution_version'] == "9.0" and ansible_facts['kernel'] == "5.14.0-70.13.1.el9_0.x86_64"
 ```

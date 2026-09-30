@@ -7,7 +7,7 @@ const PREFIX = 'rhce:';
 const APP_ID = 'rhce-field-guide';
 const EXPORT_VERSION = 1;
 // Display preferences: kept on reset and left out of progress exports.
-const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues']);
+const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv']);
 const listeners = new Map();
 const cache = new Map();
 

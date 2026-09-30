@@ -1,8 +1,9 @@
 import { Children, cloneElement, createContext, isValidElement, useContext } from 'react';
-import { Link } from 'react-router-dom';
 import { Check, FlaskConical, PartyPopper, Server } from 'lucide-react';
 import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
+import { exerciseName } from '@/lib/labEnv';
+import { HomeSetup, LabPrep } from './Env';
 
 const LabContext = createContext(null);
 const EMPTY = [];
@@ -10,17 +11,24 @@ const EMPTY = [];
 /**
  * Hands-on exercise with persisted task checkboxes.
  * <Lab id="inventory" outcomes={[...]} classroom="lab start playbook-inventory" hosts={[...]}>
+ *   <HomeSetup>optional extra notes for the home lab</HomeSetup>
  *   <Task title="...">...</Task>
  * </Lab>
+ * `starter={false}` for exercises that have no starter project (nothing for `lab start` to create at home).
  */
-export function Lab({ id = 'lab', title = 'Hands-on exercise', outcomes = [], classroom, hosts = [], children }) {
+export function Lab({ id = 'lab', title = 'Hands-on exercise', outcomes = [], classroom, starter = true, hosts = [], children }) {
   const pageKey = usePageKey();
   const [done, setDone] = useStored(`lab:${pageKey}:${id}`, EMPTY);
 
   let n = 0;
-  const numbered = Children.map(children, (child) =>
-    isValidElement(child) && child.type === Task ? cloneElement(child, { n: ++n }) : child,
-  );
+  const homeSetup = [];
+  const numbered = Children.map(children, (child) => {
+    if (isValidElement(child) && child.type === HomeSetup) {
+      homeSetup.push(child.props.children);
+      return null;
+    }
+    return isValidElement(child) && child.type === Task ? cloneElement(child, { n: ++n }) : child;
+  });
   const total = n;
   const count = done.filter((i) => i <= total).length;
   const pct = total ? Math.round((count / total) * 100) : 0;
@@ -70,11 +78,12 @@ export function Lab({ id = 'lab', title = 'Hands-on exercise', outcomes = [], cl
           </div>
 
           {classroom && (
-            <p className="lab-classroom">
-              In the Red Hat classroom, prepare the machines first with <code>{classroom}</code>. On the{' '}
-              <Link to="/ch00/snapshots-and-rht-vmctl">home lab</Link>, run <code>rht-vmctl reset servers</code> on the host and create the
-              exercise folder from your base project instead.
-            </p>
+            <LabPrep
+              name={exerciseName(classroom)}
+              classroom={classroom}
+              starter={starter}
+              extra={homeSetup.length > 0 ? <div className="lab-prep-extra">{homeSetup}</div> : null}
+            />
           )}
         </header>
 

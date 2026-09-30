@@ -23,13 +23,14 @@ lxc exec workstation -- su - student
     'Install ansible-navigator without shadowing the exam-aligned ansible-core.',
     'Add the ansible.posix and community.general collections, pinned to versions that support ansible-core 2.14.',
     'Configure navigator and SSH keys to every managed host.',
+    'Install the home-lab lab command, so the book’s lab start works here too.',
   ]}
 >
   <Task title="VM: install Ansible from Rocky's repositories">
     This `ansible-core` (2.14) is the same generation the RHEL 9 exam uses, so it is the one you practise with.
 
 ```bash title="student@workstation"
-sudo dnf install -y ansible-core rhel-system-roles podman git python3.11
+sudo dnf install -y ansible-core rhel-system-roles podman git python3.11 tree
 ansible --version | head -1          # ansible [core 2.14.18]
 ```
   </Task>
@@ -122,16 +123,57 @@ rm /tmp/version.yml
     </Callout>
   </Task>
 
-  <Task title="VM: SSH keys from student to devops on every server">
-    Enter the password `redhat` once for each server.
+  <Task title="VM: SSH keys from student to devops on every machine">
+    Enter the password `redhat` once for each machine. Workstation is in the list because some exercises manage it like any other host.
 
 ```bash title="student@workstation"
 ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519
-for h in servera serverb serverc serverd; do
+for h in workstation servera serverb serverc serverd; do
   ssh-copy-id -o StrictHostKeyChecking=accept-new devops@$h.lab.example.com
+  ssh -o StrictHostKeyChecking=accept-new devops@$h true     # trust the short name too
 done
 ssh devops@servera sudo id           # uid=0(root), no password asked
 ```
+  </Task>
+
+  <Task title="VM: let the same key log in as student and root">
+    In the classroom, `student` on workstation can also log in to every machine as `student` and as `root` without a password, and a few exercises rely on it (`remote_user: root`, or no `remote_user` at all). This reuses `devops`'s sudo, so there are no more passwords to type:
+
+```bash title="student@workstation"
+pub=$(cat ~/.ssh/id_ed25519.pub)
+for h in workstation servera serverb serverc serverd; do
+  ssh devops@$h "for u in student root; do
+      d=\$(getent passwd \$u | cut -d: -f6)/.ssh
+      sudo install -d -m 700 -o \$u -g \$u \$d
+      sudo grep -qxF '$pub' \$d/authorized_keys 2>/dev/null || echo '$pub' | sudo tee -a \$d/authorized_keys >/dev/null
+      sudo chown \$u:\$u \$d/authorized_keys; sudo chmod 600 \$d/authorized_keys; sudo restorecon -R \$d
+    done"
+done
+ssh root@servera id                  # uid=0(root)
+ssh student@serverb hostname         # serverb.lab.example.com
+```
+
+    Running it again is harmless: it adds the key only where it is missing.
+  </Task>
+
+  <Task title="VM: install the lab command">
+    The book starts every exercise with `lab start NAME`, which creates the exercise's project folder and starter files. The classroom's `lab` does not exist outside Red Hat's environment, so this guide provides a small stand-in with the same syntax. It downloads the starter files for an exercise from this site into `~/NAME`. It is a short shell script; [read it first](lab/lab) if you like.
+
+```bash title="student@workstation"
+curl -fsSL https://ayeshrodz.github.io/RHCE-RHEL-9/lab/lab -o ~/.local/bin/lab
+chmod +x ~/.local/bin/lab
+lab version                          # lab 1
+lab list                             # every exercise that has starter files
+```
+
+    | Command | What it does at home |
+    | --- | --- |
+    | `lab start playbook-basic` | Creates `~/playbook-basic` with that exercise's `ansible.cfg`, inventory and other starter files |
+    | `lab start playbook-basic --force` | Starts over; your previous folder is kept as `~/playbook-basic.old-DATE` |
+    | `lab finish playbook-basic` | Reminds you to reset the servers; your work stays where it is |
+    | `lab grade playbook-basic` | Classroom only; tells you how to check your work instead |
+
+    `lab` only ever touches workstation. Resetting the managed hosts is still `rht-vmctl reset servers`, on the Ubuntu host.
   </Task>
 
   <Task title="VM: set up vim for YAML">

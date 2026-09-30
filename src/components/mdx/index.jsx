@@ -7,6 +7,7 @@ import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step,
 import Quiz from '@/components/interactive/Quiz';
 import Flashcards from '@/components/interactive/Flashcards';
 import { Lab, Task } from '@/components/interactive/Lab';
+import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';
 
 // Every chapter's diagram/widget exports (src/diagrams/chNN/index.js) are
 // registered automatically, so a new chapter needs no change here.
@@ -71,5 +72,12 @@ export const mdxComponents = {
   Flashcards,
   Lab,
   Task,
+  Env,
+  Classroom,
+  HomeLab,
+  HomeSetup,
+  EnvSwitch,
+  Finish,
+  StarterFiles,
   ...chapterDiagrams,
 };

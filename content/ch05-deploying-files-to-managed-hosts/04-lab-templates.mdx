@@ -1,0 +1,162 @@
+---
+title: "Guided exercise: Deploying custom files with Jinja2 templates"
+kind: lab
+minutes: 15
+---
+
+<Lead>
+You will write a small template for the message of the day and a playbook that deploys it, so that each machine greets its users with its own name, its distribution and the address of its owner.
+</Lead>
+
+The project `~/file-template` has an `ansible.cfg` and this inventory:
+
+```ini title="inventory"
+[webservers]
+servera.lab.example.com
+
+[workstations]
+workstation.lab.example.com
+```
+
+<Lab
+  id="template"
+  title="Deploying custom files with Jinja2 templates"
+  classroom="lab start file-template"
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Build a template file.', 'Use the template file in a playbook.']}
+>
+  <HomeSetup>
+    This play also manages `workstation.lab.example.com` itself, so it changes `/etc/motd` on workstation. `rht-vmctl reset servers` does not reset workstation; empty the file afterwards with `sudo truncate -s 0 /etc/motd` if you want it gone.
+  </HomeSetup>
+
+  <Task title="Review the inventory">
+
+```console
+[student@workstation ~]$ cd ~/file-template
+[student@workstation file-template]$ cat inventory
+[webservers]
+servera.lab.example.com
+
+[workstations]
+workstation.lab.example.com
+```
+  </Task>
+
+  <Task title="Write the template">
+    Create `motd.j2` in the project directory. It should use:
+
+    - `ansible_facts['fqdn']` for the host's full name;
+    - `ansible_facts['distribution']` and `ansible_facts['distribution_version']` for the Linux distribution;
+    - `system_owner`, the owner's email address, which the play will define.
+
+    <Reveal title="Show motd.j2">
+
+```jinja title="motd.j2"
+This is the system {{ ansible_facts['fqdn'] }}.
+This is a {{ ansible_facts['distribution'] }} version {{ ansible_facts['distribution_version'] }} system.
+Only use this system with permission.
+Please report issues to: {{ system_owner }}.
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Write the playbook">
+    Create `motd.yml`. The play runs on all hosts as `devops` with privilege escalation, defines `system_owner`, and deploys `motd.j2` to `/etc/motd`, owned by `root:root` with mode `0644`.
+
+    <Reveal title="Show motd.yml">
+
+```yaml title="motd.yml"
+---
+- name: Configure SOE
+  hosts: all
+  remote_user: devops
+  become: true
+  vars:
+    - system_owner: clyde@example.com
+  tasks:
+    - name: Configure /etc/motd
+      ansible.builtin.template:
+        src: motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: 0644
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Check the syntax">
+
+```console
+[student@workstation file-template]$ ansible-navigator run \
+> -m stdout motd.yml --syntax-check
+playbook: /home/student/file-template/motd.yml
+```
+  </Task>
+
+  <Task title="Run the playbook">
+
+```console
+[student@workstation file-template]$ ansible-navigator run -m stdout motd.yml
+
+PLAY [Configure SOE] ***********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+ok: [workstation.lab.example.com]
+
+TASK [Configure /etc/motd] *****************************************************
+changed: [servera.lab.example.com]
+changed: [workstation.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+workstation.lab.example.com : ok=2   changed=1    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Log in and read the message">
+    Log in to servera as `devops`. The message of the day is printed at login, with servera's own values.
+
+    <Env>
+      <Classroom>
+
+```console
+[student@workstation file-template]$ ssh devops@servera.lab.example.com
+This is the system servera.lab.example.com.
+This is a RedHat version 9.0 system.
+Only use this system with permission.
+Please report issues to: clyde@example.com.
+...output omitted...
+[devops@servera ~]$ exit
+```
+      </Classroom>
+      <HomeLab>
+
+```console
+[student@workstation file-template]$ ssh devops@servera.lab.example.com
+This is the system servera.lab.example.com.
+This is a Rocky version 9.8 system.
+Only use this system with permission.
+Please report issues to: clyde@example.com.
+...output omitted...
+[devops@servera ~]$ exit
+```
+
+        The template is identical; the facts differ because the lab runs Rocky Linux.
+      </HomeLab>
+    </Env>
+  </Task>
+
+  <Task title="Run it again">
+    Run the playbook a second time. Both hosts report `ok`, `changed=0`: the rendered text matches the file that is already there.
+  </Task>
+
+  <Task title="Finish">
+    <Finish name="file-template" />
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Add a line to `motd.j2` that prints the host's memory in GiB, rounded to one decimal place, from `ansible_facts['memtotal_mb']`. Then add a line that appears only on hosts in the `webservers` group. The template playground in the previous section is a quick place to work out the syntax first.

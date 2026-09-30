@@ -1,0 +1,6 @@
+---
+- name: Validate inventory hosts
+  hosts: all
+  tasks:
+    - name: Ping all
+      ansible.builtin.ping:

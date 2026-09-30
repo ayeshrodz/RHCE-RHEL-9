@@ -1,0 +1,4 @@
+# Writing and running playbooks
+ansible.cfg
+inventory
+files/index.html

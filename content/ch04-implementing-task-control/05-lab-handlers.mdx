@@ -43,6 +43,10 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Define handlers in playbooks and notify them to apply configuration changes.']}
 >
+  <HomeSetup>
+    The two `.standard` files are the stock Rocky Linux configuration files with one comment line added at the top. That extra line is what makes the copy tasks report `changed` on the first run.
+  </HomeSetup>
+
   <Task title="Move into the project directory">
 
 ```console
@@ -172,9 +176,6 @@ servera.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish control-handlers
-```
+    <Finish name="control-handlers" />
   </Task>
 </Lab>

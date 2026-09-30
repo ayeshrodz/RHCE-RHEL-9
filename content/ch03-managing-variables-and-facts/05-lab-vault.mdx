@@ -25,6 +25,10 @@ The project `~/data-secret` contains `secret.yml`, a Vault-encrypted file (passw
 ```
   </Task>
 
+  <HomeSetup>
+    `lab start` creates `secret.yml` on your workstation and encrypts it with the Vault password `redhat`, so the ciphertext differs from anyone else's. The home-lab navigator settings already disable playbook artifacts, so the `--playbook-artifact-enable false` options below are harmless but not needed.
+  </HomeSetup>
+
   <Task title="Edit the encrypted file">
     Open `secret.yml` with `ansible-vault edit` and enter `redhat` when asked. In the editor, remove the `#` in front of the `username` and `pwhash` lines, then save and quit.
 
@@ -120,10 +124,7 @@ ansibleuser1@servera.lab.example.com's password: redhat
   </Task>
 
   <Task title="Finish">
-
-```console
-[student@workstation ~]$ lab finish data-secret
-```
+    <Finish name="data-secret" />
   </Task>
 </Lab>
 

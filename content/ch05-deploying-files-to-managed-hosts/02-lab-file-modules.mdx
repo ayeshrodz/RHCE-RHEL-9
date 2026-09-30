@@ -1,0 +1,255 @@
+---
+title: "Guided exercise: Modifying and copying files to hosts"
+kind: lab
+minutes: 25
+---
+
+<Lead>
+You will collect a log file from every managed host, copy a file out with a specific owner, mode and SELinux type, reset that SELinux context to the default, add a line and then a block to the file, and finally remove it.
+</Lead>
+
+The project `~/file-manage` has an `ansible.cfg`, an `inventory` that lists `servera.lab.example.com` and `serverb.lab.example.com`, and `files/users.txt`.
+
+<Lab
+  id="files"
+  title="Modifying and copying files to hosts"
+  classroom="lab start file-manage"
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={[
+    'Fetch files from managed hosts and store them by host name.',
+    'Use copy, file, lineinfile and blockinfile to create, change and remove files.',
+  ]}
+>
+  <HomeSetup>
+    The first three playbooks connect as `root`, like the book. That uses the SSH key for `root` from [section 0.6](#/ch00/control-node). The book's `tree` command is installed there too.
+  </HomeSetup>
+
+  <Task title="Fetch the secure log from every host">
+    In `~/file-manage`, create `secure_log_backups.yml`. One play, for all hosts, connecting as `root`, with a task that fetches `/var/log/secure` into a `secure-backups` directory. `flat: false` keeps the default layout of one subdirectory per host.
+
+```yaml title="secure_log_backups.yml"
+---
+- name: Use the fetch module to retrieve secure log files
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: Fetch the /var/log/secure log file from managed hosts
+      ansible.builtin.fetch:
+        src: /var/log/secure
+        dest: secure-backups
+        flat: false
+```
+
+    Check the syntax, then run it:
+
+```console
+[student@workstation file-manage]$ ansible-navigator run \
+> -m stdout secure_log_backups.yml --syntax-check
+playbook: /home/student/file-manage/secure_log_backups.yml
+[student@workstation file-manage]$ ansible-navigator run \
+> -m stdout secure_log_backups.yml
+...output omitted...
+TASK [Fetch the /var/log/secure log file from managed hosts] *******************
+changed: [serverb.lab.example.com]
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Look at what was fetched">
+    The module created `secure-backups` and a directory tree for each host:
+
+```console
+[student@workstation file-manage]$ tree -F secure-backups
+secure-backups
+├── servera.lab.example.com/
+│   └── var/
+│       └── log/
+│           └── secure
+└── serverb.lab.example.com/
+    └── var/
+        └── log/
+            └── secure
+```
+  </Task>
+
+  <Task title="Copy a file with owner, mode and SELinux type">
+    Create `copy_file.yml`. It connects as `root` and copies `files/users.txt` to `/home/devops/users.txt` on every host with these attributes:
+
+    | Parameter | Value |
+    | --- | --- |
+    | `src` | `files/users.txt` |
+    | `dest` | `/home/devops/users.txt` |
+    | `owner` | `devops` |
+    | `group` | `devops` |
+    | `mode` | `u+rw,g-wx,o-rwx` |
+    | `setype` | `samba_share_t` |
+
+    <Reveal title="Show copy_file.yml">
+
+```yaml title="copy_file.yml"
+---
+- name: Using the copy module
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: Copy a file to managed hosts and set attributes
+      ansible.builtin.copy:
+        src: files/users.txt
+        dest: /home/devops/users.txt
+        owner: devops
+        group: devops
+        mode: u+rw,g-wx,o-rwx
+        setype: samba_share_t
+```
+    </Reveal>
+
+    Syntax-check it, run it, then look at the result on servera:
+
+```console
+[student@workstation file-manage]$ ansible-navigator run \
+> -m stdout copy_file.yml
+...output omitted...
+[student@workstation file-manage]$ ssh devops@servera 'ls -Z'
+unconfined_u:object_r:samba_share_t:s0 users.txt
+```
+  </Task>
+
+  <Task title="Reset the SELinux context to the policy default">
+    Create `selinux_defaults.yml`. It uses `ansible.builtin.file` to set the user, role, type and level fields of `/home/devops/users.txt` back to `_default`.
+
+    <Reveal title="Show selinux_defaults.yml">
+
+```yaml title="selinux_defaults.yml"
+---
+- name: Using the file module to ensure SELinux file context
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: SELinux file context is set to defaults
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        seuser: _default
+        serole: _default
+        setype: _default
+        selevel: _default
+```
+    </Reveal>
+
+```console
+[student@workstation file-manage]$ ansible-navigator run \
+> -m stdout selinux_defaults.yml
+...output omitted...
+TASK [SELinux file context is set to defaults] *********************************
+changed: [serverb.lab.example.com]
+changed: [servera.lab.example.com]
+...output omitted...
+[student@workstation file-manage]$ ssh devops@servera 'ls -Z'
+unconfined_u:object_r:user_home_t:s0 users.txt
+```
+
+    The type is back to `user_home_t`, the policy's default for files in a home directory.
+
+    <Callout type="note" title="In real playbooks, fix the cause">
+    If you ran `copy_file.yml` again, it would set `samba_share_t` again, and the two playbooks would undo each other for ever. Normally you would remove `setype` from the copy task. The exercise skips that to stay short.
+    </Callout>
+  </Task>
+
+  <Task title="Add a line to the file">
+    Create `add_line.yml`. This play connects as `devops` (the file is theirs, so no privilege escalation is needed) and appends one line.
+
+```yaml title="add_line.yml"
+---
+- name: Add text to an existing file
+  hosts: all
+  remote_user: devops
+  tasks:
+    - name: Add a single line of text to a file
+      ansible.builtin.lineinfile:
+        path: /home/devops/users.txt
+        line: This line was added by the lineinfile module.
+        state: present
+```
+
+```console
+[student@workstation file-manage]$ ansible-navigator run -m stdout add_line.yml
+...output omitted...
+[student@workstation file-manage]$ ssh devops@servera 'cat users.txt'
+This line was added by the lineinfile module.
+```
+
+    At home you see the starter file's own line first, then the new one.
+  </Task>
+
+  <Task title="Add a block of text">
+    Create `add_block.yml` to append two lines as a managed block.
+
+    <Reveal title="Show add_block.yml">
+
+```yaml title="add_block.yml"
+---
+- name: Add block of text to a file
+  hosts: all
+  remote_user: devops
+  tasks:
+    - name: Add a block of text to an existing file
+      ansible.builtin.blockinfile:
+        path: /home/devops/users.txt
+        block: |
+          This block of text consists of two lines.
+          They have been added by the blockinfile module.
+        state: present
+```
+    </Reveal>
+
+```console
+[student@workstation file-manage]$ ansible-navigator run -m stdout add_block.yml
+...output omitted...
+[student@workstation file-manage]$ ssh devops@servera 'cat users.txt'
+This line was added by the lineinfile module.
+# BEGIN ANSIBLE MANAGED BLOCK
+This block of text consists of two lines.
+They have been added by the blockinfile module.
+# END ANSIBLE MANAGED BLOCK
+```
+
+    Run `add_block.yml` a second time: `changed=0`. The markers told Ansible the block was already there.
+  </Task>
+
+  <Task title="Remove the file">
+    Create `remove_file.yml` and use `ansible.builtin.file` with `state: absent`.
+
+    <Reveal title="Show remove_file.yml">
+
+```yaml title="remove_file.yml"
+---
+- name: Use the file module to remove a file
+  hosts: all
+  remote_user: devops
+  tasks:
+    - name: Remove a file from managed hosts
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        state: absent
+```
+    </Reveal>
+
+```console
+[student@workstation file-manage]$ ansible-navigator run -m stdout remove_file.yml
+...output omitted...
+[student@workstation file-manage]$ ssh devops@servera 'ls -l'
+total 0
+```
+  </Task>
+
+  <Task title="Finish">
+    <Finish name="file-manage" />
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Without looking at the solutions: write one playbook that creates `/srv/reports` (owner `devops`, mode `0750`), copies `files/users.txt` into it only if it is not already there, and registers a `stat` of the copied file to print its size.

@@ -131,8 +131,8 @@ lxc file pull workstation/home/student/ansible/site.yml .     # VM → host
   <Step title="Reset the servers">
     `rht-vmctl reset servers` on the host.
   </Step>
-  <Step title="Make the exercise folder">
-    Copy your base `ansible.cfg` and `inventory` into the folder the exercise names, and adjust the inventory to the groups it lists.
+  <Step title="Start the exercise">
+    `lab start NAME` on workstation, the same command the book shows. It creates `~/NAME` with that exercise's `ansible.cfg`, inventory and starter files.
   </Step>
   <Step title="Remember the firewall">
     firewalld runs on every server, as in the classroom. If an exercise sets up a web server, the playbook has to open the port (`ansible.posix.firewalld`) before `curl` from workstation works.

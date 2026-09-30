@@ -383,7 +383,7 @@ for vm in workstation servera serverb serverc serverd utility; do
   lxc info --project $P "$vm" >/dev/null 2>&1 || { echo "  skip $vm (not created)"; continue; }
   chk "$vm running"                 "lxc list --project $P ^$vm\$ -c s --format csv | grep -q RUNNING"
   chk "$vm FQDN hostname"           "X $vm 'hostname | grep -q ^$vm.lab.example.com\$'"
-  chk "$vm profile packages"        "X $vm 'rpm -q lvm2 tar vim-enhanced firewalld chrony policycoreutils-python-utils'"
+  chk "$vm profile packages"        "X $vm 'rpm -q lvm2 tar rsync vim-enhanced firewalld chrony policycoreutils-python-utils'"
   chk "$vm SELinux enforcing"       "X $vm 'test \$(getenforce) = Enforcing'"
   chk "$vm firewalld running"       "X $vm 'systemctl is-active --quiet firewalld'"
 done
@@ -400,7 +400,8 @@ chk "ansible-navigator 26.9.0"          "S 'ansible-navigator --version | grep -
 chk "navigator EE disabled"             "S 'grep -q \"enabled: false\" ~/.ansible-navigator.yml'"
 chk "collections for core 2.14"         "S 'ansible-galaxy collection list 2>/dev/null | grep -q \"^ansible.posix  *1.5\" && ansible-galaxy collection list 2>/dev/null | grep -q \"^community.general  *9\\.\"'"
 chk "no ~/ansible project (clean)"      "S '! test -e ~/ansible'"
-chk "SSH keys to devops on all servers" "S 'for h in servera serverb serverc serverd; do ssh -o BatchMode=yes devops@\$h true || exit 1; done'"
+chk "SSH keys: devops, student, root"   "S 'for h in workstation servera serverb serverc serverd; do for u in devops student root; do ssh -o BatchMode=yes \$u@\$h true || exit 1; done; done'"
+chk "lab command installed"             "S 'lab version'"
 chk "names resolve inside lab"          "S 'getent hosts serverd.lab.example.com'"
 chk "internet via NAT"                  "S 'curl -sfI -m5 https://rockylinux.org'"
 chk "utility serves files (optional)"   "S 'curl -sf -m5 http://materials.example.com/files/user_list.yml'"
@@ -416,7 +417,8 @@ chk_not "lab cannot reach router"       "S 'ping -c1 -W2 $GW'"
     | profile packages, SELinux, firewalld | [Repair an existing lab](#/ch00/troubleshooting#repair-an-existing-lab) (no need to recreate) |
     | ansible / navigator / collections lines | [Section 0.6](#/ch00/control-node), steps 1–4 |
     | no ~/ansible project | "Already created files?" below |
-    | SSH keys | [Section 0.6](#/ch00/control-node), step 5 |
+    | SSH keys | [Section 0.6](#/ch00/control-node), steps 5 and 6 (running them again is safe) |
+    | lab command | [Section 0.6](#/ch00/control-node), step 7 |
     | names resolve / internet | The ufw step in [section 0.3](#/ch00/network-and-seal), then [troubleshooting](#/ch00/troubleshooting) |
   </Task>
 
@@ -453,13 +455,14 @@ done
 - ansible-core 2.14, rhel-system-roles, podman, Python 3.11
 - `ansible.posix` and `community.general` in `/usr/share/ansible/collections`
 - `ansible-navigator` (in `~/.venvs/navigator`), `~/.ansible-navigator.yml`, `~/.vimrc`
-- SSH keys from `student@workstation` to `devops` on every server
+- SSH keys from `student@workstation` to `devops`, `student` and `root` on every machine
+- The `lab` command for starting exercises
 - Empty extra disks (`sdb`) on the servers
 
 </Column>
 <Column title="Not in it (created afterwards)" tone="gray">
 
-- The `~/ansible` project folder
+- The `~/ansible` project folder and any exercise folders created by `lab start`
 - `ansible.cfg`, inventory and playbooks
 - Collections or roles you install with `ansible-galaxy`
 - Anything a playbook changes on the servers
@@ -525,27 +528,29 @@ Where the book says to run a command on `foundation` as `kiosk`, run the same co
 | `rht-vmctl start` / `stop` / `status` | identical | Yes |
 | `rht-vmctl view servera` | identical | Text console instead of a graphical window. Log in as `root` / `redhat` |
 | `rht-vmctl fullreset servera` | identical | Same as `reset` here; the classroom also re-fetches the original disk image |
-| `lab start` / `lab finish` / `lab grade` | not available | These scripts ship only with the classroom. See below |
+| `lab start NAME` | identical, on workstation | Creates the project folder and starter files. It does not reset the servers: run `rht-vmctl reset servers` first |
+| `lab finish NAME` | identical | Only a reminder; resetting the servers does the clean-up |
+| `lab grade NAME` | not available | Grading scripts ship only with the classroom |
 
-### Replacing lab start
+### lab start at home
 
-In the classroom, `lab start` prepares each exercise: it creates the exercise folder on workstation (for example `~/playbook-basic`) with a ready-made `ansible.cfg` and `inventory`, and resets the servers. At home, do it yourself before each exercise:
+In the classroom, `lab start` prepares each exercise: it creates the exercise folder on workstation (for example `~/playbook-basic`) with a ready-made `ansible.cfg`, `inventory` and any other files, and resets the servers. At home the two halves are separate commands:
 
 <Steps>
   <Step title="Reset the servers">
-    On the host: `rht-vmctl reset servers`.
+    On the Ubuntu host: `rht-vmctl reset servers`.
   </Step>
-  <Step title="Create the exercise folder">
-    On workstation, create the folder the exercise names and copy in your base files from section 0.8, adjusting the inventory if the exercise lists different groups:
-
-```bash title="student@workstation"
-mkdir ~/playbook-basic && cp ~/ansible/{ansible.cfg,inventory} ~/playbook-basic/
-```
+  <Step title="Start the exercise">
+    On workstation: `lab start playbook-basic`, exactly as the book prints it. The home-lab `lab` command from [section 0.6](#/ch00/control-node) downloads that exercise's starter files into `~/playbook-basic`. Each exercise page lists them; click one to read it.
   </Step>
-  <Step title="Skip lab grade">
-    Check your result with the exercise's own verification steps instead, and run the playbook a second time to confirm `changed=0`.
+  <Step title="Finish">
+    Check your result with the exercise's own verification steps, run the playbook a second time to confirm `changed=0`, then reset the servers again before the next exercise. `lab grade` exists only in the classroom.
   </Step>
 </Steps>
+
+<Callout type="tip" title="Classroom or home: pick once">
+Every exercise has a small switch, *Red Hat classroom* or *Home lab*. It decides which preparation steps, and which output where they differ, you are shown. The site remembers your choice.
+</Callout>
 
 ## The ZFS snapshot rule
 

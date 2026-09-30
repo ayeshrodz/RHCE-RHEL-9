@@ -79,6 +79,18 @@ Login Succeeded!
   </Step>
 </Steps>
 
+<HomeLab title="On the home lab this is already done, a little differently">
+Rocky Linux has no `ansible-navigator` RPM and no access to Red Hat's registry, so [section 0.6](#/ch00/control-node) installs the pieces another way:
+
+| Classroom | Home lab |
+| --- | --- |
+| `sudo dnf install ansible-navigator` | `ansible-core` 2.14 from Rocky's repositories, and navigator from `pip` in its own virtual environment |
+| `podman login` and an execution environment image | No login and no image: navigator is configured with the execution environment switched off, and runs workstation's own `ansible-core` |
+| Collections come inside the execution environment | `ansible.posix` and `community.general` are installed in `/usr/share/ansible/collections` |
+
+Every `ansible-navigator` command in this guide works the same either way. To see the container workflow once, run `ansible-navigator images --ee true`: it pulls the free community image.
+</HomeLab>
+
 <Callout type="note" title="What about ansible-playbook?">
 If you need the classic `ansible-playbook` command, which uses the control node itself as the execution environment (no containers), install the `ansible-core` package too:
 

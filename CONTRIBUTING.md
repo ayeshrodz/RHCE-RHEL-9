@@ -40,6 +40,7 @@ The CI builds your branch and checks formatting. When the maintainer merges, the
 - **Write in your own words.** The site is based on the structure of the RH294 course, but the text, examples and diagrams must be original. Commands, configuration snippets and short quotations of tool output are fine; passages copied from the book or other copyrighted sources are not. Never add the book PDF or pages of it.
 - **Keep commands tested.** Run them on the lab from Chapter 0 (Rocky Linux 9, ansible-core 2.14) and say so if you didn't. Chapter 0's commands come from a lab that was built and verified, so change them only after re-testing.
 - **No personal data.** No real IP addresses, hostnames, usernames, emails, tokens or passwords. The classroom defaults (`student`, `devops`, `redhat`, `172.25.250.0/24`) are public and fine. For values that differ per reader, use the lab placeholders described in `docs/AUTHORING.md`.
+- **Exercises work in both environments.** Keep the book's commands as the default, add the home-lab difference with the `Env` / `HomeLab` components, and give each exercise its starter files under `public/lab/` (see `docs/AUTHORING.md`).
 - **Follow the look of the site:** existing components, the diagram kit and the RHEL colours, rather than new libraries or styles.
 
 ## Licensing of contributions
