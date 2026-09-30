@@ -1,0 +1,163 @@
+---
+title: "Chapter lab: Troubleshooting Ansible"
+kind: lab
+minutes: 30
+---
+
+<Lead>
+A colleague's project should put a small web site on serverb, and it does not work. There are five problems, of different kinds: some in the playbook, some in the configuration around it, and one in what the playbook leaves out. Find each from the evidence before you open its solution.
+</Lead>
+
+The project `~/troubleshoot-review` has an `ansible.cfg`, an `inventory` with serverb in the `webservers` group, a playbook `site.yml` with one play for the web server and one that tests the page from workstation, and a template `templates/vhost.conf.j2`.
+
+<Lab
+  id="review"
+  title="Troubleshooting Ansible"
+  classroom="lab start troubleshoot-review"
+  own
+  hosts={['workstation', 'serverb.lab.example.com']}
+  outcomes={['Find and fix five problems of different kinds, using the message and the right tool for each.']}
+>
+  <Task title="Start with the safe checks">
+    Run a syntax check. It passes, but read everything it prints.
+
+```console
+[student@workstation ~]$ cd ~/troubleshoot-review
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml --syntax-check
+[WARNING]: Could not match supplied host pattern, ignoring: webserver
+
+playbook: /home/student/troubleshoot-review/site.yml
+```
+
+    <Reveal title="Problem 1: show the cause and the fix">
+
+    The play targets `webserver`; the inventory group is `webservers`. With no match, the first play would simply be skipped (`skipping: no hosts matched`) and only the test play would run, and fail. Fix the play: `hosts: webservers`.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+fatal: [serverb.lab.example.com]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: devop@serverb.lab.example.com: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", "unreachable": true}
+```
+
+    <Reveal title="Problem 2: show the cause and the fix">
+
+    The host answers but refuses the user `devop`. It comes from `ansible.cfg`: `remote_user = devop`. Set it to `devops`.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it again">
+
+```console
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+TASK [Virtual host settings are in place] **************************************
+fatal: [serverb.lab.example.com]: FAILED! => {"changed": false, "msg": "AnsibleError: template error while templating string: unexpected '}'. String: # {{ ansible_managed }}\nServerAdmin {{ web_admin }}\nServerName {{ ansible_facts['fqdn'] }\n. unexpected '}'"}
+```
+
+    <Reveal title="Problem 3: show the cause and the fix">
+
+    The message quotes the template. Its last line has one closing brace instead of two. Fix `templates/vhost.conf.j2`:
+
+```jinja title="templates/vhost.conf.j2"
+# {{ ansible_managed }}
+ServerAdmin {{ web_admin }}
+ServerName {{ ansible_facts['fqdn'] }}
+```
+    </Reveal>
+  </Task>
+
+  <Task title="And again">
+
+```console
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+ERROR! The requested handler 'restart web' was not found in either the main handlers list nor in the listening handlers list
+```
+
+    <Reveal title="Problem 4: show the cause and the fix">
+
+    The template task notifies `restart web`, but the handler is called `restart httpd`. Handler names must match exactly. Change the task to `notify: restart httpd`.
+    </Reveal>
+  </Task>
+
+  <Task title="Once more">
+
+```console
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+RUNNING HANDLER [restart httpd] ************************************************
+changed: [serverb.lab.example.com]
+...output omitted...
+TASK [Home page returns our text] **********************************************
+fatal: [localhost]: FAILED! => {… "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno 113] No route to host>", …}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=0    changed=0    unreachable=0    failed=1  ...
+serverb.lab.example.com    : ok=5    changed=2    unreachable=0    failed=0  ...
+```
+
+    serverb reports success, and workstation cannot connect to it. Check the service on serverb, then think about what is between the two machines.
+
+    <Reveal title="Problem 5: show the cause and the fix">
+
+```console
+[student@workstation troubleshoot-review]$ ansible webservers -m ansible.builtin.command -a 'systemctl is-active httpd'
+serverb.lab.example.com | CHANGED | rc=0 >>
+active
+[student@workstation troubleshoot-review]$ ansible webservers -m ansible.builtin.command -a 'firewall-cmd --list-services' --become
+serverb.lab.example.com | CHANGED | rc=0 >>
+cockpit dhcpv6-client ssh
+```
+
+    Apache runs, but firewalld does not allow `http`. The playbook never opens the port. Add a task to the first play:
+
+```yaml
+    - name: Firewall allows http
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Prove it is fixed">
+
+```console
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=6    changed=1    unreachable=0    failed=0  ...
+[student@workstation troubleshoot-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
+[student@workstation troubleshoot-review]$ curl http://serverb.lab.example.com
+Review lab page
+```
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset or clean serverb the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish troubleshoot-review` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+| Problem | Where | Evidence |
+| --- | --- | --- |
+| Group name typo in `hosts` | Playbook | Warning: pattern matched nothing |
+| Wrong `remote_user` | `ansible.cfg` | `UNREACHABLE`, permission denied for that user |
+| Missing `}` | Template | Template error quoting the text |
+| Handler name mismatch | Playbook | `ERROR!` naming the missing handler |
+| Port never opened | Missing task | Test play fails; host reports success |

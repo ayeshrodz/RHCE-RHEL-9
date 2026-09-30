@@ -1,0 +1,111 @@
+/* Chapter 8 widgets: troubleshooting. */
+
+.rs-tools {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.rs-tools li {
+  margin: 0;
+}
+
+.ed-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ed-list li {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.ed-list li.is-open {
+  border-color: var(--border-strong);
+}
+.ed-list button {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.ed-stage {
+  flex: 0 0 64px;
+  padding: 1px 0;
+  border-radius: 5px;
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+.ed-msg {
+  min-width: 0;
+  padding: 0 !important;
+  background: none !important;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.ed-body {
+  padding: 0 12px 10px 84px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.ed-body p {
+  margin: 0 0 4px !important;
+}
+
+.cms-toggles {
+  display: flex;
+  gap: 14px;
+}
+.cms-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.terminal.cms-cmd {
+  margin: 0 0 8px;
+}
+.terminal.cms-out {
+  margin: 0;
+  white-space: pre;
+}
+.cms-notes {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.cms-notes li {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .ed-list button {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ed-stage {
+    flex: none;
+    padding: 1px 6px;
+  }
+  .ed-body {
+    padding-left: 12px;
+  }
+}

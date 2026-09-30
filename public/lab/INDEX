@@ -23,3 +23,16 @@ role-create          7.3   Creating a role
 role-system          7.5   Using system roles and roles from an archive
 collection-use       7.7   Getting modules from a collection
 role-review          7.8   Chapter lab: Roles and collections
+troubleshoot-playbook 8.2   Troubleshooting a playbook
+troubleshoot-host     8.4   Troubleshooting managed hosts
+troubleshoot-review   8.5   Chapter lab: Troubleshooting Ansible
+system-software       9.2   Managing software
+system-users          9.4   Managing users and authentication
+system-process        9.6   Managing the boot process and scheduled processes
+system-storage        9.8   Managing storage
+system-network        9.10  Managing network configuration
+system-review         9.11  Chapter lab: Automating Linux administration tasks
+review-deploy         10.2  Review lab: Deploying Ansible
+review-playbooks      10.3  Review lab: Creating playbooks
+review-admin          10.4  Review lab: Managing Linux hosts and using system roles
+review-roles          10.5  Review lab: Creating roles

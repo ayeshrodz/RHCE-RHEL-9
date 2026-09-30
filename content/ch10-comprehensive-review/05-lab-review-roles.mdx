@@ -1,0 +1,242 @@
+---
+title: "Review lab: Creating roles"
+kind: lab
+minutes: 45
+---
+
+<Lead>
+Write a role of your own, install a second role from an archive and a collection at a fixed version, all from requirements files, and use both roles in one playbook where variables decide what each host gets. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+This lab covers chapters 5 and 7: templates, roles, role variables, requirements files and collections. The project `~/review-roles` has an `ansible.cfg`, the review `inventory`, and a role packaged as an archive.
+
+<Lab
+  id="review-roles"
+  title="Creating roles"
+  classroom="lab start review-roles"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com', 'serverd.lab.example.com']}
+  outcomes={[
+    'Create a role with defaults, tasks and a template, and override its defaults from a play.',
+    'Install a role and a collection from requirements files into the project.',
+    'Use your role and an installed role together in one playbook.',
+  ]}
+>
+  <HomeSetup>
+    Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. `lab start review-roles` builds the archive `archives/acme.motd-1.0.tar.gz` in the project.
+  </HomeSetup>
+
+  <Task title="Look at the project">
+
+```console
+[student@workstation ~]$ cd ~/review-roles
+[student@workstation review-roles]$ ls
+ansible.cfg  archives  inventory
+[student@workstation review-roles]$ grep _path ansible.cfg
+roles_path = ./roles:/usr/share/ansible/roles
+collections_path = ./collections:~/.ansible/collections:/usr/share/ansible/collections
+```
+
+    Roles and collections installed into the project come first in both search paths, so they win over copies installed elsewhere.
+  </Task>
+
+  <Task title="Create the role">
+    Create the role `apache_site` in `roles/`. It must:
+
+    - install `httpd` and `firewalld`, start and enable both, and open `http` in the firewall,
+    - deploy `/var/www/html/index.html`, mode `0644`, from a template that shows the variable `apache_site_title` as a heading and the host's fully qualified name underneath,
+    - give `apache_site_title` the default value `Welcome`, so that a play can override it.
+
+    Remove the role directories you do not use.
+
+    <Reveal title="Show solution">
+
+```console
+[student@workstation review-roles]$ ansible-galaxy role init roles/apache_site
+- Role roles/apache_site was created successfully
+[student@workstation review-roles]$ rm -rf roles/apache_site/{tests,files,vars,handlers}
+```
+
+```yaml title="roles/apache_site/defaults/main.yml"
+---
+apache_site_title: Welcome
+```
+
+```yaml title="roles/apache_site/tasks/main.yml"
+---
+- name: Web packages are installed
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - firewalld
+    state: present
+
+- name: Services are running
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - firewalld
+    - httpd
+
+- name: http is allowed
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: The page is in place
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"
+```
+
+```jinja title="roles/apache_site/templates/index.html.j2"
+<h1>{{ apache_site_title }}</h1>
+<p>{{ ansible_facts['fqdn'] }}</p>
+```
+
+    Inside a role, `src: index.html.j2` is found in the role's own `templates/` directory. The default goes in `defaults/`, not `vars/`: values in `vars/` have a high precedence and a play could not override them.
+    </Reveal>
+  </Task>
+
+  <Task title="Install a role from an archive">
+    Write `roles/requirements.yml` so that `ansible-galaxy` installs the archive `~/review-roles/archives/acme.motd-1.0.tar.gz` as the role `acme.motd`. Install it into `roles/`.
+
+    <Reveal title="Show solution">
+
+```yaml title="roles/requirements.yml"
+---
+- src: file:///home/student/review-roles/archives/acme.motd-1.0.tar.gz
+  name: acme.motd
+```
+
+```console
+[student@workstation review-roles]$ ansible-galaxy role install -r roles/requirements.yml -p roles
+...output omitted...
+- acme.motd was installed successfully
+[student@workstation review-roles]$ cat roles/acme.motd/defaults/main.yml
+---
+motd_text: Welcome.
+```
+
+    A local archive needs a `file://` URL with an absolute path. Without `name`, the role would be installed as `acme.motd-1.0`, taken from the file name, and a play asking for `acme.motd` would not find it. The role's defaults tell you which variable it expects.
+    </Reveal>
+  </Task>
+
+  <Task title="Pin a collection">
+    Write `collections/requirements.yml` that installs `ansible.posix` at exactly version `1.5.4`, and install it into `collections/`.
+
+    <Reveal title="Show solution">
+
+```yaml title="collections/requirements.yml"
+---
+collections:
+  - name: ansible.posix
+    version: 1.5.4
+```
+
+```console
+[student@workstation review-roles]$ ansible-galaxy collection install -r collections/requirements.yml -p collections
+...output omitted...
+ansible.posix:1.5.4 was installed successfully
+[student@workstation review-roles]$ ansible-galaxy collection list 2>/dev/null | grep -E "^#|posix"
+# /home/student/review-roles/collections/ansible_collections
+ansible.posix 1.5.4
+# /usr/share/ansible/collections/ansible_collections
+ansible.posix            1.5.4
+```
+
+    Two copies now exist; the one in the project is found first. Pinning the version keeps the project working the same way when the shared copy is later updated.
+    </Reveal>
+
+    <Env>
+      <Classroom>
+        If your classroom has no internet access, it provides the collection as a tarball or from a local automation hub. Put that source in the requirements file instead.
+      </Classroom>
+      <HomeLab>
+        The collection is downloaded from Ansible Galaxy through the lab's internet access.
+      </HomeLab>
+    </Env>
+  </Task>
+
+  <Task title="Use both roles">
+    Write `site.yml` with two plays:
+
+    1. For `webservers`: apply `apache_site` with the title `Production site`.
+    2. For every host: apply `acme.motd`, with the message `Managed by Ansible. Environment: ` followed by the host's groups, separated by commas.
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: Web servers run the site
+  hosts: webservers
+  roles:
+    - role: apache_site
+      vars:
+        apache_site_title: Production site
+
+- name: Every server has a message of the day
+  hosts: all
+  vars:
+    motd_text: "Managed by Ansible. Environment: {{ group_names | join(', ') }}"
+  roles:
+    - acme.motd
+```
+
+    Both ways of setting a role's variables work: `vars` on the role entry applies to that role, and play `vars` apply to everything in the play. Either one overrides the role's defaults.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it twice">
+
+```console
+[student@workstation review-roles]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=7    changed=5    unreachable=0    failed=0  ...
+serverd.lab.example.com    : ok=7    changed=5    unreachable=0    failed=0  ...
+[student@workstation review-roles]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+servera.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+serverd.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Verify">
+
+```console
+[student@workstation review-roles]$ curl http://serverd.lab.example.com
+<h1>Production site</h1>
+<p>serverd.lab.example.com</p>
+[student@workstation review-roles]$ ssh devops@servera cat /etc/motd
+Managed by Ansible. Environment: dev
+[student@workstation review-roles]$ ssh devops@serverc cat /etc/motd
+Managed by Ansible. Environment: prod, webservers
+```
+
+    The page shows the title from the play, not the role default, and the same role wrote a different message on each host.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset the servers the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish review-roles` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+<Callout type="exam" title="What this lab rehearses">
+A role from a skeleton, with defaults meant to be overridden; a role and a collection installed from requirements files into the project; and two roles combined in one playbook. Practise writing both requirements files from memory: the formats differ.
+</Callout>

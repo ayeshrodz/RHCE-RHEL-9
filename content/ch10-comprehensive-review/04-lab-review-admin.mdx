@@ -1,0 +1,236 @@
+---
+title: "Review lab: Managing Linux hosts and using system roles"
+kind: lab
+minutes: 45
+---
+
+<Lead>
+Bring four servers to a common standard: synchronised time, an SELinux setting on the web servers, a backup volume on every host that has a spare disk, and an operators group with sudo rights and a nightly backup job on the non-production hosts. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+This lab covers chapters 6, 7 and 9: host patterns, system roles, storage, users, sudo and scheduled jobs. The project `~/review-admin` has an `ansible.cfg` and the review `inventory`. Put every play in `site.yml`.
+
+<Lab
+  id="review-admin"
+  title="Managing Linux hosts and using system roles"
+  classroom="lab start review-admin"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com', 'serverd.lab.example.com']}
+  outcomes={[
+    'Configure hosts with the timesync and selinux system roles.',
+    'Build a logical volume stack only on hosts that have the disk it needs.',
+    'Aim plays at combined host patterns, and add sudo rules and cron jobs.',
+  ]}
+>
+  <HomeSetup>
+    Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. The system roles were installed on workstation in section 0.6 as the `redhat.rhel_system_roles` collection.
+  </HomeSetup>
+
+  <Task title="Time on every server">
+    Using the timesync system role, make every server synchronise its clock with the pool `0.rocky.pool.ntp.org`, with the `iburst` option.
+
+    <Env>
+      <Classroom>
+        Use the time server your classroom provides, as a `hostname` without `pool: true` if it is a single server.
+      </Classroom>
+      <HomeLab>
+        Use the public pool above; the lab has internet access.
+      </HomeLab>
+    </Env>
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: Every server keeps time
+  hosts: all
+  vars:
+    timesync_ntp_servers:
+      - hostname: 0.rocky.pool.ntp.org
+        pool: true
+        iburst: true
+  roles:
+    - redhat.rhel_system_roles.timesync
+```
+
+    The variable names and their structure are in `/usr/share/doc/rhel-system-roles/timesync/README.md`, next to two example playbooks.
+    </Reveal>
+  </Task>
+
+  <Task title="An SELinux boolean on the web servers">
+    Using the selinux system role, turn on the boolean `httpd_can_network_connect` on the `webservers` hosts only, persistently.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: Web servers may make outbound connections
+  hosts: webservers
+  vars:
+    selinux_booleans:
+      - name: httpd_can_network_connect
+        state: true
+        persistent: true
+  roles:
+    - redhat.rhel_system_roles.selinux
+```
+
+    Without `persistent: true` the boolean is set for the running system only and is lost at the next boot. The module alternative is `ansible.posix.seboolean`, which takes the same three settings.
+    </Reveal>
+  </Task>
+
+  <Task title="A backup volume where there is a disk for it">
+    On every host that has a disk named `sdb`, and only on those:
+
+    - create a 1 GiB partition on `/dev/sdb` for LVM,
+    - build the volume group `vg_backup` from it,
+    - create the logical volume `lv_backup`, 256 MiB,
+    - format it as ext4,
+    - mount it persistently on `/backup`.
+
+    Hosts without the disk must skip these tasks without failing.
+
+    <Env>
+      <Classroom>
+        Your spare disk may have a different name, such as `vdb`. Use that name in the device paths and in the condition.
+      </Classroom>
+      <HomeLab>
+        Every server in the home lab has `/dev/sdb`, so no host skips. Change the condition to a disk name that does not exist, run the play, and check that it skips cleanly.
+      </HomeLab>
+    </Env>
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: Every server has a backup volume
+  hosts: all
+  tasks:
+    - name: Backup storage is set up
+      when: "'sdb' in ansible_facts['devices']"
+      block:
+        - name: The spare disk has a partition for LVM
+          community.general.parted:
+            device: /dev/sdb
+            number: 1
+            label: gpt
+            part_end: 1GiB
+            flags: [lvm]
+            state: present
+
+        - name: The volume group exists
+          community.general.lvg:
+            vg: vg_backup
+            pvs: /dev/sdb1
+
+        - name: The logical volume exists
+          community.general.lvol:
+            vg: vg_backup
+            lv: lv_backup
+            size: 256m
+
+        - name: It has an ext4 file system
+          community.general.filesystem:
+            dev: /dev/vg_backup/lv_backup
+            fstype: ext4
+
+        - name: It is mounted on /backup
+          ansible.posix.mount:
+            path: /backup
+            src: /dev/vg_backup/lv_backup
+            fstype: ext4
+            state: mounted
+```
+
+    `ansible_facts['devices']` is a dictionary keyed by disk name, so `in` tests whether the disk exists. A `when` on a block applies to every task inside it, so the condition is written once.
+    </Reveal>
+  </Task>
+
+  <Task title="Operators on dev and test">
+    On the hosts in `dev` and `test` (not `prod`):
+
+    - create the group `ops`,
+    - let members of `ops` run any command with sudo without a password, with a rule in `/etc/sudoers.d/ops` that is checked before it is installed,
+    - add a job to root's crontab that runs at 01:00 every night and archives `/etc` to `/backup/etc-DATE.tgz`, where `DATE` is today's date.
+
+    <Reveal title="Show solution">
+
+```yaml
+- name: Operators on dev and test
+  hosts: dev,test
+  tasks:
+    - name: The ops group exists
+      ansible.builtin.group:
+        name: ops
+
+    - name: ops members may use sudo
+      ansible.builtin.copy:
+        content: "%ops ALL=(ALL) NOPASSWD: ALL\n"
+        dest: /etc/sudoers.d/ops
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: /etc is archived every night
+      ansible.builtin.cron:
+        name: Back up /etc
+        hour: "1"
+        minute: "0"
+        job: tar czf /backup/etc-$(date +\%F).tgz /etc
+```
+
+    `dev,test` is a union of two groups. `all,!prod` would select the same hosts today, but it would also pick up any new group added later. The cron module writes to root's crontab when no `user` is given, because the play runs as root.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it twice">
+
+```console
+[student@workstation ~]$ cd ~/review-admin
+[student@workstation review-admin]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+servera.lab.example.com    : ok=32   changed=12   unreachable=0    failed=0    skipped=30  ...
+serverb.lab.example.com    : ok=32   changed=12   unreachable=0    failed=0    skipped=30  ...
+serverc.lab.example.com    : ok=45   changed=10   unreachable=0    failed=0    skipped=53  ...
+serverd.lab.example.com    : ok=45   changed=10   unreachable=0    failed=0    skipped=53  ...
+[student@workstation review-admin]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+servera.lab.example.com    : ok=31   changed=0    unreachable=0    failed=0    skipped=30  ...
+serverb.lab.example.com    : ok=31   changed=0    unreachable=0    failed=0    skipped=30  ...
+serverc.lab.example.com    : ok=44   changed=0    unreachable=0    failed=0    skipped=53  ...
+serverd.lab.example.com    : ok=44   changed=0    unreachable=0    failed=0    skipped=53  ...
+```
+
+    The large `skipped` counts come from the system roles: they are written for many releases and skip the tasks that do not apply. What matters is `failed=0` and, on the second run, `changed=0`.
+  </Task>
+
+  <Task title="Verify">
+
+```console
+[student@workstation review-admin]$ for h in servera serverc; do ssh devops@$h 'hostname -s; df -h /backup | tail -1; getsebool httpd_can_network_connect; grep ^pool /etc/chrony.conf; sudo crontab -l 2>/dev/null | tail -1'; done
+servera
+/dev/mapper/vg_backup-lv_backup  230M   14K  214M   1% /backup
+httpd_can_network_connect --> off
+pool 0.rocky.pool.ntp.org iburst
+0 1 * * * tar czf /backup/etc-$(date +\%F).tgz /etc
+serverc
+/dev/mapper/vg_backup-lv_backup  230M   14K  214M   1% /backup
+httpd_can_network_connect --> on
+pool 0.rocky.pool.ntp.org iburst
+```
+
+    One host from each side of the split: both have the volume and the time source; only serverc, a web server, has the boolean on; only servera, in `dev`, has the job.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset the servers the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish review-admin` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline, disks included.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+<Callout type="exam" title="What this lab rehearses">
+Two system roles configured only through variables, a storage stack guarded by a fact, host patterns that combine groups, and the everyday sudo and cron tasks. Reading a system role's README quickly is as important as knowing the modules.
+</Callout>

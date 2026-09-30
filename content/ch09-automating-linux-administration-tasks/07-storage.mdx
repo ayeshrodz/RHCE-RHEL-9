@@ -1,0 +1,143 @@
+---
+title: Managing storage
+kind: lesson
+minutes: 12
+---
+
+<Lead>
+Giving an application its own file system is a stack of small jobs: partition a disk, make a volume group, carve out a logical volume, create a file system, mount it. Each has its own module, and each is idempotent, so the same play can also grow the volume later.
+</Lead>
+
+<Objectives>
+- Partition a disk with `community.general.parted`.
+- Create LVM volume groups and logical volumes, and resize them.
+- Create file systems and mount them persistently.
+- Use device facts to decide what to do.
+</Objectives>
+
+## The storage stack
+
+Step through the layers from a blank disk to a mounted file system:
+
+<StorageStack />
+
+<HomeLab title="The spare disk is sdb">
+The lab VMs' spare disk is `/dev/sdb`; on many virtual machines it would be `/dev/vdb`. The storage modules live in `community.general` and `ansible.posix`, both installed on workstation.
+</HomeLab>
+
+## Partitions
+
+```yaml
+- name: The disk has one partition for LVM
+  community.general.parted:
+    device: /dev/sdb
+    number: 1
+    label: gpt
+    part_start: 1MiB
+    part_end: 1GiB
+    flags: [lvm]
+    state: present
+```
+
+`number` identifies the partition; `part_end` (and `part_start`) set its size, as a size or a percentage such as `100%`. `label: gpt` creates a GPT partition table if the disk has none. Running the task again leaves an existing, matching partition alone.
+
+## Volume groups and logical volumes
+
+```yaml
+- name: The volume group exists
+  community.general.lvg:
+    vg: apps
+    pvs: /dev/sdb1
+
+- name: The logical volume exists
+  community.general.lvol:
+    vg: apps
+    lv: data
+    size: 500m
+    resizefs: true
+```
+
+`lvg` initialises the physical volumes and creates the group. `lvol` creates the logical volume, `/dev/apps/data`, and grows it if `size` is later larger. With `resizefs: true` it also grows the file system on it, online.
+
+`size` accepts `500m`, `2g`, or a share of the group such as `100%FREE` or `50%VG`.
+
+<Callout type="warning" title="Shrinking is different">
+`lvol` refuses to shrink a volume with a file system unless you add `force: true`, and XFS cannot be shrunk at all. Plan sizes to grow.
+</Callout>
+
+## File systems and mounts
+
+```yaml
+- name: The logical volume has an XFS file system
+  community.general.filesystem:
+    dev: /dev/apps/data
+    fstype: xfs
+
+- name: The file system is mounted on /srv/data
+  ansible.posix.mount:
+    path: /srv/data
+    src: /dev/apps/data
+    fstype: xfs
+    state: mounted
+```
+
+`filesystem` creates a file system only if the device has none; it never reformats unless you set `force: true`.
+
+| `mount` `state` | Mounted now | In `/etc/fstab` |
+| --- | --- | --- |
+| `mounted` | Yes (creates the directory) | Yes |
+| `present` | No | Yes |
+| `unmounted` | No | Unchanged |
+| `absent` | No | Removed |
+
+`mounted` is what you want almost every time.
+
+<Callout type="tip" title="Mount by UUID">
+Device names can change between boots. For `src`, a UUID (`UUID=…`, from the facts or `blkid`) is the most robust. LVM paths such as `/dev/apps/data` are stable, which is one more reason to use LVM.
+</Callout>
+
+## Deciding from facts
+
+Facts describe the disks and volumes, so a play can check before it acts:
+
+```yaml
+- name: Only when the spare disk exists
+  community.general.parted:
+    device: /dev/sdb
+    number: 1
+    state: present
+  when: "'sdb' in ansible_facts['devices']"
+```
+
+`ansible_facts['devices']['sdb']['size']` gives the size, and `ansible_facts['lvm']['vgs']` lists volume groups with their free space.
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'Which module creates a volume group?',
+      options: ['`community.general.lvol`', '`community.general.lvg`', '`community.general.parted`'],
+      answer: 1,
+      explain: 'lvg: volume group. lvol: logical volume.',
+    },
+    {
+      q: 'What does `resizefs: true` add to an lvol task that makes a volume bigger?',
+      options: ['Nothing', 'It grows the file system on the volume as well', 'It reformats the volume'],
+      answer: 1,
+      explain: 'Without it the volume grows but the file system keeps its old size.',
+    },
+    {
+      q: 'Which mount state mounts now and adds the line to /etc/fstab?',
+      options: ['`present`', '`mounted`', '`absent`'],
+      answer: 1,
+      explain: 'present only writes fstab; mounted does both.',
+    },
+    {
+      q: 'The filesystem module runs against a device that already has XFS. What happens?',
+      options: ['It is reformatted', 'Nothing: it reports ok', 'It fails'],
+      answer: 1,
+      explain: 'It creates a file system only where there is none, unless force: true is set.',
+    },
+  ]}
+/>

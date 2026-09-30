@@ -1,0 +1,151 @@
+---
+title: Managing software
+kind: lesson
+minutes: 12
+---
+
+<Lead>
+Almost every playbook installs something. Ansible's package modules install, update and remove software, configure the repositories it comes from, and report what is already there, so a play can make decisions based on it.
+</Lead>
+
+<Objectives>
+- Install, update and remove packages and package groups with `ansible.builtin.dnf`.
+- Configure a repository and its signing key.
+- Collect the installed-package list with `package_facts` and use it.
+</Objectives>
+
+## The module for every administration job
+
+This chapter covers five areas. Use this as a map as you go; each section explains one area in depth.
+
+<AdminModuleFinder />
+
+## Installing and removing packages
+
+`ansible.builtin.dnf` takes a package name, or a list, and the state you want:
+
+```yaml
+- name: Web packages are installed
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - mod_ssl
+    state: present
+```
+
+| `state` | Result |
+| --- | --- |
+| `present` (default) | Installed; left alone if it already is |
+| `latest` | Installed and updated to the newest available version |
+| `absent` | Removed |
+
+Give `name` a list rather than looping: `dnf` then resolves everything in one transaction, which is much faster.
+
+A few more forms of `name`:
+
+| `name:` | Means |
+| --- | --- |
+| `httpd` | The package |
+| `"@Development Tools"` | A package group (quote it: `@` is special in YAML) |
+| `"*"` with `state: latest` | Update every package on the host |
+| `https://…/tool-1.0.rpm` or a local path | An RPM file |
+
+<Callout type="note" title="ansible.builtin.package">
+`ansible.builtin.package` calls whichever package manager the host uses, so one task works on RHEL and on Debian. It only supports the options all managers share. On RHEL, `dnf` gives you everything.
+</Callout>
+
+## Repositories and signing keys
+
+Packages come from repositories defined in `/etc/yum.repos.d/`. `ansible.builtin.yum_repository` writes those files:
+
+```yaml
+- name: The CRB repository is configured
+  ansible.builtin.yum_repository:
+    name: lab-crb
+    description: Rocky Linux 9 CRB (lab)
+    mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
+    gpgcheck: true
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+    enabled: true
+```
+
+The result on the host:
+
+```ini title="/etc/yum.repos.d/lab-crb.repo"
+[lab-crb]
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+mirrorlist = https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
+name = Rocky Linux 9 CRB (lab)
+```
+
+Use `baseurl` for a single server, or `mirrorlist` or `metalink` for a list of mirrors. Always keep `gpgcheck: true`: it makes `dnf` refuse packages that were not signed by the key you trust. Import that key with `ansible.builtin.rpm_key`, from a local file or a URL:
+
+```yaml
+- name: The Rocky Linux signing key is trusted
+  ansible.builtin.rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+    state: present
+```
+
+<HomeLab title="Why not EPEL?">
+EPEL is the usual example of an extra repository, but its metadata is large. On the 1 GiB lab VMs, `dnf` runs out of memory reading it and the kernel stops it. In Ansible that shows up as `MODULE FAILURE … Shared connection to servera.lab.example.com closed.`, and the kernel log on the host says `Out of memory: Killed process … (python3)`. The exercises use Rocky's own CRB repository instead. The technique is identical.
+</HomeLab>
+
+<Env>
+  <Classroom>
+    On RHEL, repositories usually come from a Red Hat subscription. The `community.general.redhat_subscription` module registers a host, and `community.general.rhsm_repository` enables or disables subscription repositories by name.
+  </Classroom>
+  <HomeLab>
+    Rocky Linux has no subscriptions: its repositories (BaseOS, AppStream, CRB, extras) are defined by the `rocky-repos` package and are free to use. The subscription modules do not apply at home.
+  </HomeLab>
+</Env>
+
+## What is installed?
+
+`ansible.builtin.package_facts` adds every installed package to the facts, as a dictionary keyed by name. Each value is a list, because several versions of one package (such as kernels) can be installed at once.
+
+```yaml
+- name: Collect the list of installed packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Show the version
+  ansible.builtin.debug:
+    msg: "lynx {{ ansible_facts['packages']['lynx'][0]['version'] }}"
+  when: "'lynx' in ansible_facts['packages']"
+```
+
+A condition such as `when: "'httpd' in ansible_facts['packages']"` lets a play act only on hosts that have a package, without trying to install it.
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'Which `state` makes sure a package is installed and updated to the newest version?',
+      options: ['`present`', '`latest`', '`installed`'],
+      answer: 1,
+      explain: 'present leaves an installed package alone; latest updates it.',
+    },
+    {
+      q: 'How do you install a package group with the dnf module?',
+      options: ['`name: Development Tools`', '`name: "@Development Tools"`', '`group: Development Tools`'],
+      answer: 1,
+      explain: 'Groups start with @, and the value must be quoted.',
+    },
+    {
+      q: 'What does `gpgcheck: true` on a repository do?',
+      options: ['Downloads the key', 'Makes dnf refuse packages that are not signed by a trusted key', 'Encrypts the repository'],
+      answer: 1,
+      explain: 'The key itself is imported with rpm_key or listed with gpgkey.',
+    },
+    {
+      q: 'After `package_facts`, where is the information about httpd?',
+      options: ["`ansible_facts['packages']['httpd']`", "`ansible_facts['httpd']`", '`packages.httpd.version`'],
+      answer: 0,
+      explain: 'It is a list: [0] is the first installed version.',
+    },
+  ]}
+/>

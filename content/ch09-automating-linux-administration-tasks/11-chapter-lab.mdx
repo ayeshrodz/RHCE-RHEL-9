@@ -1,0 +1,191 @@
+---
+title: "Chapter lab: Automating Linux administration tasks"
+kind: lab
+minutes: 35
+---
+
+<Lead>
+Prepare serverc for an application team in one playbook: a group and an administrator with narrow sudo rights, its own logical volume mounted with the right ownership, the web server it needs, and a nightly job. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+The project `~/system-review` has an `ansible.cfg` and an `inventory` with serverc in the `app` group. Write everything in one playbook, `site.yml`, with one play for `app`.
+
+<Lab
+  id="review"
+  title="Automating Linux administration tasks"
+  classroom="lab start system-review"
+  own
+  hosts={['workstation', 'serverc.lab.example.com']}
+  outcomes={['Combine users, sudo, storage, packages, services and cron in one idempotent play.']}
+>
+  <Task title="The team and its administrator">
+    Create the group `apps`, and the user `appadmin` as a member of it (keeping any other groups).
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: The application server is prepared
+  hosts: app
+  tasks:
+    - name: The apps group exists
+      ansible.builtin.group:
+        name: apps
+        state: present
+
+    - name: appadmin exists and is in apps
+      ansible.builtin.user:
+        name: appadmin
+        groups: apps
+        append: true
+        state: present
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Narrow sudo rights">
+    Members of `apps` may run exactly one command as root without a password: `/usr/bin/systemctl restart httpd`. Put the rule in `/etc/sudoers.d/apps` and have it checked before it is installed.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: apps members may restart the application with sudo
+      ansible.builtin.copy:
+        content: "%apps ALL=(root) NOPASSWD: /usr/bin/systemctl restart httpd\n"
+        dest: /etc/sudoers.d/apps
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Storage for the application">
+    On the spare disk: a 2 GiB LVM partition, the volume group `appvg`, a 1 GiB logical volume `applv` with ext4, mounted persistently on `/srv/app`. The mount point must be owned by `appadmin` and group `apps`, mode `2770`, so that new files belong to the group.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: The spare disk has a partition for LVM
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        label: gpt
+        part_end: 2GiB
+        flags: [lvm]
+        state: present
+
+    - name: The volume group exists
+      community.general.lvg:
+        vg: appvg
+        pvs: /dev/sdb1
+
+    - name: The logical volume exists
+      community.general.lvol:
+        vg: appvg
+        lv: applv
+        size: 1g
+
+    - name: It has an ext4 file system
+      community.general.filesystem:
+        dev: /dev/appvg/applv
+        fstype: ext4
+
+    - name: It is mounted on /srv/app
+      ansible.posix.mount:
+        path: /srv/app
+        src: /dev/appvg/applv
+        fstype: ext4
+        state: mounted
+
+    - name: appadmin owns /srv/app
+      ansible.builtin.file:
+        path: /srv/app
+        owner: appadmin
+        group: apps
+        mode: "2770"
+        state: directory
+```
+
+    The ownership task comes **after** the mount: set before it, it would apply to the empty directory underneath, hidden once the file system is mounted.
+    </Reveal>
+  </Task>
+
+  <Task title="The web server">
+    Install `httpd`, and make sure it is running and starts at boot.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: The web server is installed and running
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: httpd is started
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="A nightly job">
+    For `appadmin`, at 02:30 every night, archive `/srv/app` to `/tmp/app-DATE.tgz`, where `DATE` is today's date.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: A nightly archive job exists for appadmin
+      ansible.builtin.cron:
+        name: Archive app data
+        user: appadmin
+        hour: "2"
+        minute: "30"
+        job: tar czf /tmp/app-$(date +\%F).tgz -C /srv app
+```
+
+    In a crontab, `%` has a special meaning, so it is escaped as `\%`.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it twice">
+
+```console
+[student@workstation ~]$ cd ~/system-review
+[student@workstation system-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+serverc.lab.example.com    : ok=13   changed=12   unreachable=0    failed=0  ...
+[student@workstation system-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+serverc.lab.example.com    : ok=13   changed=0    unreachable=0    failed=0  ...
+```
+  </Task>
+
+  <Task title="Verify">
+
+```console
+[student@workstation system-review]$ ssh devops@serverc 'id appadmin; df -h /srv/app | tail -1; ls -ld /srv/app; sudo crontab -l -u appadmin; sudo -l -U appadmin | tail -2'
+uid=1002(appadmin) gid=1003(appadmin) groups=1003(appadmin),1002(apps)
+/dev/mapper/appvg-applv  974M   24K  907M   1% /srv/app
+drwxrws---. 3 appadmin apps 4096 … /srv/app
+#Ansible: Archive app data
+30 2 * * * tar czf /tmp/app-$(date +\%F).tgz -C /srv app
+User appadmin may run the following commands on serverc:
+    (root) NOPASSWD: /usr/bin/systemctl restart httpd
+```
+
+    Every requirement in one screen: the membership, the mounted volume, the set-group-ID bit (`s` in `drwxrws---`), the job, and the single permitted sudo command.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the output above, then reset or clean serverc the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish system-review` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>

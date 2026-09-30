@@ -1,0 +1,158 @@
+---
+title: Troubleshooting managed hosts
+kind: lesson
+minutes: 12
+---
+
+<Lead>
+Some problems are not in the playbook at all. The playbook is fine, but Ansible cannot reach a host, logs in as the wrong user, or cannot become root. Others are about the host's state: is the service really configured the way the playbook claims? Ansible's own tools answer both kinds of question quickly and safely.
+</Lead>
+
+<Objectives>
+- Test connections with the `ping` module and find out why a host is unreachable.
+- Inspect the variables that decide how Ansible connects to a host.
+- Tell a connection problem from a privilege escalation problem.
+- Use ad hoc commands, facts, check mode and diffs to test a host's state before and after a change.
+</Objectives>
+
+## Is the host reachable?
+
+`ansible.builtin.ping` is not ICMP ping. It connects exactly as a playbook would (SSH, the remote user, Python on the host) and replies `pong`. If it works, the connection side is fine.
+
+```console
+[student@workstation project]$ ansible all -m ansible.builtin.ping
+servera.lab.example.com | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+serverb.lab.example.com | UNREACHABLE! => {
+    "changed": false,
+    "msg": "Failed to connect to the host via ssh: ssh: connect to host 172.25.250.211 port 22: No route to host",
+    "unreachable": true
+}
+```
+
+The text after `ssh:` is the answer. The three you will meet most often:
+
+| Message | Meaning | Look at |
+| --- | --- | --- |
+| `Could not resolve hostname` | The name is unknown | The name in the inventory; DNS or `/etc/hosts` |
+| `No route to host`, `Connection timed out`, `Connection refused` | Nothing answers SSH at that address and port | `ansible_host` and `ansible_port`; is the machine up; its firewall |
+| `Permission denied (publickey,…)` | SSH answered but refused the user | `remote_user`, `ansible_user`; is the key installed for that user |
+
+## What does Ansible think it should connect to?
+
+Connection settings can come from several places: `ansible.cfg`, the inventory file, `host_vars`, `group_vars`, the play. Ask Ansible what it ended up with for one host:
+
+```console
+[student@workstation project]$ ansible-navigator inventory -m stdout --host serverb.lab.example.com
+{
+    "ansible_host": "172.25.250.211"
+}
+```
+
+| Variable | Overrides |
+| --- | --- |
+| `ansible_host` | The address or name to connect to, instead of the inventory name |
+| `ansible_port` | The SSH port (default 22) |
+| `ansible_user` | The user to log in as, instead of `remote_user` |
+| `ansible_become` | Whether to use privilege escalation for this host |
+
+To see exactly what Ansible runs, add `-vvv`. The connection lines show the user and the full `ssh` command:
+
+```text
+<serverc.lab.example.com> ESTABLISH SSH CONNECTION FOR USER: operator1
+<serverc.lab.example.com> SSH: EXEC ssh -C -o ControlMaster=auto … -o 'User="operator1"' -o ConnectTimeout=10 … serverc.lab.example.com …
+```
+
+Then run the same `ssh` by hand. If it fails outside Ansible too, the problem is SSH, not Ansible.
+
+## Connected, but not allowed
+
+A host that is reachable can still fail every task that needs root. That is a `FAILED`, not an `UNREACHABLE`:
+
+| Message | Cause |
+| --- | --- |
+| `Missing sudo password` | `become` is on, and the user needs a password for sudo |
+| `Destination /etc not writable`, `Permission denied` | `become` is off, and the task writes something only root can |
+| `user is not in the sudoers file` | The user has no sudo rights on that host |
+
+Test privilege escalation by itself with an ad hoc command:
+
+```console
+[student@workstation project]$ ansible servera.lab.example.com -m ansible.builtin.command -a id --become
+servera.lab.example.com | CHANGED | rc=0 >>
+uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+```
+
+## Testing a host's state with Ansible
+
+You rarely need to log in to a managed host to check something. Ad hoc commands answer most questions from the control node, for many hosts at once:
+
+```console
+[student@workstation project]$ ansible web -m ansible.builtin.command -a 'systemctl is-active httpd'
+[student@workstation project]$ ansible web -m ansible.builtin.stat -a 'path=/etc/motd'
+[student@workstation project]$ ansible servera.lab.example.com -m ansible.builtin.setup -a 'filter=ansible_default_ipv4'
+[student@workstation project]$ ansible localhost -m ansible.builtin.uri -a 'url=http://servera.lab.example.com'
+```
+
+Modules such as `uri`, `stat` and `assert` make these checks part of a playbook, so they run every time rather than when you remember.
+
+<Callout type="note" title="Commands for checks, modules for changes">
+`command` is fine for looking. For changing a host, use the module made for the job: it knows how to be idempotent, and check mode can preview it.
+</Callout>
+
+## Change safely: check, diff, limit
+
+Before changing a production host, preview the change on one machine:
+
+```console
+[student@workstation project]$ ansible-navigator run -m stdout motd.yml --check --diff --limit servera.lab.example.com
+...output omitted...
+--- before: /etc/motd
++++ after: /home/student/.ansible/tmp/…/motd.j2
+@@ -0,0 +1,2 @@
++This is servera.lab.example.com.
++Contact: ops@example.com
+```
+
+<Callout type="warning" title="Check mode does not test permissions">
+In check mode, a `template` task writing `/etc/motd` without privilege escalation still reports `changed`: nothing is written, so nothing is refused. Only the real run fails with `Destination /etc not writable`. A clean check run is not proof that the real run will succeed.
+</Callout>
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'What does `ansible all -m ansible.builtin.ping` test?',
+      options: ['ICMP reachability only', 'That Ansible can connect with SSH and run Python on each host', 'That every service is running'],
+      answer: 1,
+      explain: 'It uses the same connection a playbook would, and replies pong.',
+    },
+    {
+      q: 'A host is UNREACHABLE with "Permission denied (publickey,…)". Which is the likely cause?',
+      options: ['The host is switched off', 'Ansible logged in as a user that has no key there', 'become is off'],
+      answer: 1,
+      explain: 'SSH answered, so the host is up; it refused the user.',
+    },
+    {
+      q: 'How do you see which ansible_host and ansible_user are in force for one host?',
+      options: ['`ansible-navigator inventory -m stdout --host NAME`', '`ansible-navigator run --syntax-check`', '`ansible-galaxy list`'],
+      answer: 0,
+      explain: '--host prints the variables that apply to that host after all sources are combined.',
+    },
+    {
+      q: 'A task fails with "Destination /etc not writable". What is the problem?',
+      options: ['The host is unreachable', 'Privilege escalation is off for a task that needs root', 'The template has a syntax error'],
+      answer: 1,
+      explain: 'Ansible connected and ran the task as an ordinary user, who cannot write in /etc.',
+    },
+    {
+      q: 'A run with `--check` shows no failures. Is the real run certain to succeed?',
+      options: ['Yes', 'No: some failures, such as permission problems, only happen when changes are really made'],
+      answer: 1,
+      explain: 'Check mode simulates; it does not attempt the write that would be refused.',
+    },
+  ]}
+/>

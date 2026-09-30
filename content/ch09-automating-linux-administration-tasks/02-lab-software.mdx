@@ -1,0 +1,164 @@
+---
+title: "Guided exercise: Managing software"
+kind: lab
+minutes: 15
+---
+
+<Lead>
+You will add a repository to servera with its signing key, install a package that only that repository provides, and use the installed-package facts to report on it.
+</Lead>
+
+The project `~/system-software` has an `ansible.cfg` and an `inventory` with servera in the `servers` group.
+
+<Lab
+  id="software"
+  title="Managing software"
+  classroom="lab start system-software"
+  own
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Configure a repository and its GPG key.', 'Install packages and check them with package_facts.']}
+>
+  <HomeSetup>
+    The repository used here is Rocky Linux's CRB repository, reached through the lab's internet access.
+  </HomeSetup>
+
+  <Task title="Look before you change">
+
+```console
+[student@workstation ~]$ cd ~/system-software
+[student@workstation system-software]$ ansible servers -m ansible.builtin.command -a 'dnf repolist'
+servera.lab.example.com | CHANGED | rc=0 >>
+repo id                         repo name
+appstream                       Rocky Linux 9 - AppStream
+baseos                          Rocky Linux 9 - BaseOS
+extras                          Rocky Linux 9 - Extras
+```
+
+    Three repositories are enabled. The package `python3-pyxattr` is in none of them.
+  </Task>
+
+  <Task title="Trust the key and add the repository">
+    Create `software.yml` with a play for `servers` whose first two tasks import `/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9` and define a repository `lab-crb` from the mirror list `https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever`, with GPG checking on.
+
+    <Env>
+      <Classroom>
+        Use your classroom's repository URL and key instead; the tasks are the same.
+      </Classroom>
+      <HomeLab>
+        <Reveal title="Show the first two tasks">
+
+```yaml title="software.yml"
+---
+- name: Servers can install from the CRB repository
+  hosts: servers
+  tasks:
+    - name: The Rocky Linux signing key is trusted
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+        state: present
+
+    - name: The CRB repository is configured
+      ansible.builtin.yum_repository:
+        name: lab-crb
+        description: Rocky Linux 9 CRB (lab)
+        mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
+        gpgcheck: true
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+        enabled: true
+        state: present
+```
+        </Reveal>
+      </HomeLab>
+    </Env>
+  </Task>
+
+  <Task title="Install packages">
+    Add a task that installs `python3-pyxattr` and `lynx` in one transaction.
+
+    <Reveal title="Show the task">
+
+```yaml
+    - name: Packages are installed
+      ansible.builtin.dnf:
+        name:
+          - python3-pyxattr
+          - lynx
+        state: present
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Report with package facts">
+    Collect the package facts, print the installed version of `python3-pyxattr`, and assert that `chrony` is installed.
+
+    <Reveal title="Show the tasks">
+
+```yaml
+    - name: Collect the list of installed packages
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Show where python3-pyxattr came from
+      ansible.builtin.debug:
+        msg: "python3-pyxattr {{ ansible_facts['packages']['python3-pyxattr'][0]['version'] }}"
+
+    - name: Make sure chrony is still installed
+      ansible.builtin.assert:
+        that:
+          - "'chrony' in ansible_facts['packages']"
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Run it twice">
+
+```console
+[student@workstation system-software]$ ansible-navigator run -m stdout software.yml
+...output omitted...
+TASK [Show where python3-pyxattr came from] ************************************
+ok: [servera.lab.example.com] => {
+    "msg": "python3-pyxattr 0.7.2"
+}
+
+TASK [Make sure chrony is still installed] *************************************
+ok: [servera.lab.example.com] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=2    unreachable=0    failed=0  ...
+[student@workstation system-software]$ ansible-navigator run -m stdout software.yml
+...output omitted...
+servera.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+```
+
+    Only two tasks changed the first time: the repository file and the packages. The key was already trusted, because the distribution imports it. The second run reports `changed=0`.
+  </Task>
+
+  <Task title="Confirm which repository each package came from">
+
+```console
+[student@workstation system-software]$ ssh devops@servera 'dnf -q repoquery --installed --qf "%{name} %{from_repo}" python3-pyxattr lynx'
+lynx appstream
+python3-pyxattr lab-crb
+```
+
+    `lynx` came from AppStream, which already had it; `python3-pyxattr` could only come from the repository you added.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean servera the way your classroom provides before the next exercise.
+      </Classroom>
+      <HomeLab>
+        Two steps. On workstation, `lab finish system-software` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Add a task that removes `lynx` again (`state: absent`), and another that updates every package on servera (`name: "*"`, `state: latest`). Run the playbook with `--check` first: the update task tells you whether anything would change without installing it.

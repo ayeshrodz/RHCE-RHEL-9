@@ -1,0 +1,159 @@
+---
+title: "Guided exercise: Boot target and scheduled jobs"
+kind: lab
+minutes: 20
+---
+
+<Lead>
+You will schedule a recurring job and a one-off job on servera, change the target it boots into, and let a handler reboot it, then prove the change survived the reboot.
+</Lead>
+
+The project `~/system-process` has an `ansible.cfg` and an `inventory` with servera in `servers`.
+
+<Lab
+  id="process"
+  title="Boot target and scheduled jobs"
+  classroom="lab start system-process"
+  own
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Create cron and at jobs.', 'Change the default target and reboot with a handler.']}
+>
+  <Task title="See where you start">
+
+```console
+[student@workstation ~]$ cd ~/system-process
+[student@workstation system-process]$ ssh devops@servera 'systemctl get-default; uptime -s'
+graphical.target
+2026-10-01 10:31:28
+```
+
+    The lab image boots to `graphical.target`, although it has no desktop. A server should use `multi-user.target`. Note the boot time.
+  </Task>
+
+  <Task title="Schedule a recurring job">
+    Create `process.yml` with a play for `servers`. Its first task adds a cron job named `Log uptime` for `devops` that appends the output of `uptime` to `/home/devops/uptime.log` every five minutes.
+
+    <Reveal title="Show the task">
+
+```yaml title="process.yml"
+---
+- name: Scheduled jobs and boot target
+  hosts: servers
+  tasks:
+    - name: Uptime is logged every five minutes
+      ansible.builtin.cron:
+        name: Log uptime
+        user: devops
+        minute: "*/5"
+        job: uptime >> /home/devops/uptime.log
+        state: present
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Schedule a one-off job">
+    Add tasks that install `at`, start and enable `atd`, and queue `date > /tmp/at-was-here` to run once in 20 minutes, without duplicating it on later runs.
+
+    <Reveal title="Show the tasks">
+
+```yaml
+    - name: at is installed
+      ansible.builtin.dnf:
+        name: at
+        state: present
+
+    - name: atd is running
+      ansible.builtin.service:
+        name: atd
+        state: started
+        enabled: true
+
+    - name: A one-off job runs in 20 minutes
+      ansible.posix.at:
+        command: date > /tmp/at-was-here
+        count: 20
+        units: minutes
+        unique: true
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Change the boot target and reboot when needed">
+    Add a task that makes `multi-user.target` the default, notifying a handler that reboots the host.
+
+    <Reveal title="Show the task and the handler">
+
+```yaml
+    - name: The system boots to the text console
+      ansible.builtin.file:
+        src: /usr/lib/systemd/system/multi-user.target
+        dest: /etc/systemd/system/default.target
+        state: link
+      notify: reboot
+
+  handlers:
+    - name: reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation system-process]$ ansible-navigator run -m stdout process.yml
+...output omitted...
+TASK [The system boots to the text console] ************************************
+changed: [servera.lab.example.com]
+
+RUNNING HANDLER [reboot] *******************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0  ...
+```
+
+    The run pauses at the handler while servera reboots, then finishes once it answers again.
+  </Task>
+
+  <Task title="Verify after the reboot">
+
+```console
+[student@workstation system-process]$ ssh devops@servera 'systemctl get-default; uptime -s; sudo crontab -l -u devops; sudo atq'
+multi-user.target
+2026-10-01 10:32:21
+#Ansible: Log uptime
+*/5 * * * * uptime >> /home/devops/uptime.log
+1	Thu Oct  1 10:52:00 2026 a root
+```
+
+    A new boot time, the new target, the cron entry with its `#Ansible:` marker, and the at job still queued.
+  </Task>
+
+  <Task title="Run it again">
+
+```console
+[student@workstation system-process]$ ansible-navigator run -m stdout process.yml
+...output omitted...
+servera.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
+```
+
+    Nothing changed, so nothing notified the handler, and servera was not rebooted.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean servera the way your classroom provides before the next exercise.
+      </Classroom>
+      <HomeLab>
+        Two steps. On workstation, `lab finish system-process` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+## Try it again, differently
+
+Write `cleanup.yml` that removes the cron job (same `name`, `state: absent`) and sets the default target back to `graphical.target`, rebooting through a handler. Run it with `--check` first: you should see the link and the handler reported, and servera should not reboot.

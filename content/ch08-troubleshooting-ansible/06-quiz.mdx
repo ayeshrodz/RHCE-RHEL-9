@@ -1,0 +1,93 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 8
+---
+
+<Lead>
+Twelve questions on finding and fixing problems. Aim for at least nine before moving on to chapter 9.
+</Lead>
+
+<Quiz
+  id="chapter"
+  title="Chapter 8 knowledge check"
+  questions={[
+    {
+      q: 'Which of these problems does `--syntax-check` find?',
+      options: ['A misspelt variable name', 'A module argument indented at the level of the module name', 'A wrong address in ansible_host'],
+      answer: 1,
+      explain: 'Only problems in reading the playbook. Variables and connections are only tested when the play runs.',
+    },
+    {
+      q: 'What is wrong with this task?',
+      code: '- name: Install\n  ansible.builtin.dnf:\n    name: {{ pkg }}\n    state: present',
+      options: ['Nothing', 'The value starts with {{ and must be quoted', 'state must be latest'],
+      answer: 1,
+      explain: 'Unquoted, YAML reads {{ pkg }} as a dictionary. Write name: "{{ pkg }}".',
+    },
+    {
+      q: 'A task fails with "value of state must be one of: reloaded, restarted, started, stopped, got: start". What do you change?',
+      options: ['The variable name', 'The value of state, to started', 'The inventory'],
+      answer: 1,
+      explain: 'The module lists the values it accepts; start is not one of them.',
+    },
+    {
+      q: 'What is the difference between UNREACHABLE and FAILED?',
+      options: [
+        'None',
+        'UNREACHABLE: Ansible could not connect. FAILED: it connected, and the task failed',
+        'UNREACHABLE is for playbooks, FAILED for ad hoc commands',
+      ],
+      answer: 1,
+      explain: 'That distinction tells you whether to look at connection settings or at the task.',
+    },
+    {
+      q: 'Which option shows the SSH command and user Ansible uses?',
+      options: ['`-v`', '`-vvv`', '`--diff`'],
+      answer: 1,
+      explain: 'Connection details appear at -vvv.',
+    },
+    {
+      q: 'Which command shows the connection variables Ansible will use for one host?',
+      options: ['`ansible-navigator inventory -m stdout --host NAME`', '`ansible NAME -m ansible.builtin.setup`', '`ansible-navigator run --list-hosts`'],
+      answer: 0,
+      explain: '--host prints ansible_host, ansible_user and any other variables for that host.',
+    },
+    {
+      q: 'A template task writing to /etc fails with "Destination /etc not writable". What is the likely cause?',
+      options: ['The host is unreachable', 'become is off', 'The template has a syntax error'],
+      answer: 1,
+      explain: 'The task ran as the ordinary remote user.',
+    },
+    {
+      q: 'What does `--check` do to a `command` task?',
+      options: ['Runs it', 'Skips it', 'Fails the play'],
+      answer: 1,
+      explain: 'Ansible cannot predict a command’s effect, so it does not run it in check mode.',
+    },
+    {
+      q: 'What does `--diff` add to the output?',
+      options: ['A list of changed hosts', 'The lines each file task would add or remove', 'The time each task took'],
+      answer: 1,
+      explain: 'It prints a unified diff for tasks that change files, such as template and copy.',
+    },
+    {
+      q: 'Where does Ansible write output when `log_path = ./ansible.log` is set?',
+      options: ['On each managed host', 'In ansible.log in the project directory, on the control node', 'Only to the screen'],
+      answer: 1,
+      explain: 'The log is written on the control node, by the user running Ansible.',
+    },
+    {
+      q: 'All tasks on the web server report ok, but curl from workstation fails with "No route to host". Where do you look first?',
+      options: ['The web server’s firewall', 'The playbook syntax', 'The inventory'],
+      answer: 0,
+      explain: 'The host is up and the service runs; something is rejecting the connection on the way in.',
+    },
+    {
+      q: 'An ERROR says a handler was not found. What is the fix?',
+      options: ['Add become', 'Make the notify line and the handler’s name identical', 'Move the handler into tasks'],
+      answer: 1,
+      explain: 'Handlers are found by exact name.',
+    },
+  ]}
+/>
