@@ -1,0 +1,157 @@
+---
+title: Describing role structure
+kind: lesson
+minutes: 12
+---
+
+<Lead>
+Task files let you reuse a list of tasks. A role goes further: it bundles tasks with the variables, templates, files and handlers they need, in a standard layout that Ansible understands. A well-made role can be dropped into any project and used with one line.
+</Lead>
+
+<Objectives>
+- Explain what a role is and why roles make playbooks easier to maintain.
+- Name the directories of a role and what belongs in each.
+- Use a role in a play, and predict the order in which roles, tasks and handlers run.
+- Predict which value a role variable gets when it is set in several places.
+</Objectives>
+
+## What a role is
+
+A **role** is a directory with a fixed structure. Each subdirectory has one job, and Ansible loads `main.yml` from each automatically. Because the layout is always the same, anyone who has seen one role can find their way around another.
+
+Roles pay off in three ways:
+
+- **Reuse.** Write "set up a web server" once; use it in every project that needs one.
+- **Sharing.** A role is a self-contained folder, so it can be handed to a colleague, stored in its own repository, or published.
+- **Shorter playbooks.** A play that uses roles reads like a summary: which hosts, which roles.
+
+## The role layout
+
+Select a file to see what it is for:
+
+<RoleAnatomy />
+
+Only `tasks/main.yml` is required. Leave out, or delete, any directory a role does not use.
+
+| Directory | Holds |
+| --- | --- |
+| `tasks` | The tasks the role runs |
+| `defaults` | Default variable values, meant to be overridden |
+| `vars` | Variables internal to the role, not meant to be overridden |
+| `handlers` | Handlers the role's tasks notify |
+| `templates` | Jinja2 templates used by the role's tasks |
+| `files` | Static files used by the role's tasks |
+| `meta` | Information about the role, including its dependencies |
+
+Inside a role, `template` and `copy` tasks refer to their source by file name alone. Ansible looks in the role's own `templates/` and `files/` directories first.
+
+## Using a role in a play
+
+List roles under the **`roles`** keyword of a play:
+
+```yaml
+- name: Web servers run the site
+  hosts: web
+  roles:
+    - web_site
+    - monitoring_agent
+```
+
+Ansible looks for each role in a `roles/` directory next to the playbook, then in the directories of the `roles_path` setting (by default `~/.ansible/roles`, `/usr/share/ansible/roles` and `/etc/ansible/roles`).
+
+To set a role's variables for one play, give the role entry a `vars` section:
+
+```yaml
+  roles:
+    - role: web_site
+      vars:
+        web_site_title: Staff intranet
+```
+
+## The order things run in
+
+A play can contain roles and its own tasks. Ansible does not run them in the order they are written. It runs **`pre_tasks`**, then **`roles`**, then **`tasks`**, then **`post_tasks`**, and it runs pending handlers between those stages. Select a step to see where it comes from:
+
+<PlayOrder />
+
+Use `pre_tasks` for something that must happen before any role, such as taking a host out of a load balancer, and `post_tasks` for the matching step afterwards.
+
+<Callout type="note" title="Roles as tasks">
+You can also start a role from the task list, with `ansible.builtin.import_role` (static) or `ansible.builtin.include_role` (dynamic). They follow the same rules as `import_tasks` and `include_tasks` in chapter 6, and they run at that point in the task list rather than before it.
+
+```yaml
+  tasks:
+    - name: Set up the site
+      ansible.builtin.include_role:
+        name: web_site
+      when: deploy_site | bool
+```
+</Callout>
+
+## Variables in a role
+
+A role has two places for variables, and they behave very differently:
+
+<Columns>
+<Column title="defaults/main.yml" tone="green">
+
+The role's settings, with sensible starting values. They have the **lowest** precedence of anything in Ansible, so inventory, play variables and the command line can all override them.
+
+</Column>
+<Column title="vars/main.yml" tone="amber">
+
+Values the role needs internally, such as a path that must not change. They have **high** precedence: inventory and play variables do not override them.
+
+</Column>
+</Columns>
+
+Tick the places where a variable is set and see which value the role ends up with:
+
+<RoleVarResolver />
+
+<Callout type="tip" title="Two habits for role variables">
+**Put anything a user might change in `defaults`**, and keep `vars` for values that really are fixed.
+
+**Prefix every variable with the role's name** (`web_site_title`, not `title`). All variables of a play share one namespace, so a generic name in one role can collide with the same name in another.
+</Callout>
+
+<Callout type="warning" title="Secrets do not belong in a role">
+Pass passwords and keys into a role as variables from a Vault-encrypted file (chapter 3). A role with a secret inside it cannot be shared.
+</Callout>
+
+<Quiz
+  id="check"
+  title="Check your understanding"
+  questions={[
+    {
+      q: 'Which file must a role have?',
+      options: ['`meta/main.yml`', '`tasks/main.yml`', '`defaults/main.yml`', '`README.md`'],
+      answer: 1,
+      explain: 'Every other directory is optional.',
+    },
+    {
+      q: 'A play has `tasks`, `roles` and `pre_tasks`, written in that order. What runs first?',
+      options: ['The tasks, because they are written first', 'The pre_tasks', 'The roles'],
+      answer: 1,
+      explain: 'The order is always pre_tasks, roles, tasks, post_tasks, whatever order they are written in.',
+    },
+    {
+      q: 'Where should a role keep a setting that users are expected to change?',
+      options: ['`vars/main.yml`', '`defaults/main.yml`', '`meta/main.yml`'],
+      answer: 1,
+      explain: 'Defaults have the lowest precedence, so anything can override them.',
+    },
+    {
+      q: 'A role sets `web_site_title` in `vars/main.yml`. The play sets it too, under `vars:`. Which value is used?',
+      options: ['The play’s value', 'The role’s `vars/main.yml` value', 'Ansible reports a conflict'],
+      answer: 1,
+      explain: 'Role vars outrank play variables. That is why user-facing settings belong in defaults.',
+    },
+    {
+      q: 'A role task has `src: site.conf.j2` with no path. Where does Ansible look first?',
+      options: ['Next to the playbook', 'In the role’s `templates/` directory', 'In `/etc/ansible`'],
+      answer: 1,
+      explain: 'Roles find their own templates and files by name.',
+    },
+  ]}
+/>

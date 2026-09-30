@@ -1,0 +1,204 @@
+---
+title: "Chapter lab: Roles and collections"
+kind: lab
+minutes: 30
+---
+
+<Lead>
+Give every server a baseline with one short play: a role you write yourself, a system role from a collection, and tasks before and after them. The same role produces a different result on each host, driven only by variables. Solutions are hidden under each task. Try each one yourself first.
+</Lead>
+
+The project `~/role-review` has an `ansible.cfg` and this inventory:
+
+```ini title="inventory"
+[dev]
+servera.lab.example.com
+
+[prod]
+serverb.lab.example.com
+```
+
+<Lab
+  id="review"
+  title="Roles and collections"
+  classroom="lab start role-review"
+  own
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={[
+    'Create a role with defaults and a template.',
+    'Override role defaults for one group from the inventory.',
+    'Combine your role with a system role, pre_tasks and post_tasks in one play.',
+  ]}
+>
+  <Task title="Create the motd role">
+    Create a role called `motd` in `roles/`. It has two settings, with these defaults:
+
+    | Variable | Default |
+    | --- | --- |
+    | `motd_owner` | `root@localhost` |
+    | `motd_environment` | `development` |
+
+    <Reveal title="Show solution">
+
+```console
+[student@workstation ~]$ cd ~/role-review
+[student@workstation role-review]$ ansible-galaxy role init roles/motd
+- Role roles/motd was created successfully
+```
+
+```yaml title="roles/motd/defaults/main.yml"
+---
+motd_owner: root@localhost
+motd_environment: development
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Write the role's template and task">
+    The role deploys a template to `/etc/motd`, owned by `root:root`, mode `0644`. The message has two lines:
+
+    ```text
+    This is FQDN, a ENVIRONMENT system.
+    Contact: OWNER
+    ```
+
+    <Reveal title="Show solution">
+
+```jinja title="roles/motd/templates/motd.j2"
+This is {{ ansible_facts['fqdn'] }}, a {{ motd_environment }} system.
+Contact: {{ motd_owner }}
+```
+
+```yaml title="roles/motd/tasks/main.yml"
+---
+- name: Message of the day is in place
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
+```
+    </Reveal>
+  </Task>
+
+  <Task title="Set different values for production">
+    Hosts in `prod` should say `production` and give `ops@example.com` as the contact. Do this from the inventory, without touching the role or the play.
+
+    <Reveal title="Show solution">
+
+```yaml title="group_vars/prod.yml"
+---
+motd_environment: production
+motd_owner: ops@example.com
+```
+
+    Inventory variables outrank role defaults, so the role picks these up for serverb and keeps its defaults for servera.
+    </Reveal>
+  </Task>
+
+  <Task title="Write the play">
+    Create `site.yml` with one play for all hosts that, in this order:
+
+    1. prints `Starting baseline on HOSTNAME` before anything else;
+    2. applies the `timesync` system role, from its collection, with one NTP pool;
+    3. applies your `motd` role;
+    4. afterwards, reads `/etc/motd` back with a command that never reports `changed`, and prints its lines.
+
+    <Reveal title="Show solution">
+
+```yaml title="site.yml"
+---
+- name: Every server has the baseline
+  hosts: all
+  vars:
+    timesync_ntp_servers:
+      - hostname: 0.rocky.pool.ntp.org
+        pool: true
+        iburst: true
+  pre_tasks:
+    - name: Say which host is starting
+      ansible.builtin.debug:
+        msg: "Starting baseline on {{ inventory_hostname }}"
+  roles:
+    - redhat.rhel_system_roles.timesync
+    - motd
+  post_tasks:
+    - name: Read the message back
+      ansible.builtin.command: cat /etc/motd
+      register: motd_text
+      changed_when: false
+
+    - name: Show the message
+      ansible.builtin.debug:
+        var: motd_text.stdout_lines
+```
+
+    In a classroom without internet access, use the NTP server your classroom provides.
+    </Reveal>
+  </Task>
+
+  <Task title="Run it and read the result">
+
+```console
+[student@workstation role-review]$ ansible-navigator run -m stdout site.yml --syntax-check
+
+playbook: /home/student/role-review/site.yml
+[student@workstation role-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+TASK [Say which host is starting] **********************************************
+ok: [servera.lab.example.com] => {
+    "msg": "Starting baseline on servera.lab.example.com"
+}
+...output omitted...
+TASK [motd : Message of the day is in place] ***********************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+...output omitted...
+TASK [Show the message] ********************************************************
+ok: [servera.lab.example.com] => {
+    "motd_text.stdout_lines": [
+        "This is servera.lab.example.com, a development system.",
+        "Contact: root@localhost"
+    ]
+}
+ok: [serverb.lab.example.com] => {
+    "motd_text.stdout_lines": [
+        "This is serverb.lab.example.com, a production system.",
+        "Contact: ops@example.com"
+    ]
+}
+```
+
+    One role, two results: servera kept the defaults, serverb took its values from `group_vars/prod.yml`.
+  </Task>
+
+  <Task title="Prove it is idempotent">
+    Run the playbook again. Both hosts must report `changed=0`.
+
+```console
+[student@workstation role-review]$ ansible-navigator run -m stdout site.yml
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=25   changed=0    unreachable=0    failed=0    skipped=30  ...
+serverb.lab.example.com    : ok=25   changed=0    unreachable=0    failed=0    skipped=30  ...
+```
+
+    The `command` task would normally report `changed` on every run. `changed_when: false` is what keeps this recap clean.
+  </Task>
+
+  <Task title="Finish">
+    <Env>
+      <Classroom>
+        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset or clean the two servers the way your classroom provides.
+      </Classroom>
+      <HomeLab>
+        There is no grading script: the checks above are the test. Then `lab finish role-review` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
+      </HomeLab>
+    </Env>
+  </Task>
+</Lab>
+
+<Callout type="exam" title="What this lab rehearses">
+Role skeleton, defaults, a template, a group-level override, a system role by its full name, and the running order of a play. If you can build this from an empty directory without notes, you have the chapter.
+</Callout>

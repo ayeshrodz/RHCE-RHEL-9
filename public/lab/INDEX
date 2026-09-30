@@ -19,3 +19,7 @@ file-review          5.5   Chapter lab: Deploying files to managed hosts
 pattern-hosts        6.2   Selecting hosts with host patterns
 reuse-tasks          6.4   Including and importing files
 complex-review       6.5   Chapter lab: Managing complex plays and playbooks
+role-create          7.3   Creating a role
+role-system          7.5   Using system roles and roles from an archive
+collection-use       7.7   Getting modules from a collection
+role-review          7.8   Chapter lab: Roles and collections

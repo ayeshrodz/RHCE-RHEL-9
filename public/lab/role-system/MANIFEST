@@ -1,0 +1,4 @@
+# Using system roles and roles from an archive
+ansible.cfg
+inventory
+@setup.sh
