@@ -25,7 +25,7 @@ export function EnvSwitch({ label = 'Show commands for' }) {
 
 /**
  * <Env>
- *   <Classroom>…what the book does…</Classroom>
+ *   <Classroom>…what a training classroom does…</Classroom>
  *   <HomeLab>…what to do on the Chapter 0 lab…</HomeLab>
  * </Env>
  */
@@ -198,7 +198,7 @@ export function LabPrep({ name, classroom, starter, extra }) {
               </li>
               {starter && (
                 <li>
-                  On workstation: <code>{classroom}</code>, the same command as the book. The{' '}
+                  On workstation: <code>{classroom}</code>, the same command as in a classroom. The{' '}
                   <Link to="/ch00/control-node">home-lab version of lab</Link> creates <code>~/{name}</code> with these starter files:
                   <StarterFiles name={name} />
                 </li>

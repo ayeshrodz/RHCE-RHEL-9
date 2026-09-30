@@ -3,7 +3,7 @@
 import { useStored } from '@/lib/storage';
 
 export const ENVS = [
-  { id: 'classroom', label: 'Red Hat classroom' },
+  { id: 'classroom', label: 'Classroom' },
   { id: 'home', label: 'Home lab' },
 ];
 

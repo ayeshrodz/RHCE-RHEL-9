@@ -77,7 +77,7 @@ ansible-navigator.execution-environment.enabled: Settings file
 ansible-navigator.playbook-artifact.enable: Settings file
 ```
 
-        This file does not set `mode: stdout`, which is why the commands below pass `-m stdout`, as in the book.
+        This file does not set `mode: stdout`, which is why the commands below pass `-m stdout`.
       </HomeLab>
     </Env>
   </Task>
@@ -185,5 +185,5 @@ ok: [servera.lab.example.com]
 </Lab>
 
 <Callout type="exam" title="Build this from memory">
-On the exam you are likely to start from an empty project directory. Practise writing `ansible.cfg` (inventory, remote_user and the four privilege escalation directives) and a grouped inventory quickly and without typos. Then prove them with a ping playbook before writing anything bigger.
+In a hands-on exam you should expect to start from an empty project directory. Practise writing `ansible.cfg` (inventory, remote_user and the four privilege escalation directives) and a grouped inventory quickly and without typos. Then prove them with a ping playbook before writing anything bigger.
 </Callout>

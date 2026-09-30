@@ -184,7 +184,7 @@ Things worth trying:
 - In the filters example, the variable `backup_host` is not defined anywhere: remove `| default(...)` and see what happens.
 
 <HomeLab title="Your facts say Rocky">
-On the home lab, `ansible_facts['distribution']` is `Rocky` and `distribution_version` is `9.8`, where the book's output shows `RedHat` and `9.0`. The playground follows whichever environment you selected.
+On the home lab, `ansible_facts['distribution']` is `Rocky` and `distribution_version` is `9.8`, where a RHEL host reports `RedHat` and `9.0`. The playground follows whichever environment you selected.
 </HomeLab>
 
 ## Filters
@@ -204,7 +204,7 @@ A **filter** changes a value on its way into the file. Write it after a pipe:
 | `default('x')` | Use `x` when the variable is undefined |
 | `upper`, `lower`, `join(', ')`, `length` | Everyday text and list helpers |
 
-Filters work anywhere Jinja2 does, in playbooks as well as templates. There are many more; they are covered in depth in the follow-on course DO374, and in "Using filters to manipulate data" in the Ansible documentation.
+Filters work anywhere Jinja2 does, in playbooks as well as templates. There are many more: see "Using filters to manipulate data" in the Ansible documentation.
 
 <Quiz
   id="check"

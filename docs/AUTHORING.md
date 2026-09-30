@@ -58,7 +58,7 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 
 ## 3. Writing style
 
-- **Write in your own words.** Use the course PDF to check facts and structure, never copy its prose. Commands, file contents and directive names are fine to reproduce.
+- **Write in your own words, from open sources:** the public exam objectives, the Ansible and RHEL documentation, and your own testing on the lab. Do not copy or closely paraphrase training materials or books. Commands, file contents and directive names are fine to reproduce.
 - Short sentences, second person ("you"), active voice. Explain *why* before *how*.
 - Use the classroom host names (`workstation`, `servera`–`serverd`, `utility.lab.example.com`) and documentation IP ranges (`192.0.2.0/24`). Never real personal hosts, users or addresses.
 - Always use FQCNs in examples (`ansible.builtin.copy`).
@@ -152,11 +152,11 @@ Readers follow the guide either in the Red Hat classroom or on the home lab from
 | `<HomeSetup>…</HomeSetup>` inside `<Lab>` | Extra home-lab preparation notes for that exercise. |
 | `<Finish name="NAME" />` (add `grade` for chapter labs) | The body of an exercise's last task, for both environments. |
 
-Keep the book's commands as the default text of an exercise, and use these only where the home lab really differs (no execution environment, Rocky facts, firewalld running, `sdb` for `vdb`).
+Keep the classroom commands as the default text of an exercise, and use these only where the home lab really differs (no execution environment, Rocky facts, firewalld running, `sdb` for `vdb`).
 
 ### Exercise starter files
 
-Every exercise that the book starts with `lab start NAME` needs a folder `public/lab/NAME/`:
+Every exercise that starts with `lab start NAME` needs a folder `public/lab/NAME/`:
 
 ```text
 public/lab/NAME/

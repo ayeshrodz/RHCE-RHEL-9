@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lab - home-lab stand-in for the classroom's "lab" command (RHCE Field Guide)
+# lab - starts exercises on the RHCE Field Guide home lab (same syntax as a classroom 'lab' command)
 # Runs on workstation as student. Install: see section 0.6 of the guide.
 # Version 1
 set -uo pipefail
@@ -14,7 +14,7 @@ fetch() { curl -fsSL --retry 2 "$BASE/$1"; }
 
 usage() {
 cat <<USAGE
-lab v$VERSION - RH294 home lab exercises
+lab v$VERSION - RHCE Field Guide home lab exercises
 
   lab start  NAME [--force]   create ~/NAME with the exercise's starter files
   lab finish NAME             what to do when you are done

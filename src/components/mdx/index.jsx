@@ -1,4 +1,5 @@
 // Everything MDX pages can use without importing it.
+import { Children, cloneElement, isValidElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CodeBlock from './CodeBlock';
 import { fillInline, usePlaceholderValues } from '@/lib/placeholders';
@@ -41,10 +42,45 @@ function Anchor({ href = '', onClick, ...props }) {
   return <a href={href} onClick={onClick} {...props} />;
 }
 
-function Table(props) {
+const textOf = (node) =>
+  node == null || typeof node === 'boolean'
+    ? ''
+    : typeof node === 'string' || typeof node === 'number'
+      ? String(node)
+      : Array.isArray(node)
+        ? node.map(textOf).join('')
+        : isValidElement(node)
+          ? textOf(node.props.children)
+          : '';
+const elements = (node, type) => Children.toArray(node).filter((c) => isValidElement(c) && (!type || c.type === type));
+
+// Each body cell gets its column heading as data-label, so that on a phone the
+// table can turn into a stack of labelled cards instead of a sideways scroll.
+function Table({ children, ...props }) {
+  const head = elements(children, 'thead')[0];
+  const labels = head ? elements(elements(head.props.children)[0]?.props.children).map((th) => textOf(th.props.children).trim()) : [];
+  const body = Children.map(children, (section) =>
+    isValidElement(section) && section.type === 'tbody'
+      ? cloneElement(
+          section,
+          {},
+          Children.map(section.props.children, (row) =>
+            isValidElement(row)
+              ? cloneElement(
+                  row,
+                  {},
+                  elements(row.props.children).map((cell, i) =>
+                    cloneElement(cell, { 'data-label': labels[i] ?? '' }, <span className="td-val">{cell.props.children}</span>),
+                  ),
+                )
+              : row,
+          ),
+        )
+      : section,
+  );
   return (
     <div className="table-wrap">
-      <table {...props} />
+      <table {...props}>{body}</table>
     </div>
   );
 }

@@ -5,13 +5,13 @@ minutes: 20
 ---
 
 <Lead>
-Phase 12. The classroom resets machines with `rht-vmctl`. Here you install a home-lab version with the same syntax, so when the book says "reset servera" you type exactly what it shows. It runs on the Ubuntu host and uses LXD snapshots underneath.
+Phase 12. The classroom resets machines with `rht-vmctl`. Here you install a home-lab version with the same syntax, so resetting a machine is the same command in both places. It runs on the Ubuntu host and uses LXD snapshots underneath.
 </Lead>
 
 <Objectives>
 - Install `rht-vmctl` on the host.
 - Verify the whole build, then take the `clean` baseline snapshot at the right moment.
-- Follow the book's reset instructions at home, and know the one snapshot rule ZFS imposes.
+- Reset machines at home the way you would in a classroom, and know the one snapshot rule ZFS imposes.
 </Objectives>
 
 ## The reset loop
@@ -42,7 +42,7 @@ sudo tee /usr/local/bin/rht-vmctl >/dev/null
 
 ```bash title="/usr/local/bin/rht-vmctl"
 #!/usr/bin/env bash
-# rht-vmctl - RH294 classroom-style VM control for the RHCE LXD home lab
+# rht-vmctl - classroom-style VM control for the RHCE LXD home lab
 # Install: sudo install -m 755 rht-vmctl /usr/local/bin/rht-vmctl
 # Version 2 (2026-09-30): the servers' extra disks are snapshotted and reset too
 set -uo pipefail
@@ -144,9 +144,9 @@ has_ws()      { printf '%s\n' "$@" | grep -qx workstation; }
 
 usage() {
 cat <<USAGE
-rht-vmctl v$VERSION - RH294 home lab (LXD project: $PROJECT)
+rht-vmctl v$VERSION - RHCE home lab (LXD project: $PROJECT)
 
-Book commands (same syntax as the classroom):
+Classroom commands (same syntax):
   rht-vmctl status    VM|all       show state
   rht-vmctl start     VM|all       start
   rht-vmctl stop      VM|all       clean shutdown
@@ -492,7 +492,7 @@ If exercises already changed the servers (packages, users, files, partitions on 
 
 A *VM* is a name like `servera`, or `servers` (servera–serverd), or `all`.
 
-| Command | What it does | Book equivalent |
+| Command | What it does | Classroom equivalent |
 | --- | --- | --- |
 | `rht-vmctl status all` | State of each VM | same |
 | `rht-vmctl start all` | Start VMs and wait until they have booted | same |
@@ -513,14 +513,14 @@ A *VM* is a name like `servera`, or `servers` (servera–serverd), or `all`.
 | `rht-vmctl login servera root` | Shell on any VM (default user: student) | — |
 
 <Callout type="exam" title="Only for the classroom">
-`rht-vmctl` exists so you can follow the book word for word. It isn't part of the EX294 exam, where you are simply given working machines.
+`rht-vmctl` is lab housekeeping. It is not an Ansible skill and not something to study for the exam.
 </Callout>
 
-## Following the book at home
+## Coming from a classroom
 
-Where the book says to run a command on `foundation` as `kiosk`, run the same command on the Ubuntu host as yourself.
+Where classroom instructions run a command on the classroom's host machine, run the same command on the Ubuntu host as yourself.
 
-| Book instruction | Home lab | Same behaviour? |
+| Classroom command | Home lab | Same behaviour? |
 | --- | --- | --- |
 | `rht-vmctl reset servera` | identical | Yes. Returns once servera has booted and is ready |
 | `rht-vmctl reset workstation` | identical | Yes, but asks first, because your playbooks live there |
@@ -541,7 +541,7 @@ In the classroom, `lab start` prepares each exercise: it creates the exercise fo
     On the Ubuntu host: `rht-vmctl reset servers`.
   </Step>
   <Step title="Start the exercise">
-    On workstation: `lab start playbook-basic`, exactly as the book prints it. The home-lab `lab` command from [section 0.6](#/ch00/control-node) downloads that exercise's starter files into `~/playbook-basic`. Each exercise page lists them; click one to read it.
+    On workstation: `lab start playbook-basic`, the same command as in a classroom. The home-lab `lab` command from [section 0.6](#/ch00/control-node) downloads that exercise's starter files into `~/playbook-basic`. Each exercise page lists them; click one to read it.
   </Step>
   <Step title="Finish">
     Check your result with the exercise's own verification steps, run the playbook a second time to confirm `changed=0`, then reset the servers again before the next exercise. `lab grade` exists only in the classroom.

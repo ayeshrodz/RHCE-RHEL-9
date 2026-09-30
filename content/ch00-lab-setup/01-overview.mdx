@@ -5,7 +5,7 @@ minutes: 10
 ---
 
 <Lead>
-The guide's exercises assume the RH294 classroom: a `workstation` control node and managed hosts `servera` to `serverd` on `lab.example.com`. This chapter builds a faithful copy on one Ubuntu machine at home, with Rocky Linux 9 VMs using the book's names, IP addresses and users, on a private network that nothing outside can connect into.
+The guide's exercises assume a conventional Ansible training classroom: a `workstation` control node and managed hosts `servera` to `serverd` on `lab.example.com`. This chapter builds a faithful copy on one Ubuntu machine at home, with Rocky Linux 9 VMs using the usual classroom names, IP addresses and users, on a private network that nothing outside can connect into.
 </Lead>
 
 <Objectives>
@@ -47,7 +47,7 @@ Pick a traffic flow to see its path and the firewall rule that decides it:
 
 ## The address plan
 
-The lab uses the classroom network `172.25.250.0/24` and the domain `lab.example.com`, so every hostname and IP in the book works unchanged.
+The lab uses the classroom network `172.25.250.0/24` and the domain `lab.example.com`, so every hostname and IP address in this guide works unchanged.
 
 | Name | IP | vCPU / RAM | Extra disk | Role |
 | --- | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ The lab uses the classroom network `172.25.250.0/24` and the domain `lab.example
 
 | User | Password | Purpose |
 | --- | --- | --- |
-| `student` | `student` | Your everyday login, as in the book. sudo with a password. |
+| `student` | `student` | Your everyday login. sudo with a password. |
 | `devops` | `redhat` | The account Ansible connects as. Passwordless sudo. |
 | `root` | `redhat` | Same as the classroom |
 
@@ -95,7 +95,7 @@ A few values differ on every home network. The instructions write them as placeh
 | `<HOST_USER>` | Your login name on the Ubuntu host | `whoami` on the host |
 | `<ROUTER_IP>` | Your local network's default gateway | `ip route \| grep default` |
 
-Everything else, including the `172.25.250.0/24` network, the hostnames and the `student`/`devops` passwords, is fixed and matches the RH294 course materials.
+Everything else, including the `172.25.250.0/24` network, the hostnames and the `student`/`devops` passwords, is the same for everyone.
 
 ## Why the host has two IP addresses
 
@@ -162,11 +162,11 @@ Newer patch releases should behave the same. If something differs, compare again
 | All VMs | SELinux | Enforcing, selinux-policy 38.1.75 | Added by the profile; the image ships without it |
 | | firewalld, chrony | Running | Added by the profile, as on a RHEL server |
 
-<Callout type="important" title="How this differs from the course">
+<Callout type="important" title="How this differs from a Red Hat classroom">
 - **Rocky Linux 9 instead of RHEL 9.** Rocky is a free rebuild of RHEL, so packages, paths and services match. The fact `ansible_facts['distribution']` reports `Rocky`, not `RedHat`, so adjust conditions like `== "RedHat"` from chapter 4 when you practise them here, or test `ansible_facts['os_family'] == "RedHat"`, which is true on both.
-- **ansible-core 2.14 without an execution environment.** The book runs playbooks inside Red Hat's supported EE, which needs a Red Hat registry login. Here navigator runs Rocky's own `ansible-core` 2.14, the same generation RHEL 9 uses, and the `ansible.posix` and `community.general` collections the EE would provide are installed on workstation. Section 0.6 explains how to try the container workflow anyway.
+- **ansible-core 2.14 without an execution environment.** A Red Hat classroom runs playbooks inside Red Hat's supported EE, which needs a Red Hat registry login. Here navigator runs Rocky's own `ansible-core` 2.14, the same generation RHEL 9 uses, and the `ansible.posix` and `community.general` collections the EE would provide are installed on workstation. Section 0.6 explains how to try the container workflow anyway.
 - **The extra disk is `/dev/sdb`**, not `/dev/vdb`: adjust storage exercises accordingly.
-- **`lab start` is a stand-in.** The classroom's `lab` command ships only with Red Hat's environment. Section 0.6 installs a small replacement with the same syntax that downloads each exercise's starter files; `lab grade` has no equivalent.
+- **`lab start` is a stand-in.** A classroom's `lab` command exists only there. Section 0.6 installs this guide's own script with the same syntax that downloads each exercise's starter files; `lab grade` has no equivalent.
 - **Classroom or home lab: pick once.** Wherever the two differ, exercises and lessons show both, behind a switch the site remembers.
 </Callout>
 

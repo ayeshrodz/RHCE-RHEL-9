@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import Footer from './Footer';
 import SearchDialog from '@/components/search/SearchDialog';
 import { useStored } from '@/lib/storage';
 
@@ -51,6 +52,7 @@ export default function AppShell() {
         <Sidebar open={navOpen} onClose={() => setNavOpen(false)} collapsed={collapsed} onToggleCollapsed={() => setCollapsed((c) => !c)} />
         <main id="main" className="shell-main" tabIndex={-1}>
           <Outlet />
+          <Footer />
         </main>
       </div>
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}

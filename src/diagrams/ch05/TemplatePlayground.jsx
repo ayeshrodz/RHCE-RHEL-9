@@ -187,8 +187,8 @@ export default function TemplatePlayground() {
             </pre>
           )}
           <p className="tpl-foot">
-            Facts shown are for {env === 'home' ? 'the home lab (Rocky Linux)' : 'the Red Hat classroom (RHEL)'}. A variable that is not
-            defined stops the task, as it does in Ansible.
+            Facts shown are for {env === 'home' ? 'the home lab (Rocky Linux)' : 'a RHEL classroom'}. A variable that is not defined stops
+            the task, as it does in Ansible.
           </p>
         </div>
       </div>

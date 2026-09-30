@@ -38,7 +38,7 @@ export default function HomePage() {
   const { done, percent } = useProgress();
 
   useEffect(() => {
-    document.title = `${course.title} · RHCE (EX294) study guide`;
+    document.title = `${course.title} · a community RHCE study guide`;
   }, []);
 
   const [lastVisited] = useStored('lastVisited', null);
@@ -56,8 +56,8 @@ export default function HomePage() {
           </p>
           <h1>Learn Ansible the way the RHCE exam tests it.</h1>
           <p className="hero-sub">
-            A calm, visual walk through the Red Hat Enterprise Linux Automation with Ansible course. Concepts are drawn as diagrams,
-            exercises are checklists you can tick off, and every chapter ends with a quiz and a cheat sheet.
+            A calm, visual walk through Ansible automation on Red Hat Enterprise Linux. Concepts are drawn as diagrams, exercises are
+            checklists you can tick off, and every chapter ends with a quiz and a cheat sheet.
           </p>
           <div className="hero-actions">
             <Link className="btn btn-primary btn-lg" to={started ? resume.path : firstLesson.path}>
@@ -119,7 +119,7 @@ export default function HomePage() {
           <h2>Build the practice lab</h2>
           <p>
             The exercises use the machines from the official classroom. Chapter 0 builds a faithful copy on one Ubuntu machine: Rocky Linux
-            9 VMs on LXD, with the book's names, addresses and users, sealed off from your home network, plus a classroom-style{' '}
+            9 VMs on LXD, with the usual classroom names, addresses and users, sealed off from your home network, plus a classroom-style{' '}
             <code>rht-vmctl</code> to reset machines between exercises.
           </p>
           <Link className="btn home-lab-cta" to="/ch00">
@@ -137,13 +137,6 @@ export default function HomePage() {
           ))}
         </dl>
       </section>
-
-      <footer className="home-foot">
-        <p>
-          An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. Red Hat, RHCE and
-          Ansible are trademarks of Red Hat, Inc.
-        </p>
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 title: RHCE Field Guide
-exam: EX294
-course: RH294
+exam: RHCE
 rhel: "9.0"
 aap: "2.2"
 ansibleCore: "2.13"

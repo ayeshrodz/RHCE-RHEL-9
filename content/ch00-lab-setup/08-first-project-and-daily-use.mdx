@@ -43,12 +43,12 @@ become_ask_pass = False
     Every setting here is explained in [chapter 2](#/ch02/configuration).
 
     <Callout type="warning" title="Keep all three collection paths">
-    `collections_path` *replaces* Ansible's search list rather than adding to it. With only `./collections`, Ansible can no longer see `ansible.posix`, `community.general` or `redhat.rhel_system_roles` in `/usr/share/ansible/collections`, and tasks fail with *"couldn't resolve module/action"*. The three-path line is the one RH294 uses.
+    `collections_path` *replaces* Ansible's search list rather than adding to it. With only `./collections`, Ansible can no longer see `ansible.posix`, `community.general` or `redhat.rhel_system_roles` in `/usr/share/ansible/collections`, and tasks fail with *"couldn't resolve module/action"*. The three-path line keeps the defaults and adds the project folder in front.
     </Callout>
   </Task>
 
   <Task title="VM: write the inventory">
-    The groups match the EX294 practice workbook:
+    A set of groups that is handy for practice:
 
 ```ini title="~/ansible/inventory"
 [dev]
@@ -132,7 +132,7 @@ lxc file pull workstation/home/student/ansible/site.yml .     # VM → host
     `rht-vmctl reset servers` on the host.
   </Step>
   <Step title="Start the exercise">
-    `lab start NAME` on workstation, the same command the book shows. It creates `~/NAME` with that exercise's `ansible.cfg`, inventory and starter files.
+    `lab start NAME` on workstation. It creates `~/NAME` with that exercise's `ansible.cfg`, inventory and starter files.
   </Step>
   <Step title="Remember the firewall">
     firewalld runs on every server, as in the classroom. If an exercise sets up a web server, the playbook has to open the port (`ansible.posix.firewalld`) before `curl` from workstation works.

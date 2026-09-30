@@ -4,9 +4,9 @@
 
 **Read it online: https://ayeshrodz.github.io/RHCE-RHEL-9/**
 
-A free, interactive study guide and home-lab build for the **Red Hat Certified Engineer (EX294)** exam: Ansible automation on RHEL 9, following the structure of the RH294 course. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
+A free, interactive study guide and home-lab build for people working towards the **RHCE** certification: Ansible automation on RHEL 9. It is written by learners, for learners, as a way to study together. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
 
-> An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.
+> An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 
 ## Status
 
