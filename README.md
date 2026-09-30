@@ -1,5 +1,9 @@
 # RHCE Field Guide
 
+[![Deploy](https://github.com/ayeshrodz/RHCE-RHEL-9/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/RHCE-RHEL-9/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
+
+**Read it online: https://ayeshrodz.github.io/RHCE-RHEL-9/**
+
 A free, interactive study guide and home-lab build for the **Red Hat Certified Engineer (EX294)** exam: Ansible automation on RHEL 9, following the structure of the RH294 course. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
 
 > An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.
@@ -66,6 +70,15 @@ The workflow in `.github/workflows/deploy.yml` builds and publishes the site on 
 
 No configuration is needed for the repository name: assets use relative paths and routes live in the URL hash (`#/ch02/inventory`), so deep links and page refreshes work from any sub-path without a 404 fallback. `public/.nojekyll` stops GitHub from running Jekyll over the output.
 
-## Contributing content
+## Contributing
 
-See [docs/AUTHORING.md](docs/AUTHORING.md). In short: add an `.mdx` file with a frontmatter title to a chapter folder, and write in your own words.
+Contributions are welcome: corrections, lab feedback, new chapters, diagrams. Fork the repository, make your change on a branch and open a pull request; the maintainer reviews and merges it, and merging redeploys the site. Read [CONTRIBUTING.md](CONTRIBUTING.md) first, and see [docs/AUTHORING.md](docs/AUTHORING.md) for how sections and diagrams are written. In short: write in your own words and keep commands tested.
+
+Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems: see [SECURITY.md](SECURITY.md).
+
+## License
+
+- **Source code** (`src/`, `plugins/`, build and configuration files): [MIT](LICENSE).
+- **Written content** (`content/`, `docs/`) and the site's text and diagrams: [CC BY 4.0](LICENSE-CONTENT). Reuse is welcome with credit.
+
+Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks of Red Hat, Inc. This project is independent and is not affiliated with, sponsored by, or endorsed by Red Hat, Inc.
