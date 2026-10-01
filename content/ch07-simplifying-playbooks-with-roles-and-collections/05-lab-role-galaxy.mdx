@@ -10,7 +10,7 @@ You will install a role that another team keeps in a Git repository, use it to s
 
 The project `~/role-galaxy` has an `ansible.cfg` and an `inventory` with `servera.lab.example.com` in the `devservers` group. The role, `bash_env`, writes `.bashrc`, `.bash_profile` and `.vimrc` into `/etc/skel`, so every user created afterwards gets them.
 
-<Lab
+<Lab objectives={["ch07.role-install"]}
   id="role-galaxy"
   title="Deploying roles from external content sources"
   classroom="lab start role-galaxy"
@@ -25,7 +25,7 @@ The project `~/role-galaxy` has an `ansible.cfg` and an `inventory` with `server
     `lab start role-galaxy` creates the Git repository on workstation, in `~/git-repos/student/bash_env.git`, with two branches: `main` and `dev`. Wherever the steps below use the repository, use its `file://` path.
   </HomeSetup>
 
-  <Task title="Write the requirements file">
+  <Task id="task-190e425eb796" legacyIndex={1} title="Write the requirements file">
     In `~/role-galaxy`, create `roles/requirements.yml`. It installs the `bash_env` role from Git, on the `main` branch, under the name `student.bash_env`.
 
     <Env>
@@ -56,7 +56,7 @@ The project `~/role-galaxy` has an `ansible.cfg` and an `inventory` with `server
     </Env>
   </Task>
 
-  <Task title="Install the role into the project">
+  <Task id="task-d4d6bf9805bd" legacyIndex={2} title="Install the role into the project">
 
 ```console
 [student@workstation role-galaxy]$ ls roles/
@@ -70,7 +70,7 @@ requirements.yml  student.bash_env
 ```
   </Task>
 
-  <Task title="List the roles">
+  <Task id="task-4b4a67148ca8" legacyIndex={3} title="List the roles">
 
 ```console
 [student@workstation role-galaxy]$ ansible-galaxy list -p roles
@@ -85,7 +85,7 @@ requirements.yml  student.bash_env
     Run the same command without `-p roles`: the project's role is not listed, because `roles/` is not in the configured `roles_path` yet. The warning is harmless; it only says that one of the default directories does not exist.
   </Task>
 
-  <Task title="Use the role">
+  <Task id="task-bd87b7f2ed3b" legacyIndex={4} title="Use the role">
     Create `use-bash_env-role.yml`. Before the role, make sure a test user `student2` does not exist; after it, create that user again, so it gets the new files from `/etc/skel`. Set the prompt through the role's `default_prompt` variable.
 
 ```yaml title="use-bash_env-role.yml"
@@ -116,7 +116,7 @@ requirements.yml  student.bash_env
     The `password_hash` filter turns the plain-text password into the hash that `/etc/shadow` expects. The fixed salt keeps the task idempotent.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-1239aad62c32" legacyIndex={5} title="Run it">
 
 ```console
 [student@workstation role-galaxy]$ ansible-navigator run -m stdout use-bash_env-role.yml
@@ -148,7 +148,7 @@ servera.lab.example.com    : ok=6    changed=4    unreachable=0    failed=0  ...
     You may also see a deprecation warning about the Python `crypt` module, from `password_hash`. It does not affect the result.
   </Task>
 
-  <Task title="Log in as the new user">
+  <Task id="task-d9b440fe3e5a" legacyIndex={6} title="Log in as the new user">
     Connect as `student2`, with the password `redhat`. The prompt is the one from the role:
 
 ```console
@@ -159,7 +159,7 @@ student2@servera's password: redhat
 ```
   </Task>
 
-  <Task title="Switch to the dev branch">
+  <Task id="task-da21db5cbeb0" legacyIndex={7} title="Switch to the dev branch">
     The `dev` branch of the role adds a `prompt_color` variable. Change `version: main` to `version: dev` in `roles/requirements.yml`.
 
     This time, add `roles_path` to the `[defaults]` section of `ansible.cfg`, so you no longer need `-p roles`:
@@ -185,7 +185,7 @@ Starting galaxy role install process
 ```
   </Task>
 
-  <Task title="Use the new variable">
+  <Task id="task-698378252684" legacyIndex={8} title="Use the new variable">
     Add `prompt_color: blue` to the play's `vars`, next to `default_prompt`, and run the playbook again:
 
 ```console
@@ -213,7 +213,7 @@ servera.lab.example.com    : ok=6    changed=3    unreachable=0    failed=0  ...
     Only `.bashrc` changed between the branches. Log in as `student2` again: the prompt is now blue.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-740ffb8ef49e" legacyIndex={9} title="Finish">
     <Finish name="role-galaxy" />
   </Task>
 </Lab>

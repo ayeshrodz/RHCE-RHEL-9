@@ -119,35 +119,35 @@ Tick the places where a variable is set and see which value the role ends up wit
 Pass passwords and keys into a role as variables from a Vault-encrypted file (chapter 3). A role with a secret inside it cannot be shared.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch07.role-structure"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-7f557f9f4526', legacyIndex: 0,
       q: 'Which file normally contains the tasks that a role runs?',
       options: ['`meta/main.yml`', '`tasks/main.yml`', '`defaults/main.yml`', '`README.md`'],
       answer: 1,
       explain: 'tasks/main.yml is the default task entry point; roles can also supply only variables or files.',
     },
-    {
+    { id: 'q-f6a90bb6c6fc', legacyIndex: 1,
       q: 'A play has `tasks`, `roles` and `pre_tasks`, written in that order. What runs first?',
       options: ['The tasks, because they are written first', 'The pre_tasks', 'The roles'],
       answer: 1,
       explain: 'The order is always pre_tasks, roles, tasks, post_tasks, whatever order they are written in.',
     },
-    {
+    { id: 'q-bc42ceb2f7f1', legacyIndex: 2,
       q: 'Where should a role keep a setting that users are expected to change?',
       options: ['`vars/main.yml`', '`defaults/main.yml`', '`meta/main.yml`'],
       answer: 1,
       explain: 'Defaults have the lowest precedence, so anything can override them.',
     },
-    {
+    { id: 'q-028cd2773de7', legacyIndex: 3,
       q: 'A role sets `web_site_title` in `vars/main.yml`. The play sets it too, under `vars:`. Which value is used?',
       options: ['The play’s value', 'The role’s `vars/main.yml` value', 'Ansible reports a conflict'],
       answer: 1,
       explain: 'Role vars outrank play variables. That is why user-facing settings belong in defaults.',
     },
-    {
+    { id: 'q-c09bc2344e1a', legacyIndex: 4,
       q: 'A role task has `src: site.conf.j2` with no path. Where does Ansible look first?',
       options: ['Next to the playbook', 'In the role’s `templates/` directory', 'In `/etc/ansible`'],
       answer: 1,

@@ -10,7 +10,7 @@ You will make a task fail on purpose, then handle that failure four different wa
 
 The inventory in `~/control-errors` puts `servera.lab.example.com` in the `databases` group.
 
-<Lab
+<Lab objectives={["ch04.failure"]}
   id="failure"
   title="Handling task failure"
   classroom="lab start control-errors"
@@ -21,7 +21,7 @@ The inventory in `~/control-errors` puts `servera.lab.example.com` in the `datab
     'Implement block, rescue and always.',
   ]}
 >
-  <Task title="Write a play with a deliberate mistake">
+  <Task id="task-4890067ca913" legacyIndex={1} title="Write a play with a deliberate mistake">
     In `~/control-errors`, create `playbook.yml`. The value `http` is **intentionally wrong**: there is no package with that name.
 
 ```yaml title="playbook.yml"
@@ -46,7 +46,7 @@ The inventory in `~/control-errors` puts `servera.lab.example.com` in the `datab
 ```
   </Task>
 
-  <Task title="Run it and watch the play stop">
+  <Task id="task-55176e7282ae" legacyIndex={2} title="Run it and watch the play stop">
 
 ```console
 [student@workstation control-errors]$ ansible-navigator run -m stdout playbook.yml
@@ -63,7 +63,7 @@ servera.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
     The second task never ran.
   </Task>
 
-  <Task title="Ignore the error">
+  <Task id="task-1f58a221d68a" legacyIndex={3} title="Ignore the error">
     Add `ignore_errors: true` to the first task and run again. The failure is reported as `...ignoring`, the second task runs, and the recap shows `ignored=1`.
 
 ```yaml
@@ -75,7 +75,7 @@ servera.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
 ```
   </Task>
 
-  <Task title="Rescue the failure with a block">
+  <Task id="task-a19fe3ebb571" legacyIndex={4} title="Rescue the failure with a block">
     Remove `ignore_errors`. Put the web package task in a `block`, the database package task in `rescue`, and add an `always` section that starts the database service.
 
     <Reveal title="Show solution">
@@ -102,7 +102,7 @@ servera.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
     </Reveal>
   </Task>
 
-  <Task title="Run it: block fails, rescue and always run">
+  <Task id="task-5e1d32f4d55c" legacyIndex={5} title="Run it: block fails, rescue and always run">
 
 ```console
 [student@workstation control-errors]$ ansible-navigator run -m stdout playbook.yml
@@ -124,11 +124,11 @@ skipped=0    rescued=1    ignored=0
     Note `failed=0` and `rescued=1`: the rescue handled the failure.
   </Task>
 
-  <Task title="Fix the package name">
+  <Task id="task-d4c45f93bc77" legacyIndex={6} title="Fix the package name">
     Change `web_package` to `httpd` and run again. The block succeeds, so `rescue` is skipped, and `always` still runs.
   </Task>
 
-  <Task title="Add a read-only command">
+  <Task id="task-ec894f88c687" legacyIndex={7} title="Add a read-only command">
     Before the block, add a task that runs `date` and registers the output, and a task that prints it.
 
 ```yaml
@@ -144,11 +144,11 @@ skipped=0    rescued=1    ignored=0
     Run the playbook twice: `Check local time` reports `changed` every time, although `date` changes nothing on the host. The command module cannot tell the difference between reading and changing.
   </Task>
 
-  <Task title="Tell Ansible the command changes nothing">
+  <Task id="task-fea018122f91" legacyIndex={8} title="Tell Ansible the command changes nothing">
     Add `changed_when: false` to `Check local time` and run again. It now reports `ok`, and the recap shows `changed=0`, while the time is still captured and printed.
   </Task>
 
-  <Task title="Invent a failure condition">
+  <Task id="task-8b392c47fab3" legacyIndex={9} title="Invent a failure condition">
     Add `failed_when: web_package == "httpd"` to the task inside the block, and run the playbook.
 
 ```yaml
@@ -175,7 +175,7 @@ skipped=0    rescued=1    ignored=0
     `dnf` actually succeeded ("Nothing to do", `rc: 0`), but `failed_when` changed how it was **reported**, and that report was enough to send the play into `rescue`.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-2953a744268c" legacyIndex={10} title="Finish">
     <Finish name="control-errors" />
   </Task>
 </Lab>

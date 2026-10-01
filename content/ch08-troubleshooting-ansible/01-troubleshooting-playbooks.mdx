@@ -211,35 +211,35 @@ A recap full of `ok` means the tasks succeeded, not that the service works. End 
 Syntax check. Read the whole message and note the stage. Look at the line above the one marked. Add `-v` or a `debug` task if the cause is not obvious. Fix, and rerun with `--start-at-task`. When it passes, run the whole playbook once more and look for `changed=0`.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch08.playbook-errors"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-ef0d23e20533', legacyIndex: 0,
       q: 'A run prints `ERROR!` and no `PLAY` line. What happened?',
       options: ['A host was unreachable', 'Ansible could not read the playbook, so nothing ran', 'A task failed on every host'],
       answer: 1,
       explain: 'Errors before the first PLAY line come from reading the playbook.',
     },
-    {
+    { id: 'q-265ddbb289ff', legacyIndex: 1,
       q: 'Which mistake does `--syntax-check` catch?',
       options: ['An undefined variable', 'An argument indented at the same level as the module name', 'A value a module does not accept'],
       answer: 1,
       explain: 'Indentation and YAML problems are found while reading; the others only appear when the task runs.',
     },
-    {
+    { id: 'q-dca5034edcb6', legacyIndex: 2,
       q: 'You want every run written to a file with timestamps. What do you set?',
       options: ['`log_path` in ansible.cfg', '`-vvvv`', '`--step`'],
       answer: 0,
       explain: 'log_path makes Ansible append each run’s output to that file.',
     },
-    {
+    { id: 'q-9ffee9966e37', legacyIndex: 3,
       q: 'In check mode, what happens to an `ansible.builtin.command` task?',
       options: ['It runs as usual', 'It is skipped', 'It fails'],
       answer: 1,
       explain: 'Ansible cannot predict what a command would change, so it does not run it in check mode.',
     },
-    {
+    { id: 'q-8adf4213343f', legacyIndex: 4,
       q: 'A playbook of 40 tasks failed on task 38. After fixing it, what saves time?',
       options: ['`--syntax-check`', '`--start-at-task` with the name of task 38', '`--diff`'],
       answer: 1,

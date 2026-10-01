@@ -1877,6 +1877,217 @@
           ]
         }
       }
+    },
+    "assessment-release": {
+      "version": 1,
+      "lesson": "#/ch10/assessment-release",
+      "brief": "Deploy a reusable, protected web release and prove it can be recovered.",
+      "prerequisites": [
+        "Complete chapters 2\u20137 and the archive lab.",
+        "Start with a clean serverb and use the release_hosts inventory group."
+      ],
+      "variation": "Override release_id with an extra variable and explain which value wins.",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "ansible.cfg",
+            "inventory",
+            "site.yml",
+            "vault.yml",
+            "group_vars/release_hosts/main.yml",
+            "roles/release_web/defaults/main.yml",
+            "roles/release_web/tasks/main.yml",
+            "roles/release_web/handlers/main.yml",
+            "roles/release_web/templates/index.html.j2"
+          ],
+          "groups": {
+            "release_hosts": [
+              "serverb.lab.example.com"
+            ]
+          },
+          "local": [
+            {
+              "id": "encrypted-token",
+              "file": "vault.yml",
+              "contains": "$ANSIBLE_VAULT;"
+            }
+          ],
+          "probes": [
+            {
+              "id": "services",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "Both services are active and enabled",
+              "command": "for service in httpd firewalld; do systemctl is-active --quiet \"$service\" && systemctl is-enabled --quiet \"$service\" || exit 1; done"
+            },
+            {
+              "id": "http",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "HTTP serves release-2 and the inventory host name",
+              "command": "curl --fail --silent http://localhost/ | grep -F 'Playbook Path release-2 on serverb.lab.example.com'"
+            },
+            {
+              "id": "firewall",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "HTTP is open now and after reboot",
+              "command": "firewall-cmd --query-service=http && firewall-cmd --permanent --query-service=http"
+            },
+            {
+              "id": "config",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "Apache release configuration contains both directives",
+              "command": "grep -qx 'ServerTokens Prod' /etc/httpd/conf.d/release.conf && grep -qx 'ServerSignature Off' /etc/httpd/conf.d/release.conf"
+            },
+            {
+              "id": "token",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "Deployed token is protected and nonempty",
+              "command": "test -s /etc/playbook-path/release-token && test \"$(stat -c '%a:%U:%G' /etc/playbook-path/release-token)\" = 600:root:root"
+            },
+            {
+              "id": "recovery",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "Archive is readable and the recovered page matches",
+              "command": "tar -tzf /srv/release-site.tar.gz >/dev/null && cmp /var/www/html/index.html /srv/site-recovered/index.html"
+            },
+            {
+              "id": "permissions",
+              "hosts": "serverb.lab.example.com",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "Served and recovered pages have the required owner and mode",
+              "command": "for file in /var/www/html/index.html /srv/site-recovered/index.html; do test \"$(stat -c '%a:%U:%G' $file)\" = 644:root:root || exit 1; done"
+            }
+          ]
+        }
+      }
+    },
+    "assessment-operations": {
+      "version": 1,
+      "lesson": "#/ch10/assessment-operations",
+      "brief": "Prepare persistent storage, a reporting account, a schedule, and a secondary network connection.",
+      "prerequisites": [
+        "Complete chapter 9.",
+        "Use a clean serverc and verify the empty extra disk before running your solution."
+      ],
+      "variation": "Add a second reporting group member with a different SSH key while preserving the first account.",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "ansible.cfg",
+            "inventory",
+            "site.yml",
+            "host.txt.j2",
+            "files/reporter.pub"
+          ],
+          "groups": {
+            "operations": [
+              "serverc.lab.example.com"
+            ]
+          },
+          "probes": [
+            {
+              "id": "storage",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "768 MiB report volume is mounted as XFS with an fstab entry",
+              "command": "test \"$(findmnt -rn -M /srv/reports -o FSTYPE)\" = xfs && lvs --noheadings --units m --nosuffix -o lv_size /dev/vg_practice/reports | awk '$1 >= 768 {ok=1} END {exit !ok}' && findmnt --fstab -rn -M /srv/reports >/dev/null"
+            },
+            {
+              "id": "account",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "Reporter belongs to reporting and has an SSH public key",
+              "command": "id -nG reporter | grep -qw reporting && test -s /home/reporter/.ssh/authorized_keys"
+            },
+            {
+              "id": "directory",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "Report directory belongs to reporter:reporting with mode 0750",
+              "command": "test \"$(stat -c '%a:%U:%G' /srv/reports)\" = 750:reporter:reporting"
+            },
+            {
+              "id": "policy",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "The limited sudo policy is exact, valid and protected",
+              "command": "test \"$(stat -c '%a:%U:%G' /etc/sudoers.d/reporter)\" = 440:root:root && visudo -cf /etc/sudoers.d/reporter && test \"$(grep -vE '^ *#|^ *$' /etc/sudoers.d/reporter)\" = 'reporter ALL=(root) NOPASSWD: /usr/bin/du -sh /srv/reports' && sudo -u reporter sudo -n /usr/bin/du -sh /srv/reports"
+            },
+            {
+              "id": "selinux",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "SELinux is enforcing now and persistently",
+              "command": "test \"$(getenforce)\" = Enforcing && grep -q '^SELINUX=enforcing' /etc/selinux/config"
+            },
+            {
+              "id": "schedule",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "Usage report schedule runs at minute 15 every six hours",
+              "command": "grep -F '15 */6 * * * reporter /usr/bin/df -h /srv/reports > /srv/reports/usage.txt' /etc/cron.d/report-usage"
+            },
+            {
+              "id": "network",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "Secondary address and persistent profile exist",
+              "command": "ip -4 -o addr show practice0 | grep -F '198.51.100.20/24' && nmcli -g ipv4.addresses connection show practice0 | grep -F '198.51.100.20/24'"
+            },
+            {
+              "id": "summary",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "Rendered host summary has the expected contents and access",
+              "command": "grep -F 'serverc.lab.example.com' /srv/reports/host.txt && grep -F '/srv/reports' /srv/reports/host.txt && test \"$(stat -c '%a:%U:%G' /srv/reports/host.txt)\" = 640:reporter:reporting"
+            },
+            {
+              "id": "report",
+              "hosts": "serverc.lab.example.com",
+              "targets": [
+                "serverc.lab.example.com"
+              ],
+              "message": "A usage report was verified by the learner",
+              "command": "test -s /srv/reports/usage.txt"
+            }
+          ]
+        }
+      }
     }
   }
 }

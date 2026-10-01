@@ -84,10 +84,10 @@ When you run a playbook with `ansible-navigator`, you choose an EE to run it in.
 
 **Automation controller** (formerly Red Hat Ansible Tower) is the central place to run enterprise automation, with a web UI and a REST API. **Automation hub** at `console.redhat.com` provides certified collections that you download with `ansible-galaxy` (for `ansible-navigator`) or through controller. Installing controller and hub is outside the scope of this course and the exam.
 
-<Quiz
+<Quiz objectives={["ch01.distributions"]}
   id="check"
   questions={[
-    {
+    { id: 'q-e809ef1927c0', legacyIndex: 0,
       q: 'What is an automation execution environment?',
       options: [
         'A Python virtual environment on each managed host',
@@ -97,7 +97,7 @@ When you run a playbook with `ansible-navigator`, you choose an EE to run it in.
       answer: 1,
       explain: 'EEs are container images. ansible-navigator and automation controller both run playbooks inside them, so the runtime is identical in development and production.',
     },
-    {
+    { id: 'q-b68905239394', legacyIndex: 1,
       q: 'Which collection is always part of Ansible Core?',
       options: ['`community.general`', '`ansible.posix`', '`ansible.builtin`'],
       answer: 2,

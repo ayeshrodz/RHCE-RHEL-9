@@ -10,7 +10,7 @@ You have inherited a working playbook from the previous administrator of four we
 
 The project `~/projects-review` has an `ansible.cfg`, an `inventory`, the inherited `playbook.yml`, a small `host-test.yml` for trying out patterns, and `files/tune.conf`.
 
-<Lab
+<Lab objectives={["ch06.patterns","ch06.reuse"]}
   id="review"
   title="Managing Complex Plays and Playbooks"
   classroom="lab start projects-review"
@@ -27,7 +27,7 @@ The project `~/projects-review` has an `ansible.cfg`, an `inventory`, the inheri
     'Replace similar tasks with one task file driven by variables.',
   ]}
 >
-  <Task title="Read the inherited playbook">
+  <Task id="task-be615ad83aee" legacyIndex={1} title="Read the inherited playbook">
 
 ```console
 [student@workstation ~]$ cd ~/projects-review
@@ -92,7 +92,7 @@ The project `~/projects-review` has an `ansible.cfg`, an `inventory`, the inheri
     Six tasks in two groups of three: the web server, then the firewall. Both groups start with the same two steps: install a package, then enable and start its service.
   </Task>
 
-  <Task title="Replace the host list with a pattern">
+  <Task id="task-1e99ea301edf" legacyIndex={2} title="Replace the host list with a pattern">
     Find one wildcard pattern that selects exactly the four servers. Test it in `host-test.yml` first, then use it in `playbook.yml`.
 
     <Reveal title="Show solution">
@@ -137,7 +137,7 @@ ok: [serverd.lab.example.com] => {
     </Reveal>
   </Task>
 
-  <Task title="Move the web tasks to a task file">
+  <Task id="task-1cec2f186611" legacyIndex={3} title="Move the web tasks to a task file">
     Move the first three tasks into `tasks/web_tasks.yml`, and import that file where they were.
 
     <Reveal title="Show solution">
@@ -181,7 +181,7 @@ ok: [serverd.lab.example.com] => {
     </Reveal>
   </Task>
 
-  <Task title="Move the firewall tasks to a task file">
+  <Task id="task-a3859838baf8" legacyIndex={4} title="Move the firewall tasks to a task file">
     Do the same with the last three tasks, in `tasks/firewall_tasks.yml`.
 
     <Reveal title="Show solution">
@@ -214,7 +214,7 @@ ok: [serverd.lab.example.com] => {
     </Reveal>
   </Task>
 
-  <Task title="One task file for both install-and-start steps">
+  <Task id="task-eed91fb253ed" legacyIndex={5} title="One task file for both install-and-start steps">
     Both task files begin with the same pattern: install a package, enable and start a service. Write that pattern once, in `tasks/install_and_enable.yml`, with the variables `package` and `service`. Then replace those two tasks in `web_tasks.yml` and in `firewall_tasks.yml` with an import of the new file, passing the right values.
 
     <Reveal title="Show solution">
@@ -272,7 +272,7 @@ ok: [serverd.lab.example.com] => {
     </Reveal>
   </Task>
 
-  <Task title="Check the finished playbook, then run it">
+  <Task id="task-9993dfa2fde9" legacyIndex={6} title="Check the finished playbook, then run it">
 
     <Reveal title="Show the finished playbook.yml">
 
@@ -345,7 +345,7 @@ serverd.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
     The task names come from the shared file, with the variables filled in. Run it again: every host reports `ok=7 changed=0`, one fewer `ok` because the handler is not notified.
   </Task>
 
-  <Task title="Verify">
+  <Task id="task-2763bf19327e" legacyIndex={7} title="Verify">
 
 ```console
 [student@workstation projects-review]$ ssh devops@serverc \
@@ -362,7 +362,7 @@ cockpit dhcpv6-client http ssh
     In a classroom, the content of `tune.conf` may differ; what matters is that it is there, and that both services run with `http` allowed.
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-5ab3d2084dae" legacyIndex={8} title="Grade and finish">
     <Finish name="projects-review" grade />
   </Task>
 </Lab>

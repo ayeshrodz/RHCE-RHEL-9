@@ -10,7 +10,7 @@ You will collect a log file from every managed host, copy a file out with a spec
 
 The project `~/file-manage` has an `ansible.cfg`, an `inventory` that lists `servera.lab.example.com` and `serverb.lab.example.com`, and `files/users.txt`.
 
-<Lab
+<Lab objectives={["ch05.files"]}
   id="files"
   title="Modifying and copying files to hosts"
   classroom="lab start file-manage"
@@ -24,7 +24,7 @@ The project `~/file-manage` has an `ansible.cfg`, an `inventory` that lists `ser
     The first three playbooks connect as `root`. That uses the SSH key for `root` from [section 0.6](#/ch00/control-node). The `tree` command is installed there too.
   </HomeSetup>
 
-  <Task title="Fetch the secure log from every host">
+  <Task id="task-1f00314d7200" legacyIndex={1} title="Fetch the secure log from every host">
     In `~/file-manage`, create `secure_log_backups.yml`. One play, for all hosts, connecting as `root`, with a task that fetches `/var/log/secure` into a `secure-backups` directory. `flat: false` keeps the default layout of one subdirectory per host.
 
 ```yaml title="secure_log_backups.yml"
@@ -59,7 +59,7 @@ serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Look at what was fetched">
+  <Task id="task-b47b78fa45fe" legacyIndex={2} title="Look at what was fetched">
     The module created `secure-backups` and a directory tree for each host:
 
 ```console
@@ -76,7 +76,7 @@ secure-backups
 ```
   </Task>
 
-  <Task title="Copy a file with owner, mode and SELinux type">
+  <Task id="task-de0a26458857" legacyIndex={3} title="Copy a file with owner, mode and SELinux type">
     Create `copy_file.yml`. It connects as `root` and copies `files/users.txt` to `/home/devops/users.txt` on every host with these attributes:
 
     | Parameter | Value |
@@ -118,7 +118,7 @@ unconfined_u:object_r:samba_share_t:s0 users.txt
 ```
   </Task>
 
-  <Task title="Reset the SELinux context to the policy default">
+  <Task id="task-3bfb21831b34" legacyIndex={4} title="Reset the SELinux context to the policy default">
     Create `selinux_defaults.yml`. It uses `ansible.builtin.file` to set the user, role, type and level fields of `/home/devops/users.txt` back to `_default`.
 
     <Reveal title="Show selinux_defaults.yml">
@@ -158,7 +158,7 @@ unconfined_u:object_r:user_home_t:s0 users.txt
     </Callout>
   </Task>
 
-  <Task title="Add a line to the file">
+  <Task id="task-1e91b319aa60" legacyIndex={5} title="Add a line to the file">
     Create `add_line.yml`. This play connects as `devops` (the file is theirs, so no privilege escalation is needed) and appends one line.
 
 ```yaml title="add_line.yml"
@@ -184,7 +184,7 @@ This line was added by the lineinfile module.
     At home you see the starter file's own line first, then the new one.
   </Task>
 
-  <Task title="Add a block of text">
+  <Task id="task-36985cfb9ab6" legacyIndex={6} title="Add a block of text">
     Create `add_block.yml` to append two lines as a managed block.
 
     <Reveal title="Show add_block.yml">
@@ -219,7 +219,7 @@ They have been added by the blockinfile module.
     Run `add_block.yml` a second time: `changed=0`. The markers told Ansible the block was already there.
   </Task>
 
-  <Task title="Remove the file">
+  <Task id="task-d4b0ef381355" legacyIndex={7} title="Remove the file">
     Create `remove_file.yml` and use `ansible.builtin.file` with `state: absent`.
 
     <Reveal title="Show remove_file.yml">
@@ -245,7 +245,7 @@ total 0
 ```
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-0b1024ec09da" legacyIndex={8} title="Finish">
     <Finish name="file-manage" />
   </Task>
 </Lab>

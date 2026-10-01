@@ -10,7 +10,7 @@ Set up workstation as a control node for servera and serverb, then write, fix an
 
 This lab covers chapters 1 to 4 and 8. Your project directory is `~/review-deploy`; `lab start` puts two playbooks in it, `packages.yml` and `verify_user.yml`. You write everything else.
 
-<Lab
+<Lab objectives={["ch10.review","ch10.deployment"]}
   id="review-deploy"
   title="Deploying Ansible"
   classroom="lab start review-deploy"
@@ -21,7 +21,7 @@ This lab covers chapters 1 to 4 and 8. Your project directory is `~/review-deplo
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. `ansible-navigator` is already installed on workstation (section 0.6), and the home lab runs without an execution environment, so the first task's EE steps do not apply.
   </HomeSetup>
 
-  <Task title="Install the control node tools">
+  <Task id="task-2106b05b9af3" legacyIndex={1} title="Install the control node tools">
     Install automation content navigator on workstation; the repository that contains it is already configured.
 
     <Env>
@@ -46,7 +46,7 @@ ansible-navigator 26.9.0
     </Env>
   </Task>
 
-  <Task title="Inventory and configuration">
+  <Task id="task-f1b9195ad505" legacyIndex={2} title="Inventory and configuration">
     In `~/review-deploy`, create an `inventory` with a group `dev` containing `servera.lab.example.com` and `serverb.lab.example.com`, and an `ansible.cfg` that uses it.
 
     <Reveal title="Show solution">
@@ -74,7 +74,7 @@ remote_user=root
     </HomeLab>
   </Task>
 
-  <Task title="The execution environment">
+  <Task id="task-66c287a5d8ad" legacyIndex={3} title="The execution environment">
     Create `ansible-navigator.yml` so that navigator uses the image `utility.lab.example.com/ee-supported-rhel8:latest`, and pulls it only if it is missing. Log in to the private automation hub on `utility.lab.example.com` (user `admin`, password `redhat`), then run `ansible-navigator` once to pull the image.
 
     <Env>
@@ -110,7 +110,7 @@ Execution environment pull needed:    True
     </Env>
   </Task>
 
-  <Task title="Two users with one task">
+  <Task id="task-3f7a3c63394e" legacyIndex={4} title="Two users with one task">
     Write `users.yml` with one play for `dev` that adds the users `joe` and `sam`, with a single task. Run it.
 
     <Reveal title="Show solution">
@@ -153,7 +153,7 @@ serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
     </Reveal>
   </Task>
 
-  <Task title="Packages from a variable">
+  <Task id="task-6343c0ff1318" legacyIndex={5} title="Packages from a variable">
     Look at `packages.yml`. In its play, define a variable `packages` with the list `httpd` and `mariadb-server`. Run it.
 
     <Reveal title="Show solution">
@@ -185,7 +185,7 @@ changed: [serverb.lab.example.com]
     </Reveal>
   </Task>
 
-  <Task title="A package that depends on a fact">
+  <Task id="task-79e3e2990c8c" legacyIndex={6} title="A package that depends on a fact">
     Add a task to `packages.yml` that installs `redis` only if the host has more than 10 MB of swap space. Run the playbook again.
 
     <Reveal title="Show solution">
@@ -216,7 +216,7 @@ servera.lab.example.com | SUCCESS => {
     </Reveal>
   </Task>
 
-  <Task title="Fix verify_user.yml">
+  <Task id="task-0bb61a51392a" legacyIndex={7} title="Fix verify_user.yml">
     `verify_user.yml` should check, without creating it, that the user `sam` exists, and then write a line to `/home/student/verify.txt`. Run it with `--check` and fix what it reports, until a check run passes. Then run it normally.
 
     <Reveal title="Show solution">
@@ -288,7 +288,7 @@ serverb.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0  ...
     </Reveal>
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-19a97a244d73" legacyIndex={8} title="Grade and finish">
     <Finish name="review-deploy" grade />
   </Task>
 </Lab>

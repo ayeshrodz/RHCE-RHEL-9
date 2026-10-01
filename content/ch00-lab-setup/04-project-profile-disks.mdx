@@ -8,13 +8,13 @@ minutes: 17
 Phases 05 to 07: give the lab its own LXD project, turn the project's default profile into a template that creates the classroom users on first boot, and create the spare disks the storage exercises need.
 </Lead>
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="project"
   title="Phase 05 · Create the rhce project (~2 min)"
   hosts={['LXD UI', 'Ubuntu host']}
   outcomes={['Keep the lab in its own LXD project so it cannot collide with anything else on the machine.']}
 >
-  <Task title="LXD UI: create the project">
+  <Task id="task-a7d130d0b9c6" legacyIndex={1} title="LXD UI: create the project">
     Project selector (top left) → **Create project**:
 
     | Field | Value | Why |
@@ -32,11 +32,11 @@ Phases 05 to 07: give the lab its own LXD project, turn the project's default pr
     </Callout>
   </Task>
 
-  <Task title="LXD UI: switch to it">
+  <Task id="task-86a669189995" legacyIndex={2} title="LXD UI: switch to it">
     Click **Create**, then switch the selector to **rhce**. Stay in it from now on.
   </Task>
 
-  <Task title="Host: make the command line use it too">
+  <Task id="task-35abc2543633" legacyIndex={3} title="Host: make the command line use it too">
     Then you don't need `--project rhce` on every command.
 
 ```bash title="Ubuntu host"
@@ -58,17 +58,17 @@ A **profile** is a template every VM inherits. The rhce project's `default` prof
 | `power_state:` | Reboots once after the first boot, so SELinux labels the disk and starts in enforcing mode |
 | `devices:` | A 20 GiB system disk and a network card on `rhcebr0` |
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="profile"
   title="Phase 06 · Set up the lab profile (~10 min)"
   hosts={['LXD UI']}
   outcomes={['Make every new VM boot with the classroom users, packages and hostname.']}
 >
-  <Task title="LXD UI: open the profile editor">
+  <Task id="task-37cd8e3c99ba" legacyIndex={1} title="LXD UI: open the profile editor">
     Project **rhce** → **Profiles** → **default** → **Configuration** → **YAML configuration** → **Edit profile**.
   </Task>
 
-  <Task title="LXD UI: replace everything and save">
+  <Task id="task-3940b44ba4f8" legacyIndex={2} title="LXD UI: replace everything and save">
     Replace the whole profile with this, then **Save changes**. Nothing needs editing.
 
 ```yaml title="rhce project: default profile"
@@ -143,13 +143,13 @@ devices:
   </Task>
 </Lab>
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="disks"
   title="Phase 07 · Create the extra disks (~5 min)"
   hosts={['LXD UI']}
   outcomes={['Give each managed host an empty 5 GiB disk for the partition, LVM and filesystem exercises.']}
 >
-  <Task title="LXD UI: create four block volumes">
+  <Task id="task-1e0e320ca751" legacyIndex={1} title="LXD UI: create four block volumes">
     Four times, for `servera-disk2`, `serverb-disk2`, `serverc-disk2` and `serverd-disk2`: **Storage** → **Volumes** → **Create volume**.
 
     | Field | Value |

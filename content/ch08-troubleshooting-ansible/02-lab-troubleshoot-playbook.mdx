@@ -10,14 +10,14 @@ A colleague's playbook that should set up a Samba server on servera does not run
 
 The project `~/troubleshoot-playbook` has an `inventory` with servera in the `samba_servers` group, the playbook `samba.yml`, and a template `samba.conf.j2`. There is no `ansible.cfg` yet.
 
-<Lab
+<Lab objectives={["ch08.playbook-errors"]}
   id="troubleshoot-playbook"
   title="Troubleshooting playbooks"
   classroom="lab start troubleshoot-playbook"
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Read error messages, find the problems in a playbook and fix them.']}
 >
-  <Task title="Log everything">
+  <Task id="task-80a4185a92be" legacyIndex={1} title="Log everything">
     In `~/troubleshoot-playbook`, create `ansible.cfg` so that Ansible uses the project's inventory and writes a log file in the project:
 
 ```ini title="ansible.cfg"
@@ -29,7 +29,7 @@ inventory = /home/student/troubleshoot-playbook/inventory
     The playbook sets `remote_user` and `become` itself, so nothing else is needed.
   </Task>
 
-  <Task title="Run it, and read the first error">
+  <Task id="task-fd8603b38adf" legacyIndex={2} title="Run it, and read the first error">
 
 ```console
 [student@workstation ~]$ cd ~/troubleshoot-playbook
@@ -65,7 +65,7 @@ Please review the log for errors.
 ```
   </Task>
 
-  <Task title="Check the syntax again">
+  <Task id="task-2ff7488d5d2c" legacyIndex={3} title="Check the syntax again">
 
 ```console
 [student@workstation troubleshoot-playbook]$ ansible-navigator run \
@@ -98,7 +98,7 @@ The offending line appears to be:
 ```
   </Task>
 
-  <Task title="And again">
+  <Task id="task-a14970323f16" legacyIndex={4} title="And again">
 
 ```console
 [student@workstation troubleshoot-playbook]$ ansible-navigator run \
@@ -144,7 +144,7 @@ playbook: /home/student/troubleshoot-playbook/samba.yml
 ```
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-5216423f395d" legacyIndex={5} title="Run it">
 
 ```console
 [student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout samba.yml
@@ -186,7 +186,7 @@ servera.lab.example.com    : ok=6    changed=2    unreachable=0    failed=1  ...
 ```
   </Task>
 
-  <Task title="Run it once more">
+  <Task id="task-ccf984f523b1" legacyIndex={6} title="Run it once more">
 
 ```console
 [student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout samba.yml
@@ -204,7 +204,7 @@ servera.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
     Every task succeeds. A further run reports `changed=0`.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-9c4142f6314d" legacyIndex={7} title="Finish">
     <Finish name="troubleshoot-playbook" />
   </Task>
 </Lab>

@@ -8,13 +8,13 @@ minutes: 15
 Phases 13 and 14. With the baseline saved, everything from here on is your own work. Create the base Ansible project the exercises copy from, prove it reaches every server, and set up a one-command way into the lab from your own computer.
 </Lead>
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="project"
   title="Phase 13 · Your first Ansible project (~10 min)"
   hosts={['workstation']}
   outcomes={['Create ~/ansible with ansible.cfg and an inventory.', 'Prove SSH, the devops user and sudo work on every server.']}
 >
-  <Task title="VM: create the project folder">
+  <Task id="task-6b05df6627f0" legacyIndex={1} title="VM: create the project folder">
     It lives on workstation, so resetting the servers never touches it. Get there with `rht-vmctl ws`.
 
 ```bash title="student@workstation"
@@ -22,7 +22,7 @@ mkdir -p ~/ansible/{roles,collections} && cd ~/ansible
 ```
   </Task>
 
-  <Task title="VM: write ansible.cfg">
+  <Task id="task-3b3b4da08fdf" legacyIndex={2} title="VM: write ansible.cfg">
 
 ```ini title="~/ansible/ansible.cfg"
 [defaults]
@@ -47,7 +47,7 @@ become_ask_pass = False
     </Callout>
   </Task>
 
-  <Task title="VM: write the inventory">
+  <Task id="task-7111ab693da6" legacyIndex={3} title="VM: write the inventory">
     A set of groups that is handy for practice:
 
 ```ini title="~/ansible/inventory"
@@ -66,7 +66,7 @@ prod
 ```
   </Task>
 
-  <Task title="VM: prove it reaches every server">
+  <Task id="task-27d11c0dd567" legacyIndex={4} title="VM: prove it reaches every server">
 
 ```bash title="student@workstation:~/ansible"
 ansible-inventory --graph
@@ -80,7 +80,7 @@ ansible --version | head -1          # ansible [core 2.14.18]
     </Callout>
   </Task>
 
-  <Task title="VM: put it under Git">
+  <Task id="task-7e5e11ba56c6" legacyIndex={5} title="VM: put it under Git">
     Restoring workstation to `clean` removes `~/ansible`, so keep your work in Git and commit as you go:
 
 ```bash title="student@workstation"

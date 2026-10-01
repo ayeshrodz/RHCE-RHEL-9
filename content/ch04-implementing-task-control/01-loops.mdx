@@ -173,23 +173,23 @@ ok: [localhost] => (item={'changed': True, 'stdout': 'This is my item: two', ...
 }
 ```
 
-<Quiz
+<Quiz objectives={["ch04.loops-conditions"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-75557e4a1371', legacyIndex: 0,
       q: 'Inside a looping task, which variable holds the current list entry?',
       options: ['`loop_var`', '`item`', '`this`'],
       answer: 1,
       explain: '`item` is the default loop variable.',
     },
-    {
+    { id: 'q-43f2d36a4ab3', legacyIndex: 1,
       q: 'Which line correctly loops over the variable `packages`?',
       options: ['`loop: {{ packages }}`', '`loop: "{{ packages }}"`', '`loop: packages`'],
       answer: 1,
       explain: 'The value starts with `{{`, so it must be quoted. A bare `packages` would be a one-item list containing the string "packages".',
     },
-    {
+    { id: 'q-adf77b62d0d1', legacyIndex: 2,
       q: 'A task that loops over three items has `register: out`. Where is the stdout of the second run?',
       options: ["`out['stdout'][1]`", "`out['results'][1]['stdout']`", "`out[1]['stdout']`"],
       answer: 1,

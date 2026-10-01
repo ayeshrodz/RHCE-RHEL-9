@@ -8,29 +8,29 @@ minutes: 8
 Twelve questions across variables, precedence, Vault and facts. Aim for at least nine before moving on to chapter 4.
 </Lead>
 
-<Quiz
+<Quiz objectives={["ch03.variables","ch03.vault","ch03.facts"]}
   id="chapter"
   title="Chapter 3 knowledge check"
   questions={[
-    {
+    { id: 'q-3aa1ea263329', legacyIndex: 0,
       q: 'Which variable name is invalid?',
       options: ['`app_port`', '`App2`', '`app-port`', '`a1_b2`'],
       answer: 2,
       explain: 'Dashes are not allowed. Names start with a letter and use only letters, digits and underscores.',
     },
-    {
+    { id: 'q-e7ed41680040', legacyIndex: 1,
       q: 'Which task line is written correctly?',
       options: ['`name: {{ user }}`', '`name: "{{ user }}"`', '`name: {{ "user" }}`'],
       answer: 1,
       explain: 'A value that begins with a variable reference must be quoted, or YAML treats the brace as the start of a dictionary.',
     },
-    {
+    { id: 'q-235dd0bd1ab1', legacyIndex: 2,
       q: 'Which keyword loads play variables from an external file?',
       options: ['`include_vars:` at play level', '`vars_files:`', '`vars_from:`'],
       answer: 1,
       explain: '`vars_files` takes a list of YAML files, relative to the playbook.',
     },
-    {
+    { id: 'q-990343818bdb', legacyIndex: 3,
       q: 'Put these in order, lowest precedence first: play vars, group_vars file, extra vars, host_vars file.',
       options: [
         'group_vars → host_vars → play vars → extra vars',
@@ -40,13 +40,13 @@ Twelve questions across variables, precedence, Vault and facts. Aim for at least
       answer: 0,
       explain: 'Inventory variables are weakest (group before host), playbook variables beat them, and extra variables beat everything.',
     },
-    {
+    { id: 'q-e82da0f3be9e', legacyIndex: 4,
       q: 'Where should group variables for `webservers` go, following recommended practice?',
       options: ['A `[webservers:vars]` section in the inventory', '`group_vars/webservers`', '`vars/webservers.yml` loaded by every playbook'],
       answer: 1,
       explain: 'Keep variables out of the inventory file, in group_vars and host_vars directories.',
     },
-    {
+    { id: 'q-972bad2e859d', legacyIndex: 5,
       q: 'Which two expressions return the same value?',
       options: [
         "`users.bjones.first_name` and `users['bjones']['first_name']`",
@@ -56,19 +56,19 @@ Twelve questions across variables, precedence, Vault and facts. Aim for at least
       answer: 0,
       explain: 'Dot and bracket notation are equivalent. Bracket keys are quoted strings.',
     },
-    {
+    { id: 'q-11411cbd611e', legacyIndex: 6,
       q: 'What does `register: result` store?',
       options: ['The task’s name', 'The module’s full JSON result for that task', 'Only the command’s stdout'],
       answer: 1,
       explain: 'register keeps the whole result: changed, rc, msg, stdout (for commands) and module-specific keys.',
     },
-    {
+    { id: 'q-ec45a6668167', legacyIndex: 7,
       q: 'Which command encrypts two files that already exist?',
       options: ['`ansible-vault create a.yml b.yml`', '`ansible-vault encrypt a.yml b.yml`', '`ansible-vault rekey a.yml b.yml`'],
       answer: 1,
       explain: '`create` makes a new file; `rekey` changes the password of already-encrypted files.',
     },
-    {
+    { id: 'q-7a2a697a5d83', legacyIndex: 8,
       q: 'How do you run a playbook with a Vault password stored in `vault-pass`?',
       options: [
         '`ansible-navigator run -m stdout site.yml --vault-id vault-pass`',
@@ -78,13 +78,13 @@ Twelve questions across variables, precedence, Vault and facts. Aim for at least
       answer: 1,
       explain: 'Use `--vault-password-file` (or the ANSIBLE_VAULT_PASSWORD_FILE environment variable).',
     },
-    {
+    { id: 'q-1875cfaa5f07', legacyIndex: 9,
       q: 'Which variable holds a host’s total memory in MiB?',
       options: ["`ansible_facts['memory']`", "`ansible_facts['memtotal_mb']`", "`ansible_facts['ram_mb']`"],
       answer: 1,
       explain: '`memtotal_mb` (and `memfree_mb`) come from setup.',
     },
-    {
+    { id: 'q-72c3f36cfadb', legacyIndex: 10,
       q: 'A custom fact file must be…',
       options: [
         'YAML, in `/etc/ansible/facts.d`, named `*.yml`',
@@ -94,7 +94,7 @@ Twelve questions across variables, precedence, Vault and facts. Aim for at least
       answer: 1,
       explain: 'setup reads *.fact files from /etc/ansible/facts.d. YAML is not supported.',
     },
-    {
+    { id: 'q-f9e8e132bd3a', legacyIndex: 11,
       q: 'The inventory lists a host as `web1 ansible_host=servera.lab.example.com`. What is `inventory_hostname`?',
       options: ['`servera.lab.example.com`', '`web1`', '`servera`'],
       answer: 1,

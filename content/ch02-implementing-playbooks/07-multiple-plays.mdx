@@ -127,23 +127,23 @@ A play with `hosts: localhost` runs its tasks without SSH. With `ansible-navigat
 
 `ansible.builtin.uri` fails the task unless the server answers with the expected `status_code`, so a green run means the site is really up.
 
-<Quiz
+<Quiz objectives={["ch02.inventory","ch02.configuration","ch02.playbooks","ch02.modules"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-5392bdd54d57', legacyIndex: 0,
       q: '`ansible.cfg` sets `become = true`. How do you run one play in the playbook **without** privilege escalation?',
       options: ['Add `become: false` to that play', 'Remove `become` from ansible.cfg', 'Add `become_user: none` to the play'],
       answer: 0,
       explain: 'Play-level keywords override ansible.cfg for that play only.',
     },
-    {
+    { id: 'q-159bf8ba6f1d', legacyIndex: 1,
       q: 'No `ansible_user`, no play `remote_user` and no `remote_user` in ansible.cfg. Which user does `ansible-navigator run` connect as?',
       options: ['The user who ran ansible-navigator', '`root`, the user inside the execution environment', '`ansible`'],
       answer: 1,
       explain: 'Navigator runs Ansible in a container as root, so root is the default. ansible-playbook would use your own user name.',
     },
-    {
+    { id: 'q-e5a7cb0b93e6', legacyIndex: 2,
       q: 'Where does a `hosts: localhost` play run when you use ansible-navigator?',
       options: ['On workstation, outside any container', 'Inside the execution environment container', 'On the first host in the inventory'],
       answer: 1,

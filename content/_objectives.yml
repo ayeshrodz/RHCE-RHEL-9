@@ -159,7 +159,8 @@
       "ch03/ansible-vault"
     ],
     "labs": [
-      "ch03/lab-vault"
+      "ch03/lab-vault",
+      "ch10/assessment-release"
     ],
     "challenges": [
       "vault-runtime"
@@ -233,7 +234,8 @@
       "ch05/jinja2-templates"
     ],
     "labs": [
-      "ch05/lab-templates"
+      "ch05/lab-templates",
+      "ch10/assessment-release"
     ],
     "challenges": [
       "render-banner"
@@ -285,7 +287,8 @@
       "ch07/creating-roles"
     ],
     "labs": [
-      "ch07/lab-role-create"
+      "ch07/lab-role-create",
+      "ch10/assessment-release"
     ],
     "challenges": []
   },
@@ -368,7 +371,8 @@
       "ch09/users"
     ],
     "labs": [
-      "ch09/lab-users"
+      "ch09/lab-users",
+      "ch10/assessment-operations"
     ],
     "challenges": [
       "validate-sudo"
@@ -381,7 +385,8 @@
       "ch09/boot-and-scheduling"
     ],
     "labs": [
-      "ch09/lab-boot-and-scheduling"
+      "ch09/lab-boot-and-scheduling",
+      "ch10/assessment-operations"
     ],
     "challenges": []
   },
@@ -392,7 +397,8 @@
       "ch09/storage"
     ],
     "labs": [
-      "ch09/lab-storage"
+      "ch09/lab-storage",
+      "ch10/assessment-operations"
     ],
     "challenges": [
       "persistent-mount"
@@ -405,7 +411,8 @@
       "ch09/network"
     ],
     "labs": [
-      "ch09/lab-network"
+      "ch09/lab-network",
+      "ch10/assessment-operations"
     ],
     "challenges": []
   },
@@ -440,7 +447,8 @@
       "ch10/how-to-review"
     ],
     "labs": [
-      "ch10/lab-review-playbooks"
+      "ch10/lab-review-playbooks",
+      "ch10/assessment-release"
     ],
     "challenges": [
       "review-recovery"
@@ -453,7 +461,8 @@
       "ch10/how-to-review"
     ],
     "labs": [
-      "ch10/lab-review-admin"
+      "ch10/lab-review-admin",
+      "ch10/assessment-operations"
     ],
     "challenges": []
   },
@@ -464,7 +473,8 @@
       "ch10/how-to-review"
     ],
     "labs": [
-      "ch10/lab-review-roles"
+      "ch10/lab-review-roles",
+      "ch10/assessment-release"
     ],
     "challenges": []
   },

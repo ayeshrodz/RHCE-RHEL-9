@@ -185,35 +185,35 @@ A term that matches nothing is not an error. Ansible warns and carries on with t
 A typo in a group name does not stop a play: it quietly runs on fewer hosts, or none. If a play finishes suspiciously fast, look for this warning and for `skipping: no hosts matched`.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch06.patterns"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-2da1cebfdd2f', legacyIndex: 0,
       q: 'Which pattern selects the hosts that are in both `web` and `production`?',
       options: ['`web,production`', "`'web,&production'`", "`'web,!production'`"],
       answer: 1,
       explain: '& keeps only the hosts that are also in that group. A plain comma adds the two groups together.',
     },
-    {
+    { id: 'q-0ef94f2fb7bd', legacyIndex: 1,
       q: "What does `'!staging,web'` select?",
       options: ['Nothing: the exclusion comes first', 'The web hosts that are not in staging', 'Every host except staging and web'],
       answer: 1,
       explain: 'Order does not matter. Plain terms are added first, then intersections, then exclusions.',
     },
-    {
+    { id: 'q-feb0be39c42d', legacyIndex: 2,
       q: 'A play has `hosts: db`. You run it with `--limit web`, and no host is in both groups. What happens?',
       options: ['It runs on the web hosts', 'It runs on the db hosts', 'The play is skipped: no hosts matched'],
       answer: 2,
       explain: '--limit narrows the play’s own hosts; it never adds hosts the play did not ask for.',
     },
-    {
+    { id: 'q-6737b76fa87c', legacyIndex: 3,
       q: 'Why must `hosts: *.example.com` be quoted?',
       options: ['Ansible requires quotes around every pattern', 'In YAML, a value starting with * is an alias reference', 'Wildcards only work in quotes'],
       answer: 1,
       explain: '*, ! and & at the start of a YAML value have special meanings, so the line fails to parse without quotes.',
     },
-    {
+    { id: 'q-d0c43b12dbb3', legacyIndex: 4,
       q: 'Which command lists the hosts each play of `site.yml` would run on, without running it?',
       options: ['`ansible-navigator run site.yml --syntax-check`', '`ansible-navigator run site.yml --list-hosts`', '`ansible-navigator inventory --graph`'],
       answer: 1,

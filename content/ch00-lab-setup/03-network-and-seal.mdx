@@ -8,17 +8,17 @@ minutes: 15
 Phases 03 and 04: build the virtual switch `rhcebr0` with the classroom's addresses and DNS names, then add a small nftables firewall that makes it one-way. This is what makes the lab safe to run on your home network.
 </Lead>
 
-<Lab
+<Lab objectives={["ch00.lab-network"]}
   id="network"
   title="Phase 03 · Create the lab network (~5 min)"
   hosts={['LXD UI', 'Ubuntu host']}
   outcomes={['Create the rhcebr0 bridge at 172.25.250.254/24 with DHCP, DNS and NAT.']}
 >
-  <Task title="LXD UI: start in the default project">
+  <Task id="task-21b695fe52da" legacyIndex={1} title="LXD UI: start in the default project">
     The project selector (top left) must say **default**: networks made here are shared with every project. Then go to **Networks** → **Create network**.
   </Task>
 
-  <Task title="LXD UI: fill in the form">
+  <Task id="task-bbf55db0e30f" legacyIndex={2} title="LXD UI: fill in the form">
 
     | Field | Value |
     | --- | --- |
@@ -31,7 +31,7 @@ Phases 03 and 04: build the virtual switch `rhcebr0` with the classroom's addres
     | DNS domain (in the *DNS* section) | lab.example.com |
   </Task>
 
-  <Task title="LXD UI: check the YAML configuration">
+  <Task id="task-bc107a2d6d5f" legacyIndex={3} title="LXD UI: check the YAML configuration">
     Open the **YAML configuration** tab and make it match this. The `raw.dnsmasq` lines point `content.example.com` and `materials.example.com` at the utility VM, as in the classroom. Then click **Create**.
 
 ```yaml title="rhcebr0: YAML configuration"
@@ -54,7 +54,7 @@ config:
     </Callout>
   </Task>
 
-  <Task title="Host: confirm the bridge is up">
+  <Task id="task-4cb63ca17e4b" legacyIndex={4} title="Host: confirm the bridge is up">
     You will see both of the host's addresses, as explained in [the overview](#/ch00/overview).
 
 ```bash title="Ubuntu host"
@@ -88,13 +88,13 @@ The seal is a small **nftables** table on the host that only looks at traffic to
 
 The map in [the overview](#/ch00/overview) lets you trace each of these flows.
 
-<Lab
+<Lab objectives={["ch00.lab-network"]}
   id="seal"
   title="Phase 04 · Seal the lab network (~10 min)"
   hosts={['Ubuntu host']}
   outcomes={['Load an nftables table that makes rhcebr0 one-way, on every boot.']}
 >
-  <Task title="Host: create the rules file">
+  <Task id="task-3d2ff89d4e69" legacyIndex={1} title="Host: create the rules file">
 
 ```text title="/etc/nftables-rhce.nft"
 #!/usr/sbin/nft -f
@@ -145,7 +145,7 @@ table inet rhce_isolate {
     | `input` | Traffic the lab *sends* to the host | VMs can only ask the host for an IP and name lookups. No access to its SSH, LXD UI or anything else. |
   </Task>
 
-  <Task title="Host: create a service that loads it on boot">
+  <Task id="task-a916d762a14a" legacyIndex={2} title="Host: create a service that loads it on boot">
 
 ```ini title="/etc/systemd/system/rhce-isolate.service"
 [Unit]
@@ -164,7 +164,7 @@ WantedBy=multi-user.target
 ```
   </Task>
 
-  <Task title="Host: check the syntax, then turn it on">
+  <Task id="task-64ce0845c6e3" legacyIndex={3} title="Host: check the syntax, then turn it on">
 
 ```bash title="Ubuntu host"
 sudo nft -c -f /etc/nftables-rhce.nft          # -c = check only; no output means OK
@@ -178,7 +178,7 @@ sudo nft list table inet rhce_isolate          # shows the three chains
     </Callout>
   </Task>
 
-  <Task title="Host: only if ufw is active, let the lab through it">
+  <Task id="task-7381b1312869" legacyIndex={4} title="Host: only if ufw is active, let the lab through it">
     ufw's default policy blocks the lab's DHCP and DNS requests and its internet traffic. That only shows up later as a confusing failure, so add these now:
 
 ```bash title="Ubuntu host"

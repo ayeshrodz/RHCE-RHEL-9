@@ -223,24 +223,24 @@ If a host and a group share a name, `ansible-navigator inventory` prints a warni
 
 Inventory information can also be generated from external databases. The community has written many **inventory plug-ins** for sources such as Red Hat Satellite or Amazon EC2, and you can write your own. Because the plug-in runs every time Ansible does, the inventory is always current as hosts are added and removed. Using them is outside the scope of this chapter.
 
-<Quiz
+<Quiz objectives={["ch02.inventory"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-95b0eba90bbd', legacyIndex: 0,
       q: 'Which hosts does `db[08:10].example.com` match?',
       options: ['db8, db9 and db10', 'db08, db09 and db10', 'db08 and db10 only'],
       answer: 1,
       explain: 'The range is inclusive and the leading zero is kept, so it expands to db08, db09 and db10.',
     },
-    {
+    { id: 'q-6c50e1a9a9dc', legacyIndex: 1,
       q: 'How do you make group `europe` contain the groups `uk` and `france`?',
       code: '[europe:children]\nuk\nfrance',
       options: ['Exactly as shown', 'Replace `:children` with `:groups`', 'List every host of uk and france under `[europe]`'],
       answer: 0,
       explain: 'The `:children` suffix tells Ansible the lines below are group names, not host names.',
     },
-    {
+    { id: 'q-51393bb252c5', legacyIndex: 2,
       q: 'A host is listed only under `[webservers]`. Which groups is it in?',
       options: ['`webservers` only', '`webservers` and `ungrouped`', '`all` and `webservers`'],
       answer: 2,

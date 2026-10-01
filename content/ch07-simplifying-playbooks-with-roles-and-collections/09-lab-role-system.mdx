@@ -10,7 +10,7 @@ You will install the system roles collection into a project, read the timesync r
 
 The project `~/role-system` has an `ansible.cfg`, an `inventory`, and the collection archive. Its inventory puts servera and serverb in `database_servers`, servera in `na_datacenter` and serverb in `europe_datacenter`.
 
-<Lab
+<Lab objectives={["ch07.system-roles"]}
   id="role-system"
   title="Reusing content with system roles"
   classroom="lab start role-system"
@@ -25,7 +25,7 @@ The project `~/role-system` has an `ansible.cfg`, an `inventory`, and the collec
     `lab start role-system` packages the `redhat.rhel_system_roles` collection that section 0.6 installed on workstation as `redhat-rhel_system_roles-1.120.5.tar.gz` (your version may differ). This exercise reboots servera and serverb at the end.
   </HomeSetup>
 
-  <Task title="Install the collection into the project">
+  <Task id="task-bfa9fbeb97de" legacyIndex={1} title="Install the collection into the project">
 
 ```console
 [student@workstation ~]$ cd ~/role-system
@@ -61,7 +61,7 @@ redhat.rhel_system_roles 1.120.5
 ```
   </Task>
 
-  <Task title="Start the playbook">
+  <Task id="task-ad84fa56fa53" legacyIndex={2} title="Start the playbook">
     Create `configure_time.yml` with one play for `database_servers` that applies the timesync role:
 
 ```yaml title="configure_time.yml"
@@ -74,7 +74,7 @@ redhat.rhel_system_roles 1.120.5
 ```
   </Task>
 
-  <Task title="Read the role's documentation">
+  <Task id="task-d58a2fee515c" legacyIndex={3} title="Read the role's documentation">
 
 ```console
 [student@workstation role-system]$ less \
@@ -101,7 +101,7 @@ timesync_ntp_provider: chrony
 ```
   </Task>
 
-  <Task title="Set the time source for all hosts">
+  <Task id="task-5fafbf366f82" legacyIndex={4} title="Set the time source for all hosts">
     These settings apply to every host, so they go in `group_vars/all`:
 
 ```console
@@ -140,7 +140,7 @@ timesync_ntp_servers:
     </Env>
   </Task>
 
-  <Task title="Set the time zone after the role">
+  <Task id="task-812669625a37" legacyIndex={5} title="Set the time zone after the role">
     Add `post_tasks` and a handler to the play. The first task reads the current time zone; the second changes it only if it differs from `host_timezone`, and notifies a handler that reboots the host.
 
 ```yaml title="configure_time.yml"
@@ -170,7 +170,7 @@ timesync_ntp_servers:
     The `when` condition is what keeps the `command` task idempotent: on the second run the zone already matches, so the task is skipped.
   </Task>
 
-  <Task title="One time zone per data centre">
+  <Task id="task-9b6763d184ec" legacyIndex={6} title="One time zone per data centre">
     Find the zone names, then give each data centre group its own value:
 
 ```console
@@ -188,7 +188,7 @@ mkdir: created directory 'group_vars/europe_datacenter'
 ```
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-c6ad14d8e0c1" legacyIndex={7} title="Run it">
 
 ```console
 [student@workstation role-system]$ ansible-navigator run -m stdout configure_time.yml --syntax-check
@@ -219,7 +219,7 @@ serverb.lab.example.com    : ok=23   changed=6    unreachable=0    failed=0    s
     The role's own handler restarts chronyd after its tasks; your handler reboots the hosts at the end of the play. A second run reports `changed=0`.
   </Task>
 
-  <Task title="Check the time zones">
+  <Task id="task-4e5b60e9a15b" legacyIndex={8} title="Check the time zones">
 
 ```console
 [student@workstation role-system]$ ssh devops@servera date
@@ -231,7 +231,7 @@ Thu Oct  1 02:37:56 AM EEST 2026
     The same moment, shown in two time zones.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-a319f6f39b76" legacyIndex={9} title="Finish">
     <Finish name="role-system" />
   </Task>
 </Lab>

@@ -18,14 +18,14 @@ servera.lab.example.com
 serverb.lab.example.com
 ```
 
-<Lab
+<Lab objectives={["ch04.loops-conditions"]}
   id="loops"
   title="Writing loops and conditional tasks"
   classroom="lab start control-flow"
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Implement conditionals with the when keyword.', 'Iterate a task with loop, together with conditionals.']}
 >
-  <Task title="Move into the project directory">
+  <Task id="task-d5f9a74e1402" legacyIndex={1} title="Move into the project directory">
 
 ```console
 [student@workstation ~]$ cd ~/control-flow
@@ -33,7 +33,7 @@ serverb.lab.example.com
 ```
   </Task>
 
-  <Task title="Start the play with a list variable">
+  <Task id="task-67c3b2c439e7" legacyIndex={2} title="Start the play with a list variable">
     Create `playbook.yml` with a play, `MariaDB server is running`, for `database_dev`. Define `mariadb_packages` as a list containing `mariadb-server` and `python3-PyMySQL`.
 
     <Reveal title="Show solution">
@@ -50,7 +50,7 @@ serverb.lab.example.com
     </Reveal>
   </Task>
 
-  <Task title="Install the packages with a loop">
+  <Task id="task-bf9a26906d4b" legacyIndex={3} title="Install the packages with a loop">
     Add a task that installs each package in `mariadb_packages`, one loop item at a time.
 
     <Reveal title="Show solution">
@@ -70,7 +70,7 @@ serverb.lab.example.com
     </Callout>
   </Task>
 
-  <Task title="Start the service">
+  <Task id="task-51ccade9e547" legacyIndex={4} title="Start the service">
 
 ```yaml
     - name: Start MariaDB service
@@ -81,7 +81,7 @@ serverb.lab.example.com
 ```
   </Task>
 
-  <Task title="Run it and read the per-item output">
+  <Task id="task-a07f008f4b12" legacyIndex={5} title="Run it and read the per-item output">
 
 ```console
 [student@workstation control-flow]$ ansible-navigator run -m stdout playbook.yml
@@ -100,7 +100,7 @@ servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
     Each loop item gets its own line, tagged `(item=...)`.
   </Task>
 
-  <Task title="Add a condition and target production">
+  <Task id="task-0d4ebcd4cf41" legacyIndex={6} title="Add a condition and target production">
     Change the play to target `database_prod`, and make the install task run only when the host's distribution is Red Hat Enterprise Linux.
 
     <Reveal title="Show solution">
@@ -123,7 +123,7 @@ servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
     </HomeLab>
   </Task>
 
-  <Task title="Run it again">
+  <Task id="task-1efb9fc5a722" legacyIndex={7} title="Run it again">
 
 ```console
 [student@workstation control-flow]$ ansible-navigator run -m stdout playbook.yml
@@ -145,7 +145,7 @@ skipping: [serverb.lab.example.com] => (item=python3-PyMySQL)
 ```
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-11b17def7893" legacyIndex={8} title="Finish">
     <Finish name="control-flow" />
   </Task>
 </Lab>

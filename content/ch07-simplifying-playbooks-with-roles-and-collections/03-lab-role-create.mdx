@@ -10,14 +10,14 @@ You will turn the setup of an Apache virtual host into a role, `myvhost`: a skel
 
 The project `~/role-create` has an `ansible.cfg`, an `inventory` with `servera.lab.example.com` in the `webservers` group, a template `vhost.conf.j2`, and three playbooks named `verify-*.yml`.
 
-<Lab
+<Lab objectives={["ch07.role-structure","ch07.role-create"]}
   id="role-create"
   title="Creating roles"
   classroom="lab start role-create"
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Create a role that uses variables and a handler, and use it in a play together with pre_tasks and post_tasks.']}
 >
-  <Task title="Create the role skeleton">
+  <Task id="task-e4c4bd1f3087" legacyIndex={1} title="Create the role skeleton">
 
 ```console
 [student@workstation ~]$ cd ~/role-create
@@ -45,7 +45,7 @@ removed directory 'myvhost/tests'
     `ansible-galaxy init` and `ansible-galaxy role init` are the same command; the short form is older.
   </Task>
 
-  <Task title="Write the tasks">
+  <Task id="task-64ceffee5269" legacyIndex={2} title="Write the tasks">
     Replace the contents of `roles/myvhost/tasks/main.yml` with three tasks: install `httpd`, start and enable it, and install the virtual host configuration from a template, notifying a handler.
 
 ```yaml title="roles/myvhost/tasks/main.yml"
@@ -76,7 +76,7 @@ removed directory 'myvhost/tests'
     `src: vhost.conf.j2` has no directory: inside a role, the `template` module looks in the role's own `templates/` directory.
   </Task>
 
-  <Task title="Write the handler">
+  <Task id="task-a78e0f11ee8c" legacyIndex={3} title="Write the handler">
 
 ```yaml title="roles/myvhost/handlers/main.yml"
 ---
@@ -88,7 +88,7 @@ removed directory 'myvhost/tests'
 ```
   </Task>
 
-  <Task title="Move the template into the role">
+  <Task id="task-b4b81791c8b3" legacyIndex={4} title="Move the template into the role">
     Look at the template the project provides. Every host-specific value comes from a fact, so the role needs no variables of its own:
 
 ```jinja title="vhost.conf.j2"
@@ -114,7 +114,7 @@ renamed 'vhost.conf.j2' -> 'roles/myvhost/templates/vhost.conf.j2'
 ```
   </Task>
 
-  <Task title="Create the web content">
+  <Task id="task-f74d95e3a150" legacyIndex={5} title="Create the web content">
     The content is not part of the role: it belongs to this project. Put it in `files/html/`:
 
 ```console
@@ -125,7 +125,7 @@ mkdir: created directory 'files/html'
 ```
   </Task>
 
-  <Task title="Use the role in a play">
+  <Task id="task-259c8427fef7" legacyIndex={6} title="Use the role in a play">
     Create `use-vhost-role.yml`. The play for `webservers` prints a message **before** the role, applies `myvhost`, then copies the content and prints a message **after** it:
 
 ```yaml title="use-vhost-role.yml"
@@ -154,7 +154,7 @@ mkdir: created directory 'files/html'
     The trailing `/` on `src: files/html/` copies the **contents** of the directory. Without it, `copy` would create an `html` directory inside the destination.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-484b454c474c" legacyIndex={7} title="Run it">
 
 ```console
 [student@workstation role-create]$ ansible-navigator run \
@@ -199,7 +199,7 @@ servera.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
     Notice where the handler ran: after the role's tasks and **before** `post_tasks`. Handlers notified in each stage of a play run at the end of that stage.
   </Task>
 
-  <Task title="Verify the service">
+  <Task id="task-4419805ccd19" legacyIndex={8} title="Verify the service">
     The project's verification playbooks each run a command and print what it returned:
 
 ```console
@@ -225,7 +225,7 @@ ok: [servera.lab.example.com] => {
     The exact `httpd` version depends on your repositories.
   </Task>
 
-  <Task title="Verify the configuration and the content">
+  <Task id="task-a1af029d5819" legacyIndex={9} title="Verify the configuration and the content">
 
 ```console
 [student@workstation role-create]$ ansible-navigator run -m stdout verify-config.yml
@@ -275,7 +275,7 @@ simple index
     Run `use-vhost-role.yml` once more: `ok=7 changed=0`. Nothing changed, so the handler did not run.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-4898882665f2" legacyIndex={10} title="Finish">
     <Finish name="role-create" />
   </Task>
 </Lab>

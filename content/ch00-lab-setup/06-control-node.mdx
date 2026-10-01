@@ -14,7 +14,7 @@ Everything in Phase 10 happens on workstation as `student`. Get there with:
 lxc exec workstation -- su - student
 ```
 
-<Lab
+<Lab objectives={["ch00.lab-tools"]}
   id="control"
   title="Phase 10 · Prepare workstation as the control node (~15 min)"
   hosts={['workstation']}
@@ -26,7 +26,7 @@ lxc exec workstation -- su - student
     'Install the home-lab lab command, so lab start works here as it does in a classroom.',
   ]}
 >
-  <Task title="VM: install Ansible from Rocky's repositories">
+  <Task id="task-36204c1d80c4" legacyIndex={1} title="VM: install Ansible from Rocky's repositories">
     This `ansible-core` (2.14) is the same generation the RHEL 9 exam uses, so it is the one you practise with.
 
 ```bash title="student@workstation"
@@ -35,7 +35,7 @@ ansible --version | head -1          # ansible [core 2.14.18]
 ```
   </Task>
 
-  <Task title="VM: add the collections the exercises use">
+  <Task id="task-4cd9c852f576" legacyIndex={2} title="VM: add the collections the exercises use">
     From chapter 2 on, the exercises use modules such as `ansible.posix.firewalld` and `ansible.posix.authorized_key`. In the classroom they come inside the execution environment; here you install them once, system-wide, where every project finds them. Pin the versions: the latest releases need ansible-core 2.16 or newer and refuse to run on 2.14.
 
 ```bash title="student@workstation"
@@ -55,7 +55,7 @@ ansible-galaxy collection list
     </Callout>
   </Task>
 
-  <Task title="VM: install ansible-navigator in a virtual environment">
+  <Task id="task-71cdf056a41b" legacyIndex={3} title="VM: install ansible-navigator in a virtual environment">
     Navigator needs Python 3.10 or later (Rocky 9's system Python is 3.9, hence `python3.11`). Keep it in a virtual environment: pip also installs a newer `ansible-core` as a navigator dependency, and a plain `pip install --user` would put that copy in front of the exam-aligned one.
 
 ```bash title="student@workstation"
@@ -85,7 +85,7 @@ which -a ansible                     # should now be /usr/bin/ansible only
     </Callout>
   </Task>
 
-  <Task title="VM: configure navigator">
+  <Task id="task-4f100baad6ce" legacyIndex={4} title="VM: configure navigator">
     Plain output, no artifact files (which also lets Vault password prompts work, see chapter 3), and run playbooks with workstation's own `ansible-core` rather than inside a container. Create the file with one command so there is nothing to mistype:
 
 ```bash title="student@workstation: writes ~/.ansible-navigator.yml"
@@ -125,7 +125,7 @@ rm /tmp/version.yml
     </Callout>
   </Task>
 
-  <Task title="VM: SSH keys from student to devops on every machine">
+  <Task id="task-69894a7c7b7b" legacyIndex={5} title="VM: SSH keys from student to devops on every machine">
     Enter the password `redhat` once for each machine. Workstation is in the list because some exercises manage it like any other host.
 
 ```bash title="student@workstation"
@@ -138,7 +138,7 @@ ssh devops@servera sudo id           # uid=0(root), no password asked
 ```
   </Task>
 
-  <Task title="VM: let the same key log in as student and root">
+  <Task id="task-815d188a1d19" legacyIndex={6} title="VM: let the same key log in as student and root">
     In the classroom, `student` on workstation can also log in to every machine as `student` and as `root` without a password, and a few exercises rely on it (`remote_user: root`, or no `remote_user` at all). This reuses `devops`'s sudo, so there are no more passwords to type:
 
 ```bash title="student@workstation"
@@ -158,7 +158,7 @@ ssh student@serverb hostname         # serverb.lab.example.com
     Running it again is harmless: it adds the key only where it is missing.
   </Task>
 
-  <Task title="VM: install the lab command">
+  <Task id="task-6bc6181e3dd9" legacyIndex={7} title="VM: install the lab command">
     In a training classroom, each exercise starts with `lab start NAME`, which creates the exercise's project folder and starter files. That command exists only inside the classroom, so this guide provides its own small script with the same syntax. It downloads the starter files for an exercise from this site into `~/NAME`. It is a short shell script; [read it first](lab/lab) if you like.
 
 ```bash title="student@workstation"
@@ -187,7 +187,7 @@ lab check                            # key logins, collections and starter files
     </Callout>
   </Task>
 
-  <Task title="VM: set up vim for YAML">
+  <Task id="task-9c145d8aa995" legacyIndex={8} title="VM: set up vim for YAML">
     Two-space indentation and spaces instead of tabs, as chapter 2 recommends:
 
 ```text title="~/.vimrc"
@@ -198,22 +198,22 @@ set expandtab
 ```
   </Task>
 
-  <Task title="VM: don't create a project yet">
+  <Task id="task-4269fceb0cce" legacyIndex={9} title="VM: don't create a project yet">
     Leave workstation as it is for now. Your first Ansible project comes in [section 0.8](#/ch00/first-project-and-daily-use), *after* the `clean` snapshot, so the baseline contains the tools but none of your work.
   </Task>
 </Lab>
 
-<Lab
+<Lab objectives={["ch00.lab-tools"]}
   id="utility"
   title="Phase 11 · The utility server, optional (~10 min)"
   hosts={['utility.lab.example.com', 'workstation']}
   outcomes={['Serve practice files over HTTP for "download this from utility" style tasks.']}
 >
-  <Task title="LXD UI: create utility">
+  <Task id="task-987fb4e47997" legacyIndex={1} title="LXD UI: create utility">
     Create it as in section 0.5: name `utility`, `ipv4.address: 172.25.250.8`, no `disk2`. `content.example.com` and `materials.example.com` already point here, from the network's `raw.dnsmasq` lines.
   </Task>
 
-  <Task title="VM: install a web server and the practice files">
+  <Task id="task-fc08b2e12a0f" legacyIndex={2} title="VM: install a web server and the practice files">
 
 ```bash title="Ubuntu host"
 lxc exec utility -- bash
@@ -244,7 +244,7 @@ ls
 ```
   </Task>
 
-  <Task title="VM: check it from workstation">
+  <Task id="task-72b0aaf9b03d" legacyIndex={3} title="VM: check it from workstation">
 
 ```bash title="student@workstation"
 curl http://utility.lab.example.com/files/

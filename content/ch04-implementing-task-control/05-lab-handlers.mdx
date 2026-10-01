@@ -36,7 +36,7 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
 | `web_config_src`, `web_config_dst` | nginx configuration: source and installed location |
 | `app_config_src`, `app_config_dst` | php-fpm configuration: source and installed location |
 
-<Lab
+<Lab objectives={["ch04.handlers"]}
   id="handlers"
   title="Implementing handlers"
   classroom="lab start control-handlers"
@@ -47,14 +47,14 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
     The two `.standard` files are the stock Rocky Linux configuration files with one comment line added at the top. That extra line is what makes the copy tasks report `changed` on the first run.
   </HomeSetup>
 
-  <Task title="Move into the project directory">
+  <Task id="task-1cbee31bad8a" legacyIndex={1} title="Move into the project directory">
 
 ```console
 [student@workstation ~]$ cd ~/control-handlers
 ```
   </Task>
 
-  <Task title="Install the packages">
+  <Task id="task-a3c13e1041fa" legacyIndex={2} title="Install the packages">
     Add a task that installs everything in `packages`. `dnf` accepts the whole list.
 
 ```yaml
@@ -66,7 +66,7 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
 ```
   </Task>
 
-  <Task title="Start and enable both services">
+  <Task id="task-385f1823b352" legacyIndex={3} title="Start and enable both services">
 
 ```yaml
     - name: Make sure the web service is running
@@ -83,7 +83,7 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
 ```
   </Task>
 
-  <Task title="Deploy each configuration file and notify its handler">
+  <Task id="task-f585c84867f5" legacyIndex={4} title="Deploy each configuration file and notify its handler">
     Add two `ansible.builtin.copy` tasks: one installs the nginx configuration and notifies `restart web service`; the other installs the php-fpm configuration and notifies `restart app service`.
 
     <Reveal title="Show solution">
@@ -108,7 +108,7 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
     </Reveal>
   </Task>
 
-  <Task title="Define the two handlers">
+  <Task id="task-6dd03225b742" legacyIndex={5} title="Define the two handlers">
     Add a `handlers` section, aligned with `tasks`, with a handler that restarts `web_service` and one that restarts `app_service`. Their names must match the `notify` entries exactly.
 
     <Reveal title="Show solution">
@@ -128,7 +128,7 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
     </Reveal>
   </Task>
 
-  <Task title="Check the syntax">
+  <Task id="task-5a090c4548f0" legacyIndex={6} title="Check the syntax">
 
 ```console
 [student@workstation control-handlers]$ ansible-navigator run \
@@ -137,7 +137,7 @@ playbook: /home/student/control-handlers/configure_webapp.yml
 ```
   </Task>
 
-  <Task title="Run it: the handlers fire">
+  <Task id="task-755703a8038c" legacyIndex={7} title="Run it: the handlers fire">
 
 ```console
 [student@workstation control-handlers]$ ansible-navigator run \
@@ -162,7 +162,7 @@ servera.lab.example.com    : ok=8    changed=7    unreachable=0    failed=0  ...
     The handlers appear as `RUNNING HANDLER`, after the last task.
   </Task>
 
-  <Task title="Run it again: the handlers stay quiet">
+  <Task id="task-8a389ab98648" legacyIndex={8} title="Run it again: the handlers stay quiet">
 
 ```console
 [student@workstation control-handlers]$ ansible-navigator run \
@@ -175,7 +175,7 @@ servera.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
     The files already match, so the copy tasks report `ok`, nothing is notified, and neither service is restarted. If only `nginx.conf` changed in future, only `restart web service` would run.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-69fb2be4d311" legacyIndex={9} title="Finish">
     <Finish name="control-handlers" />
   </Task>
 </Lab>

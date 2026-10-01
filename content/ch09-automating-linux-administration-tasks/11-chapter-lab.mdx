@@ -10,7 +10,7 @@ Five small playbooks, one for each area of the chapter, prepare the web servers:
 
 The project `~/system-review` has an `ansible.cfg`, an `inventory` with servera in `webservers`, and the system roles collection archive. Every playbook targets `webservers`.
 
-<Lab
+<Lab objectives={["ch09.software","ch09.users","ch09.scheduling","ch09.storage","ch09.network"]}
   id="review"
   title="Automating Linux Administration Tasks"
   classroom="lab start system-review"
@@ -26,7 +26,7 @@ The project `~/system-review` has an `ansible.cfg`, an `inventory` with servera 
     As in the guided exercises: the repository is Rocky Linux's CRB repository with the key already on the servers, the package is `libyaml-devel` (only in CRB), the spare disk is `/dev/sdb`, and `eth1` is a dummy interface with the address `192.0.2.40/24`.
   </HomeSetup>
 
-  <Task title="A package from a signed repository">
+  <Task id="task-ecaab709dcab" legacyIndex={1} title="A package from a signed repository">
     Write `repo_playbook.yml`. On the web servers, create `/etc/yum.repos.d/example.repo` for the repository `example-internal`, described as `Example Inc. Internal YUM repo`, from `http://materials.example.com/yum/repository`, with GPG checking on. Import its key from `http://materials.example.com/yum/repository/RPM-GPG-KEY-example`, and install the package `rhelver`. Run it and check that the package is installed.
 
     <Reveal title="Show solution">
@@ -97,7 +97,7 @@ libyaml-devel-0.2.5-7.el9.x86_64
     </Reveal>
   </Task>
 
-  <Task title="Two operators">
+  <Task id="task-51479c17afe2" legacyIndex={2} title="Two operators">
     Write `users.yml`. On the web servers, create the group `webadmin`, and the users `ops1` and `ops2` with `webadmin` as a supplementary group. Run it and check.
 
     <Reveal title="Show solution">
@@ -137,7 +137,7 @@ uid=1008(ops2) gid=1009(ops2) groups=1009(ops2),1002(webadmin)
     </Reveal>
   </Task>
 
-  <Task title="Storage">
+  <Task id="task-6a19b214fcf2" legacyIndex={3} title="Storage">
     Install the system roles collection into `collections/`. Write `storage.yml`, which uses the storage role on the web servers: `/dev/vdb` as the physical volume of `apache-vg`; logical volumes `content-lv` (512 MiB) and `logs-lv` (768 MiB), both XFS; `content-lv` mounted on `/var/www` and `logs-lv` on `/var/log/httpd`. Run it.
 
     <Reveal title="Show solution">
@@ -177,7 +177,7 @@ uid=1008(ops2) gid=1009(ops2) groups=1009(ops2),1002(webadmin)
     </Reveal>
   </Task>
 
-  <Task title="A disk usage report">
+  <Task id="task-090e1ce4ddee" legacyIndex={4} title="A disk usage report">
     Write `create_crontab_file.yml`. It creates the system cron file `/etc/cron.d/disk_usage` on the web servers, with a job that runs as `devops` every two minutes from 09:00 to 16:59, Monday to Friday, and runs `df >> /home/devops/disk_usage`. Run it and check the file.
 
     <Reveal title="Show solution">
@@ -208,7 +208,7 @@ uid=1008(ops2) gid=1009(ops2) groups=1009(ops2),1002(webadmin)
     </Reveal>
   </Task>
 
-  <Task title="A second address">
+  <Task id="task-a9a981a4e8f5" legacyIndex={5} title="A second address">
     Write `network_playbook.yml`, which uses the network role to give `eth1` on the web servers the address `172.25.250.40/24`. Run it.
 
     <Reveal title="Show solution">
@@ -262,7 +262,7 @@ servera.lab.example.com    : ok=11   changed=1    unreachable=0    failed=0    s
     </Reveal>
   </Task>
 
-  <Task title="Check everything once more">
+  <Task id="task-93bb73db41fc" legacyIndex={6} title="Check everything once more">
     Run each playbook a second time: all five report `changed=0`. Then check on servera:
 
 ```console
@@ -274,7 +274,7 @@ eth1             UNKNOWN        192.0.2.40/24
 ```
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-a5314cc2ed0c" legacyIndex={7} title="Grade and finish">
     <Finish name="system-review" grade />
   </Task>
 </Lab>

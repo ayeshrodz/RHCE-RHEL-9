@@ -10,7 +10,7 @@ The web servers need the same five administrator accounts, all in a `webadmin` g
 
 The project `~/system-users` has an `ansible.cfg`, an `inventory` with servera in `webservers`, the variables file `vars/users_vars.yml`, and one public key per user in `files/`.
 
-<Lab
+<Lab objectives={["ch09.users"]}
   id="users"
   title="Managing users and authentication"
   classroom="lab start system-users"
@@ -21,7 +21,7 @@ The project `~/system-users` has an `ansible.cfg`, an `inventory` with servera i
     `lab start system-users` creates a key pair for each user in `files/`: `user1.key` and `user1.key.pub`, and so on. Only the `.pub` files go to the servers.
   </HomeSetup>
 
-  <Task title="Look at the data">
+  <Task id="task-d80246856412" legacyIndex={1} title="Look at the data">
 
 ```yaml title="vars/users_vars.yml"
 ---
@@ -39,7 +39,7 @@ users:
 ```
   </Task>
 
-  <Task title="Create the group and the users">
+  <Task id="task-21189c54416c" legacyIndex={2} title="Create the group and the users">
     Create `users.yml` with one play for `webservers` that loads the variables file, creates the group `webadmin`, and creates each user as a member of it.
 
 ```yaml title="users.yml"
@@ -65,7 +65,7 @@ users:
     The group must exist before a user can be added to it, so its task comes first.
   </Task>
 
-  <Task title="Install each user's key">
+  <Task id="task-6c2bf484133e" legacyIndex={3} title="Install each user's key">
     Add a task that puts each user's public key, `files/USERNAME.key.pub`, into their `authorized_keys`:
 
 ```yaml
@@ -79,7 +79,7 @@ users:
     The `file` lookup runs on the control node and returns the contents of the file; `+` joins strings to build its name for each user.
   </Task>
 
-  <Task title="Let webadmin use sudo">
+  <Task id="task-0b051f6080d4" legacyIndex={4} title="Let webadmin use sudo">
     Members of `webadmin` may run any command as root without a password. Put the rule in `/etc/sudoers.d/webadmin`, and have it checked before it is installed:
 
 ```yaml
@@ -96,7 +96,7 @@ users:
     `%` marks a group in a sudoers rule. `validate` runs `visudo` on a temporary copy and installs the file only if the check passes: a broken sudoers file could lock everyone out of sudo.
   </Task>
 
-  <Task title="Stop root logging in over SSH">
+  <Task id="task-169469b10a40" legacyIndex={5} title="Stop root logging in over SSH">
     Set `PermitRootLogin no` in `/etc/ssh/sshd_config`, and restart `sshd` when it changes. Put the handler before the tasks, as a reminder that order in the file does not matter:
 
 ```yaml
@@ -119,7 +119,7 @@ users:
     `regexp` finds an existing line to replace; if there is none, `lineinfile` adds `line` at the end of the file.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-c6bd8aabca0d" legacyIndex={6} title="Run it">
 
 ```console
 [student@workstation system-users]$ ansible-navigator run -m stdout users.yml
@@ -157,7 +157,7 @@ servera.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Log in as user1, and use sudo">
+  <Task id="task-97d043bbb2fc" legacyIndex={7} title="Log in as user1, and use sudo">
 
     <Env>
       <Classroom>
@@ -181,7 +181,7 @@ root
     </Env>
   </Task>
 
-  <Task title="Confirm root cannot log in">
+  <Task id="task-27d5b6a3ec19" legacyIndex={8} title="Confirm root cannot log in">
 
 ```console
 [student@workstation system-users]$ ssh root@servera
@@ -191,7 +191,7 @@ root@servera: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password
     In a classroom that also asks for a password, the answer is `Permission denied, please try again.` Either way, the root account is refused.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-4909a4513b6e" legacyIndex={9} title="Finish">
     <Finish name="system-users" />
   </Task>
 </Lab>

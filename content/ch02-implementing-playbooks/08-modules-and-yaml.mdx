@@ -183,11 +183,11 @@ tasks:
 
 The normal form takes more lines but is easier to read: your eyes move straight down the keys. It is also real YAML, so editors highlight it properly. Recognise the shorthand when you see it, but do not write it.
 
-<Quiz
+<Quiz objectives={["ch02.modules"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-3c18c69b6dc7', legacyIndex: 0,
       q: 'You need to run `/usr/local/bin/setup.sh` once. It creates `/etc/app/ready` when it finishes. How do you make the task idempotent?',
       options: [
         'Use `ansible.builtin.shell` instead of `command`',
@@ -197,19 +197,19 @@ The normal form takes more lines but is easier to read: your eyes move straight 
       answer: 1,
       explain: 'With `creates`, the command is skipped whenever the file already exists.',
     },
-    {
+    { id: 'q-a4006af89a4d', legacyIndex: 1,
       q: 'Which module can run a command on a host that has no Python installed?',
       options: ['`ansible.builtin.command`', '`ansible.builtin.shell`', '`ansible.builtin.raw`'],
       answer: 2,
       explain: '`raw` bypasses the module system and sends the command directly over SSH. `command` and `shell` need Python.',
     },
-    {
+    { id: 'q-27648904301a', legacyIndex: 2,
       q: 'You need `ls /tmp | wc -l`. Which module supports the pipe?',
       options: ['`ansible.builtin.command`', '`ansible.builtin.shell`', 'Either'],
       answer: 1,
       explain: 'Pipes and redirects are shell features. `command` passes the arguments to the program directly, without a shell.',
     },
-    {
+    { id: 'q-3774858990b5', legacyIndex: 3,
       q: 'Which YAML block style turns several lines into one line joined by spaces?',
       options: ['`|`', '`>`', '`---`'],
       answer: 1,

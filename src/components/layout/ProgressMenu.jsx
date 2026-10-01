@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Download, RotateCcw, Upload } from 'lucide-react';
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
@@ -30,7 +31,7 @@ export default function ProgressMenu() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `rhce-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `playbook-path-progress-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     setMessage({ ok: true, text: 'Progress file downloaded.' });
@@ -41,6 +42,7 @@ export default function ProgressMenu() {
     e.target.value = '';
     if (!file) return;
     try {
+      if (file.size > 2_000_000) throw new Error('This progress file is too large.');
       const count = importProgress(JSON.parse(await file.text()));
       setMessage({ ok: true, text: `Restored ${count} saved item${count === 1 ? '' : 's'}.` });
     } catch (err) {
@@ -76,6 +78,9 @@ export default function ProgressMenu() {
       {open && (
         <div className="progress-panel" role="dialog" aria-label="Your progress">
           <p className="progress-panel-title">Your progress</p>
+          <Link to="/progress" onClick={() => setOpen(false)}>
+            Open your learning dashboard
+          </Link>
           <p className="progress-panel-sub">
             {done.length} of {total} sections complete. Saved in this browser only.
           </p>
@@ -116,7 +121,11 @@ export default function ProgressMenu() {
             <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={upload} />
           </div>
 
-          {message && <p className={`progress-message ${message.ok ? 'is-ok' : 'is-error'}`}>{message.text}</p>}
+          {message && (
+            <p role="status" className={`progress-message ${message.ok ? 'is-ok' : 'is-error'}`}>
+              {message.text}
+            </p>
+          )}
         </div>
       )}
     </div>

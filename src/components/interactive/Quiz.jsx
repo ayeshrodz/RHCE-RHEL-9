@@ -2,8 +2,9 @@ import { Check, RotateCcw, X } from 'lucide-react';
 import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
 import { Inline } from './inline';
+import { latestAnswer, recordAnswer, resetQuiz } from '@/lib/progressModel';
 
-const EMPTY = {};
+const EMPTY = { version: 2, items: {} };
 const LETTERS = 'ABCDEFG';
 
 /**
@@ -14,8 +15,8 @@ export default function Quiz({ id = 'quiz', title, questions }) {
   const pageKey = usePageKey();
   const [answers, setAnswers] = useStored(`quiz:${pageKey}:${id}`, EMPTY);
 
-  const answered = Object.keys(answers).length;
-  const correct = questions.filter((q, i) => answers[i] === q.answer).length;
+  const answered = questions.filter((q) => latestAnswer(answers.items[q.id], q) !== undefined).length;
+  const correct = questions.filter((q) => latestAnswer(answers.items[q.id], q) === q.answer).length;
   const finished = answered === questions.length;
   const single = questions.length === 1;
 
@@ -30,10 +31,11 @@ export default function Quiz({ id = 'quiz', title, questions }) {
 
       <ol className="quiz-list">
         {questions.map((item, qi) => {
-          const chosen = answers[qi];
+          const history = answers.items[item.id];
+          const chosen = latestAnswer(history, item);
           const done = chosen !== undefined;
           return (
-            <li key={qi} className="quiz-item">
+            <li key={item.id} id={item.id} className="quiz-item">
               <p className="quiz-q">
                 {single ? <span className="quiz-q-kicker">Quick check</span> : <span className="quiz-q-num">{qi + 1}</span>}
                 <span className="quiz-q-text">
@@ -41,18 +43,20 @@ export default function Quiz({ id = 'quiz', title, questions }) {
                 </span>
               </p>
               {item.code && <pre className="quiz-code">{item.code}</pre>}
-              <div className="quiz-options" role="radiogroup">
+              {history?.attempts.length > 0 && !done && (
+                <p className="quiz-history">{history.attempts.length} earlier attempt(s) kept. Answer this version again.</p>
+              )}
+              <div className="quiz-options" role="group" aria-label={`Answers to question ${qi + 1}`}>
                 {item.options.map((opt, oi) => {
                   const isAnswer = oi === item.answer;
                   const state = !done ? '' : isAnswer ? 'is-correct' : oi === chosen ? 'is-wrong' : 'is-muted';
                   return (
                     <button
                       key={oi}
-                      role="radio"
-                      aria-checked={chosen === oi}
+                      aria-pressed={chosen === oi}
                       className={`quiz-option ${state}`}
                       disabled={done}
-                      onClick={() => setAnswers((a) => ({ ...a, [qi]: oi }))}
+                      onClick={() => setAnswers((a) => recordAnswer(a, item, oi))}
                     >
                       <span className="quiz-letter">
                         {done && isAnswer ? (
@@ -71,7 +75,7 @@ export default function Quiz({ id = 'quiz', title, questions }) {
                 })}
               </div>
               {done && item.explain && (
-                <p className={`quiz-explain ${chosen === item.answer ? 'is-correct' : 'is-wrong'}`}>
+                <p role="status" className={`quiz-explain ${chosen === item.answer ? 'is-correct' : 'is-wrong'}`}>
                   <strong>{chosen === item.answer ? 'Correct. ' : 'Not quite. '}</strong>
                   <Inline text={item.explain} />
                 </p>
@@ -86,14 +90,14 @@ export default function Quiz({ id = 'quiz', title, questions }) {
           {!single && (
             <p>
               {correct === questions.length
-                ? 'Perfect score. You are ready for the next chapter.'
+                ? 'Every answer is correct. Try applying these ideas in the lab.'
                 : correct >= questions.length * 0.7
                   ? 'Good work. Re-read the explanations for the ones you missed.'
                   : 'Worth another pass through the lessons before moving on.'}
             </p>
           )}
-          <button className="btn btn-sm" onClick={() => setAnswers(EMPTY)}>
-            <RotateCcw size={13} /> {single ? 'Try again' : 'Reset quiz'}
+          <button className="btn btn-sm" onClick={() => setAnswers(resetQuiz)}>
+            <RotateCcw size={13} /> {single ? 'Try again' : 'Try quiz again'}
           </button>
         </footer>
       )}

@@ -11,6 +11,35 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
+import { createProcessor } from '@mdx-js/mdx';
+import { questionRevision } from '../src/lib/progressModel.js';
+
+const activityParser = createProcessor();
+const literal = (node) =>
+  node?.type === 'ArrayExpression'
+    ? node.elements.map(literal)
+    : node?.type === 'TemplateLiteral'
+      ? node.quasis.map((q) => q.value.cooked).join('')
+      : node?.value;
+function readActivities(body) {
+  const quizzes = [];
+  const tasks = [];
+  function visit(node, labId = 'lab') {
+    const attribute = (name) => node.attributes?.find((a) => a.name === name)?.value;
+    if (node.name === 'Lab') labId = attribute('id') ?? 'lab';
+    if (node.name === 'Task') tasks.push({ id: attribute('id'), title: attribute('title'), labId });
+    if (node.name === 'Quiz') {
+      const items = attribute('questions').data.estree.body[0].expression.elements;
+      for (const item of items) {
+        const q = Object.fromEntries(item.properties.map((p) => [p.key.name, literal(p.value)]));
+        quizzes.push({ id: q.id, prompt: q.q, quizId: attribute('id') ?? 'quiz', revision: questionRevision(q) });
+      }
+    }
+    for (const child of node.children ?? []) visit(child, labId);
+  }
+  visit(activityParser.parse(body));
+  return { quizzes, tasks };
+}
 
 const VIRTUAL_ID = 'virtual:course';
 const RESOLVED_ID = '\0' + VIRTUAL_ID;
@@ -51,6 +80,7 @@ export default function contentManifest({ dir = 'content' } = {}) {
       kind: data.kind ?? inferKind(slug),
       minutes: data.minutes ?? estimateMinutes(body),
       draft: data.draft === true,
+      activities: readActivities(body),
     };
   }
 

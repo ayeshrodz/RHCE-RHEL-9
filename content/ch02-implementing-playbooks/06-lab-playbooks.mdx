@@ -20,14 +20,14 @@ The project directory `~/playbook-basic` already contains an `ansible.cfg` and a
 Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.copy -m stdout` shows them, with examples. Getting comfortable with it now will pay off in the exam.
 </Callout>
 
-<Lab
+<Lab objectives={["ch02.playbooks"]}
   id="playbooks"
   title="Writing and running playbooks"
   classroom="lab start playbook-basic"
   hosts={['workstation', 'serverc.lab.example.com', 'serverd.lab.example.com']}
   outcomes={['Write a playbook using correct YAML and playbook structure.', 'Validate and run it with ansible-navigator run.']}
 >
-  <Task title="Move into the project directory">
+  <Task id="task-f8615ccc9dff" legacyIndex={1} title="Move into the project directory">
 
 ```console
 [student@workstation ~]$ cd ~/playbook-basic
@@ -35,7 +35,7 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
 ```
   </Task>
 
-  <Task title="Start the play">
+  <Task id="task-db438de9dddd" legacyIndex={2} title="Start the play">
     Create `site.yml`. Begin with the document marker, then a play named `Install and start Apache HTTPD` that targets the `web` group. `hosts` must line up with `name`.
 
 ```yaml title="site.yml"
@@ -45,7 +45,7 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
 ```
   </Task>
 
-  <Task title="Add the tasks key and the package task">
+  <Task id="task-12e168405f1c" legacyIndex={3} title="Add the tasks key and the package task">
     Add `tasks:` at the same indentation as `hosts`. Then add the first task, indented further, that uses `ansible.builtin.dnf` to make sure `httpd` is `present`.
 
 ```yaml
@@ -57,7 +57,7 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
 ```
   </Task>
 
-  <Task title="Add the web page task">
+  <Task id="task-2b78738e5ef9" legacyIndex={4} title="Add the web page task">
     Match the format of the previous task. Use `ansible.builtin.copy` with `src` and `dest`.
 
 ```yaml
@@ -68,7 +68,7 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
 ```
   </Task>
 
-  <Task title="Add the service task">
+  <Task id="task-733631c5f524" legacyIndex={5} title="Add the service task">
     Use `ansible.builtin.service` so `httpd` is `started` now and `enabled` at boot.
 
     <Reveal title="Show the complete site.yml">
@@ -97,7 +97,7 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
     </Reveal>
   </Task>
 
-  <Task title="Check the syntax">
+  <Task id="task-16933d0cc598" legacyIndex={6} title="Check the syntax">
     Fix anything it reports before continuing.
 
 ```console
@@ -107,7 +107,7 @@ playbook: /home/student/playbook-basic/site.yml
 ```
   </Task>
 
-  <Task title="Run the playbook">
+  <Task id="task-9c10c6ff823d" legacyIndex={7} title="Run the playbook">
 
 ```console
 [student@workstation playbook-basic]$ ansible-navigator run -m stdout site.yml
@@ -120,7 +120,7 @@ serverd.lab.example.com    : ok=4    changed=3    unreachable=0    failed=0  ...
     Four tasks ran on each host (Gathering Facts plus your three), and all three of yours changed something.
   </Task>
 
-  <Task title="Run it again">
+  <Task id="task-b1a29dcaedd7" legacyIndex={8} title="Run it again">
     This time nothing should change:
 
 ```text
@@ -130,7 +130,7 @@ serverd.lab.example.com    : ok=4    changed=0    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Test the web servers">
+  <Task id="task-dab94357098a" legacyIndex={9} title="Test the web servers">
 
 ```console
 [student@workstation playbook-basic]$ curl serverc.lab.example.com
@@ -155,7 +155,7 @@ This is a test page.
     </HomeLab>
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-32186255913b" legacyIndex={10} title="Finish">
     <Finish name="playbook-basic" />
   </Task>
 </Lab>

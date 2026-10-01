@@ -7,6 +7,7 @@ import Callout from './Callout';
 import { H2, H3 } from './Heading';
 import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step, Steps, Tab, Tabs, Term } from './Layout';
 import Quiz from '@/components/interactive/Quiz';
+import AssessmentTimer from '@/components/interactive/AssessmentTimer';
 import ChapterPractice from '@/components/interactive/Challenge';
 import Flashcards from '@/components/interactive/Flashcards';
 import { Lab, Task } from '@/components/interactive/Lab';
@@ -110,6 +111,7 @@ export const mdxComponents = {
   Term,
   Quiz,
   ChapterPractice,
+  AssessmentTimer,
   Flashcards,
   Lab,
   Task,

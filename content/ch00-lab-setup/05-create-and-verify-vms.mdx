@@ -8,17 +8,17 @@ minutes: 30
 Phases 08 and 09: create workstation and the four servers from the Rocky Linux 9 cloud image, then step inside and prove two things: everything works *inside* the lab, and everything *outside* is blocked.
 </Lead>
 
-<Lab
+<Lab objectives={["ch00.lab-machines"]}
   id="vms"
   title="Phase 08 · Create the VMs (~20 min)"
   hosts={['LXD UI']}
   outcomes={['Create servera in full, then workstation and the other servers with fixed IPs.']}
 >
-  <Task title="LXD UI: start a new instance">
+  <Task id="task-34dba7e6d7e8" legacyIndex={1} title="LXD UI: start a new instance">
     Project **rhce** → **Instances** → **Create instance**.
   </Task>
 
-  <Task title="LXD UI: choose the Rocky Linux 9 cloud image">
+  <Task id="task-393bb94f294d" legacyIndex={2} title="LXD UI: choose the Rocky Linux 9 cloud image">
     **Browse images**, then filter and click **Select**. The first download takes a few minutes; later VMs reuse it.
 
     | Filter | Value |
@@ -42,11 +42,11 @@ lxc image info rocky9-lab | grep -E 'Fingerprint|serial|description'
     </Callout>
   </Task>
 
-  <Task title="LXD UI: name and profile">
+  <Task id="task-acdaf07296d2" legacyIndex={3} title="LXD UI: name and profile">
     Main configuration: name `servera`, instance type `VM`, profile `default`.
   </Task>
 
-  <Task title="LXD UI: pin the IP and attach the extra disk">
+  <Task id="task-012ea0c1e2b0" legacyIndex={4} title="LXD UI: pin the IP and attach the extra disk">
     Open the **YAML configuration** tab and replace the `devices:` section with this:
 
 ```yaml title="servera: YAML configuration, devices section"
@@ -63,11 +63,11 @@ devices:
 ```
   </Task>
 
-  <Task title="LXD UI: create and start">
+  <Task id="task-7d4356facca9" legacyIndex={5} title="LXD UI: create and start">
     **Create and start**. The first boot takes 2–3 minutes: cloud-init installs the packages, then the VM reboots once more to switch SELinux on. The UI shows it running the whole time.
   </Task>
 
-  <Task title="LXD UI: create the rest the same way">
+  <Task id="task-df93e22556cf" legacyIndex={6} title="LXD UI: create the rest the same way">
 
     | Name | ipv4.address | disk2 source | Resource limits (left menu) |
     | --- | --- | --- | --- |
@@ -91,13 +91,13 @@ devices:
   </Task>
 </Lab>
 
-<Lab
+<Lab objectives={["ch00.lab-machines"]}
   id="verify"
   title="Phase 09 · Get inside and check everything (~10 min)"
   hosts={['Ubuntu host', 'workstation']}
   outcomes={['Enter VMs with lxc exec.', 'Prove the inside works and the outside is blocked.']}
 >
-  <Task title="Host: every VM is running with its address">
+  <Task id="task-a97d7488fcb9" legacyIndex={1} title="Host: every VM is running with its address">
     `lxc exec` and the UI's **Terminal** tab are how you will always get in. Neither uses the network, so the firewall doesn't get in the way.
 
 ```bash title="Ubuntu host"
@@ -105,7 +105,7 @@ lxc list
 ```
   </Task>
 
-  <Task title="Host: step inside servera and check the first boot">
+  <Task id="task-f613098e8cbe" legacyIndex={2} title="Host: step inside servera and check the first boot">
 
 ```bash title="Ubuntu host"
 lxc exec servera -- bash
@@ -130,7 +130,7 @@ exit
     </Callout>
   </Task>
 
-  <Task title="VM: the inside works">
+  <Task id="task-92945e9a0259" legacyIndex={3} title="VM: the inside works">
     Enter workstation as `student` and move around by SSH, as in the classroom.
 
 ```bash title="Ubuntu host"
@@ -149,7 +149,7 @@ curl -sI https://rockylinux.org | head -1   # works: internet via NAT
     </Callout>
   </Task>
 
-  <Task title="VM: the outside is blocked from inside the lab">
+  <Task id="task-3cf2bfb27492" legacyIndex={4} title="VM: the outside is blocked from inside the lab">
     These should all **fail**. The ufw rules don't weaken the seal: if one of them succeeds, check that the seal is loaded with `sudo systemctl status rhce-isolate`.
 
 ```bash title="student@workstation: these should all FAIL"
@@ -159,7 +159,7 @@ curl -m3 -k https://172.25.250.254:8443   # the host's LXD API: times out
 ```
   </Task>
 
-  <Task title="Host: the lab is blocked from the host too">
+  <Task id="task-cfa468658f00" legacyIndex={5} title="Host: the lab is blocked from the host too">
 
 ```bash title="Ubuntu host: these should FAIL"
 ping -c2 -W2 172.25.250.10            # "Operation not permitted" or no reply

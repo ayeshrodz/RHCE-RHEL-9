@@ -20,7 +20,7 @@ export function Challenge({ challenge }) {
       ]);
   };
   return (
-    <section className="challenge widget" aria-labelledby={`${uid}-title`}>
+    <section id={`challenge-${challenge.id}`} className="challenge widget" aria-labelledby={`${uid}-title`}>
       <p className="widget-label">Browser practice · simulation</p>
       <h3 id={`${uid}-title`}>{challenge.title}</h3>
       <p>{challenge.prompt}</p>

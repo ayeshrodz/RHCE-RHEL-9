@@ -10,7 +10,7 @@ servera has a second network interface, `eth1`, that is not configured yet. You 
 
 The project `~/system-network` has an `ansible.cfg`, an `inventory` with servera in `webservers`, a playbook `get-eth1.yml` that shows the facts for `eth1`, and the system roles collection archive.
 
-<Lab
+<Lab objectives={["ch09.network"]}
   id="network"
   title="Managing network configuration"
   classroom="lab start system-network"
@@ -21,7 +21,7 @@ The project `~/system-network` has an `ansible.cfg`, an `inventory` with servera
     The home-lab VMs have one network card, which Ansible uses. Instead of a second card, `eth1` is a **dummy** interface, created by the same role from `type: dummy`, with an address from `192.0.2.0/24`, a range reserved for documentation. Everything else is the same.
   </HomeSetup>
 
-  <Task title="Install the collection">
+  <Task id="task-cd220ddcb60d" legacyIndex={1} title="Install the collection">
 
 ```console
 [student@workstation ~]$ cd ~/system-network
@@ -32,7 +32,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
 ```
   </Task>
 
-  <Task title="Write the playbook">
+  <Task id="task-3afc041de50a" legacyIndex={2} title="Write the playbook">
 
 ```yaml title="playbook.yml"
 ---
@@ -44,7 +44,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
 ```
   </Task>
 
-  <Task title="Find the variable in the documentation">
+  <Task id="task-1561270b14a8" legacyIndex={3} title="Find the variable in the documentation">
     The role's `README.md` has a section for each kind of setting. Look for "Setting the IP configuration":
 
 ```console
@@ -55,7 +55,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
     Its example shows a `network_connections` entry with an `ip` dictionary, whose `address` is a list of addresses with their prefix.
   </Task>
 
-  <Task title="Put the setting in group_vars">
+  <Task id="task-da82ed3d27c2" legacyIndex={4} title="Put the setting in group_vars">
 
 ```console
 [student@workstation system-network]$ mkdir -pv group_vars/webservers
@@ -92,7 +92,7 @@ network_connections:
     </Env>
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-72f23c628514" legacyIndex={5} title="Run it">
 
 ```console
 [student@workstation system-network]$ ansible-navigator run -m stdout playbook.yml
@@ -119,7 +119,7 @@ ok: [servera.lab.example.com]
     The role uses NetworkManager (`nm`), added a connection profile called `eth1`, and finally checked that it can still reach the host.
   </Task>
 
-  <Task title="Read it back from the facts">
+  <Task id="task-9d0d81b5873d" legacyIndex={6} title="Read it back from the facts">
 
 ```yaml title="get-eth1.yml"
 ---
@@ -151,7 +151,7 @@ ok: [servera.lab.example.com] => {
     In a classroom, the address is `172.25.250.30`.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-fcda0efb4bda" legacyIndex={7} title="Finish">
     <Finish name="system-network" />
   </Task>
 </Lab>

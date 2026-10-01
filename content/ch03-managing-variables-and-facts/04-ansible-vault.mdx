@@ -161,17 +161,17 @@ Playbook variables can be protected the same way: put the secrets in their own f
 If you use more than one Vault password, give each encrypted file a Vault ID and supply the matching ID when you run the playbook. Ansible then tries the right password first instead of working through all of them.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch03.vault"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-752f20a29f62', legacyIndex: 0,
       q: 'You only need to read an encrypted file. Which command should you use?',
       options: ['`ansible-vault edit`', '`ansible-vault view`', '`ansible-vault decrypt`'],
       answer: 1,
       explain: '`view` prints the content and leaves the file untouched. `edit` rewrites it, and `decrypt` removes the encryption.',
     },
-    {
+    { id: 'q-0d8bf55e01da', legacyIndex: 1,
       q: '`ansible-navigator run -m stdout site.yml --vault-id @prompt` hangs without asking for a password. Why?',
       options: [
         'The Vault ID is missing a label',
@@ -181,13 +181,13 @@ If you use more than one Vault password, give each encrypted file a Vault ID and
       answer: 1,
       explain: 'Navigator can only prompt when playbook artifacts are disabled, with `--playbook-artifact-enable false` or in ansible-navigator.yml.',
     },
-    {
+    { id: 'q-f3739d6a5912', legacyIndex: 2,
       q: 'Which command changes the password of an encrypted file?',
       options: ['`ansible-vault passwd`', '`ansible-vault rekey`', '`ansible-vault encrypt --new`'],
       answer: 1,
       explain: '`rekey` asks for the current password and then the new one. It can rekey several files at once.',
     },
-    {
+    { id: 'q-b34368d61149', legacyIndex: 3,
       q: 'What is the safest way to keep one host’s passwords out of plain text while its other variables stay readable?',
       options: [
         'Encrypt the whole inventory file',

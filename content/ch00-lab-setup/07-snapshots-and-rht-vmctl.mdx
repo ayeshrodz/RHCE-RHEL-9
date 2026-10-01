@@ -22,13 +22,13 @@ Build the lab once, save a `clean` snapshot, then break things freely: any machi
 
 ## Install and use it
 
-<Lab
+<Lab objectives={["ch00.lab-reset"]}
   id="rhtvmctl"
   title="Phase 12 · Snapshots and rht-vmctl (~10 min)"
   hosts={['Ubuntu host']}
   outcomes={['Install rht-vmctl.', 'Verify the build and take the clean baseline.']}
 >
-  <Task title="Host: install the script">
+  <Task id="task-1f2c2379eecd" legacyIndex={1} title="Host: install the script">
     Open an empty file for the script. Run `sudo -v` first so the password prompt is out of the way; otherwise the paste would land in the password prompt.
 
 ```bash title="Ubuntu host"
@@ -349,7 +349,7 @@ exit $RC
 </Reveal>
   </Task>
 
-  <Task title="Host: make it executable and try it">
+  <Task id="task-a4caf1b94492" legacyIndex={2} title="Host: make it executable and try it">
 
 ```bash title="Ubuntu host"
 sudo chmod 755 /usr/local/bin/rht-vmctl
@@ -362,7 +362,7 @@ rht-vmctl status all
     </Callout>
   </Task>
 
-  <Task title="Host: verify the whole build">
+  <Task id="task-9f6ba446521d" legacyIndex={3} title="Host: verify the whole build">
     The `clean` snapshot is what every reset returns to, so check everything first. This changes nothing: it prints PASS or FAIL for every requirement in this chapter, including that workstation has no project yet. Every line should pass (the utility line only matters if you built it).
 
 ```bash title="Ubuntu host: verify the build"
@@ -424,7 +424,7 @@ chk_not "lab cannot reach router"       "S 'ping -c1 -W2 $GW'"
     | names resolve / internet | The ufw step in [section 0.3](#/ch00/network-and-seal), then [troubleshooting](#/ch00/troubleshooting) |
   </Task>
 
-  <Task title="Host: take the clean baseline">
+  <Task id="task-cc2d89cae313" legacyIndex={4} title="Host: take the clean baseline">
     When everything passes:
 
 ```bash title="Ubuntu host"

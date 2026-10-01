@@ -1,0 +1,909 @@
+{
+  "quizzes": {
+    "quiz:ch01/why-automate:check": [
+      "q-f9250bf18f92"
+    ],
+    "quiz:ch01/what-is-ansible:check": [
+      "q-94bfa1cda240"
+    ],
+    "quiz:ch01/architecture:check": [
+      "q-ce081d4ff720",
+      "q-bfb138b6b29d",
+      "q-67165513eb48"
+    ],
+    "quiz:ch01/automation-platform:check": [
+      "q-e809ef1927c0",
+      "q-b68905239394"
+    ],
+    "quiz:ch01/control-node-and-hosts:check": [
+      "q-b64af50d3717",
+      "q-fc8525167abf"
+    ],
+    "quiz:ch01/quiz:chapter": [
+      "q-6c352a8d108b",
+      "q-f38e26846d80",
+      "q-4b1fb0ef8d0f",
+      "q-fabdc185a014",
+      "q-9240c10dab6f",
+      "q-bdcdec7e6c6e",
+      "q-50f22a40c31d",
+      "q-d2341a3a613f",
+      "q-b063dca92a85",
+      "q-d27598f34f65"
+    ],
+    "quiz:ch01/linux-readiness:linux-foundations": [
+      "q-9c9d12485bf2",
+      "q-c842c1ac6ddc",
+      "q-9e054599d164",
+      "q-1eb5931907d1"
+    ],
+    "quiz:ch02/inventory:check": [
+      "q-95b0eba90bbd",
+      "q-6c50e1a9a9dc",
+      "q-51393bb252c5"
+    ],
+    "quiz:ch02/configuration:check": [
+      "q-8efac24357d8",
+      "q-f232e3b58583",
+      "q-5f23aab3ad94"
+    ],
+    "quiz:ch02/writing-playbooks:check": [
+      "q-a4931ed68e9e",
+      "q-433e747817d5",
+      "q-b15e5bffaa45"
+    ],
+    "quiz:ch02/multiple-plays:check": [
+      "q-5392bdd54d57",
+      "q-159bf8ba6f1d",
+      "q-e5a7cb0b93e6"
+    ],
+    "quiz:ch02/modules-and-yaml:check": [
+      "q-3c18c69b6dc7",
+      "q-a4006af89a4d",
+      "q-27648904301a",
+      "q-3774858990b5"
+    ],
+    "quiz:ch02/quiz:chapter": [
+      "q-70242dabb6d6",
+      "q-a1bff0e94e56",
+      "q-602807f829d7",
+      "q-44ef14e3c050",
+      "q-a3f0b6da3a1a",
+      "q-1c96368d8778",
+      "q-6780847b3652",
+      "q-d397f9692f89",
+      "q-3872b08b2232",
+      "q-511ba85e82ab",
+      "q-5155f2b86c8d",
+      "q-a053b25f02cd"
+    ],
+    "quiz:ch03/variables:check": [
+      "q-f7726edba898",
+      "q-343b4cdbcdb0",
+      "q-9520ce229011"
+    ],
+    "quiz:ch03/scope-and-precedence:check": [
+      "q-357aa89202b2",
+      "q-48493515c72c",
+      "q-babd47db8acf",
+      "q-e716465820a2"
+    ],
+    "quiz:ch03/ansible-vault:check": [
+      "q-752f20a29f62",
+      "q-0d8bf55e01da",
+      "q-f3739d6a5912",
+      "q-b34368d61149"
+    ],
+    "quiz:ch03/facts:check": [
+      "q-aaa736d87b77",
+      "q-71f6ee551a26",
+      "q-d6762e07d140",
+      "q-c1c2486e6414"
+    ],
+    "quiz:ch03/custom-facts-and-magic-variables:check": [
+      "q-614fb73eb4ff",
+      "q-aadf53a03bd1",
+      "q-97a6b5605e26"
+    ],
+    "quiz:ch03/quiz:chapter": [
+      "q-3aa1ea263329",
+      "q-e7ed41680040",
+      "q-235dd0bd1ab1",
+      "q-990343818bdb",
+      "q-e82da0f3be9e",
+      "q-972bad2e859d",
+      "q-11411cbd611e",
+      "q-ec45a6668167",
+      "q-7a2a697a5d83",
+      "q-1875cfaa5f07",
+      "q-72c3f36cfadb",
+      "q-f9e8e132bd3a"
+    ],
+    "quiz:ch04/loops:check": [
+      "q-75557e4a1371",
+      "q-43f2d36a4ab3",
+      "q-adf77b62d0d1"
+    ],
+    "quiz:ch04/conditionals:check": [
+      "q-7c2c0abc2e41",
+      "q-5995c59b5e84",
+      "q-bae47708c4f1",
+      "q-5d3b0ddc320e"
+    ],
+    "quiz:ch04/handlers:check": [
+      "q-390bacd087df",
+      "q-d03d4815ca22",
+      "q-b672846b42e6",
+      "q-deb93183b3bf"
+    ],
+    "quiz:ch04/task-failure:check": [
+      "q-06e576552831",
+      "q-d745b7f744be",
+      "q-5893c0aa6043",
+      "q-5e2b921d22e5"
+    ],
+    "quiz:ch04/quiz:chapter": [
+      "q-2aab5d535778",
+      "q-e92a61716ded",
+      "q-cff2d026c331",
+      "q-c2950d5f8036",
+      "q-d600d231ebd5",
+      "q-b6d71cd30fdd",
+      "q-dc8a02a626ca",
+      "q-c0c5da4938ff",
+      "q-17ed48e23f4b",
+      "q-457870b5ac32",
+      "q-fc528532bbb1",
+      "q-2092f33ea726"
+    ],
+    "quiz:ch05/file-modules:check": [
+      "q-b63a46cc4d3a",
+      "q-8d269d4d2ba6",
+      "q-6b931b703ed1",
+      "q-c64f5e3fa07c",
+      "q-7730105a923f"
+    ],
+    "quiz:ch05/jinja2-templates:check": [
+      "q-2749ef28936e",
+      "q-68bb6cffabc1",
+      "q-1dcef18899fd",
+      "q-d53a95b62ecd",
+      "q-e4d6d95f5540"
+    ],
+    "quiz:ch05/quiz:chapter": [
+      "q-b1b34717aa9c",
+      "q-689d5cd8ec03",
+      "q-1020080d7c66",
+      "q-c7cccb062d0a",
+      "q-d62fa1aab0de",
+      "q-749ccf85f756",
+      "q-07ff2c506ef1",
+      "q-635326074d13",
+      "q-00c932a41048",
+      "q-f0e9464bba48",
+      "q-a7d97b63ea9b",
+      "q-6ad402058450"
+    ],
+    "quiz:ch06/host-patterns:check": [
+      "q-2da1cebfdd2f",
+      "q-0ef94f2fb7bd",
+      "q-feb0be39c42d",
+      "q-6737b76fa87c",
+      "q-d0c43b12dbb3"
+    ],
+    "quiz:ch06/reusing-content:check": [
+      "q-f70bb30c717f",
+      "q-cafe4c3dc3ea",
+      "q-455afe6df3df",
+      "q-7a005083d533",
+      "q-aa049ecc1c41"
+    ],
+    "quiz:ch06/quiz:chapter": [
+      "q-8e47208674a7",
+      "q-5747e563b2f1",
+      "q-3041e6fc66e8",
+      "q-4aa9b45ecb9e",
+      "q-44bec0fc2baa",
+      "q-ceee4a7ef70a",
+      "q-f72d4c468746",
+      "q-9ab3f21d00f5",
+      "q-074f43d9cf25",
+      "q-c9cecbd439fb",
+      "q-f80bab03a1c7",
+      "q-4e878426f04d"
+    ],
+    "quiz:ch07/role-structure:check": [
+      "q-7f557f9f4526",
+      "q-f6a90bb6c6fc",
+      "q-bc42ceb2f7f1",
+      "q-028cd2773de7",
+      "q-c09bc2344e1a"
+    ],
+    "quiz:ch07/external-roles:check": [
+      "q-511474222e03",
+      "q-c6114494446e",
+      "q-aabd9abf876f",
+      "q-63912fbfaba8",
+      "q-5218d4f3de08"
+    ],
+    "quiz:ch07/collections:check": [
+      "q-05e9722faa95",
+      "q-af52b8811658",
+      "q-f69d03afc23b",
+      "q-89eae66824b4",
+      "q-98ba015290a9"
+    ],
+    "quiz:ch07/system-roles:check": [
+      "q-d51015e5bc1a",
+      "q-7a05dc1971a7",
+      "q-0a00ef598690",
+      "q-279af43105c2"
+    ],
+    "quiz:ch07/quiz:chapter": [
+      "q-056442c85659",
+      "q-ab6819d4f6dc",
+      "q-1dfc7e86db94",
+      "q-57bd985a3c91",
+      "q-1f01b708e271",
+      "q-38f816357799",
+      "q-fbb725a80623",
+      "q-da885e620232",
+      "q-bc0a1ecf5da1",
+      "q-d5ba3f2a43ef",
+      "q-da41cbb86b82",
+      "q-ff4960129789",
+      "q-5ba2de57bfcf",
+      "q-e1ec3db73ead",
+      "q-5a550d7379f2"
+    ],
+    "quiz:ch08/troubleshooting-playbooks:check": [
+      "q-ef0d23e20533",
+      "q-265ddbb289ff",
+      "q-dca5034edcb6",
+      "q-9ffee9966e37",
+      "q-8adf4213343f"
+    ],
+    "quiz:ch08/troubleshooting-hosts:check": [
+      "q-a246a8c856f9",
+      "q-cdafde949639",
+      "q-56899c8e20d6",
+      "q-4221eb417da4",
+      "q-957ee4955981"
+    ],
+    "quiz:ch08/quiz:chapter": [
+      "q-40f8a5e7c553",
+      "q-f55e7a0f5fd5",
+      "q-e0e562407ffa",
+      "q-19304086cc55",
+      "q-0294cb10d241",
+      "q-68aca429e1da",
+      "q-3b043a2d4b54",
+      "q-1ac40f78ea7f",
+      "q-6e32a7a569ab",
+      "q-2276e85c7090",
+      "q-ec550618ee48",
+      "q-70456a26fdcf"
+    ],
+    "quiz:ch09/software:check": [
+      "q-67e2effaf1a5",
+      "q-02c7a6dab640",
+      "q-24017d26dcc0",
+      "q-c30585cf1a18"
+    ],
+    "quiz:ch09/users:check": [
+      "q-30282ebd78ec",
+      "q-b55432627468",
+      "q-82ebbab0099e",
+      "q-6d97e75db186"
+    ],
+    "quiz:ch09/boot-and-scheduling:check": [
+      "q-35d91b308bed",
+      "q-9f5eb8001434",
+      "q-88c3ef36faf2",
+      "q-3369f89f8c94"
+    ],
+    "quiz:ch09/storage:check": [
+      "q-1ca6ff291e9e",
+      "q-e96907a3d61f",
+      "q-abeb1ba85727",
+      "q-3d4dfaa7b718"
+    ],
+    "quiz:ch09/network:check": [
+      "q-9585a8f6f37c",
+      "q-a2eee69992b3",
+      "q-4adc4b7993cb",
+      "q-7da698dcaa5e"
+    ],
+    "quiz:ch09/quiz:chapter": [
+      "q-bac2617b022d",
+      "q-5628c5670610",
+      "q-fdb82414456f",
+      "q-9214b3f61c37",
+      "q-db230e1574e4",
+      "q-fd079ab851ae",
+      "q-44c79ebd712c",
+      "q-a11f71c3c981",
+      "q-6089924a9baa",
+      "q-78428c84df03",
+      "q-b515f359967e",
+      "q-fbd9e1657c89",
+      "q-b9cd7230badb",
+      "q-9a92c377c5aa",
+      "q-1e519d9441ec",
+      "q-c49367969a1b",
+      "q-b09428161ae1",
+      "q-bf19eb64ad0f"
+    ],
+    "quiz:ch10/quiz:final": [
+      "q-cc2c2ec18164",
+      "q-6f006200e976",
+      "q-001fea519ca4",
+      "q-e2865725ade8",
+      "q-0473fa197f82",
+      "q-23190b1071f6",
+      "q-82dd80cedbd9",
+      "q-8c6cbf1f893c",
+      "q-446cd139a2a2",
+      "q-ec89ac465c78",
+      "q-88b0d8f2e0da",
+      "q-315946c82bbe",
+      "q-06d8848340cd",
+      "q-690801d87eaa",
+      "q-b8ed650e55f5",
+      "q-684eab8b61fe",
+      "q-da55ff4bb28f",
+      "q-68511e689be9",
+      "q-80181953d0c3",
+      "q-057611fb2b19"
+    ],
+    "quiz:ch11/git-for-automation:git-check": [
+      "q-fbeebb28acb1",
+      "q-c6d6f4249f1a"
+    ],
+    "quiz:ch11/development-containers:containers-check": [
+      "q-ba334361f226",
+      "q-e86ff9360799"
+    ]
+  },
+  "labs": {
+    "lab:ch00/prepare-host:host": [
+      "task-c3f15967887d",
+      "task-6ce4a47198c7",
+      "task-143e1f080c3f"
+    ],
+    "lab:ch00/prepare-host:ui": [
+      "task-8e6cd2906b54",
+      "task-f7f76ea9ca36",
+      "task-5b62233c33a2"
+    ],
+    "lab:ch00/network-and-seal:network": [
+      "task-21b695fe52da",
+      "task-bbf55db0e30f",
+      "task-bc107a2d6d5f",
+      "task-4cb63ca17e4b"
+    ],
+    "lab:ch00/network-and-seal:seal": [
+      "task-3d2ff89d4e69",
+      "task-a916d762a14a",
+      "task-64ce0845c6e3",
+      "task-7381b1312869"
+    ],
+    "lab:ch00/project-profile-disks:project": [
+      "task-a7d130d0b9c6",
+      "task-86a669189995",
+      "task-35abc2543633"
+    ],
+    "lab:ch00/project-profile-disks:profile": [
+      "task-37cd8e3c99ba",
+      "task-3940b44ba4f8"
+    ],
+    "lab:ch00/project-profile-disks:disks": [
+      "task-1e0e320ca751"
+    ],
+    "lab:ch00/create-and-verify-vms:vms": [
+      "task-34dba7e6d7e8",
+      "task-393bb94f294d",
+      "task-acdaf07296d2",
+      "task-012ea0c1e2b0",
+      "task-7d4356facca9",
+      "task-df93e22556cf"
+    ],
+    "lab:ch00/create-and-verify-vms:verify": [
+      "task-a97d7488fcb9",
+      "task-f613098e8cbe",
+      "task-92945e9a0259",
+      "task-3cf2bfb27492",
+      "task-cfa468658f00"
+    ],
+    "lab:ch00/control-node:control": [
+      "task-36204c1d80c4",
+      "task-4cd9c852f576",
+      "task-71cdf056a41b",
+      "task-4f100baad6ce",
+      "task-69894a7c7b7b",
+      "task-815d188a1d19",
+      "task-6bc6181e3dd9",
+      "task-9c145d8aa995",
+      "task-4269fceb0cce"
+    ],
+    "lab:ch00/control-node:utility": [
+      "task-987fb4e47997",
+      "task-fc08b2e12a0f",
+      "task-72b0aaf9b03d"
+    ],
+    "lab:ch00/snapshots-and-rht-vmctl:rhtvmctl": [
+      "task-1f2c2379eecd",
+      "task-a4caf1b94492",
+      "task-9f6ba446521d",
+      "task-cc2d89cae313"
+    ],
+    "lab:ch00/first-project-and-daily-use:project": [
+      "task-6b05df6627f0",
+      "task-3b3b4da08fdf",
+      "task-7111ab693da6",
+      "task-27d11c0dd567",
+      "task-7e5e11ba56c6"
+    ],
+    "lab:ch01/lab-installing-ansible:install": [
+      "task-6430c82812af",
+      "task-f58235ab694f",
+      "task-5a8c1e6d0ebe",
+      "task-f1143d189e35",
+      "task-6d4b803445b8"
+    ],
+    "lab:ch02/lab-inventory:inventory": [
+      "task-fa234038afb7",
+      "task-7b4906552ab0",
+      "task-aa93e194a7fc",
+      "task-3fa584c5566c",
+      "task-33d5633c31ab",
+      "task-69fb390048f8",
+      "task-e50e9ac21f3f",
+      "task-86a3adc7baa0"
+    ],
+    "lab:ch02/lab-configuration:config": [
+      "task-913f067f7a6e",
+      "task-1d63da6e737e",
+      "task-565406e065d8",
+      "task-6e4faca6afd1",
+      "task-7fbd06b90b46",
+      "task-459de24c29de",
+      "task-d3cc750236c2",
+      "task-b1ad55584150"
+    ],
+    "lab:ch02/lab-playbooks:playbooks": [
+      "task-f8615ccc9dff",
+      "task-db438de9dddd",
+      "task-12e168405f1c",
+      "task-2b78738e5ef9",
+      "task-733631c5f524",
+      "task-16933d0cc598",
+      "task-9c10c6ff823d",
+      "task-b1a29dcaedd7",
+      "task-dab94357098a",
+      "task-32186255913b"
+    ],
+    "lab:ch02/lab-multiple-plays:multi": [
+      "task-1e7df0708233",
+      "task-7de83234a5db",
+      "task-a2d204610a52",
+      "task-7821c75cd7a4",
+      "task-41141086c8ce",
+      "task-089b534996df",
+      "task-7aaf1f0f02e5",
+      "task-ec9a223362a4",
+      "task-0d4c28ac9b74",
+      "task-69531c0ca500"
+    ],
+    "lab:ch02/chapter-lab:review": [
+      "task-38c7bc9491e8",
+      "task-95aed2c47f59",
+      "task-2adb154d7c7c",
+      "task-3cc9e1a8fa70",
+      "task-0a61f2642eca",
+      "task-bc43e93c2183",
+      "task-1a90023e84c5",
+      "task-1ea37e735fb9"
+    ],
+    "lab:ch03/lab-variables:variables": [
+      "task-a787b59f1544",
+      "task-7a723773963d",
+      "task-519d5468cca1",
+      "task-aa40f7dea118",
+      "task-f3fae7a2c389",
+      "task-c1937505cded",
+      "task-b66601efefc6",
+      "task-119df69b92bb",
+      "task-64cb54d91b02",
+      "task-93152b8dd1dd"
+    ],
+    "lab:ch03/lab-vault:vault": [
+      "task-d7abb6426853",
+      "task-ecd51d2dbdcd",
+      "task-a28f416e9007",
+      "task-62563bba0dcc",
+      "task-a643127a7426",
+      "task-0dcad73c2000",
+      "task-c9f0a8d7abde",
+      "task-359bfff83017"
+    ],
+    "lab:ch03/lab-facts:facts": [
+      "task-9a77e738e146",
+      "task-83120ce7b323",
+      "task-7d244833be22",
+      "task-fb91427a23d7",
+      "task-f0c74d158cf8",
+      "task-36ad89145070",
+      "task-8b5b0ec69015",
+      "task-7fc410701d7d",
+      "task-567978b344f5",
+      "task-d369aa498d86",
+      "task-a1b26ea23336"
+    ],
+    "lab:ch03/chapter-lab:review": [
+      "task-baa87f70759f",
+      "task-40b08c71d240",
+      "task-cef4c99e072d",
+      "task-d88c9c2dac5a",
+      "task-b587159d1829",
+      "task-40318d27146d",
+      "task-584ea28704ce",
+      "task-6f5c50fc77c9",
+      "task-3f9eafae9edf",
+      "task-23d9f57f129f",
+      "task-08c7f598a53d",
+      "task-4dce4e5ad1cb"
+    ],
+    "lab:ch04/lab-loops-conditionals:loops": [
+      "task-d5f9a74e1402",
+      "task-67c3b2c439e7",
+      "task-bf9a26906d4b",
+      "task-51ccade9e547",
+      "task-a07f008f4b12",
+      "task-0d4ebcd4cf41",
+      "task-1efb9fc5a722",
+      "task-11b17def7893"
+    ],
+    "lab:ch04/lab-handlers:handlers": [
+      "task-1cbee31bad8a",
+      "task-a3c13e1041fa",
+      "task-385f1823b352",
+      "task-f585c84867f5",
+      "task-6dd03225b742",
+      "task-5a090c4548f0",
+      "task-755703a8038c",
+      "task-8a389ab98648",
+      "task-69fb2be4d311"
+    ],
+    "lab:ch04/lab-task-failure:failure": [
+      "task-4890067ca913",
+      "task-55176e7282ae",
+      "task-1f58a221d68a",
+      "task-a19fe3ebb571",
+      "task-5e1d32f4d55c",
+      "task-d4c45f93bc77",
+      "task-ec894f88c687",
+      "task-fea018122f91",
+      "task-8b392c47fab3",
+      "task-2953a744268c"
+    ],
+    "lab:ch04/chapter-lab:review": [
+      "task-99753cb43bac",
+      "task-206edff35bc8",
+      "task-7ac41c7ef7c5",
+      "task-38f17331b99f",
+      "task-5f6fc930e00c",
+      "task-55c8acc2c73a",
+      "task-3b9579b4e587",
+      "task-19eeebcb0cb9",
+      "task-c8a5a26da924"
+    ],
+    "lab:ch05/lab-file-modules:files": [
+      "task-1f00314d7200",
+      "task-b47b78fa45fe",
+      "task-de0a26458857",
+      "task-3bfb21831b34",
+      "task-1e91b319aa60",
+      "task-36985cfb9ab6",
+      "task-d4b0ef381355",
+      "task-0b1024ec09da"
+    ],
+    "lab:ch05/lab-templates:template": [
+      "task-ef934b0a3436",
+      "task-ac6c69e3ae46",
+      "task-5f0e6664e868",
+      "task-4455bea8c477",
+      "task-f1b9502ddbbb",
+      "task-d0006cddcc96",
+      "task-88ec536f00d3",
+      "task-66570f23244d"
+    ],
+    "lab:ch05/chapter-lab:review": [
+      "task-a9597a31b2fd",
+      "task-ce839d351809",
+      "task-69b6e9776e71",
+      "task-0d77e610c323",
+      "task-4a20ac0a5765",
+      "task-37f55568f8cc",
+      "task-e991fad92553",
+      "task-6a2990ed3ea5",
+      "task-cf55592d7c48",
+      "task-e371cb18dcfd",
+      "task-cb5636853adc"
+    ],
+    "lab:ch06/lab-host-patterns:patterns": [
+      "task-f242ad3b5bb6",
+      "task-4c82b8cef257",
+      "task-89eff933ba5b",
+      "task-117e9b17ddc2",
+      "task-0d976cb50072",
+      "task-735b16c3af22",
+      "task-0aee66c811f8",
+      "task-b7cd55ea55ef",
+      "task-f6438705f5a6",
+      "task-333fe9fe3ffc",
+      "task-3a2a11eb1a42",
+      "task-a2605d529778",
+      "task-ea3f377de5a1",
+      "task-ed4dfc2e5a8e"
+    ],
+    "lab:ch06/lab-reuse:reuse": [
+      "task-aa6c2eaea533",
+      "task-997baaaf812d",
+      "task-ff87f0a04eed",
+      "task-55c28157d3f7",
+      "task-2e6ea89f68e2",
+      "task-d016c03a4c8a",
+      "task-b498083be0f7",
+      "task-03130d16fac6",
+      "task-94dedae9ac67",
+      "task-c3518a0e7610",
+      "task-d5655fd1e341"
+    ],
+    "lab:ch06/chapter-lab:review": [
+      "task-be615ad83aee",
+      "task-1e99ea301edf",
+      "task-1cec2f186611",
+      "task-a3859838baf8",
+      "task-eed91fb253ed",
+      "task-9993dfa2fde9",
+      "task-2763bf19327e",
+      "task-5ab3d2084dae"
+    ],
+    "lab:ch07/lab-role-create:role-create": [
+      "task-e4c4bd1f3087",
+      "task-64ceffee5269",
+      "task-a78e0f11ee8c",
+      "task-b4b81791c8b3",
+      "task-f74d95e3a150",
+      "task-259c8427fef7",
+      "task-484b454c474c",
+      "task-4419805ccd19",
+      "task-a1af029d5819",
+      "task-4898882665f2"
+    ],
+    "lab:ch07/lab-role-galaxy:role-galaxy": [
+      "task-190e425eb796",
+      "task-d4d6bf9805bd",
+      "task-4b4a67148ca8",
+      "task-bd87b7f2ed3b",
+      "task-1239aad62c32",
+      "task-d9b440fe3e5a",
+      "task-da21db5cbeb0",
+      "task-698378252684",
+      "task-740ffb8ef49e"
+    ],
+    "lab:ch07/lab-role-collections:role-collections": [
+      "task-f8a5c12328dc",
+      "task-f36bccaaf993",
+      "task-90deea7cf1cf",
+      "task-0fe7e8e5180e",
+      "task-a5096e24cfd9",
+      "task-44a364abb93c",
+      "task-790d5a3d7218"
+    ],
+    "lab:ch07/lab-role-system:role-system": [
+      "task-bfa9fbeb97de",
+      "task-ad84fa56fa53",
+      "task-d58a2fee515c",
+      "task-5fafbf366f82",
+      "task-812669625a37",
+      "task-9b6763d184ec",
+      "task-c6ad14d8e0c1",
+      "task-4e5b60e9a15b",
+      "task-a319f6f39b76"
+    ],
+    "lab:ch07/chapter-lab:review": [
+      "task-1a4ddac08d15",
+      "task-cc6a433c4707",
+      "task-c5ffdd5e910f",
+      "task-40f755761dc4",
+      "task-d890d9c01f72",
+      "task-40c5c621a517",
+      "task-094867f57ec1",
+      "task-f0ba33af5e66",
+      "task-262bbcbb3942",
+      "task-72d64dba48d1"
+    ],
+    "lab:ch08/lab-troubleshoot-playbook:troubleshoot-playbook": [
+      "task-80a4185a92be",
+      "task-fd8603b38adf",
+      "task-2ff7488d5d2c",
+      "task-a14970323f16",
+      "task-5216423f395d",
+      "task-ccf984f523b1",
+      "task-9c4142f6314d"
+    ],
+    "lab:ch08/lab-troubleshoot-host:troubleshoot-host": [
+      "task-260280c9d635",
+      "task-0eaaea1c8a3d",
+      "task-c3eaa3944498",
+      "task-abda28e1c058",
+      "task-a780e5758806",
+      "task-c389582f9dd3",
+      "task-80dee2838b4c",
+      "task-d2c1463dbdea",
+      "task-40692fc504fd"
+    ],
+    "lab:ch08/chapter-lab:review": [
+      "task-3e92568ef802",
+      "task-7e07ab3e2ab4",
+      "task-c6119f891da6",
+      "task-9b58ffa8e50e",
+      "task-0d83750a5bb3",
+      "task-48973b1a9c19",
+      "task-7f9b6eee9e04"
+    ],
+    "lab:ch09/lab-software:software": [
+      "task-e61b47949ed2",
+      "task-df4a1426fc07",
+      "task-764aadd7dd06",
+      "task-e7ce98c3eecc",
+      "task-7da9f35a0ab0",
+      "task-c57b99c3bc21",
+      "task-463415f6a554"
+    ],
+    "lab:ch09/lab-users:users": [
+      "task-d80246856412",
+      "task-21189c54416c",
+      "task-6c2bf484133e",
+      "task-0b051f6080d4",
+      "task-169469b10a40",
+      "task-c6bd8aabca0d",
+      "task-97d043bbb2fc",
+      "task-27d5b6a3ec19",
+      "task-4909a4513b6e"
+    ],
+    "lab:ch09/lab-boot-and-scheduling:process": [
+      "task-04bbcd8bfdf4",
+      "task-fc6a351415e1",
+      "task-5cf43c7ac536",
+      "task-a5e977e47824",
+      "task-4ce54a83864c",
+      "task-6a2de9585ee8",
+      "task-a24857208bf3"
+    ],
+    "lab:ch09/lab-storage:storage": [
+      "task-bd8a6fcdf7e1",
+      "task-7652cdac8b30",
+      "task-2f8f26f62b7c",
+      "task-732a0b8b3f0e",
+      "task-ec6316ec4ff3",
+      "task-692a1b272348"
+    ],
+    "lab:ch09/lab-network:network": [
+      "task-cd220ddcb60d",
+      "task-3afc041de50a",
+      "task-1561270b14a8",
+      "task-da82ed3d27c2",
+      "task-72f23c628514",
+      "task-9d0d81b5873d",
+      "task-fcda0efb4bda"
+    ],
+    "lab:ch09/chapter-lab:review": [
+      "task-ecaab709dcab",
+      "task-51479c17afe2",
+      "task-6a19b214fcf2",
+      "task-090e1ce4ddee",
+      "task-a9a981a4e8f5",
+      "task-93bb73db41fc",
+      "task-a5314cc2ed0c"
+    ],
+    "lab:ch10/lab-review-deploy:review-deploy": [
+      "task-2106b05b9af3",
+      "task-f1b9195ad505",
+      "task-66c287a5d8ad",
+      "task-3f7a3c63394e",
+      "task-6343c0ff1318",
+      "task-79e3e2990c8c",
+      "task-0bb61a51392a",
+      "task-19a97a244d73"
+    ],
+    "lab:ch10/lab-review-playbooks:review-playbooks": [
+      "task-822ba5c68791",
+      "task-28ecde6859fc",
+      "task-0295ea7348e3",
+      "task-29c45fd951c2",
+      "task-fd914a350488",
+      "task-10b1c4b6ed1f",
+      "task-5cbdf22d22f9",
+      "task-b9ff39f4f54c",
+      "task-45b7d79a5413"
+    ],
+    "lab:ch10/lab-review-admin:review-admin": [
+      "task-61498f8d8e99",
+      "task-03eb01ff7d3c",
+      "task-a12472c928ff",
+      "task-0f0ee9b36e07",
+      "task-fc621d39fad9",
+      "task-fbbefa162b96",
+      "task-299205de0ccb"
+    ],
+    "lab:ch10/lab-review-roles:review-roles": [
+      "task-9451fe9e663a",
+      "task-084eed535c78",
+      "task-afa91065a15b",
+      "task-97a0d8bb7979",
+      "task-010775a0a2b4",
+      "task-26c4a235e70c",
+      "task-583265e67b5a"
+    ],
+    "lab:ch11/lab-archive-recovery:archive-recovery": [
+      "task-612e24cb8c2a",
+      "task-56ef7e8d45cf",
+      "task-4f1408ad97e1",
+      "task-ed2f86815758"
+    ],
+    "lab:ch11/lab-security-validation:access-policy": [
+      "task-e4230a35326c",
+      "task-38874ab662ff",
+      "task-ef043f5acd2d",
+      "task-c8141a8b7639"
+    ]
+  },
+  "readiness": {
+    "ch00:0": "ch00.lab-network",
+    "ch00:1": "ch00.lab-machines",
+    "ch00:2": "ch00.lab-tools",
+    "ch00:3": "ch00.lab-reset",
+    "ch01:0": "ch01.automation",
+    "ch01:1": "ch01.architecture",
+    "ch01:2": "ch01.distributions",
+    "ch01:3": "ch01.runtime",
+    "ch02:0": "ch02.inventory",
+    "ch02:1": "ch02.configuration",
+    "ch02:2": "ch02.playbooks",
+    "ch02:3": "ch02.modules",
+    "ch03:0": "ch03.variables",
+    "ch03:1": "ch03.vault",
+    "ch03:2": "ch03.facts",
+    "ch04:0": "ch04.loops-conditions",
+    "ch04:1": "ch04.handlers",
+    "ch04:2": "ch04.failure",
+    "ch05:0": "ch05.files",
+    "ch05:1": "ch05.templates",
+    "ch06:0": "ch06.patterns",
+    "ch06:1": "ch06.reuse",
+    "ch07:0": "ch07.role-structure",
+    "ch07:1": "ch07.role-create",
+    "ch07:2": "ch07.role-install",
+    "ch07:3": "ch07.collections",
+    "ch07:4": "ch07.system-roles",
+    "ch08:0": "ch08.playbook-errors",
+    "ch08:1": "ch08.host-errors",
+    "ch09:0": "ch09.software",
+    "ch09:1": "ch09.users",
+    "ch09:2": "ch09.scheduling",
+    "ch09:3": "ch09.storage",
+    "ch09:4": "ch09.network",
+    "ch10:0": "ch10.review",
+    "ch10:1": "ch10.deployment",
+    "ch10:2": "ch10.composition",
+    "ch10:3": "ch10.administration",
+    "ch10:4": "ch10.reusable-roles",
+    "ch11:0": "ch11.git",
+    "ch11:1": "ch11.development",
+    "ch11:2": "ch11.archives",
+    "ch11:3": "ch11.security"
+  }
+}

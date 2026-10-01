@@ -10,7 +10,7 @@ You will assemble a playbook almost entirely out of existing pieces: three task 
 
 The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera.lab.example.com` and `workstation`, a `tasks` directory with three task files, and a `plays` directory with one playbook.
 
-<Lab
+<Lab objectives={["ch06.reuse"]}
   id="reuse"
   title="Including and importing files"
   classroom="lab start projects-file"
@@ -21,7 +21,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
     The last play runs on `workstation` itself, as the user `devops`, using the key set up in [section 0.6](#/ch00/control-node).
   </HomeSetup>
 
-  <Task title="Read the task files">
+  <Task id="task-aa6c2eaea533" legacyIndex={1} title="Read the task files">
 
 ```console
 [student@workstation ~]$ cd ~/projects-file
@@ -76,7 +76,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
     `rule` in `firewall.yml` is a list: the loop opens one firewall service per item.
   </Task>
 
-  <Task title="Read the test play">
+  <Task id="task-997baaaf812d" legacyIndex={2} title="Read the test play">
     `plays/test.yml` is a complete playbook with one play. It runs on workstation, without privilege escalation, and asks for a URL that it expects to answer with HTTP status 200:
 
 ```yaml title="plays/test.yml"
@@ -92,7 +92,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
 ```
   </Task>
 
-  <Task title="Start the playbook">
+  <Task id="task-ff87f0a04eed" legacyIndex={3} title="Start the playbook">
     Create `playbook.yml` with a play named `Configure web server` for `servera.lab.example.com`, and an empty `tasks:` section.
 
 ```yaml title="playbook.yml"
@@ -103,7 +103,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
 ```
   </Task>
 
-  <Task title="Include the environment tasks">
+  <Task id="task-55c28157d3f7" legacyIndex={4} title="Include the environment tasks">
     As the first task, **include** `tasks/environment.yml`, with `package` and `service` both set to `httpd`:
 
 ```yaml
@@ -117,7 +117,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
     `vars` on an include or import applies only to the tasks it brings in.
   </Task>
 
-  <Task title="Import the firewall tasks">
+  <Task id="task-2e6ea89f68e2" legacyIndex={5} title="Import the firewall tasks">
     As the second task, **import** `tasks/firewall.yml`. Install and start `firewalld`, and open both `http` and `https`:
 
 ```yaml
@@ -132,7 +132,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
 ```
   </Task>
 
-  <Task title="Import the placeholder task">
+  <Task id="task-d016c03a4c8a" legacyIndex={6} title="Import the placeholder task">
     As the third task, import `tasks/placeholder.yml` and have it write `/var/www/html/index.html`:
 
 ```yaml
@@ -143,7 +143,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
 ```
   </Task>
 
-  <Task title="Import the test play">
+  <Task id="task-b498083be0f7" legacyIndex={7} title="Import the test play">
     After the first play, at the top level of the file, import `plays/test.yml` and set `url` to the new web server:
 
 ```yaml
@@ -188,7 +188,7 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
     </Reveal>
   </Task>
 
-  <Task title="See the difference before running">
+  <Task id="task-03130d16fac6" legacyIndex={8} title="See the difference before running">
     Check the syntax, then list the tasks Ansible knows about before the run:
 
 ```console
@@ -216,7 +216,7 @@ playbook: /home/student/projects-file/playbook.yml
     The imported tasks are listed one by one, and the imported play appears as play 2. The include is a single line: what is inside `environment.yml` is not read until the play reaches that task.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-94dedae9ac67" legacyIndex={9} title="Run it">
 
 ```console
 [student@workstation projects-file]$ ansible-navigator run -m stdout playbook.yml
@@ -264,7 +264,7 @@ workstation                : ok=2    changed=0    unreachable=0    failed=0  ...
     The `included:` line is where the include is processed during the run; the task names now show the values of the variables. `firewalld` was already installed and running, so those two tasks report `ok`.
   </Task>
 
-  <Task title="Check the page">
+  <Task id="task-c3518a0e7610" legacyIndex={10} title="Check the page">
 
 ```console
 [student@workstation projects-file]$ curl http://servera.lab.example.com
@@ -272,7 +272,7 @@ servera.lab.example.com has been customized using Ansible.
 ```
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-d5655fd1e341" legacyIndex={11} title="Finish">
     <Finish name="projects-file" />
   </Task>
 </Lab>

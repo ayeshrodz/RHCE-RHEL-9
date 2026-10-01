@@ -10,14 +10,14 @@ The chapter's end-of-chapter lab: no step-by-step code this time. Build a two-pl
 
 The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory` that defines `serverb.lab.example.com`, and an `index.php` page.
 
-<Lab
+<Lab objectives={["ch02.inventory","ch02.configuration","ch02.playbooks","ch02.modules"]}
   id="review"
   title="Implementing an Ansible Playbook"
   classroom="lab start playbook-review"
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Write and run a playbook that installs, configures and verifies web and database services on a managed host.']}
 >
-  <Task title="Start a play for serverb">
+  <Task id="task-38c7bc9491e8" legacyIndex={1} title="Start a play for serverb">
     In `~/playbook-review`, create `internet.yml`. Add a play named `Enable internet services` for `serverb.lab.example.com`, with privilege escalation enabled and a task list.
 
     <Reveal title="Show solution">
@@ -32,7 +32,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Install the packages">
+  <Task id="task-95aed2c47f59" legacyIndex={2} title="Install the packages">
     Add one task that installs the **latest** versions of `firewalld`, `httpd`, `mariadb-server`, `php` and `php-mysqlnd`.
 
     <Reveal title="Show solution">
@@ -51,7 +51,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Configure the firewall">
+  <Task id="task-2adb154d7c7c" legacyIndex={3} title="Configure the firewall">
     Make sure `firewalld` is enabled and running, and that the `http` service is allowed, permanently and immediately.
 
     <Reveal title="Show solution">
@@ -73,7 +73,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Start the services">
+  <Task id="task-3cc9e1a8fa70" legacyIndex={4} title="Start the services">
     Make sure `httpd` and `mariadb` are both enabled and running.
 
     <Reveal title="Show solution">
@@ -94,7 +94,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Deploy the PHP page">
+  <Task id="task-0a61f2642eca" legacyIndex={5} title="Deploy the PHP page">
     Copy `~/playbook-review/index.php` to `/var/www/html/` on the managed host, with file mode `0644`.
 
     <Reveal title="Show solution">
@@ -111,7 +111,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Add a test play">
+  <Task id="task-bc43e93c2183" legacyIndex={6} title="Add a test play">
     Add a second play named `Test internet web server` that runs on the `workstation` host without privilege escalation, and uses `ansible.builtin.uri` to request `http://serverb.lab.example.com`, expecting status code `200`.
 
     <Reveal title="Show solution">
@@ -129,7 +129,7 @@ The project `~/playbook-review` already contains an `ansible.cfg`, an `inventory
     </Reveal>
   </Task>
 
-  <Task title="Validate and run">
+  <Task id="task-1a90023e84c5" legacyIndex={7} title="Validate and run">
     Syntax-check the playbook, then run it and read the output.
 
 ```console
@@ -146,7 +146,7 @@ workstation                : ok=2    changed=0    unreachable=0    failed=0  ...
     Why `changed=5` and not 6? In the classroom `firewalld` is already running on `serverb`, so that task reports `ok`.
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-1ea37e735fb9" legacyIndex={8} title="Grade and finish">
     <Finish name="playbook-review" grade />
   </Task>
 </Lab>

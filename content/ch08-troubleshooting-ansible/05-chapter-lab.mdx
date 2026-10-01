@@ -10,14 +10,14 @@ The playbook `secure-web.yml` should set up Apache with TLS on the web servers, 
 
 The project `~/troubleshoot-review` has an `ansible.cfg`, an `inventory`, the playbook `secure-web.yml`, the Apache configuration `vhosts.conf` and the page `index.html`. `serverb.lab.example.com` should be the only host in the `webservers` group. Ansible can reach it as `devops`, with the SSH keys already in place, and `devops` can become `root` without a password.
 
-<Lab
+<Lab objectives={["ch08.playbook-errors","ch08.host-errors"]}
   id="review"
   title="Troubleshooting Ansible"
   classroom="lab start troubleshoot-review"
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Troubleshoot playbooks.', 'Troubleshoot managed hosts.']}
 >
-  <Task title="Check the syntax">
+  <Task id="task-3e92568ef802" legacyIndex={1} title="Check the syntax">
     From `~/troubleshoot-review`, check the syntax of `secure-web.yml` and fix the problem it reports.
 
     <Reveal title="Show solution">
@@ -49,7 +49,7 @@ The offending line appears to be:
     </Reveal>
   </Task>
 
-  <Task title="Check the syntax again">
+  <Task id="task-7e07ab3e2ab4" legacyIndex={2} title="Check the syntax again">
     It still has a problem. Fix the next one.
 
     <Reveal title="Show solution">
@@ -82,7 +82,7 @@ The offending line appears to be:
     </Reveal>
   </Task>
 
-  <Task title="And a third time">
+  <Task id="task-c6119f891da6" legacyIndex={3} title="And a third time">
 
     <Reveal title="Show solution">
 
@@ -125,7 +125,7 @@ playbook: /home/student/troubleshoot-review/secure-web.yml
     </Reveal>
   </Task>
 
-  <Task title="Fix the connection">
+  <Task id="task-9b58ffa8e50e" legacyIndex={4} title="Fix the connection">
     Run the playbook. Ansible cannot connect to `serverb.lab.example.com`. Two problems prevent it; fix both. (You may well find them in a different order, or both at once.)
 
     <Reveal title="Show solution">
@@ -169,7 +169,7 @@ serverb.lab.example.com
     </Reveal>
   </Task>
 
-  <Task title="Fix the next failure">
+  <Task id="task-0d83750a5bb3" legacyIndex={5} title="Fix the next failure">
     Run the playbook again. The connection works now, but a task fails. Fix it.
 
     <Reveal title="Show solution">
@@ -193,7 +193,7 @@ failed: [serverb.lab.example.com] (item=mod_ssl) => {"ansible_loop_var": "item",
     </Reveal>
   </Task>
 
-  <Task title="Run it to the end">
+  <Task id="task-48973b1a9c19" legacyIndex={6} title="Run it to the end">
     Run the playbook once more. It must complete; then confirm with an ad hoc command that `httpd` is running on serverb.
 
     <Reveal title="Show solution">
@@ -228,7 +228,7 @@ serverb.lab.example.com | CHANGED | rc=0 >>
     </Reveal>
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-7f9b6eee9e04" legacyIndex={7} title="Grade and finish">
     <Finish name="troubleshoot-review" grade />
   </Task>
 </Lab>

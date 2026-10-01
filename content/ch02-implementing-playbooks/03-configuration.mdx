@@ -289,17 +289,17 @@ Both files accept `#` at the start of a line as a comment. `ansible.cfg` also ac
 inventory = ./inventory   ; the rest of this line is a comment
 ```
 
-<Quiz
+<Quiz objectives={["ch02.configuration"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-8efac24357d8', legacyIndex: 0,
       q: 'Your project has `./ansible.cfg` and you also have `~/.ansible.cfg`. `ANSIBLE_CONFIG` is not set. Which settings apply?',
       options: ['Both files, merged', 'Only `./ansible.cfg`', 'Only `~/.ansible.cfg`'],
       answer: 1,
       explain: 'Ansible uses the first file found and ignores the others completely. Nothing is merged.',
     },
-    {
+    { id: 'q-f232e3b58583', legacyIndex: 1,
       q: 'You set `become_ask_pass = true`, and `ansible-navigator run site.yml` hangs. What is most likely missing?',
       options: [
         '`become = true`',
@@ -309,7 +309,7 @@ inventory = ./inventory   ; the rest of this line is a comment
       answer: 1,
       explain: 'Navigator can only prompt for passwords in stdout mode with playbook artifacts disabled.',
     },
-    {
+    { id: 'q-5f23aab3ad94', legacyIndex: 2,
       q: 'Which `ansible.cfg` directive names the user Ansible logs in as on managed hosts?',
       options: ['`become_user`', '`remote_user`', '`ansible_user`'],
       answer: 1,

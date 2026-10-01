@@ -8,7 +8,7 @@ minutes: 15
 In this exercise you turn `workstation` into a working control node: install automation content navigator, log in to the classroom registry, and download the execution environment that later chapters use.
 </Lead>
 
-<Lab
+<Lab objectives={["ch01.automation","ch01.architecture","ch01.distributions","ch01.runtime"]}
   id="install"
   title="Installing Ansible"
   classroom="lab start intro-install"
@@ -20,7 +20,7 @@ In this exercise you turn `workstation` into a working control node: install aut
     There is nothing to download for this exercise. Workstation already has everything from [section 0.6](#/ch00/control-node); each task below shows what to run at home to confirm it.
   </HomeSetup>
 
-  <Task title="Install the ansible-navigator package">
+  <Task id="task-6430c82812af" legacyIndex={1} title="Install the ansible-navigator package">
     As the `student` user on `workstation`, install automation content navigator.
 
     <Env>
@@ -52,7 +52,7 @@ ansible-core-2.14.18-3.el9_8.1.x86_64
     </Callout>
   </Task>
 
-  <Task title="Verify the installation">
+  <Task id="task-f58235ab694f" legacyIndex={2} title="Verify the installation">
 
     <Env>
       <Classroom>
@@ -76,7 +76,7 @@ ansible [core 2.14.18]
     </Env>
   </Task>
 
-  <Task title="Log in to the classroom registry">
+  <Task id="task-5a8c1e6d0ebe" legacyIndex={3} title="Log in to the classroom registry">
     <Env>
       <Classroom>
         The classroom's private automation hub runs on `utility.lab.example.com`. Log in with username `admin` and password `redhat`.
@@ -105,7 +105,7 @@ ansible-navigator:
     </Env>
   </Task>
 
-  <Task title="Download the execution environment">
+  <Task id="task-f1143d189e35" legacyIndex={4} title="Download the execution environment">
     <HomeLab title="Optional at home">
     With the execution environment switched off there is nothing to download. To try the container workflow anyway, run `ansible-navigator images --ee true -m interactive`: navigator pulls the free community image (about 1.5 GB) and shows the same list. That image carries a much newer `ansible-core`, so keep using the default, container-free setup for the exercises.
     </HomeLab>
@@ -131,7 +131,7 @@ Running the command: podman pull utility.lab.example.com/ee-supported-rhel8:late
     Type `:0` to inspect the image (its Ansible version, collections and Python packages), then press <kbd>Esc</kbd> until you are back at the shell.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-6d4b803445b8" legacyIndex={5} title="Finish">
     <Env>
       <Classroom>
         Clean up so this exercise does not affect later ones: `lab finish intro-install`.

@@ -18,6 +18,8 @@ Results recorded on 2 October 2026. VM work uses isolated copies of clean lab sn
 | `system-storage` | Passed, XFS volumes 512 and 768 MiB | `changed=0` | Passed |
 | `system-network` | Passed, dummy interface | `changed=0` | Passed |
 
+Broken security permissions and a damaged restored file were detected by the grader. An invalid sudo policy was rejected before replacing the valid policy. Recovery succeeded, and all four graders passed after an explicit VM reboot.
+
 These results validate the listed cases on this stack. The remaining exercises and intermediate checkpoints still need complete VM runs with their published solutions, deliberately broken states, and applicable reboot checks. VM-dependent PRs remain drafts until their required checks are recorded.
 
 ## Automated coverage
@@ -26,3 +28,10 @@ These results validate the listed cases on this stack. The remaining exercises a
 - Python fixtures exercise every grading checkpoint with successful, failing, and unreachable responses. They validate control flow and report behavior; they do not establish that each shell probe matches a real host.
 - Downloader tests cover missing files, failing setup hooks, unsafe manifest paths, preservation of existing work, and successful preparation.
 - Production build and formatting checks pass.
+
+## Learning progress and assessments
+
+- 36 JavaScript tests pass, including version 1 migration, stable task/confidence IDs, quiz history after resets and corrections, version 2 round trips, complete lab report validation, and cross-tab cache updates.
+- Chromium verified quiz persistence, legacy quiz migration, review queue links, timer persistence after reload, cross-tab updates, and the unavailable-storage message. Mobile assessment layout has no horizontal page overflow.
+- The web-release assessment deployed successfully, repeated with no unexpected changes, passed its grader, served the expected page to workstation, and passed after a reboot.
+- The operations assessment VM run is in progress; its final results are recorded before marking its PR ready.

@@ -19,10 +19,13 @@ test('legacy exports and preferences remain compatible', () => {
   writeStored('theme', 'dark');
   importProgress({ ...payload({ completed: ['ch02/inventory'], theme: 'light' }), app: 'rhce-field-guide' });
   assert.deepEqual(exportProgress().data, { completed: ['ch02/inventory'] });
-  assert.deepEqual(validateProgress(payload({ 'quiz:ch02/inventory:check': { 0: 1 } })), { 'quiz:ch02/inventory:check': { 0: 1 } });
+  const migrated = validateProgress(payload({ 'quiz:ch02/inventory:check': { 0: 1 } }))['quiz:ch02/inventory:check'];
+  assert.equal(migrated.version, 2);
+  assert.equal(Object.values(migrated.items)[0].attempts[0].choice, 1);
 });
 test('progress exports include memory-only changes when storage is unavailable', () => {
-  resetAllProgress(); writeStored('completed', ['ch03/facts']);
+  resetAllProgress();
+  writeStored('completed', ['ch03/facts']);
   assert.deepEqual(exportProgress().data.completed, ['ch03/facts']);
 });
 test('cyclic inventories produce useful feedback instead of a stack overflow', () => {
