@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CodeBlock from './CodeBlock';
 import { fillInline, usePlaceholderValues } from '@/lib/placeholders';
 import Callout from './Callout';
+import { H2, H3 } from './Heading';
 import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step, Steps, Tab, Tabs, Term } from './Layout';
 import Quiz from '@/components/interactive/Quiz';
 import Flashcards from '@/components/interactive/Flashcards';
@@ -20,22 +21,22 @@ function Code({ children, ...props }) {
   return <code {...props}>{fillInline(children, labValues)}</code>;
 }
 
-// The router owns the URL hash, so heading links can't be plain #anchors:
-// "#/ch00/page#heading" opens a page at a heading, "#heading" scrolls this one.
+// The router owns the URL hash, so heading links carry the heading after a
+// second "#": "#/ch00/page#heading" opens a page at a heading, "#heading"
+// scrolls this one. SectionPage does the scrolling.
 function Anchor({ href = '', onClick, ...props }) {
   const navigate = useNavigate();
   if (href.startsWith('#/') && href.indexOf('#', 1) > 0) {
-    const [path, id] = href.slice(1).split('#');
     const go = (e) => {
       e.preventDefault();
-      navigate(path, { state: { scrollTo: id } });
+      navigate(href.slice(1));
     };
-    return <a href={`#${path}`} onClick={go} {...props} />;
+    return <a href={href} onClick={go} {...props} />;
   }
   if (href.startsWith('#') && !href.startsWith('#/')) {
     const go = (e) => {
       e.preventDefault();
-      document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+      navigate({ hash: href }, { replace: true, state: { scrollSmooth: true } });
     };
     return <a href={href} onClick={go} {...props} />;
   }
@@ -87,6 +88,8 @@ function Table({ children, ...props }) {
 
 export const mdxComponents = {
   a: Anchor,
+  h2: H2,
+  h3: H3,
   pre: CodeBlock,
   code: Code,
   table: Table,

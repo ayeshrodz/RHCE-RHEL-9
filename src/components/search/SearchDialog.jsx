@@ -26,7 +26,7 @@ export default function SearchDialog({ onClose }) {
   useEffect(() => setCursor(0), [query]);
 
   const open = (r) => {
-    navigate(r.page.path, { state: { scrollTo: r.anchor } });
+    navigate(r.anchor ? `${r.page.path}#${r.anchor}` : r.page.path);
     onClose();
   };
 

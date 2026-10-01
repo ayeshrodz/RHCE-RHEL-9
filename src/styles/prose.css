@@ -65,7 +65,66 @@ a.page-eyebrow:hover {
   font-weight: 500;
   letter-spacing: -0.01em;
   text-wrap: balance;
-  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+/* The copy-link button after each h2/h3: shown on hover or keyboard focus,
+   always faintly visible on touch screens, where there is no hover. */
+.prose .heading-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-3);
+  vertical-align: middle;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    color 0.15s,
+    background 0.15s;
+}
+.prose h2:hover .heading-link,
+.prose h3:hover .heading-link,
+.prose .heading-link:focus-visible,
+.prose .heading-link[data-copied] {
+  opacity: 1;
+}
+.prose .heading-link:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.prose .heading-link[data-copied] {
+  color: var(--ok);
+}
+.prose .heading-link {
+  position: relative;
+}
+.prose .heading-link[data-copied]::after {
+  content: 'Link copied';
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+  color: var(--ok);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (hover: none) {
+  .prose .heading-link {
+    opacity: 0.55;
+  }
 }
 .prose h2 {
   margin: 2.2em 0 0.6em;

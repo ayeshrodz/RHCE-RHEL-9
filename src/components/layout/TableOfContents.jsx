@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * "On this page" outline. Reads h2/h3 headings from the rendered article
- * and highlights the one currently in view. Uses scrollIntoView instead of
- * #anchors because the router owns the URL hash.
+ * and highlights the one currently in view. A click puts the section in the
+ * URL ("#/page#heading"), which SectionPage scrolls to.
  */
 export default function TableOfContents({ articleRef, contentKey }) {
   const [items, setItems] = useState([]);
   const [active, setActive] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const root = articleRef.current;
@@ -16,7 +18,7 @@ export default function TableOfContents({ articleRef, contentKey }) {
       setItems(
         [...root.querySelectorAll('h2[id], h3[id]')].map((h) => ({
           id: h.id,
-          text: h.textContent,
+          text: h.textContent.trim(),
           level: h.tagName === 'H2' ? 2 : 3,
         })),
       );
@@ -52,7 +54,7 @@ export default function TableOfContents({ articleRef, contentKey }) {
           <li key={item.id} className={`toc-l${item.level}`}>
             <button
               className={active === item.id ? 'is-active' : ''}
-              onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => navigate({ hash: `#${item.id}` }, { replace: true, state: { scrollSmooth: true } })}
             >
               {item.text}
             </button>

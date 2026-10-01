@@ -25,7 +25,10 @@ function Section({ page }) {
   const { prev, next } = neighbours(page);
   const done = isDone(page.key);
   const Icon = kindIcon[page.section.kind];
-  const scrollTo = useLocation().state?.scrollTo;
+  const location = useLocation();
+  // A section link ("#/ch07/collections#the-role-layout") arrives as location.hash.
+  const target = decodeURIComponent(location.hash.slice(1));
+  const smooth = location.state?.scrollSmooth;
 
   useEffect(() => {
     let alive = true;
@@ -42,12 +45,25 @@ function Section({ page }) {
     };
   }, [page]);
 
-  // Arriving from search: jump to the matching heading once content renders.
+  // Jump to the linked heading once the content has rendered, and again
+  // whenever the link changes (location.key is new on every navigation).
+  // Diagrams and fonts that finish loading can push the heading down, so the
+  // jump is repeated while the page settles, unless the reader scrolls first.
   useEffect(() => {
-    if (!Content || !scrollTo) return;
-    const id = requestAnimationFrame(() => document.getElementById(scrollTo)?.scrollIntoView());
-    return () => cancelAnimationFrame(id);
-  }, [Content, scrollTo]);
+    if (!Content || !target) return;
+    const jump = (behavior) => document.getElementById(target)?.scrollIntoView({ behavior });
+    let userScrolled = false;
+    const stop = () => (userScrolled = true);
+    const events = ['wheel', 'touchmove', 'keydown', 'mousedown'];
+    events.forEach((e) => window.addEventListener(e, stop, { passive: true }));
+    const frame = requestAnimationFrame(() => jump(smooth ? 'smooth' : 'auto'));
+    const timers = smooth ? [] : [150, 500, 1200].map((ms) => setTimeout(() => !userScrolled && jump('auto'), ms));
+    return () => {
+      cancelAnimationFrame(frame);
+      timers.forEach(clearTimeout);
+      events.forEach((e) => window.removeEventListener(e, stop));
+    };
+  }, [Content, target, smooth, location.key]);
 
   useEffect(() => {
     document.title = `${page.number} ${page.section.title} · RHCE Field Guide`;
