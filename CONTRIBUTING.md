@@ -5,7 +5,7 @@ Thanks for helping make this guide better. Anyone can propose changes; only the 
 ## Ways to help
 
 - **Fix a mistake:** a wrong command, an unclear explanation, a broken diagram. Open a *content correction* issue, or send a pull request straight away for small fixes.
-- **Test the lab:** follow [Chapter 0](https://ayeshrodz.github.io/RHCE-RHEL-9/#/ch00) on your hardware and report anything that doesn't match.
+- **Test the lab:** follow [Chapter 0](https://ayeshrodz.github.io/playbook-path/#/ch00) on your hardware and report anything that doesn't match.
 - **Write a chapter:** chapters 5–10 are planned. Please open an issue first so two people don't write the same one.
 - **Improve a diagram or widget**, or the site itself.
 
@@ -14,8 +14,8 @@ Thanks for helping make this guide better. Anyone can propose changes; only the 
 Requires Node.js 20.19+ or 22.12+.
 
 ```bash
-git clone https://github.com/<you>/RHCE-RHEL-9.git    # your fork
-cd RHCE-RHEL-9
+git clone https://github.com/<you>/playbook-path.git    # your fork
+cd playbook-path
 npm install
 npm run dev                                          # http://localhost:3000, edits show live
 ```

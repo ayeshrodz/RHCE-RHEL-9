@@ -1,10 +1,10 @@
-# RHCE Field Guide
+# Playbook Path
 
-[![Deploy](https://github.com/ayeshrodz/RHCE-RHEL-9/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/RHCE-RHEL-9/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
+[![Deploy](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
 
-**Read it online: https://ayeshrodz.github.io/RHCE-RHEL-9/**
+**Read it online: https://ayeshrodz.github.io/playbook-path/**
 
-A free, interactive study guide and home-lab build for people working towards the **RHCE** certification: Ansible automation on RHEL 9. It is written by learners, for learners, as a way to study together. Every concept gets a diagram, every exercise is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
+**Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. The path follows the objectives of the **RHCE** exam, so it doubles as exam preparation. It is written by learners, for learners, as a way to study together: every concept gets a diagram, every exercise runs on a practice lab you build yourself and is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
 
 > An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 

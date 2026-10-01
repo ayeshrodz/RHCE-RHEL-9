@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Clock } from 'lucide-react';
-import { findPage, kindLabel, loaderFor, neighbours } from '@/lib/course';
+import { course, findPage, kindLabel, loaderFor, neighbours } from '@/lib/course';
 import { useProgress } from '@/hooks/useProgress';
 import { useStored } from '@/lib/storage';
 import { PageContext } from '@/lib/pageContext';
@@ -66,7 +66,7 @@ function Section({ page }) {
   }, [Content, target, smooth, location.key]);
 
   useEffect(() => {
-    document.title = `${page.number} ${page.section.title} · RHCE Field Guide`;
+    document.title = `${page.number} ${page.section.title} · ${course.title}`;
     setLastVisited(page.key);
   }, [page, setLastVisited]);
 

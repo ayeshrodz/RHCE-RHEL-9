@@ -3,8 +3,11 @@
 // components in other open tabs of the site.
 import { useCallback, useSyncExternalStore } from 'react';
 
+// Kept from the site's first name, so that saved progress survives the rename.
 const PREFIX = 'rhce:';
-const APP_ID = 'rhce-field-guide';
+const APP_ID = 'playbook-path';
+// Exports made before the site was renamed are still accepted.
+const OLD_APP_IDS = ['rhce-field-guide'];
 const EXPORT_VERSION = 1;
 // Display preferences: kept on reset and left out of progress exports.
 const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv']);
@@ -105,8 +108,8 @@ export function exportProgress() {
 
 /** Restore a file produced by exportProgress(). Replaces current progress. */
 export function importProgress(payload) {
-  if (!payload || payload.app !== APP_ID || typeof payload.data !== 'object') {
-    throw new Error('This file is not an RHCE Field Guide progress export.');
+  if (!payload || (payload.app !== APP_ID && !OLD_APP_IDS.includes(payload.app)) || typeof payload.data !== 'object') {
+    throw new Error('This file is not a Playbook Path progress export.');
   }
   if (payload.version > EXPORT_VERSION) {
     throw new Error('This export was made by a newer version of the guide.');
