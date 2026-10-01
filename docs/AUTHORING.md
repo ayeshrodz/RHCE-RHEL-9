@@ -27,7 +27,7 @@ content/
   ---
   title: Managing Ansible configuration files
   kind: lesson        # lesson | lab | quiz | summary (inferred from the filename if omitted)
-  minutes: 14         # estimated from word count if omitted
+  minutes: 8         # estimated from word count if omitted
   draft: true         # optional: hide the section from the site
   ---
   ```
@@ -40,7 +40,7 @@ The page title, number, breadcrumb, reading time, table of contents, "mark compl
 
 ## 2. Page shape
 
-Every lesson follows the same rhythm:
+Aim for 5–12 minutes: purpose, a small example, an activity, an explanation, and a short recap. Put deeper details in optional reveals. A lesson can start like this:
 
 ```mdx
 <Lead>One or two sentences on why this matters.</Lead>
@@ -52,7 +52,7 @@ Every lesson follows the same rhythm:
 ## First topic
 ...prose, a diagram, a code block...
 
-<Quiz id="check" questions={[ ... ]} />
+<Quiz id="check" objectives={["ch02.playbooks"]} questions={[ ... ]} />
 ```
 
 Use `##` for topics and `###` for sub-topics; both appear in the table of contents.
@@ -80,8 +80,8 @@ No imports needed. They are registered in `src/components/mdx/index.jsx`.
 | `<Steps>` + `<Step title>` | Numbered procedures inside a lesson. |
 | `<Glossary>` + `<Term name>` | Definition lists. |
 | `<Reveal title="Show solution">` | Hidden answers. |
-| `<Quiz id questions={[{ q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
-| `<Lab id title outcomes hosts classroom>` + `<Task title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
+| `<Quiz id objectives questions={[{ id, q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
+| `<Lab id objectives title outcomes hosts classroom>` + `<Task id title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
 | `<Flashcards cards={[{ front, back }]}>` | Revision cards. |
 
 Strings passed as props (quiz text, card text) support `` `code` ``, `**bold**` and `*italic*`.
@@ -133,7 +133,7 @@ export default function Example() {
 
 Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
 
-Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the registry globs every chapter folder). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
 Reusable pieces from chapter 3 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
 
@@ -173,11 +173,54 @@ Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/
 
 All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turned off so `!=` and `->` show as typed). Sizes come from `--code-size` (blocks and terminals), `--code-size-sm` (compact widgets) and `--code-inline` (inline code in text). Use these tokens rather than hard-coded values.
 
-## 7. Before you commit
+## 7. Stable activities and skills
+
+Give each question and task a unique, descriptive ID, such as `ch02-inventory-child-groups` or `ch02-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.
+
+```mdx
+<Quiz id="check" objectives={["ch02.inventory"]} questions={[{
+  id: "ch02-example-group-membership",
+  q: "Which group contains the child group's hosts?",
+  options: ["The parent", "Only the child"],
+  answer: 0,
+  explain: "A parent includes the hosts of its children.",
+}]} />
+```
+
+Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
+
+Browser challenges live in `src/data/challenges.js`. Supply a stable `id`, chapter, objective, type, requirement, starter input or choices, expected result, progressive hints, explanation, and solution. Keep simulations within the supported parser behavior. Test correct, incorrect, incomplete, and equivalent answers in `tests/challenges.test.js`; compare relevant cases with actual Ansible.
+
+A lab brief needs prerequisites, outcomes, verification, progressive hints, and an independent variation. Catalog brief metadata appears through `LabBrief`; task solutions can use `<Reveal>`. Challenge mode exposes requirements first. Keep task requirements understandable without reading the solution.
+
+For a new exercise, add a starter manifest and index entry plus a `graders.json` entry. Each probe needs stable IDs, required target hosts, read-only commands, and a useful failure explanation. Use named checkpoints where later tasks intentionally remove earlier results. Increment the exercise version when the grading contract changes and regenerate the browser report schema:
 
 ```bash
-npm run build    # must pass: catches MDX syntax errors
+node scripts/generate-report-schema.mjs
+```
+
+Never treat a mocked passing probe as real host validation. Test the published solution, a deliberate broken state, repeat execution, reset behavior, and reboot persistence where relevant. Record the tested stack and limitations in `docs/VALIDATION.md`.
+
+## 8. Before you commit
+
+```bash
 npm run format
+npm run format:check
+npm run validate:content
+npm test
+npm run test:labs
+npm run build
+python3 -m pip install -r tests/browser-requirements.txt
+python3 -m playwright install chromium
+npm run test:browser
 ```
 
 Then open the page in both light and dark mode, and at phone width.
+
+For the behavior-comparison script, use a disposable control-node environment with Ansible installed:
+
+```bash
+python3 scripts/validate-ansible-simulations.py
+```
+
+It creates a temporary local project, uses the local connection, and prints the runtime and passed comparisons. It does not validate remote system-administration labs.

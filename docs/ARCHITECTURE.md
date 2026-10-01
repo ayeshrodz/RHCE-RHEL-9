@@ -1,81 +1,43 @@
-# System Architecture & Technical Design
+# Architecture
 
-This document details the software architecture, component model, and build pipeline for the **Playbook Path** web application.
+Playbook Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
 
----
+## Content and routing
 
-## 1. Technical Stack
+`plugins/content-manifest.js` builds `virtual:course` from chapter metadata and MDX frontmatter. `src/lib/course.js` exposes navigation and page lookup. MDX pages load on demand through Vite imports.
 
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Framework** | React 19 + React Router 7 | Reactive SPA architecture with hash-based routing (`/#/ch01/why-automate`). |
-| **Build Tool** | Vite 8 | Fast ESM development server, sub-second HMR, optimized static build with tree-shaking. |
-| **Content Engine** | `@mdx-js/rollup` + Remark + Rehype | Compiles Markdown + JSX into React components on the fly. |
-| **Code Highlighting** | Shiki (`@shikijs/rehype`) | Accurate token-based syntax highlighting with dual light/dark themes (`github-light` / `github-dark`), line highlights, and title metadata. |
-| **Diagram System** | Custom React SVG Kit (`src/diagrams/kit`) | Theme-adaptive, accessible vector diagrams with steppers, node inspectors, and pan/zoom capabilities. |
-| **Icons & UI** | Lucide React | Modern, consistent iconography for navigation, kinds, and status indicators. |
-| **Persistence** | Browser `localStorage` | Client-side tracking of completed sections, quiz results, and theme preferences (`light`, `dark`, `system`). |
+Published URLs use hash routing, for example `#/ch02/inventory`. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
 
----
+`content/_objectives.yml` maps stable skill IDs to lessons, challenges, and labs. Each chapter lists its objective IDs; quizzes and labs reference the skills they practise.
 
-## 2. Directory Structure
+## Learning activities
 
-```text
-RHCE/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml              # Automated GitHub Pages CI/CD workflow
-├── content/
-│   ├── ch01-introducing-ansible/   # Chapter 1 MDX lessons, labs, quiz, summary
-│   └── ch02-implementing-playbooks/# Chapter 2 MDX lessons, labs, quiz, summary
-├── docs/
-│   ├── ARCHITECTURE.md             # This technical architecture document
-│   ├── AUTHORING.md                # Style guide and component reference
-├── src/
-│   ├── App.jsx                     # Top-level routing and MDXProvider wrapper
-│   ├── main.jsx                    # Application entrypoint and theme bootstrap
-│   ├── components/
-│   │   ├── interactive/            # Interactive quiz, flashcards, labs, checklists
-│   │   ├── layout/                 # AppShell, Header, Sidebar, TableOfContents
-│   │   ├── mdx/                    # MDX primitives (Callout, Terminal, CodeBlock, etc.)
-│   │   └── search/                 # Modal search dialog (Ctrl+K)
-│   ├── diagrams/
-│   │   ├── kit/                    # Reusable SVG primitives (Node, Arrow, Group, Stepper)
-│   │   ├── ch01/                   # Chapter 1 interactive visual models
-│   │   └── ch02/                   # Chapter 2 inventory and playbook models
-│   ├── hooks/                      # useProgress, useSearch, useTheme
-│   ├── lib/
-│   │   ├── course.js               # Single source of truth for course hierarchy
-│   │   ├── inventory.js            # Inventory parser and validator utilities
-│   │   └── storage.js              # LocalStorage helper functions
-│   ├── pages/                      # HomePage, ChapterPage, SectionPage, NotFound
-│   └── styles/                     # CSS stylesheets, CSS custom properties, responsive design
-├── index.html                      # Semantic HTML5 entry with pre-paint theme script
-├── package.json                    # Project dependencies and npm scripts
-└── vite.config.js                  # Vite configuration with MDX and path aliases
-```
+- `Quiz.jsx` stores attempts by question ID. Question revisions come from the question, options, and answer. Corrections request another attempt and retain history.
+- `Lab.jsx` stores checked task IDs separately from reading completion. Guided mode shows the procedure; Challenge mode starts with requirements and makes help available on demand.
+- `src/data/challenges.js` defines twenty browser challenges. `challengeEngine.js` checks a documented subset of YAML, inventory, template, and diagnostic behavior. These are simulations, with hints and explained solutions.
+- Chapter diagrams are React/SVG components. `plugins/chapter-widgets.js` discovers named default exports in chapter indexes and creates lazy wrappers. Chapter widgets, browser challenges, search, and the progress dashboard load when needed.
+- `AssessmentTimer.jsx` persists an optional end time. The two integrated assessments have independent requirements, solutions, and local graders.
 
----
+## Browser progress
 
-## 3. Core Architectural Subsystems
+`src/lib/storage.js` wraps individual `rhce:` localStorage keys and subscriptions. The original prefix is retained so earlier progress survives. Same-tab writes and cross-tab storage events update readers; unavailable storage falls back to memory and shows a warning.
 
-### 3.1 Course Manifest & Route Generation
-- `src/lib/course.js` is the single source of truth. Every chapter and section is declared here with its slug, title, reading time, kind (`lesson`, `lab`, `quiz`, `summary`), and target MDX file.
-- Pages are loaded lazily on demand using Vite's `import.meta.glob('/content/**/*.mdx')`.
+Version 2 exports include reading completion, quiz history, task completion, challenge attempts, confidence, timers, and imported lab reports. Preferences are separate. Imports validate every entry before replacing progress. Invalid stored entries are preserved on disk, ignored by the UI, and omitted from exports.
 
-### 3.2 Dynamic Search Index
-- When the search dialog (`Ctrl+K`) is invoked, raw Markdown/MDX content is asynchronously pulled across all pages using `import.meta.glob('/content/**/*.mdx', { query: '?raw' })`.
-- A client-side inverted index processes headings, titles, code snippets, and paragraphs for instant sub-millisecond filtering.
+`progressModel.js` migrates older positional activity data using the frozen `legacyActivityMap.json`. Never regenerate that map from reordered content. `labReports.js` validates imported reports against the generated, versioned `labReportSchema.json`.
 
-### 3.3 Study Progress & State Management
-- Progress is stored in `localStorage` under `rhce:progress`.
-- The `useProgress` hook coordinates:
-  - Section completion toggles.
-  - Interactive quiz answer validation and persistence.
-  - Lab exercise task checklists with persistent state.
-  - Visual progress rings in the header and sidebar checkmarks.
+The dashboard combines these independent signals into a next lesson, review queue, practice links, and skills to revisit. It does not predict an exam score.
 
-### 3.4 GitHub Pages Deployment Pipeline
-- `vite.config.js` sets `base: './'`.
-- Running `npm run build` generates purely static HTML, JS, and CSS in `dist/`.
-- The included GitHub Actions workflow (`.github/workflows/deploy.yml`) builds and deploys directly to GitHub Pages on every push to `main`.
+## Local lab tooling
+
+`public/lab/lab` downloads an exercise into a staging directory, validates downloads and setup hooks, then moves it into place. Failed preparation is explicit and preserves existing work. Starter folders use `MANIFEST`; the index and grading catalog cover every published exercise.
+
+`grade.py` checks project files, inventory groups, and read-only host probes defined in `graders.json`. It uses the learner's Ansible connection settings. Checks report PASS, FAIL, or SKIP and link to the lesson. Grading does not run playbooks or repair systems. See [lab grading](LAB-GRADING.md) for report and exit-code contracts.
+
+## Build and checks
+
+React 19, React Router 7, Vite 8, MDX, Shiki, and CSS build into `dist/`. `base: './'` and hash routing support GitHub Pages.
+
+PR CI runs formatting, content validation, JavaScript regressions, Python lab-tool tests, a production build, and Chromium learning-flow checks. Content validation covers routes and heading links, activity/objective IDs, quiz answers, starter manifests, setup syntax, and grader coverage. Browser checks cover every route plus mobile layouts, focus, persistence, and imports.
+
+`.github/workflows/deploy.yml` publishes pushes to `main`. Maintainers control merging. VM-dependent changes stay in draft until their required host checks are recorded in [validation evidence](VALIDATION.md).

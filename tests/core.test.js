@@ -57,3 +57,24 @@ test('template blocks, short circuiting and loops behave as taught', () => {
   assert.throws(() => render('x'.repeat(20001), {}), /20 KB/);
   assert.throws(() => render('{{ constructor }}', {}), /undefined/);
 });
+
+test('shared group descendants and deep inventories have bounded traversal', () => {
+  const lines = ['[root:children]', 'a0', 'b0'];
+  for (let i = 0; i < 24; i++) {
+    for (const side of ['a', 'b']) lines.push(`[${side}${i}:children]`, `a${i + 1}`, `b${i + 1}`);
+  }
+  lines.push('[a24]', 'web1');
+  const inventory = parseInventory(lines.join('\n'));
+  const output = graph(inventory, 'root');
+  assert.match(output, /Graph output limited/);
+  assert.ok(output.split('\n').length <= 5001);
+  assert.deepEqual(matchPattern(inventory, 'root').hosts, ['web1']);
+  assert.match(matchPattern(inventory, '~a*a*a*a*b').error, /quantifiers/);
+});
+
+test('wildcards select hosts and bound expensive learner patterns', () => {
+  const inventory = parseInventory('[web]\nweb01\nweb02\ndb01');
+  assert.deepEqual(matchPattern(inventory, 'w*b0?').hosts, ['web01', 'web02']);
+  const longHost = parseInventory('[web]\n' + 'a'.repeat(1600) + 'b');
+  assert.match(matchPattern(longHost, '*' + 'a'.repeat(600) + 'c').error, /work limit/);
+});

@@ -27,8 +27,13 @@ function Section({ page }) {
   const Icon = kindIcon[page.section.kind];
   const location = useLocation();
   // A section link ("#/ch07/collections#the-role-layout") arrives as location.hash.
-  const target = decodeURIComponent(location.hash.slice(1));
-  const smooth = location.state?.scrollSmooth;
+  let target;
+  try {
+    target = decodeURIComponent(location.hash.slice(1));
+  } catch {
+    target = location.hash.slice(1);
+  }
+  const smooth = location.state?.scrollSmooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     let alive = true;
@@ -51,7 +56,11 @@ function Section({ page }) {
   // jump is repeated while the page settles, unless the reader scrolls first.
   useEffect(() => {
     if (!Content || !target) return;
-    const jump = (behavior) => document.getElementById(target)?.scrollIntoView({ behavior });
+    const jump = (behavior) => {
+      const element = document.getElementById(target);
+      for (let parent = element?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true;
+      element?.scrollIntoView({ behavior });
+    };
     let userScrolled = false;
     const stop = () => (userScrolled = true);
     const events = ['wheel', 'touchmove', 'keydown', 'mousedown'];

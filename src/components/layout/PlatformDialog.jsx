@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useDialogFocus } from '@/hooks/useDialogFocus';
 import { course } from '@/lib/course';
 
 // Content lives in content/_platform.mdx so it can be edited like any lesson.
@@ -10,10 +11,11 @@ const loadPlatform = Object.values(import.meta.glob('/content/_platform.mdx'))[0
 export default function PlatformDialog({ onClose }) {
   const [Content, setContent] = useState(null);
   const closeRef = useRef(null);
+  const dialogRef = useRef(null);
+  useDialogFocus(dialogRef, true, onClose, closeRef);
 
   useEffect(() => {
     loadPlatform?.().then((m) => setContent(() => m.default));
-    closeRef.current?.focus();
     const onKey = (e) => e.key === 'Escape' && onClose();
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -28,7 +30,15 @@ export default function PlatformDialog({ onClose }) {
   // become the containing block for this fixed-position overlay.
   return createPortal(
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="platform-title" onMouseDown={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="platform-title"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <header className="modal-head">
           <div>
             <p className="modal-kicker">

@@ -136,7 +136,7 @@ PLAY RECAP *********************************************************************
 serverb.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
 ```
 
-    In the classroom serverb runs RHEL, so the condition is true and the task runs. On a host where the condition is false, each item shows `skipping:` instead:
+    The shown recap is a repeat run after production is configured. Its first run can report changes. In the classroom serverb runs RHEL, so the condition is true and the task runs. On a host where the condition is false, each item shows `skipping:` instead:
 
 ```text
 TASK [MariaDB packages are installed] ******************************************

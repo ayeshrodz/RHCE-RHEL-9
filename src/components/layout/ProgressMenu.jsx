@@ -4,6 +4,7 @@ import { Download, RotateCcw, Upload } from 'lucide-react';
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { exportProgress, importProgress, resetAllProgress } from '@/lib/storage';
+import { useDialogFocus } from '@/hooks/useDialogFocus';
 import ProgressRing from './ProgressRing';
 
 /** Header progress ring that opens a panel to review, back up or reset progress. */
@@ -13,6 +14,8 @@ export default function ProgressMenu() {
   const [message, setMessage] = useState(null);
   const rootRef = useRef(null);
   const fileRef = useRef(null);
+  const panelRef = useRef(null);
+  useDialogFocus(panelRef, open, () => setOpen(false));
 
   useEffect(() => {
     if (!open) return;
@@ -68,6 +71,7 @@ export default function ProgressMenu() {
           setMessage(null);
         }}
         aria-expanded={open}
+        aria-label="Your progress"
         aria-haspopup="dialog"
         title="Your progress"
       >
@@ -76,7 +80,7 @@ export default function ProgressMenu() {
       </button>
 
       {open && (
-        <div className="progress-panel" role="dialog" aria-label="Your progress">
+        <div ref={panelRef} tabIndex={-1} className="progress-panel" role="dialog" aria-label="Your progress">
           <p className="progress-panel-title">Your progress</p>
           <Link to="/progress" onClick={() => setOpen(false)}>
             Open your learning dashboard

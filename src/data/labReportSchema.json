@@ -303,7 +303,7 @@
       }
     },
     "control-flow": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch04/lab-loops-conditionals",
       "checkpoints": {
         "final": {
@@ -317,7 +317,8 @@
             {
               "id": "database",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ]
@@ -869,7 +870,7 @@
       }
     },
     "troubleshoot-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch08/chapter-lab",
       "checkpoints": {
         "final": {
@@ -884,6 +885,18 @@
           "probes": [
             {
               "id": "secure-web",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "correct-host",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "tls-content",
               "targets": [
                 "serverb.lab.example.com"
               ]
@@ -1177,7 +1190,7 @@
       }
     },
     "review-playbooks": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch10/lab-review-playbooks",
       "checkpoints": {
         "final": {
@@ -1185,7 +1198,8 @@
             "dev_deploy.yml",
             "get_web_content.yml",
             "inventory",
-            "site.yml"
+            "site.yml",
+            "error.log"
           ],
           "groups": {},
           "local": [
@@ -1195,9 +1209,24 @@
           ],
           "probes": [
             {
-              "id": "stopped",
+              "id": "httpd",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ]
@@ -1231,6 +1260,29 @@
               "targets": [
                 "servera.lab.example.com",
                 "serverb.lab.example.com"
+              ]
+            }
+          ]
+        },
+        "rescued": {
+          "files": [
+            "dev_deploy.yml",
+            "get_web_content.yml",
+            "inventory",
+            "site.yml",
+            "error.log"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "rescue-log"
+            }
+          ],
+          "probes": [
+            {
+              "id": "stopped",
+              "targets": [
+                "servera.lab.example.com"
               ]
             }
           ]

@@ -168,3 +168,26 @@ kbd {
   background: var(--accent-soft);
   color: var(--accent-text);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 600px) {
+  textarea,
+  input:not([type='radio']):not([type='checkbox']),
+  select {
+    font-size: max(16px, 1em);
+  }
+  textarea {
+    min-height: 120px;
+    max-width: 100%;
+  }
+}

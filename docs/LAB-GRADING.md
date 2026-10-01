@@ -28,6 +28,9 @@ The default checkpoint is `final`. Earlier checkpoints preserve a useful place t
 | `system-software` | `installed` | Before removing the practice package |
 | `system-process` | `scheduled` | Before removing the recurring cron job |
 | `review-playbooks` | `deployed` | Before stopping Apache to demonstrate rescue |
+| `review-playbooks` | `rescued` | While Apache is stopped and the failed request is recorded |
+
+The final review-playbooks checkpoint expects Apache running again and the earlier rescue log retained.
 
 The final scheduling check waits for the one-off job's output, so run it after the scheduled minute has elapsed. Reboot persistence is a separate learner action.
 

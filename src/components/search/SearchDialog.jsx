@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CornerDownLeft, FileText, Search } from 'lucide-react';
+import { useDialogFocus } from '@/hooks/useDialogFocus';
 import { getIndex, search } from './searchIndex';
 
 const SUGGESTIONS = ['inventory ranges', 'ansible.cfg precedence', 'become', 'syntax-check', 'execution environment', 'FQCN'];
@@ -8,16 +9,22 @@ const SUGGESTIONS = ['inventory ranges', 'ansible.cfg precedence', 'become', 'sy
 export default function SearchDialog({ onClose }) {
   const [query, setQuery] = useState('');
   const [entries, setEntries] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [cursor, setCursor] = useState(0);
   const inputRef = useRef(null);
+  const dialogRef = useRef(null);
+  useDialogFocus(dialogRef, true, onClose, inputRef);
   const navigate = useNavigate();
 
   useEffect(() => {
-    inputRef.current?.focus();
-    getIndex().then(setEntries);
+    let alive = true;
+    getIndex()
+      .then((index) => alive && setEntries(index))
+      .catch(() => alive && setLoadError(true));
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
+      alive = false;
       document.body.style.overflow = prev;
     };
   }, []);
@@ -43,7 +50,15 @@ export default function SearchDialog({ onClose }) {
 
   return (
     <div className="search-backdrop" onMouseDown={onClose}>
-      <div className="search-dialog" role="dialog" aria-modal="true" aria-label="Search" onMouseDown={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        className="search-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <div className="search-input-row">
           <Search size={17} />
           <input
@@ -53,12 +68,21 @@ export default function SearchDialog({ onClose }) {
             onKeyDown={onKey}
             placeholder="Search lessons, commands, directives…"
             aria-label="Search"
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-autocomplete="list"
+            aria-activedescendant={results[cursor] ? `search-result-${cursor}` : undefined}
             aria-controls="search-results"
           />
           <kbd>Esc</kbd>
         </div>
 
         <div className="search-results" id="search-results" role="listbox">
+          {loadError && (
+            <p role="status" className="search-none">
+              Search could not load. Check your connection and open search again.
+            </p>
+          )}
           {!query && (
             <div className="search-empty">
               <p>Try searching for</p>
@@ -75,6 +99,7 @@ export default function SearchDialog({ onClose }) {
           {results.map((r, i) => (
             <button
               key={`${r.page.key}-${r.anchor}-${i}`}
+              id={`search-result-${i}`}
               role="option"
               aria-selected={i === cursor}
               className={`search-hit ${i === cursor ? 'is-active' : ''}`}

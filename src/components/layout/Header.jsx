@@ -18,7 +18,7 @@ function GithubIcon({ size = 17 }) {
 
 const themeIcon = { light: Sun, dark: Moon, system: Monitor };
 
-export default function Header({ onMenu, onSearch }) {
+export default function Header({ onMenu, onSearch, navigationOpen }) {
   const { pref, cycle } = useTheme();
   const ThemeIcon = themeIcon[pref] ?? Monitor;
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -27,7 +27,13 @@ export default function Header({ onMenu, onSearch }) {
 
   return (
     <header className="header">
-      <button className="icon-btn header-menu" onClick={onMenu} aria-label="Open navigation">
+      <button
+        className="icon-btn header-menu"
+        onClick={onMenu}
+        aria-expanded={navigationOpen}
+        aria-controls="course-navigation"
+        aria-label="Open navigation"
+      >
         <Menu size={18} />
       </button>
 

@@ -8,14 +8,12 @@ import { H2, H3 } from './Heading';
 import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step, Steps, Tab, Tabs, Term } from './Layout';
 import Quiz from '@/components/interactive/Quiz';
 import AssessmentTimer from '@/components/interactive/AssessmentTimer';
-import ChapterPractice from '@/components/interactive/Challenge';
+import { lazyWidget } from '@/components/interactive/LazyWidget';
+import chapterDiagrams from 'virtual:chapter-widgets';
+const ChapterPractice = lazyWidget(() => import('@/components/interactive/Challenge'));
 import Flashcards from '@/components/interactive/Flashcards';
 import { Lab, Task } from '@/components/interactive/Lab';
 import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';
-
-// Every chapter's diagram/widget exports (src/diagrams/chNN/index.js) are
-// registered automatically, so a new chapter needs no change here.
-const chapterDiagrams = Object.assign({}, ...Object.values(import.meta.glob('/src/diagrams/ch*/index.js', { eager: true })));
 
 // Inline code (and the <code> inside highlighted blocks, which CodeBlock handles).
 function Code({ children, ...props }) {

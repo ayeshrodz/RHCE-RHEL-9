@@ -221,7 +221,7 @@ workstation                : ok=2    changed=1    unreachable=0    failed=0    s
 {'content': '', 'redirected': False, 'url': 'http://servera.lab.example.com', 'status': -1, 'elapsed': 0, 'changed': False, 'failed': True, 'msg': 'Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>'}
 ```
 
-    `failed=0` and `rescued=1`: the failure was handled. Run `site.yml` once more to start `httpd` again.
+    `failed=0` and `rescued=1`: the failure was handled. At home, run `lab grade review-playbooks --checkpoint rescued` while the service is stopped. Run `site.yml` once more to start `httpd` again, then grade the final state.
   </Task>
 
   <Task id="task-45b7d79a5413" legacyIndex={9} title="Grade and finish">

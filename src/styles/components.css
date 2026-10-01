@@ -1364,3 +1364,10 @@
   border-color: var(--teal-200);
   color: var(--teal-100);
 }
+
+summary.reveal-toggle {
+  list-style: none;
+}
+summary.reveal-toggle::-webkit-details-marker {
+  display: none;
+}

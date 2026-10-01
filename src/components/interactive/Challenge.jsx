@@ -95,7 +95,7 @@ export function Challenge({ challenge }) {
         </ol>
       )}
       <button className="btn btn-ghost btn-sm" aria-expanded={showSolution} onClick={() => setShowSolution(!showSolution)}>
-        Show an explained solution
+        {showSolution ? 'Hide the explained solution' : 'Show an explained solution'}
       </button>
       {showSolution && (
         <div>

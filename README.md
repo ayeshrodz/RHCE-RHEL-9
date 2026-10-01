@@ -4,7 +4,7 @@
 
 **Read it online: https://ayeshrodz.github.io/playbook-path/**
 
-**Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. The path follows the objectives of the **RHCE** exam, so it doubles as exam preparation. It is written by learners, for learners, as a way to study together: every concept gets a diagram, every exercise runs on a practice lab you build yourself and is a checklist that remembers your progress, and every chapter ends with a quiz and a cheat sheet.
+**Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. The path follows the objectives of the **RHCE** exam, so it doubles as exam preparation. It is written by learners, for learners, as a way to study together: short explanations combine browser activities, real Linux labs, quizzes, and summaries. A learning dashboard keeps reading, practice, confidence, and local grading evidence separate.
 
 > An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 
@@ -22,7 +22,8 @@
 | 7. Simplifying Playbooks with Roles and Collections | Complete |
 | 8. Troubleshooting Ansible | Complete |
 | 9. Automating Linux Administration Tasks | Complete |
-| 10. Comprehensive Review | Complete |
+| 10. Comprehensive Review | Includes two integrated assessments |
+| 11. Current Automation Workflows | Git, development containers, execution environments, archive recovery, and security |
 
 ## Quick start
 
@@ -33,7 +34,10 @@ npm install
 npm run dev       # http://localhost:3000
 npm run build     # static site in dist/
 npm run preview   # serve the built site locally
-npm run format    # prettier over src/
+npm run format    # format application code
+npm run validate:content
+npm test
+npm run test:labs
 ```
 
 ## How it is built
@@ -60,11 +64,13 @@ src/
   components/search/             client-side search (built lazily from MDX)
   diagrams/kit/                  SVG diagram primitives (Diagram, Node, Arrow…)
   diagrams/chNN/                 chapter diagrams and interactive widgets
-public/lab/                      the home-lab `lab` command and each exercise's starter files
   pages/                         home, chapter overview, section, 404
   styles/                        design tokens, layout, prose, components
-docs/AUTHORING.md                how to write new sections and diagrams
+public/lab/                      home-lab helper, read-only graders, and starter files
+docs/AUTHORING.md                how to write new sections and activities
 ```
+
+See [validation evidence](docs/VALIDATION.md) for the tested stack and remaining host checks, [progress compatibility](docs/PROGRESS.md) for backups, and [local grading](docs/LAB-GRADING.md) for exercise checkpoints.
 
 ## Deploying to GitHub Pages
 

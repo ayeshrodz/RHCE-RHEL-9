@@ -429,7 +429,7 @@
       }
     },
     "control-flow": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch04/lab-loops-conditionals",
       "brief": "You will install MariaDB with a looping task, then add a condition so the installation only happens on Red Hat Enterprise Linux, and run it against a second group.",
       "prerequisites": [
@@ -446,11 +446,12 @@
           "probes": [
             {
               "id": "database",
-              "hosts": "database_dev",
-              "message": "Development MariaDB is running and enabled",
-              "command": "systemctl is-active --quiet mariadb && systemctl is-enabled --quiet mariadb",
+              "hosts": "database_dev:database_prod",
+              "message": "Both database groups need the packages and a running, enabled MariaDB service; use the matching distribution condition.",
+              "command": "rpm -q mariadb-server python3-PyMySQL && systemctl is-active --quiet mariadb && systemctl is-enabled --quiet mariadb",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ]
@@ -1166,7 +1167,7 @@
       "intentionalFaults": "Starter files contain deliberate YAML, inventory, or task errors. Repair them before the final checkpoint."
     },
     "troubleshoot-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch08/chapter-lab",
       "brief": "The playbook `secure-web.yml` should set up Apache with TLS on the web servers, but several problems stop it: in the playbook, in the inventory and in how it connects. Find and fix each one until the playbook runs cleanly. Solutions are hidden under each task. Try each one yourself first.",
       "prerequisites": [
@@ -1185,10 +1186,28 @@
               "id": "secure-web",
               "hosts": "webservers",
               "message": "Correct host runs Apache with HTTPS open",
-              "command": "systemctl is-active --quiet httpd && firewall-cmd --query-service=https && firewall-cmd --permanent --query-service=https",
+              "command": "systemctl is-active --quiet httpd && systemctl is-enabled --quiet httpd && firewall-cmd --query-service=https && firewall-cmd --permanent --query-service=https",
               "targets": [
                 "serverb.lab.example.com"
               ]
+            },
+            {
+              "id": "correct-host",
+              "hosts": "webservers",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "command": "hostname -s | grep -Eq '(^|-)serverb$'",
+              "message": "The connection must reach serverb; check ansible_host if this resolves to a different managed host."
+            },
+            {
+              "id": "tls-content",
+              "hosts": "webservers",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "command": "curl --insecure --fail --silent --resolve serverb.lab.example.com:443:127.0.0.1 https://serverb.lab.example.com/ | grep -F \"This is the secure web site on serverb.\"",
+              "message": "The self-signed practice TLS site must serve the provided page; check its certificate, virtual host, content, and service."
             }
           ],
           "groups": {
@@ -1575,7 +1594,7 @@
       }
     },
     "review-playbooks": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch10/lab-review-playbooks",
       "brief": "Write three playbooks: one that installs and configures web servers from a template, with a handler; one that tests the result from workstation and records any failure with a block and rescue; and one that imports the other two. Solutions are hidden under each task. Try each one yourself first.",
       "prerequisites": [
@@ -1589,23 +1608,46 @@
             "dev_deploy.yml",
             "get_web_content.yml",
             "inventory",
-            "site.yml"
+            "site.yml",
+            "error.log"
           ],
           "probes": [
             {
-              "id": "stopped",
-              "hosts": "servera.lab.example.com",
-              "message": "Apache is stopped for the deliberate rescue test",
-              "command": "! systemctl is-active --quiet httpd",
+              "id": "httpd",
+              "hosts": "webservers",
+              "message": "Apache is running and enabled",
+              "command": "systemctl is-active --quiet httpd && systemctl is-enabled --quiet httpd",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "hosts": "webservers",
+              "message": "Web traffic is permitted now and persistently",
+              "command": "firewall-cmd --query-service=http && firewall-cmd --permanent --query-service=http",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "hosts": "webservers",
+              "message": "The rendered virtual host must serve the provided page from its configured document root.",
+              "command": "test -s /var/www/vhosts/$(hostname -s)/index.html && curl --fail --silent http://localhost/ | grep -F \"This is a test page.\"",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ],
           "local": [
             {
               "id": "rescue-log",
-              "file": "error.log"
+              "file": "error.log",
+              "contains": "Request failed"
             }
           ]
         },
@@ -1640,12 +1682,39 @@
             {
               "id": "content",
               "hosts": "webservers",
-              "message": "Web content is present",
-              "command": "test -s /var/www/html/index.html || test -s /var/www/html/index.php",
+              "message": "The rendered virtual host must serve the provided page from its configured document root.",
+              "command": "test -s /var/www/vhosts/$(hostname -s)/index.html && curl --fail --silent http://localhost/ | grep -F \"This is a test page.\"",
               "targets": [
                 "servera.lab.example.com",
                 "serverb.lab.example.com"
               ]
+            }
+          ]
+        },
+        "rescued": {
+          "files": [
+            "dev_deploy.yml",
+            "get_web_content.yml",
+            "inventory",
+            "site.yml",
+            "error.log"
+          ],
+          "probes": [
+            {
+              "id": "stopped",
+              "hosts": "servera.lab.example.com",
+              "message": "Apache is stopped for the deliberate rescue test",
+              "command": "! systemctl is-active --quiet httpd",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ],
+          "local": [
+            {
+              "id": "rescue-log",
+              "file": "error.log",
+              "contains": "Request failed"
             }
           ]
         }
