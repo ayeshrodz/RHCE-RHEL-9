@@ -39,6 +39,21 @@ The `name` is written into the crontab as a comment, `#Ansible: Log uptime`, and
 | `user` | Whose crontab |
 | `cron_file` | Write to a file in `/etc/cron.d/` instead of a user's crontab |
 
+A **system** cron job lives in a file of its own in `/etc/cron.d/`, and its lines name the user the job runs as. With `cron_file`, `user` sets that field instead of choosing a crontab:
+
+```yaml
+- name: Flush the application cache every day
+  ansible.builtin.cron:
+    name: Flush Bolt cache
+    cron_file: flush_bolt
+    user: root
+    minute: "45"
+    hour: "11"
+    job: php ./app/nut cache:clear
+```
+
+Never point `cron_file` at `/etc/crontab`: the module manages whole files, and that one belongs to the system.
+
 ## One-off jobs: at
 
 `ansible.posix.at` schedules a command to run once, after a delay. The `atd` service must be installed and running:
@@ -89,6 +104,16 @@ The lab's Rocky Linux image does not include `at`, so install it first, as above
 
 `ansible.builtin.systemd` adds `daemon_reload: true`, needed after you install or change a unit file, and `masked`.
 
+`service` works with whatever init system the host uses; `systemd` only with systemd, but it can also manage **timers**, the systemd alternative to cron:
+
+```yaml
+- name: The dnf cache is no longer refreshed on a timer
+  ansible.builtin.systemd:
+    name: dnf-makecache.timer
+    state: stopped
+    enabled: false
+```
+
 ## The default boot target
 
 The default target decides what a host boots into: `multi-user.target` for a server console, `graphical.target` for a desktop. It is a symbolic link, so the `file` module sets it idempotently:
@@ -99,6 +124,21 @@ The default target decides what a host boots into: `multi-user.target` for a ser
     src: /usr/lib/systemd/system/multi-user.target
     dest: /etc/systemd/system/default.target
     state: link
+```
+
+The `systemd` module cannot set the default target. Another way, closer to what you would type by hand, runs `systemctl` and uses a condition to stay idempotent:
+
+```yaml
+- name: Get current boot target
+  ansible.builtin.command:
+    cmd: systemctl get-default
+  changed_when: false
+  register: target
+
+- name: Set default boot target
+  ansible.builtin.command:
+    cmd: systemctl set-default {{ default_target }}
+  when: default_target not in target['stdout']
 ```
 
 A change of target takes effect at the next boot, which leads to reboots.

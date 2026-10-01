@@ -29,6 +29,8 @@ ansible-navigator run -m stdout site.yml --list-tasks
 ansible-navigator run -m stdout site.yml --start-at-task "Task name"
 ansible-navigator run -m stdout site.yml --check --diff
 ansible-navigator run -m stdout site.yml --limit servera.lab.example.com
+ansible-navigator replay -m stdout site-artifact-….json   # a saved run, again
+ansible-lint site.yml                                    # style and good practice
 ```
 
 ```ini

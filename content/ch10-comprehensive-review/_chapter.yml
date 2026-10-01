@@ -1,8 +1,8 @@
 title: Comprehensive Review
-goal: Bring the whole course together in end-to-end labs that start from an empty directory and finish with verified, idempotent automation.
+goal: Demonstrate the skills learned in this course by installing, optimizing and configuring Ansible to manage hosts.
 objectives:
   - Find and close the gaps in what you have learned, chapter by chapter.
-  - Set up an Ansible project from nothing, and run ad hoc commands and vaulted playbooks against it.
-  - Write multi-play playbooks with loops, conditions, handlers, templates and checks.
-  - Manage storage, users, scheduled jobs and SELinux on groups of hosts with modules and system roles.
-  - Create a role, install a role and a collection from requirements files, and use all of them in one playbook.
+  - Install and configure Ansible, and create, modify and troubleshoot playbooks.
+  - Write playbooks that use templates, handlers, blocks and imports.
+  - Manage storage, users, networking and scheduled jobs with modules and system roles.
+  - Create a role from an existing playbook, and apply it to managed hosts.

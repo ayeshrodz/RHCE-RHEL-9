@@ -1,0 +1,12 @@
+---
+- name: Verify the httpd config
+  hosts: webservers
+  tasks:
+    - name: Verify the httpd config file is in place
+      ansible.builtin.command: cat /etc/httpd/conf.d/vhost.conf
+      register: config
+      changed_when: false
+
+    - name: What does the httpd config file contain
+      ansible.builtin.debug:
+        var: config.stdout_lines

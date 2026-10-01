@@ -46,6 +46,10 @@ hosts: ungrouped                   # hosts that are in no group except all
 
 If the inventory lists a host by IP address, the pattern is that IP address. The pattern never looks anything up: it only compares names.
 
+If you would rather use a name in patterns but must connect by address, give the host a name in the inventory and set `ansible_host` for it, for example `web01.example.com ansible_host=192.168.2.1`, or the same variable in `host_vars/web01.example.com`. Patterns and groups use the name; the connection uses the address.
+
+A pattern decides which hosts **start** the play. A host that fails during the play, even in the automatic `Gathering Facts` task, is dropped from the rest of the play, so the recap can show fewer hosts finishing than the pattern selected.
+
 ## Wildcards
 
 `*` matches any run of characters, in host names **and** group names:

@@ -93,6 +93,58 @@ log_path = ./ansible.log
 
 The user who runs Ansible must be able to write to the file. Keep log files out of version control. `ansible-navigator` also writes its own `ansible-navigator.log` in the directory you run it from; that one records what navigator did, not the playbook output.
 
+### Playbook artifacts and replay
+
+When it runs a playbook, `ansible-navigator` can also save everything about the run, every task result and every fact, in a JSON **playbook artifact** named after the playbook and the time, such as `site-artifact-2022-07-22T20:00:04.819343+00:00.json`. `ansible-navigator replay` shows a saved run again as if it had just happened, and in interactive mode lets you open each play, task and host result, which is a good way to study a failure after the terminal output is gone:
+
+```console
+[student@workstation project]$ ansible-navigator replay -m stdout samba-artifact.json
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=8    changed=0    unreachable=0    failed=0  ...
+```
+
+Artifacts can contain sensitive values, and they pile up. Turn them off in `ansible-navigator.yml` when you do not want them:
+
+```yaml title="ansible-navigator.yml"
+ansible-navigator:
+  playbook-artifact:
+    enable: false
+```
+
+<HomeLab>
+Section 0.6 switched artifacts off for the home lab, because a playbook that prompts for a password cannot run with them on. To save one for a single run, add `--pae true --pas FILE.json` (`--playbook-artifact-enable`, `--playbook-artifact-save-as`).
+</HomeLab>
+
+## Write playbooks that are easy to troubleshoot
+
+Most errors are easier to avoid than to find:
+
+- Give every play and task a short **name** that says what it achieves. The output then reads like a checklist.
+- Add **comments** where the reason for a task is not obvious.
+- Use **blank lines** between tasks, and indent with spaces only, consistently.
+- Keep it **simple**: a playbook that tries to be clever is the hardest to debug.
+
+`ansible-lint` checks a playbook against a list of rules for style and good practice, and reports syntax errors like `--syntax-check` does:
+
+```console
+[student@workstation project]$ ansible-lint secure-web.yml
+...output omitted...
+# Rule Violation Summary
+
+  1 package-latest profile:safety tags:idempotency
+
+Failed: 1 failure(s), 0 warning(s) in 1 files processed of 1 encountered. Last profile that met the validation criteria was 'moderate'. Rating: 2/5 star
+package-latest: Package installs should not use latest.
+secure-web.yml:11 Task/Handler: Install web server packages
+```
+
+Each finding names the rule, the file and line, and the task. A project can switch rules off, or turn them into warnings, in `.ansible-lint` or `.config/ansible-lint.yml`, with `skip_list` and `warn_list`. Treat its findings as advice: `state: latest` is a deliberate choice in some playbooks.
+
+<HomeLab>
+`ansible-lint` was installed with `ansible-navigator`, in the same virtual environment, but section 0.6 linked only `ansible-navigator` into your path. Run it as `~/.venvs/navigator/bin/ansible-lint`, or link it too: `ln -s ~/.venvs/navigator/bin/ansible-lint ~/.local/bin/`.
+</HomeLab>
+
 ## Rerun only what matters
 
 A long playbook that fails on its last task does not need to run from the top again.

@@ -1,5 +1,2 @@
-[dev]
+[dev_webserver]
 servera.lab.example.com
-
-[prod]
-serverb.lab.example.com

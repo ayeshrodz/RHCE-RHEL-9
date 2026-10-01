@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+[global]
+        workgroup = SAMBA
+        security = user
+        passdb backend = tdbsam
+
+[homes]
+        comment = Home Directories
+        valid users = %S, %D%w%S
+        browseable = No
+        read only = No
+        inherit acls = Yes

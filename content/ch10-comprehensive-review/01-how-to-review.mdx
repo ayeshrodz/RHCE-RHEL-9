@@ -5,7 +5,7 @@ minutes: 12
 ---
 
 <Lead>
-Everything from here on is practice. Four labs cover the whole course, each starting from a clean set of servers and a nearly empty project. Before you begin, find out where you are weak, and settle on a way of working that gets every task right the first time and proves it.
+Everything from here on is practice. Four labs cover the whole course, each starting from a clean set of servers and a small project. Before you begin, find out where you are weak, and settle on a way of working that gets every task right the first time and proves it.
 </Lead>
 
 <Objectives>
@@ -26,38 +26,23 @@ Revisit the weak chapters first: the knowledge check at the end of each one take
 ## The four review labs
 
 <Cards cols={2}>
-  <Card title="Deploying Ansible" kicker="10.2 · chapters 1–3" tone="purple">
-    An empty directory. Write the configuration and inventory, run ad hoc commands, vault a secret and use it in a playbook.
+  <Card title="Deploying Ansible" kicker="10.2 · chapters 1–4, 8" tone="purple">
+    Set up the control node, an inventory and the configuration; add users with a loop, install packages from a variable and on a condition, and fix a broken playbook in check mode.
   </Card>
-  <Card title="Creating playbooks" kicker="10.3 · chapters 2–5" tone="teal">
-    Three plays in one playbook: a web server with a template and a handler, users chosen by condition, and a check that runs from the control node.
+  <Card title="Creating playbooks" kicker="10.3 · chapters 2–6" tone="teal">
+    A web server from a template with a handler, a test from workstation that records failures with block and rescue, and a playbook that imports both.
   </Card>
-  <Card title="Managing hosts" kicker="10.4 · chapters 6, 7, 9" tone="amber">
-    System roles for time and SELinux, a logical volume on every host that has a spare disk, a sudo group and a nightly job.
+  <Card title="Managing hosts" kicker="10.4 · chapters 3, 6, 7, 9" tone="amber">
+    LVM volumes with the storage role, an administrator with a vaulted password and sudo, an address with the network role, a nightly cron job, and one playbook for all of it.
   </Card>
   <Card title="Creating roles" kicker="10.5 · chapters 5, 7" tone="coral">
-    Write a role, install another from an archive and a collection at a fixed version, then use them together.
+    Turn a working playbook into a documented role, then apply it to two web servers.
   </Card>
 </Cards>
 
-Every lab uses the same four groups, so the host patterns stay familiar and the variety comes from the tasks:
+Each lab has its own project and inventory, so read the inventory first: knowing which hosts are in which group is the first step of every task.
 
-```ini title="inventory"
-[dev]
-servera.lab.example.com
-
-[test]
-serverb.lab.example.com
-
-[prod]
-serverc.lab.example.com
-serverd.lab.example.com
-
-[webservers:children]
-prod
-```
-
-Chapter 8 is not listed against a lab because you use it in all of them: when something fails, read the message, find the stage, fix it.
+Chapter 8 is part of all of them: when something fails, read the message, find the stage, fix it.
 
 ## A method that works under time pressure
 

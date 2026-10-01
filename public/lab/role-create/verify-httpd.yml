@@ -1,0 +1,30 @@
+---
+- name: Verify the httpd service
+  hosts: webservers
+  tasks:
+    - name: Verify the httpd service is installed
+      ansible.builtin.command: rpm -q httpd
+      register: installed
+      changed_when: false
+
+    - name: Is the httpd service installed
+      ansible.builtin.debug:
+        var: installed.stdout
+
+    - name: Verify the httpd service is started
+      ansible.builtin.command: systemctl is-active httpd
+      register: started
+      changed_when: false
+
+    - name: Is the httpd service started
+      ansible.builtin.debug:
+        var: started.stdout
+
+    - name: Verify the httpd service is enabled
+      ansible.builtin.command: systemctl is-enabled httpd
+      register: enabled
+      changed_when: false
+
+    - name: Is the httpd service enabled
+      ansible.builtin.debug:
+        var: enabled.stdout

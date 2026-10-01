@@ -1,164 +1,202 @@
 ---
-title: "Guided exercise: Managing software"
+title: "Guided exercise: Managing software and subscriptions"
 kind: lab
-minutes: 15
+minutes: 20
 ---
 
 <Lead>
-You will add a repository to servera with its signing key, install a package that only that repository provides, and use the installed-package facts to report on it.
+Your web servers need a package that is only published in an internal repository, whose packages are signed. You will configure the repository and its key, install the package, and use the package facts to report on it before and after.
 </Lead>
 
-The project `~/system-software` has an `ansible.cfg` and an `inventory` with servera in the `servers` group.
+The project `~/system-software` has an `ansible.cfg` and an `inventory` with servera in the `webservers` group.
 
 <Lab
   id="software"
-  title="Managing software"
+  title="Managing software and subscriptions"
   classroom="lab start system-software"
-  own
   hosts={['workstation', 'servera.lab.example.com']}
-  outcomes={['Configure a repository and its GPG key.', 'Install packages and check them with package_facts.']}
+  outcomes={['Configure a repository and its GPG key.', 'Install a package from it, and report on it with package_facts.']}
 >
   <HomeSetup>
-    The repository used here is Rocky Linux's CRB repository, reached through the lab's internet access.
+    The home lab has no internal repository, so the exercise uses Rocky Linux's **CRB** repository, through the lab's internet access, and the package `python3-pyxattr`, which only CRB provides. Its signing key is already on every server, in `/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9`.
   </HomeSetup>
 
-  <Task title="Look before you change">
-
-```console
-[student@workstation ~]$ cd ~/system-software
-[student@workstation system-software]$ ansible servers -m ansible.builtin.command -a 'dnf repolist'
-servera.lab.example.com | CHANGED | rc=0 >>
-repo id                         repo name
-appstream                       Rocky Linux 9 - AppStream
-baseos                          Rocky Linux 9 - BaseOS
-extras                          Rocky Linux 9 - Extras
-```
-
-    Three repositories are enabled. The package `python3-pyxattr` is in none of them.
-  </Task>
-
-  <Task title="Trust the key and add the repository">
-    Create `software.yml` with a play for `servers` whose first two tasks import `/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9` and define a repository `lab-crb` from the mirror list `https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever`, with GPG checking on.
+  <Task title="Start the playbook">
+    In `~/system-software`, create `repo_playbook.yml` with a play for all hosts and a variable naming the package to install:
 
     <Env>
       <Classroom>
-        Use your classroom's repository URL and key instead; the tasks are the same.
+
+```yaml title="repo_playbook.yml"
+---
+- name: Config yum repo for installing simple-agent
+  hosts: all
+  vars:
+    custom_pkg: simple-agent
+  tasks:
+```
       </Classroom>
       <HomeLab>
-        <Reveal title="Show the first two tasks">
 
-```yaml title="software.yml"
+```yaml title="repo_playbook.yml"
 ---
-- name: Servers can install from the CRB repository
-  hosts: servers
+- name: Config yum repo for installing simple-agent
+  hosts: all
+  vars:
+    custom_pkg: python3-pyxattr
   tasks:
-    - name: The Rocky Linux signing key is trusted
-      ansible.builtin.rpm_key:
-        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
-        state: present
-
-    - name: The CRB repository is configured
-      ansible.builtin.yum_repository:
-        name: lab-crb
-        description: Rocky Linux 9 CRB (lab)
-        mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
-        gpgcheck: true
-        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
-        enabled: true
-        state: present
 ```
-        </Reveal>
       </HomeLab>
     </Env>
   </Task>
 
-  <Task title="Install packages">
-    Add a task that installs `python3-pyxattr` and `lynx` in one transaction.
-
-    <Reveal title="Show the task">
+  <Task title="Report on the package first">
+    Add two tasks: gather the package facts, then show the facts for `custom_pkg`, only if it is installed.
 
 ```yaml
-    - name: Packages are installed
-      ansible.builtin.dnf:
-        name:
-          - python3-pyxattr
-          - lynx
-        state: present
-```
-    </Reveal>
-  </Task>
-
-  <Task title="Report with package facts">
-    Collect the package facts, print the installed version of `python3-pyxattr`, and assert that `chrony` is installed.
-
-    <Reveal title="Show the tasks">
-
-```yaml
-    - name: Collect the list of installed packages
+    - name: Gather Package Facts
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: Show where python3-pyxattr came from
+    - name: Show Package Facts for the custom package
       ansible.builtin.debug:
-        msg: "python3-pyxattr {{ ansible_facts['packages']['python3-pyxattr'][0]['version'] }}"
-
-    - name: Make sure chrony is still installed
-      ansible.builtin.assert:
-        that:
-          - "'chrony' in ansible_facts['packages']"
+        var: ansible_facts['packages'][custom_pkg]
+      when: custom_pkg in ansible_facts['packages']
 ```
-    </Reveal>
+
+    Run it now if you like: the second task is skipped, because the package is not installed yet.
   </Task>
 
-  <Task title="Run it twice">
+  <Task title="Add the repository and its key">
+
+    <Env>
+      <Classroom>
+
+```yaml
+    - name: Ensure Example Repo exists
+      ansible.builtin.yum_repository:
+        name: example-internal
+        description: Example Inc. Internal YUM repo
+        file: example
+        baseurl: http://materials.example.com/yum/repository/
+        gpgcheck: true
+
+    - name: Ensure Repo RPM Key is Installed
+      ansible.builtin.rpm_key:
+        key: http://materials.example.com/yum/repository/RPM-GPG-KEY-example
+        state: present
+```
+      </Classroom>
+      <HomeLab>
+
+```yaml
+    - name: Ensure Example Repo exists
+      ansible.builtin.yum_repository:
+        name: lab-crb
+        description: Rocky Linux 9 CRB (lab)
+        file: lab-crb
+        mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
+        gpgcheck: true
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+
+    - name: Ensure Repo RPM Key is Installed
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+        state: present
+```
+
+        `$basearch` and `$releasever` are dnf variables, not Ansible ones: dnf fills them in on the host.
+      </HomeLab>
+    </Env>
+
+    `yum_repository` writes `/etc/yum.repos.d/FILE.repo`. With `gpgcheck: true`, dnf refuses any package from it that is not signed by a key it trusts, which is what `rpm_key` provides.
+  </Task>
+
+  <Task title="Install the package, and report again">
+    Add a task that installs `custom_pkg`, then copy the two reporting tasks after it:
+
+```yaml
+    - name: Install Example package
+      ansible.builtin.dnf:
+        name: "{{ custom_pkg }}"
+        state: present
+
+    - name: Gather Package Facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Show Package Facts for the custom package
+      ansible.builtin.debug:
+        var: ansible_facts['packages'][custom_pkg]
+      when: custom_pkg in ansible_facts['packages']
+```
+
+    The facts must be gathered **again**: facts describe the host as it was when they were collected, not as it is now.
+  </Task>
+
+  <Task title="Run it">
 
 ```console
-[student@workstation system-software]$ ansible-navigator run -m stdout software.yml
-...output omitted...
-TASK [Show where python3-pyxattr came from] ************************************
-ok: [servera.lab.example.com] => {
-    "msg": "python3-pyxattr 0.7.2"
-}
+[student@workstation system-software]$ ansible-navigator run -m stdout repo_playbook.yml
 
-TASK [Make sure chrony is still installed] *************************************
+PLAY [Config yum repo for installing simple-agent] *****************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Gather Package Facts] ****************************************************
+ok: [servera.lab.example.com]
+
+TASK [Show Package Facts for the custom package] *******************************
+skipping: [servera.lab.example.com]
+
+TASK [Ensure Example Repo exists] **********************************************
+changed: [servera.lab.example.com]
+
+TASK [Ensure Repo RPM Key is Installed] ****************************************
+ok: [servera.lab.example.com]
+
+TASK [Install Example package] *************************************************
+changed: [servera.lab.example.com]
+
+TASK [Gather Package Facts] ****************************************************
+ok: [servera.lab.example.com]
+
+TASK [Show Package Facts for the custom package] *******************************
 ok: [servera.lab.example.com] => {
-    "changed": false,
-    "msg": "All assertions passed"
+    "ansible_facts['packages'][custom_pkg]": [
+        {
+            "arch": "x86_64",
+            "epoch": null,
+            "name": "python3-pyxattr",
+            "release": "4.el9",
+            "source": "rpm",
+            "version": "0.7.2"
+        }
+    ]
 }
 
 PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=7    changed=2    unreachable=0    failed=0  ...
-[student@workstation system-software]$ ansible-navigator run -m stdout software.yml
-...output omitted...
-servera.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=7    changed=2    unreachable=0    failed=0    skipped=1  ...
 ```
 
-    Only two tasks changed the first time: the repository file and the packages. The key was already trusted, because the distribution imports it. The second run reports `changed=0`.
+    The facts are a list per package, because several versions of one package (kernels, for example) can be installed side by side. In a classroom the key is new too, so `changed=3`.
   </Task>
 
-  <Task title="Confirm which repository each package came from">
+  <Task title="Clean up with an ad hoc command">
+    Remove the package again, so that later exercises start from the same state:
 
 ```console
-[student@workstation system-software]$ ssh devops@servera 'dnf -q repoquery --installed --qf "%{name} %{from_repo}" python3-pyxattr lynx'
-lynx appstream
-python3-pyxattr lab-crb
+[student@workstation system-software]$ ansible all -m ansible.builtin.dnf \
+> -a 'name=python3-pyxattr state=absent'
+servera.lab.example.com | CHANGED => {
+...output omitted...
 ```
 
-    `lynx` came from AppStream, which already had it; `python3-pyxattr` could only come from the repository you added.
+    In a classroom, remove `simple-agent` instead.
   </Task>
 
   <Task title="Finish">
-    <Env>
-      <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean servera the way your classroom provides before the next exercise.
-      </Classroom>
-      <HomeLab>
-        Two steps. On workstation, `lab finish system-software` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+    <Finish name="system-software" />
   </Task>
 </Lab>
-
-## Try it again, differently
-
-Add a task that removes `lynx` again (`state: absent`), and another that updates every package on servera (`name: "*"`, `state: latest`). Run the playbook with `--check` first: the update task tells you whether anything would change without installing it.

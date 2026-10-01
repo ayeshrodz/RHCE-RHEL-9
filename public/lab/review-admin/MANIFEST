@@ -1,3 +1,4 @@
 # Review lab: Managing Linux hosts and using system roles
 ansible.cfg
 inventory
+@setup.sh

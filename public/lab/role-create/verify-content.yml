@@ -1,0 +1,12 @@
+---
+- name: Verify the index.html file
+  hosts: webservers
+  tasks:
+    - name: Verify the index.html file is in place
+      ansible.builtin.command: cat /var/www/vhosts/{{ ansible_facts['hostname'] }}/index.html
+      register: content
+      changed_when: false
+
+    - name: What does the index.html file contain
+      ansible.builtin.debug:
+        var: content.stdout

@@ -1,0 +1,47 @@
+---
+- name: Create user accounts
+  ansible.builtin.user:
+    name: "{{ item['username'] }}"
+    comment: "{{ item['name'] }}"
+    state: present
+  loop: "{{ web_developers }}"
+
+- name: Give student access to all accounts
+  ansible.posix.authorized_key:
+    user: "{{ item['username'] }}"
+    key: "{{ lookup('ansible.builtin.file', '~/.ssh/id_ed25519.pub') }}"
+    state: present
+  loop: "{{ web_developers }}"
+
+- name: Create content directory
+  ansible.builtin.file:
+    path: /var/www/{{ item['username'] }}
+    state: directory
+    owner: "{{ item['username'] }}"
+    mode: "0755"
+  loop: "{{ web_developers }}"
+
+- name: Create skeleton index.html if needed
+  ansible.builtin.copy:
+    content: "This is index.html for user: {{ item['name'] }} ({{ item['username'] }})\n"
+    dest: /var/www/{{ item['username'] }}/index.html
+    owner: "{{ item['username'] }}"
+    mode: "0644"
+    force: false
+  loop: "{{ web_developers }}"
+
+- name: Set firewall port
+  ansible.posix.firewalld:
+    port: "{{ item['user_port'] }}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ web_developers }}"
+
+- name: Copy Per-Developer Config files
+  ansible.builtin.template:
+    src: developer.conf.j2
+    dest: /etc/httpd/conf.d/developer_{{ item['username'] }}.conf
+    mode: "0644"
+  loop: "{{ web_developers }}"
+  notify: restart apache

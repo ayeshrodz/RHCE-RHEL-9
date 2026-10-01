@@ -1,141 +1,161 @@
 ---
 title: "Guided exercise: Managing network configuration"
 kind: lab
-minutes: 15
+minutes: 20
 ---
 
 <Lead>
-You will read serverb's network facts, add a second address on a new interface without touching the one Ansible uses, give it a name, and confirm from the facts that the change took effect.
+servera has a second network interface, `eth1`, that is not configured yet. You will give it a static address with the network system role, keeping the setting in `group_vars`, and then read the result back from the facts.
 </Lead>
 
-The project `~/system-network` has an `ansible.cfg` and an `inventory` with serverb in `servers`.
+The project `~/system-network` has an `ansible.cfg`, an `inventory` with servera in `webservers`, a playbook `get-eth1.yml` that shows the facts for `eth1`, and the system roles collection archive.
 
 <Lab
   id="network"
   title="Managing network configuration"
   classroom="lab start system-network"
-  own
-  hosts={['workstation', 'serverb.lab.example.com']}
-  outcomes={['Read network facts.', 'Add a NetworkManager connection with nmcli, and a hosts entry.']}
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Configure a network interface with the network system role.', 'Read network facts.']}
 >
-  <Task title="Read the current configuration">
+  <HomeSetup>
+    The home-lab VMs have one network card, which Ansible uses. Instead of a second card, `eth1` is a **dummy** interface, created by the same role from `type: dummy`, with an address from `192.0.2.0/24`, a range reserved for documentation. Everything else is the same.
+  </HomeSetup>
+
+  <Task title="Install the collection">
 
 ```console
 [student@workstation ~]$ cd ~/system-network
-[student@workstation system-network]$ ansible servers -m ansible.builtin.setup -a 'filter=ansible_default_ipv4'
-serverb.lab.example.com | SUCCESS => {
-    "ansible_facts": {
-        "ansible_default_ipv4": {
-            "address": "172.25.250.11",
-            ...output omitted...
-            "interface": "enp5s0",
-            ...output omitted...
-[student@workstation system-network]$ ssh devops@serverb 'nmcli -t -f NAME,TYPE,DEVICE con show'
-System enp5s0:802-3-ethernet:enp5s0
-lo:loopback:lo
+[student@workstation system-network]$ ansible-galaxy collection install \
+> ./redhat-rhel_system_roles-1.120.5.tar.gz -p collections
+...output omitted...
+redhat.rhel_system_roles:1.120.5 was installed successfully
 ```
-
-    One real connection, `System enp5s0`, which is the one Ansible is using right now. Leave it alone.
   </Task>
 
   <Task title="Write the playbook">
-    Create `network.yml` for `servers` that:
 
-    1. prints the default interface and its address from the facts;
-    2. adds a NetworkManager connection `lab-dummy0` of type `dummy` on interface `dummy0` with the address `192.0.2.10/24`, starting at boot;
-    3. adds `192.0.2.10 internal.lab.example.com` to `/etc/hosts`;
-    4. refreshes the network facts and prints dummy0's address from them.
-
-    <Reveal title="Show network.yml">
-
-```yaml title="network.yml"
+```yaml title="playbook.yml"
 ---
-- name: A second address for internal services
-  hosts: servers
-  tasks:
-    - name: Show the current default interface
-      ansible.builtin.debug:
-        msg: "{{ ansible_facts['default_ipv4']['interface'] }} has {{ ansible_facts['default_ipv4']['address'] }}"
+- name: NIC Configuration
+  hosts: webservers
 
-    - name: A dummy interface carries 192.0.2.10
-      community.general.nmcli:
-        conn_name: lab-dummy0
-        type: dummy
-        ifname: dummy0
-        ip4: 192.0.2.10/24
-        autoconnect: true
-        state: present
-
-    - name: The name is in /etc/hosts
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: 192.0.2.10 internal.lab.example.com
-        state: present
-
-    - name: Refresh facts
-      ansible.builtin.setup:
-        gather_subset: network
-
-    - name: Show the new interface from facts
-      ansible.builtin.debug:
-        msg: "dummy0 has {{ ansible_facts['dummy0']['ipv4']['address'] }}"
+  roles:
+    - redhat.rhel_system_roles.network
 ```
-    </Reveal>
   </Task>
 
-  <Task title="Run it twice">
+  <Task title="Find the variable in the documentation">
+    The role's `README.md` has a section for each kind of setting. Look for "Setting the IP configuration":
 
 ```console
-[student@workstation system-network]$ ansible-navigator run -m stdout network.yml
-...output omitted...
-TASK [Show the current default interface] **************************************
-ok: [serverb.lab.example.com] => {
-    "msg": "enp5s0 has 172.25.250.11"
-}
-...output omitted...
-TASK [Show the new interface from facts] ***************************************
-ok: [serverb.lab.example.com] => {
-    "msg": "dummy0 has 192.0.2.10"
-}
-
-PLAY RECAP *********************************************************************
-serverb.lab.example.com    : ok=6    changed=2    unreachable=0    failed=0  ...
-[student@workstation system-network]$ ansible-navigator run -m stdout network.yml
-...output omitted...
-serverb.lab.example.com    : ok=6    changed=0    unreachable=0    failed=0  ...
+[student@workstation system-network]$ less \
+> collections/ansible_collections/redhat/rhel_system_roles/roles/network/README.md
 ```
 
-    The facts gathered at the start knew nothing about dummy0. The `setup` task refreshed them in the middle of the play.
+    Its example shows a `network_connections` entry with an `ip` dictionary, whose `address` is a list of addresses with their prefix.
   </Task>
 
-  <Task title="Verify on the host">
+  <Task title="Put the setting in group_vars">
 
 ```console
-[student@workstation system-network]$ ssh devops@serverb 'nmcli -t -f NAME,TYPE,DEVICE con show; ip -4 -brief addr show dummy0; grep internal /etc/hosts'
-System enp5s0:802-3-ethernet:enp5s0
-lab-dummy0:dummy:dummy0
-lo:loopback:lo
-dummy0           UNKNOWN        192.0.2.10/24
-192.0.2.10 internal.lab.example.com
-[student@workstation system-network]$ ansible servers -m ansible.builtin.ping -o
-serverb.lab.example.com | SUCCESS => {… "ping": "pong"}
+[student@workstation system-network]$ mkdir -pv group_vars/webservers
+mkdir: created directory 'group_vars'
+mkdir: created directory 'group_vars/webservers'
 ```
 
-    The new connection is there, and Ansible still reaches serverb through the untouched main interface.
-  </Task>
-
-  <Task title="Finish">
     <Env>
       <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean serverb the way your classroom provides before the next exercise.
+
+```yaml title="group_vars/webservers/network.yml"
+---
+network_connections:
+  - name: eth1
+    type: ethernet
+    ip:
+      address:
+        - 172.25.250.30/24
+```
       </Classroom>
       <HomeLab>
-        Two steps. On workstation, `lab finish system-network` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
+
+```yaml title="group_vars/webservers/network.yml"
+---
+network_connections:
+  - name: eth1
+    type: dummy
+    interface_name: eth1
+    ip:
+      address:
+        - 192.0.2.30/24
+```
       </HomeLab>
     </Env>
   </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation system-network]$ ansible-navigator run -m stdout playbook.yml
+...output omitted...
+TASK [redhat.rhel_system_roles.network : Print network provider] ***************
+ok: [servera.lab.example.com] => {
+    "msg": "Using network provider: nm"
+}
+...output omitted...
+TASK [redhat.rhel_system_roles.network : Configure networking connection profiles] ***
+changed: [servera.lab.example.com]
+...output omitted...
+ok: [servera.lab.example.com] => {
+    "__network_connections_result.stderr_lines": [
+        "[002] <info>  #0, state:None persistent_state:present, 'eth1': add connection eth1, 08b92940-ef4a-49ad-a309-e4f05eae64af"
+    ]
+}
+...output omitted...
+TASK [redhat.rhel_system_roles.network : Re-test connectivity] *****************
+ok: [servera.lab.example.com]
+...output omitted...
+```
+
+    The role uses NetworkManager (`nm`), added a connection profile called `eth1`, and finally checked that it can still reach the host.
+  </Task>
+
+  <Task title="Read it back from the facts">
+
+```yaml title="get-eth1.yml"
+---
+- name: Obtain network info for webservers
+  hosts: webservers
+
+  tasks:
+    - name: Display eth1 info
+      ansible.builtin.debug:
+        var: ansible_facts['eth1']['ipv4']
+```
+
+```console
+[student@workstation system-network]$ ansible-navigator run -m stdout get-eth1.yml
+...output omitted...
+TASK [Display eth1 info] *******************************************************
+ok: [servera.lab.example.com] => {
+    "ansible_facts['eth1']['ipv4']": {
+        "address": "192.0.2.30",
+        "broadcast": "192.0.2.255",
+        "netmask": "255.255.255.0",
+        "network": "192.0.2.0",
+        "prefix": "24"
+    }
+}
+...output omitted...
+```
+
+    In a classroom, the address is `172.25.250.30`.
+  </Task>
+
+  <Task title="Finish">
+    <Finish name="system-network" />
+  </Task>
 </Lab>
 
-## Try it again, differently
-
-Remove the connection and the hosts line again with `state: absent` on both tasks. Then do the same job with the `redhat.rhel_system_roles.network` role and its `network_connections` variable, and compare the two playbooks.
+<Callout type="tip" title="Changing an existing connection">
+The role adds a new profile and NetworkManager brings it up. When you **change** the address of a profile that already exists, add `state: up` to the entry so that the role reactivates the connection and the new address takes effect at once.
+</Callout>

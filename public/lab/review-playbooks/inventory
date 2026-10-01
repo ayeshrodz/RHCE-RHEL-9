@@ -1,12 +1,5 @@
-[dev]
+workstation
+
+[webservers]
 servera.lab.example.com
-
-[test]
 serverb.lab.example.com
-
-[prod]
-serverc.lab.example.com
-serverd.lab.example.com
-
-[webservers:children]
-prod

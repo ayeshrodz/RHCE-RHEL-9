@@ -1,3 +1,5 @@
 # Review lab: Creating playbooks
 ansible.cfg
 inventory
+templates/vhost.conf.j2
+files/index.html

@@ -5,239 +5,364 @@ minutes: 30
 ---
 
 <Lead>
-Build a small two-tier project from reusable pieces, then roll it out the careful way: first to one canary host, then to everything else. Solutions are hidden under each task. Try each one yourself first.
+You have inherited a working playbook from the previous administrator of four web servers. It does its job, but it lists every host by hand and keeps every task in one play. Make it easier to maintain with a host pattern, task files and one reusable, parameterised task file. Solutions are hidden under each task. Try each one yourself first.
 </Lead>
 
-The project `~/complex-review` has an `ansible.cfg`, one ready-made task file, `tasks/install.yml`, which installs whatever list it is given in `packages`, and this inventory:
-
-```ini title="inventory"
-[web]
-servera.lab.example.com
-serverb.lab.example.com
-
-[db]
-serverc.lab.example.com
-
-[canary]
-servera.lab.example.com
-```
+The project `~/projects-review` has an `ansible.cfg`, an `inventory`, the inherited `playbook.yml`, a small `host-test.yml` for trying out patterns, and `files/tune.conf`.
 
 <Lab
   id="review"
-  title="Managing complex plays and playbooks"
-  classroom="lab start complex-review"
-  own
-  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com']}
+  title="Managing Complex Plays and Playbooks"
+  classroom="lab start projects-review"
+  hosts={[
+    'workstation',
+    'servera.lab.example.com',
+    'serverb.lab.example.com',
+    'serverc.lab.example.com',
+    'serverd.lab.example.com',
+  ]}
   outcomes={[
-    'Reuse task files with imports and a looped include.',
-    'Combine playbooks with import_playbook.',
-    'Stage a roll-out with host patterns and --limit.',
+    'Simplify the hosts of a play with a host pattern.',
+    'Move tasks into task files and import them.',
+    'Replace similar tasks with one task file driven by variables.',
   ]}
 >
-  <Task title="Write a task file for one firewall service">
-    Create `tasks/firewall.yml`. It makes sure `firewalld` is started and enabled, then allows **one** firewalld service, permanently and immediately. The service name arrives as `item`, because the file will be included in a loop.
+  <Task title="Read the inherited playbook">
 
-    <Reveal title="Show solution">
-
-```yaml title="tasks/firewall.yml"
----
-- name: firewalld is running
-  ansible.builtin.service:
-    name: firewalld
-    state: started
-    enabled: true
-
-- name: "{{ item }} is allowed through the firewall"
-  ansible.posix.firewalld:
-    service: "{{ item }}"
-    permanent: true
-    immediate: true
-    state: enabled
+```console
+[student@workstation ~]$ cd ~/projects-review
+[student@workstation projects-review]$ cat playbook.yml
 ```
-    </Reveal>
-  </Task>
 
-  <Task title="Write the web playbook">
-    Create `web.yml` with one play for the `web` group that:
-
-    1. imports `tasks/install.yml`, passing `httpd` and `firewalld` as `packages`;
-    2. includes `tasks/firewall.yml` in a loop over a list containing `http`;
-    3. writes `/var/www/html/index.html` containing `HOSTNAME is a member of: GROUPS`, from `inventory_hostname` and `group_names`;
-    4. makes sure `httpd` is started and enabled.
-
-    <Reveal title="Show solution">
-
-```yaml title="web.yml"
+```yaml title="playbook.yml (as inherited)"
 ---
-- name: Web servers are configured
-  hosts: web
+- name: Install and configure web service
+  hosts:
+    - servera.lab.example.com
+    - serverb.lab.example.com
+    - serverc.lab.example.com
+    - serverd.lab.example.com
   tasks:
-    - name: Web packages
-      ansible.builtin.import_tasks: tasks/install.yml
-      vars:
-        packages:
-          - httpd
-          - firewalld
+    - name: Install httpd
+      ansible.builtin.dnf:
+        name: httpd
+        state: latest
 
-    - name: Firewall services
-      ansible.builtin.include_tasks: tasks/firewall.yml
-      loop:
-        - http
-
-    - name: Home page is in place
-      ansible.builtin.copy:
-        content: "{{ inventory_hostname }} is a member of: {{ group_names | join(', ') }}\n"
-        dest: /var/www/html/index.html
-
-    - name: httpd is running
+    - name: Enable and start httpd
       ansible.builtin.service:
         name: httpd
-        state: started
         enabled: true
-```
-    </Reveal>
-  </Task>
+        state: started
 
-  <Task title="Write the database playbook">
-    Create `db.yml` with one play for the `db` group. It imports the **same** `tasks/install.yml` with `mariadb-server`, then starts and enables `mariadb`.
+    - name: Tuning configuration installed
+      ansible.builtin.copy:
+        src: files/tune.conf
+        dest: /etc/httpd/conf.d/tune.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - restart httpd
 
-    <Reveal title="Show solution">
+    - name: Install firewalld
+      ansible.builtin.dnf:
+        name: firewalld
+        state: latest
 
-```yaml title="db.yml"
----
-- name: Database servers are configured
-  hosts: db
-  tasks:
-    - name: Database packages
-      ansible.builtin.import_tasks: tasks/install.yml
-      vars:
-        packages:
-          - mariadb-server
-
-    - name: mariadb is running
+    - name: Enable and start the firewall
       ansible.builtin.service:
-        name: mariadb
-        state: started
+        name: firewalld
         enabled: true
+        state: started
+
+    - name: Open the port for http
+      ansible.posix.firewalld:
+        service: http
+        immediate: true
+        permanent: true
+        state: enabled
+
+  handlers:
+    - name: restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
 ```
-    </Reveal>
+
+    Six tasks in two groups of three: the web server, then the firewall. Both groups start with the same two steps: install a package, then enable and start its service.
   </Task>
 
-  <Task title="Combine them in site.yml">
-    Create `site.yml`, which runs the web playbook and then the database playbook.
+  <Task title="Replace the host list with a pattern">
+    Find one wildcard pattern that selects exactly the four servers. Test it in `host-test.yml` first, then use it in `playbook.yml`.
 
     <Reveal title="Show solution">
 
-```yaml title="site.yml"
----
-- name: Web tier
-  ansible.builtin.import_playbook: web.yml
+    Put the pattern in `host-test.yml` and run it:
 
-- name: Database tier
-  ansible.builtin.import_playbook: db.yml
+```yaml title="host-test.yml"
+---
+- name: List inventory hostnames
+  hosts: server*.lab.example.com
+  gather_facts: false
+  tasks:
+    - name: List inventory hostnames
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}"
+```
+
+```console
+[student@workstation projects-review]$ ansible-navigator run -m stdout host-test.yml
+...output omitted...
+ok: [servera.lab.example.com] => {
+    "msg": "servera.lab.example.com"
+}
+ok: [serverb.lab.example.com] => {
+    "msg": "serverb.lab.example.com"
+}
+ok: [serverc.lab.example.com] => {
+    "msg": "serverc.lab.example.com"
+}
+ok: [serverd.lab.example.com] => {
+    "msg": "serverd.lab.example.com"
+}
+...output omitted...
+```
+
+    Exactly the four servers, so replace the list in `playbook.yml`:
+
+```yaml
+- name: Install and configure web service
+  hosts: server*.lab.example.com
 ```
     </Reveal>
   </Task>
 
-  <Task title="Check the syntax and preview the canary run">
-    Check the syntax, then list which hosts each play would touch if the run is limited to the `canary` group.
+  <Task title="Move the web tasks to a task file">
+    Move the first three tasks into `tasks/web_tasks.yml`, and import that file where they were.
+
+    <Reveal title="Show solution">
 
 ```console
-[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --syntax-check
-
-playbook: /home/student/complex-review/site.yml
-[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit canary --list-hosts
-
-playbook: /home/student/complex-review/site.yml
-
-  play #1 (web): Web servers are configured	TAGS: []
-    pattern: ['web']
-    hosts (1):
-      servera.lab.example.com
-
-  play #2 (db): Database servers are configured	TAGS: []
-    pattern: ['db']
-    hosts (0):
+[student@workstation projects-review]$ mkdir tasks
 ```
 
-    Only servera is both in `web` and in `canary`. No database server is a canary, so the second play has nothing to do.
+```yaml title="tasks/web_tasks.yml"
+---
+- name: Install httpd
+  ansible.builtin.dnf:
+    name: httpd
+    state: latest
+
+- name: Enable and start httpd
+  ansible.builtin.service:
+    name: httpd
+    enabled: true
+    state: started
+
+- name: Tuning configuration installed
+  ansible.builtin.copy:
+    src: files/tune.conf
+    dest: /etc/httpd/conf.d/tune.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - restart httpd
+```
+
+    In `playbook.yml`, in place of the three tasks:
+
+```yaml
+    - name: Import the web_tasks.yml task file
+      ansible.builtin.import_tasks: tasks/web_tasks.yml
+```
+
+    The handler stays in the play. A task in an imported file can notify it, because handlers are looked up in the play.
+    </Reveal>
   </Task>
 
-  <Task title="Roll out to the canary">
+  <Task title="Move the firewall tasks to a task file">
+    Do the same with the last three tasks, in `tasks/firewall_tasks.yml`.
+
+    <Reveal title="Show solution">
+
+```yaml title="tasks/firewall_tasks.yml"
+---
+- name: Install firewalld
+  ansible.builtin.dnf:
+    name: firewalld
+    state: latest
+
+- name: Enable and start the firewall
+  ansible.builtin.service:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: Open the port for http
+  ansible.posix.firewalld:
+    service: http
+    immediate: true
+    permanent: true
+    state: enabled
+```
+
+```yaml
+    - name: Import the firewall_tasks.yml task file
+      ansible.builtin.import_tasks: tasks/firewall_tasks.yml
+```
+    </Reveal>
+  </Task>
+
+  <Task title="One task file for both install-and-start steps">
+    Both task files begin with the same pattern: install a package, enable and start a service. Write that pattern once, in `tasks/install_and_enable.yml`, with the variables `package` and `service`. Then replace those two tasks in `web_tasks.yml` and in `firewall_tasks.yml` with an import of the new file, passing the right values.
+
+    <Reveal title="Show solution">
+
+```yaml title="tasks/install_and_enable.yml"
+---
+- name: Install {{ package }}
+  ansible.builtin.dnf:
+    name: "{{ package }}"
+    state: latest
+
+- name: Enable and start {{ service }}
+  ansible.builtin.service:
+    name: "{{ service }}"
+    enabled: true
+    state: started
+```
+
+```yaml title="tasks/web_tasks.yml"
+---
+- name: Install and start httpd
+  ansible.builtin.import_tasks: install_and_enable.yml
+  vars:
+    package: httpd
+    service: httpd
+
+- name: Tuning configuration installed
+  ansible.builtin.copy:
+    src: files/tune.conf
+    dest: /etc/httpd/conf.d/tune.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - restart httpd
+```
+
+```yaml title="tasks/firewall_tasks.yml"
+---
+- name: Install and start firewalld
+  ansible.builtin.import_tasks: install_and_enable.yml
+  vars:
+    package: firewalld
+    service: firewalld
+
+- name: Open the port for http
+  ansible.posix.firewalld:
+    service: http
+    immediate: true
+    permanent: true
+    state: enabled
+```
+
+    Inside a task file, the path of another task file is relative to the file doing the importing, so `install_and_enable.yml` needs no `tasks/` prefix. `files/tune.conf`, on the other hand, is still found next to the playbook.
+    </Reveal>
+  </Task>
+
+  <Task title="Check the finished playbook, then run it">
+
+    <Reveal title="Show the finished playbook.yml">
+
+```yaml title="playbook.yml"
+---
+- name: Install and configure web service
+  hosts: server*.lab.example.com
+  tasks:
+    - name: Import the web_tasks.yml task file
+      ansible.builtin.import_tasks: tasks/web_tasks.yml
+
+    - name: Import the firewall_tasks.yml task file
+      ansible.builtin.import_tasks: tasks/firewall_tasks.yml
+
+  handlers:
+    - name: restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+```
+    </Reveal>
 
 ```console
-[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit canary
-...output omitted...
-TASK [Firewall services] *******************************************************
-included: /home/student/complex-review/tasks/firewall.yml for servera.lab.example.com => (item=http)
+[student@workstation projects-review]$ ansible-navigator run \
+> -m stdout playbook.yml --syntax-check
+playbook: /home/student/projects-review/playbook.yml
+[student@workstation projects-review]$ ansible-navigator run -m stdout playbook.yml
 
-TASK [firewalld is running] ****************************************************
+PLAY [Install and configure web service] ***************************************
+
+TASK [Gathering Facts] *********************************************************
 ok: [servera.lab.example.com]
+...output omitted...
 
-TASK [http is allowed through the firewall] ************************************
+TASK [Install httpd] ***********************************************************
 changed: [servera.lab.example.com]
 ...output omitted...
-PLAY [Database servers are configured] *****************************************
-skipping: no hosts matched
 
-PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=7    changed=4    unreachable=0    failed=0  ...
-```
-
-    Test the canary, and confirm the other web server is untouched:
-
-```console
-[student@workstation complex-review]$ curl http://servera.lab.example.com
-servera.lab.example.com is a member of: canary, web
-[student@workstation complex-review]$ curl -m 4 http://serverb.lab.example.com
-curl: (7) Failed to connect to serverb.lab.example.com port 80: No route to host
-```
-
-    *No route to host* is serverb's firewall rejecting the connection: nothing has opened port 80 there yet. On a host without a firewall you would see *Connection refused* instead.
-  </Task>
-
-  <Task title="Roll out to everything else">
-    The canary is healthy. Run the same playbook on every host **except** the canary.
-
-    <Reveal title="Show solution">
-
-```console
-[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml --limit 'all,!canary'
+TASK [Enable and start httpd] **************************************************
+changed: [servera.lab.example.com]
 ...output omitted...
+
+TASK [Tuning configuration installed] ******************************************
+changed: [servera.lab.example.com]
+...output omitted...
+
+TASK [Install firewalld] *******************************************************
+ok: [servera.lab.example.com]
+...output omitted...
+
+TASK [Enable and start firewalld] **********************************************
+ok: [servera.lab.example.com]
+...output omitted...
+
+TASK [Open the port for http] **************************************************
+changed: [servera.lab.example.com]
+...output omitted...
+
+RUNNING HANDLER [restart httpd] ************************************************
+changed: [servera.lab.example.com]
+...output omitted...
+
 PLAY RECAP *********************************************************************
-serverb.lab.example.com    : ok=7    changed=4    unreachable=0    failed=0  ...
-serverc.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
-[student@workstation complex-review]$ curl http://serverb.lab.example.com
-serverb.lab.example.com is a member of: web
+servera.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
+serverc.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
+serverd.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
 ```
-    </Reveal>
+
+    The task names come from the shared file, with the variables filled in. Run it again: every host reports `ok=7 changed=0`, one fewer `ok` because the handler is not notified.
   </Task>
 
-  <Task title="Prove the whole project is idempotent">
-    Run `site.yml` once more with no limit. Every host should report `changed=0`.
+  <Task title="Verify">
 
 ```console
-[student@workstation complex-review]$ ansible-navigator run -m stdout site.yml
-...output omitted...
-PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=7    changed=0    unreachable=0    failed=0  ...
-serverc.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
+[student@workstation projects-review]$ ssh devops@serverc \
+> 'cat /etc/httpd/conf.d/tune.conf; systemctl is-active httpd firewalld; sudo firewall-cmd --list-services'
+# Keep-alive tuning for the web servers
+KeepAlive On
+MaxKeepAliveRequests 200
+KeepAliveTimeout 3
+active
+active
+cockpit dhcpv6-client http ssh
 ```
+
+    In a classroom, the content of `tune.conf` may differ; what matters is that it is there, and that both services run with `http` allowed.
   </Task>
 
-  <Task title="Finish">
-    <Env>
-      <Classroom>
-        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset or clean the three servers the way your classroom provides.
-      </Classroom>
-      <HomeLab>
-        There is no grading script: the checks above are the test. Then `lab finish complex-review` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+  <Task title="Grade and finish">
+    <Finish name="projects-review" grade />
   </Task>
 </Lab>
-
-<Callout type="exam" title="Why stage a roll-out">
-`--limit` with a small group, a check, then `--limit 'all,!thatgroup'` is the everyday way to make a risky change safely. It works because the playbook is idempotent: the final run over everything costs nothing and proves nothing was missed.
-</Callout>

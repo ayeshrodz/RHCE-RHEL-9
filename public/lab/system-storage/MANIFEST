@@ -1,3 +1,5 @@
 # Managing storage
 ansible.cfg
 inventory
+get-storage.yml
+@setup.sh

@@ -106,6 +106,28 @@ Fifteen questions across the five administration areas. Aim for at least eleven 
       explain: 'mounted mounts it and writes /etc/fstab; present only writes fstab.',
     },
     {
+      q: 'Which variable of the storage system role describes a volume group and its logical volumes?',
+      options: ['`storage_volumes`', '`storage_pools`', '`storage_lvm`'],
+      answer: 1,
+      explain: 'storage_pools: each pool is a volume group, with its volumes. storage_volumes puts a file system on a whole disk.',
+    },
+    {
+      q: 'How do you set the default boot target idempotently with commands?',
+      options: [
+        'Run `systemctl set-default` in every play',
+        'Read `systemctl get-default` with changed_when: false, and set it only when it differs',
+        'Use the systemd module with `default: true`',
+      ],
+      answer: 1,
+      explain: 'The systemd module cannot set the default target; a registered read plus a condition keeps the command idempotent.',
+    },
+    {
+      q: 'Which variable of the network system role lists the connection profiles to configure?',
+      options: ['`network_connections`', '`network_interfaces`', '`nmcli_connections`'],
+      answer: 0,
+      explain: 'Each entry describes one profile: name, type, interface, ip settings, state.',
+    },
+    {
       q: 'Why practise network changes on an extra interface?',
       options: ['Dummy interfaces are faster', 'Changing the interface Ansible uses can cut off the connection mid-play', 'nmcli cannot change the main interface'],
       answer: 1,

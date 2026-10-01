@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+Listen {{ item['user_port'] }}
+
+<VirtualHost *:{{ item['user_port'] }}>
+    ServerName {{ ansible_facts['fqdn'] }}
+    DocumentRoot /var/www/{{ item['username'] }}
+    <Directory /var/www/{{ item['username'] }}>
+        Require all granted
+    </Directory>
+</VirtualHost>

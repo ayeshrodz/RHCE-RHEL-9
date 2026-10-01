@@ -16,17 +16,18 @@ control-review       4.8   Chapter lab: Implementing task control
 file-manage          5.2   Modifying and copying files to hosts
 file-template        5.4   Deploying custom files with Jinja2 templates
 file-review          5.5   Chapter lab: Deploying files to managed hosts
-pattern-hosts        6.2   Selecting hosts with host patterns
-reuse-tasks          6.4   Including and importing files
-complex-review       6.5   Chapter lab: Managing complex plays and playbooks
-role-create          7.3   Creating a role
-role-system          7.5   Using system roles and roles from an archive
-collection-use       7.7   Getting modules from a collection
-role-review          7.8   Chapter lab: Roles and collections
-troubleshoot-playbook 8.2   Troubleshooting a playbook
-troubleshoot-host     8.4   Troubleshooting managed hosts
+projects-host        6.2   Selecting hosts with host patterns
+projects-file        6.4   Including and importing files
+projects-review      6.5   Chapter lab: Managing complex plays and playbooks
+role-create          7.3   Creating roles
+role-galaxy          7.5   Deploying roles from external content sources
+role-collections     7.7   Getting roles and modules from content collections
+role-system          7.9   Reusing content with system roles
+role-review          7.10  Chapter lab: Simplifying playbooks with roles and content collections
+troubleshoot-playbook 8.2   Troubleshooting playbooks
+troubleshoot-host     8.4   Troubleshooting Ansible managed hosts
 troubleshoot-review   8.5   Chapter lab: Troubleshooting Ansible
-system-software       9.2   Managing software
+system-software       9.2   Managing software and subscriptions
 system-users          9.4   Managing users and authentication
 system-process        9.6   Managing the boot process and scheduled processes
 system-storage        9.8   Managing storage

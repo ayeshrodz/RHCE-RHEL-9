@@ -1,0 +1,7 @@
+# Including and importing files
+ansible.cfg
+inventory
+tasks/environment.yml
+tasks/firewall.yml
+tasks/placeholder.yml
+plays/test.yml

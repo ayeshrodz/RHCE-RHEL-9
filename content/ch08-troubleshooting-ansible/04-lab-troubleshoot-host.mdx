@@ -1,193 +1,212 @@
 ---
-title: "Guided exercise: Troubleshooting managed hosts"
+title: "Guided exercise: Troubleshooting Ansible managed hosts"
 kind: lab
 minutes: 20
 ---
 
 <Lead>
-This time the playbook is correct. Three things around it are not: two hosts have bad connection settings in the inventory, and privilege escalation is switched off. You will find each with Ansible's own tools, preview the change with check mode, then apply it.
+You will troubleshoot two playbooks that fail on a managed host: one that fails only in check mode, and one that cannot reach its host at all, even though an ad hoc command can.
 </Lead>
 
-The project `~/troubleshoot-host` has an `ansible.cfg`, an `inventory` with a `web` group of three servers, a playbook `motd.yml` that deploys a message of the day from `templates/motd.j2`, and no mistakes in the playbook itself.
+The project `~/troubleshoot-host` has an `ansible.cfg`, an `inventory`, the playbooks `mailrelay.yml` and `samba.yml`, and their templates. `mailrelay.yml` sets up servera as a Postfix mail relay; `samba.yml` is the playbook you fixed in the previous exercise.
 
 <Lab
-  id="tshost"
-  title="Troubleshooting managed hosts"
+  id="troubleshoot-host"
+  title="Troubleshooting Ansible managed hosts"
   classroom="lab start troubleshoot-host"
-  own
-  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com']}
-  outcomes={[
-    'Find why a host is unreachable from the message, the inventory and -vvv.',
-    'Tell a privilege problem from a connection problem.',
-    'Preview a change with check mode and a diff before applying it.',
-  ]}
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Troubleshoot managed hosts with check mode, ad hoc commands and verbose output.']}
 >
-  <Task title="Test the connections">
+  <Task title="Try the mail relay in check mode">
 
 ```console
 [student@workstation ~]$ cd ~/troubleshoot-host
-[student@workstation troubleshoot-host]$ ansible web -m ansible.builtin.ping
-serverc.lab.example.com | UNREACHABLE! => {
-    "changed": false,
-    "msg": "Failed to connect to the host via ssh: operator1@serverc.lab.example.com: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).",
-    "unreachable": true
-}
-servera.lab.example.com | SUCCESS => {
-    ...output omitted...
-    "ping": "pong"
-}
-serverb.lab.example.com | UNREACHABLE! => {
-    "changed": false,
-    "msg": "Failed to connect to the host via ssh: ssh: connect to host 172.25.250.211 port 22: No route to host",
-    "unreachable": true
-}
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout mailrelay.yml --check
+
+PLAY [Create mail relay servers] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Install postfix package] *************************************************
+changed: [servera.lab.example.com]
+
+TASK [Install mail config files] ***********************************************
+changed: [servera.lab.example.com]
+
+TASK [Check main.cf file] ******************************************************
+ok: [servera.lab.example.com]
+
+TASK [Verify main.cf file exists] **********************************************
+skipping: [servera.lab.example.com]
+
+TASK [Start and enable mail services] ******************************************
+fatal: [servera.lab.example.com]: FAILED! => {"changed": false, "msg": "Could not find the requested service postfix: host"}
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=4    changed=2    unreachable=0    failed=1    skipped=1  ...
 ```
 
-    One works and two do not, for different reasons. serverb is being contacted at an address that does not answer; serverc answers, but refuses the user `operator1`.
-  </Task>
-
-  <Task title="Ask Ansible where those settings come from">
-
-```console
-[student@workstation troubleshoot-host]$ ansible-navigator inventory -m stdout --host serverb.lab.example.com
-{
-    "ansible_host": "172.25.250.211"
-}
-[student@workstation troubleshoot-host]$ ansible-navigator inventory -m stdout --host serverc.lab.example.com
-{
-    "ansible_user": "operator1"
-}
-[student@workstation troubleshoot-host]$ getent hosts serverb.lab.example.com
-172.25.250.11   serverb.lab.example.com
-```
-
-    Both hosts have a variable that overrides the normal settings. The name `serverb.lab.example.com` resolves to `.11`, but `ansible_host` sends Ansible to `.211`.
-
-    For serverc, `-vvv` shows the same thing from the connection's side:
-
-```console
-[student@workstation troubleshoot-host]$ ansible serverc.lab.example.com -m ansible.builtin.ping -vvv
-...output omitted...
-<serverc.lab.example.com> ESTABLISH SSH CONNECTION FOR USER: operator1
-...output omitted...
-```
-  </Task>
-
-  <Task title="Fix the inventory">
-    Remove the two overrides, so both hosts use their names and the `remote_user` from `ansible.cfg`.
-
-    <Reveal title="Show the fixed inventory">
-
-```ini title="inventory"
-[web]
-servera.lab.example.com
-serverb.lab.example.com
-serverc.lab.example.com
-```
-    </Reveal>
-
-```console
-[student@workstation troubleshoot-host]$ ansible web -m ansible.builtin.ping -o
-servera.lab.example.com | SUCCESS => {… "ping": "pong"}
-serverc.lab.example.com | SUCCESS => {… "ping": "pong"}
-serverb.lab.example.com | SUCCESS => {… "ping": "pong"}
-```
-  </Task>
-
-  <Task title="Preview the change">
-    Everything connects. Before changing three servers, preview with check mode:
-
-```console
-[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout motd.yml --check
-...output omitted...
-servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-serverc.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-```
-
-    It looks fine. Remember this result for the next task.
+    `Check main.cf file` uses the `stat` module, and `Verify main.cf file exists` reports only when the file is there. Both tell the same story: in check mode the `postfix` package was not really installed, so neither its configuration file nor its service exists. The failure is an artefact of check mode, not a problem in the playbook.
   </Task>
 
   <Task title="Run it for real">
 
 ```console
-[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout motd.yml
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout mailrelay.yml
 ...output omitted...
-TASK [Message of the day is in place] ******************************************
-fatal: [servera.lab.example.com]: FAILED! => {… "changed": false, "checksum": "…", "msg": "Destination /etc not writable"}
+TASK [Check main.cf file] ******************************************************
+ok: [servera.lab.example.com]
+
+TASK [Verify main.cf file exists] **********************************************
+ok: [servera.lab.example.com] => {
+    "msg": "The main.cf file exists"
+}
+
+TASK [Start and enable mail services] ******************************************
+changed: [servera.lab.example.com]
 ...output omitted...
 PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
-serverb.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
-serverc.lab.example.com    : ok=1    changed=0    unreachable=0    failed=1  ...
+servera.lab.example.com    : ok=8    changed=4    unreachable=0    failed=0    skipped=1  ...
 ```
 
-    `FAILED`, not `UNREACHABLE`: Ansible connected and gathered facts, then could not write to `/etc` as `devops`. Check mode could not see this, because it never attempted the write.
-
-    <Reveal title="Show the cause and the fix">
-
-```console
-[student@workstation troubleshoot-host]$ grep become ansible.cfg
-become = false
-become_method = sudo
-become_user = root
-become_ask_pass = false
-```
-
-    Set `become = true` in `ansible.cfg` (or `become: true` in the play).
-    </Reveal>
+    The error is gone.
   </Task>
 
-  <Task title="Preview with a diff, then apply">
+  <Task title="Let mail in through the firewall">
+    Postfix runs, but other hosts cannot reach it. Add a task at the end of the play, before the handlers, that enables the `smtp` service in the firewall:
 
-```console
-[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout motd.yml --check --diff
-...output omitted...
-TASK [Message of the day is in place] ******************************************
---- before: /etc/motd
-+++ after: /home/student/.ansible/tmp/…/motd.j2
-@@ -0,0 +1,2 @@
-+This is serverb.lab.example.com.
-+Contact: ops@example.com
-
-changed: [serverb.lab.example.com]
-...output omitted...
-[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout motd.yml
-...output omitted...
-servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-serverc.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
+```yaml
+    - name: Postfix firewalld config
+      ansible.posix.firewalld:
+        state: enabled
+        permanent: true
+        immediate: true
+        service: smtp
 ```
 
-    The diff shows each host's own file before anything is written. `/etc/motd` was empty, so every line is new (`+`).
+```console
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout mailrelay.yml
+...output omitted...
+TASK [Postfix firewalld config] ************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=8    changed=1    unreachable=0    failed=0    skipped=1  ...
+```
   </Task>
 
-  <Task title="Verify">
+  <Task title="Test the mail port">
+
+    <Env>
+      <Classroom>
 
 ```console
-[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout motd.yml
-...output omitted...
-servera.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
-serverc.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
-[student@workstation troubleshoot-host]$ ssh devops@serverc cat /etc/motd
-This is serverc.lab.example.com.
-Contact: ops@example.com
+[student@workstation troubleshoot-host]$ telnet servera.lab.example.com 25
+Trying 172.25.250.10...
+Connected to servera.lab.example.com.
+Escape character is '^]'.
+220 servera.lab.example.com ESMTP Postfix
+quit
+221 2.0.0 Bye
+Connection closed by foreign host.
 ```
+      </Classroom>
+      <HomeLab>
+        `telnet` is not installed on the home-lab workstation. Bash can open the connection itself:
+
+```console
+[student@workstation troubleshoot-host]$ exec 3<>/dev/tcp/servera.lab.example.com/25; \
+> head -1 <&3; printf 'QUIT\r\n' >&3; head -1 <&3; exec 3<&-
+220 servera.lab.example.com ESMTP Postfix
+221 2.0.0 Bye
+```
+      </HomeLab>
+    </Env>
+
+    The relay answers on TCP port 25.
+  </Task>
+
+  <Task title="Run the Samba playbook">
+
+```console
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout samba.yml
+
+PLAY [Install a samba server] **************************************************
+
+TASK [Gathering Facts] *********************************************************
+fatal: [servera.lab.exammple.com]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host servera.lab.exammple.com port 22: Network is unreachable", "unreachable": true}
+
+PLAY RECAP *********************************************************************
+servera.lab.exammple.com   : ok=0    changed=0    unreachable=1    failed=0  ...
+```
+
+    The very first task cannot connect. In a classroom the message may instead end in `Connection timed out`; either way, SSH never reached a server.
+  </Task>
+
+  <Task title="Is it the connection?">
+    Check, outside Ansible, that you can log in to servera as `devops`, then with an ad hoc command:
+
+```console
+[student@workstation troubleshoot-host]$ ssh devops@servera.lab.example.com hostname
+servera.lab.example.com
+[student@workstation troubleshoot-host]$ ansible servera.lab.example.com -m ansible.builtin.ping
+servera.lab.example.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+    Both work. So the keys, the user and SSH are fine: the problem is in what the playbook asks Ansible to connect to.
+  </Task>
+
+  <Task title="Ask for detail">
+
+```console
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout samba.yml -vvvv
+ansible-playbook [core 2.14.18]
+  config file = /home/student/troubleshoot-host/ansible.cfg
+...output omitted...
+PLAYBOOK: samba.yml ************************************************************
+...output omitted...
+verbosity: 4
+...output omitted...
+inventory: ('/home/student/troubleshoot-host/inventory',)
+...output omitted...
+<servera.lab.exammple.com> ESTABLISH SSH CONNECTION FOR USER: devops
+...output omitted...
+fatal: [servera.lab.exammple.com]: UNREACHABLE! => {
+...output omitted...
+```
+
+    The first lines show which configuration file and inventory are in use. `ESTABLISH SSH CONNECTION` shows the name Ansible is really connecting to: `servera.lab.exammple.com`, with two `m`s.
+  </Task>
+
+  <Task title="Fix the inventory">
+    The host in the `samba_servers` group is misspelled. Correct it:
+
+```ini title="inventory"
+[mailrelay]
+servera.lab.example.com
+
+[samba_servers]
+servera.lab.example.com
+```
+
+```console
+[student@workstation troubleshoot-host]$ ansible-navigator run -m stdout samba.yml
+...output omitted...
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=8    changed=4    unreachable=0    failed=0  ...
+```
+
+    Every task succeeds. If you did not reset the servers after the previous exercise, Samba is already set up and the run reports `changed=0` instead.
   </Task>
 
   <Task title="Finish">
-    <Env>
-      <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean the three servers the way your classroom provides before the next exercise.
-      </Classroom>
-      <HomeLab>
-        Two steps. On workstation, `lab finish troubleshoot-host` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+    <Finish name="troubleshoot-host" />
   </Task>
 </Lab>
-
-## Try it again, differently
-
-Put `ansible_port=2222` on serverb in the inventory and run the ping again: read the new message, then find the variable with `ansible-navigator inventory --host`. Remove it when you are done.

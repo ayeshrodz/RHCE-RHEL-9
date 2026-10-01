@@ -1,5 +1,6 @@
-# Chapter lab: Troubleshooting Ansible (five problems to find)
+# Chapter lab: Troubleshooting Ansible
 ansible.cfg
 inventory
-site.yml
-templates/vhost.conf.j2
+index.html
+secure-web.yml
+vhosts.conf

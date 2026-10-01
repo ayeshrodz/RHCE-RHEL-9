@@ -1,0 +1,237 @@
+---
+title: "Guided exercise: Reusing content with system roles"
+kind: lab
+minutes: 25
+---
+
+<Lead>
+You will install the system roles collection into a project, read the timesync role's documentation, and use the role to synchronise time on two database servers. Then you will set a different time zone for each data centre with tasks after the role and a handler that reboots the host.
+</Lead>
+
+The project `~/role-system` has an `ansible.cfg`, an `inventory`, and the collection archive. Its inventory puts servera and serverb in `database_servers`, servera in `na_datacenter` and serverb in `europe_datacenter`.
+
+<Lab
+  id="role-system"
+  title="Reusing content with system roles"
+  classroom="lab start role-system"
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={[
+    'Install the system roles collection into a project.',
+    'Find and read a system role’s documentation.',
+    'Configure time synchronisation and time zones with a system role and tasks.',
+  ]}
+>
+  <HomeSetup>
+    `lab start role-system` packages the `redhat.rhel_system_roles` collection that section 0.6 installed on workstation as `redhat-rhel_system_roles-1.120.5.tar.gz` (your version may differ). This exercise reboots servera and serverb at the end.
+  </HomeSetup>
+
+  <Task title="Install the collection into the project">
+
+```console
+[student@workstation ~]$ cd ~/role-system
+[student@workstation role-system]$ mkdir -p collections
+```
+
+    Add `collections_path` to the `[defaults]` section of `ansible.cfg`, with the project's directory first:
+
+```ini title="ansible.cfg"
+[defaults]
+inventory = ./inventory
+remote_user = devops
+interpreter_python = auto_silent
+collections_path = ./collections:~/.ansible/collections:/usr/share/ansible/collections
+...output omitted...
+```
+
+```console
+[student@workstation role-system]$ ansible-galaxy collection install \
+> -p collections/ redhat-rhel_system_roles-1.120.5.tar.gz
+Starting galaxy collection install process
+Process install dependency map
+Starting collection install process
+Installing 'redhat.rhel_system_roles:1.120.5' to '/home/student/role-system/collections/ansible_collections/redhat/rhel_system_roles'
+redhat.rhel_system_roles:1.120.5 was installed successfully
+[student@workstation role-system]$ ansible-galaxy collection list
+
+# /home/student/role-system/collections/ansible_collections
+Collection               Version
+------------------------ -------
+redhat.rhel_system_roles 1.120.5
+...output omitted...
+```
+  </Task>
+
+  <Task title="Start the playbook">
+    Create `configure_time.yml` with one play for `database_servers` that applies the timesync role:
+
+```yaml title="configure_time.yml"
+---
+- name: Time Synchronization
+  hosts: database_servers
+
+  roles:
+    - redhat.rhel_system_roles.timesync
+```
+  </Task>
+
+  <Task title="Read the role's documentation">
+
+```console
+[student@workstation role-system]$ less \
+> collections/ansible_collections/redhat/rhel_system_roles/roles/timesync/README.md
+```
+
+    The Role Variables section describes the two you need:
+
+```yaml
+timesync_ntp_servers:
+  - hostname: foo.example.com   # Hostname or address of the server
+    minpoll: 4                  # Minimum polling interval (default 6)
+    maxpoll: 8                  # Maximum polling interval (default 10)
+    iburst: true                # Flag enabling fast initial synchronization
+                                # (default false)
+    pool: false                 # Flag indicating that each resolved address
+                                # of the hostname is a separate NTP server
+                                # (default false)
+...output omitted...
+# Possible values are "chrony" and "ntp". If not defined, the currently active
+# or enabled service will be configured. If no service is active or enabled, a
+# package specific to the system and its version will be selected.
+timesync_ntp_provider: chrony
+```
+  </Task>
+
+  <Task title="Set the time source for all hosts">
+    These settings apply to every host, so they go in `group_vars/all`:
+
+```console
+[student@workstation role-system]$ mkdir -pv group_vars/all
+mkdir: created directory 'group_vars'
+mkdir: created directory 'group_vars/all'
+```
+
+    <Env>
+      <Classroom>
+
+```yaml title="group_vars/all/timesync.yml"
+---
+#redhat.rhel_system_roles.timesync variables for all hosts
+
+timesync_ntp_provider: chrony
+
+timesync_ntp_servers:
+  - hostname: classroom.example.com
+    iburst: true
+```
+      </Classroom>
+      <HomeLab>
+
+```yaml title="group_vars/all/timesync.yml"
+---
+#redhat.rhel_system_roles.timesync variables for all hosts
+
+timesync_ntp_provider: chrony
+
+timesync_ntp_servers:
+  - hostname: 0.rocky.pool.ntp.org
+    iburst: true
+```
+      </HomeLab>
+    </Env>
+  </Task>
+
+  <Task title="Set the time zone after the role">
+    Add `post_tasks` and a handler to the play. The first task reads the current time zone; the second changes it only if it differs from `host_timezone`, and notifies a handler that reboots the host.
+
+```yaml title="configure_time.yml"
+---
+- name: Time Synchronization
+  hosts: database_servers
+
+  roles:
+    - redhat.rhel_system_roles.timesync
+
+  post_tasks:
+    - name: Get time zone
+      ansible.builtin.command: timedatectl show
+      register: current_timezone
+      changed_when: false
+
+    - name: Set time zone
+      ansible.builtin.command: "timedatectl set-timezone {{ host_timezone }}"
+      when: host_timezone not in current_timezone.stdout
+      notify: reboot host
+
+  handlers:
+    - name: reboot host
+      ansible.builtin.reboot:
+```
+
+    The `when` condition is what keeps the `command` task idempotent: on the second run the zone already matches, so the task is skipped.
+  </Task>
+
+  <Task title="One time zone per data centre">
+    Find the zone names, then give each data centre group its own value:
+
+```console
+[student@workstation role-system]$ timedatectl list-timezones | grep Chicago
+America/Chicago
+[student@workstation role-system]$ timedatectl list-timezones | grep Helsinki
+Europe/Helsinki
+[student@workstation role-system]$ mkdir -pv group_vars/{na_datacenter,europe_datacenter}
+mkdir: created directory 'group_vars/na_datacenter'
+mkdir: created directory 'group_vars/europe_datacenter'
+[student@workstation role-system]$ echo "host_timezone: America/Chicago" > \
+> group_vars/na_datacenter/timezone.yml
+[student@workstation role-system]$ echo "host_timezone: Europe/Helsinki" > \
+> group_vars/europe_datacenter/timezone.yml
+```
+  </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation role-system]$ ansible-navigator run -m stdout configure_time.yml --syntax-check
+playbook: /home/student/role-system/configure_time.yml
+[student@workstation role-system]$ ansible-navigator run -m stdout configure_time.yml
+...output omitted...
+RUNNING HANDLER [redhat.rhel_system_roles.timesync : Restart chronyd] **********
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+TASK [Get time zone] ***********************************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Set time zone] ***********************************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+RUNNING HANDLER [reboot host] **************************************************
+changed: [serverb.lab.example.com]
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=23   changed=6    unreachable=0    failed=0    skipped=32  ...
+serverb.lab.example.com    : ok=23   changed=6    unreachable=0    failed=0    skipped=32  ...
+```
+
+    The role's own handler restarts chronyd after its tasks; your handler reboots the hosts at the end of the play. A second run reports `changed=0`.
+  </Task>
+
+  <Task title="Check the time zones">
+
+```console
+[student@workstation role-system]$ ssh devops@servera date
+Wed Sep 30 06:37:55 PM CDT 2026
+[student@workstation role-system]$ ssh devops@serverb date
+Thu Oct  1 02:37:56 AM EEST 2026
+```
+
+    The same moment, shown in two time zones.
+  </Task>
+
+  <Task title="Finish">
+    <Finish name="role-system" />
+  </Task>
+</Lab>

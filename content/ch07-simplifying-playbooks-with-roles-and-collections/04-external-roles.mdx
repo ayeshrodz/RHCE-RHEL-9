@@ -1,80 +1,58 @@
 ---
-title: Using roles you did not write
+title: Deploying roles from external content sources
 kind: lesson
 minutes: 12
 ---
 
 <Lead>
-Most of the automation you need has been written before. Your operating system ships a set of supported roles for common administration jobs, and any role can be installed from an archive or a Git repository with one command. Knowing how to find, install and read a role is as useful as knowing how to write one.
+Most of the automation you need has been written before, by your own organisation or by the community. Roles are shared through Git repositories, archives on a web server, and the Ansible Galaxy site, and `ansible-galaxy` installs them from any of those with one command. Knowing how to find, install and read a role is as useful as knowing how to write one.
 </Lead>
 
 <Objectives>
-- Find and use the system roles that ship with RHEL.
-- Install roles with `ansible-galaxy role install`, from an archive or a repository.
+- Find roles on Ansible Galaxy, from the web site or the command line.
+- Install roles with `ansible-galaxy role install`, from a Git repository, an archive or Galaxy.
 - Record a project's roles in a requirements file so the set is repeatable.
 - List and remove installed roles.
 </Objectives>
 
-## System roles
+## Where roles come from
 
-RHEL provides a package of roles for everyday administration: time synchronisation, SELinux, networking, storage, the firewall, SSH and more. They are supported, tested against each RHEL release, and they hide the differences between versions behind one set of variables.
+| Source | Typical use |
+| --- | --- |
+| A **Git repository** of your organisation | Roles your teams write and maintain, each in its own repository |
+| An **archive** (`.tar.gz`) on a web server or a file share | Releases published by a team or a vendor |
+| **Ansible Galaxy** (galaxy.ansible.com) | Thousands of community roles, of varying quality and without vendor support |
+
+More and more roles are now shipped inside **collections** instead, together with modules and plug-ins; the next sections cover those. This section is about roles distributed on their own.
+
+<Callout type="warning" title="Community content is unreviewed">
+A role from Galaxy has not been checked by anyone but its author. It runs as root on your hosts. Read its tasks and defaults before you use it, and pin the version you reviewed.
+</Callout>
+
+## Finding roles on Ansible Galaxy
+
+On galaxy.ansible.com, search by keyword and filter by platform, tags and author; each role shows its download count, its source repository and a quality score. The same search works from the command line:
 
 ```console
-[student@workstation ~]$ sudo dnf install rhel-system-roles
+[student@workstation ~]$ ansible-galaxy search 'redis' --platforms EL
+Found 251 roles matching your search:
+ Name                             Description
+ ----                             -----------
+ geerlingguy.redis                Redis for Linux
+...output omitted...
+[student@workstation ~]$ ansible-galaxy info geerlingguy.redis
+Role: geerlingguy.redis
+        description: Redis for Linux
+        ...output omitted...
+        github_repo: ansible-role-redis
+        ...output omitted...
 ```
 
-The package installs the roles twice, under two names:
-
-| Form | Location | Name in a play |
-| --- | --- | --- |
-| Collection | `/usr/share/ansible/collections/ansible_collections/redhat/rhel_system_roles/` | `redhat.rhel_system_roles.timesync` |
-| Plain roles | `/usr/share/ansible/roles/` | `rhel-system-roles.timesync` |
-
-Prefer the collection form: it is a fully qualified name, like the module names you already use.
+`--author`, `--platforms` and `--galaxy-tags` narrow a search; `info` shows a role's details, including the minimum Ansible version and where its source lives.
 
 <HomeLab>
-Rocky Linux ships the same package under the same name, and section 0.6 installed it on workstation. The collection name is also the same, `redhat.rhel_system_roles`. The upstream project, with identical variables, is published as `fedora.linux_system_roles`.
+The home lab's servers are isolated, but workstation reaches the internet, so `search` and `info` work there. The exercises in this chapter use Git repositories and archives created on workstation instead, so they do not depend on a third-party site.
 </HomeLab>
-
-### Using one
-
-A system role is configured entirely through variables. This play makes every host synchronise its clock with one NTP pool:
-
-```yaml
-- name: Time is synchronised
-  hosts: all
-  vars:
-    timesync_ntp_servers:
-      - hostname: 0.rocky.pool.ntp.org
-        pool: true
-        iburst: true
-  roles:
-    - redhat.rhel_system_roles.timesync
-```
-
-The role installs chrony if it is missing, writes `/etc/chrony.conf`, and restarts the service only if the file changed. You describe the result you want; the role works out the steps.
-
-### Reading a role's documentation
-
-Every system role documents its variables, with example playbooks beside them:
-
-```console
-[student@workstation ~]$ ls /usr/share/doc/rhel-system-roles/timesync/
-CHANGELOG.md  example-multiple-ntp-servers-playbook.yml  example-single-pool-playbook.yml  README.html  README.md
-```
-
-Read `README.md` for the variable names, and start from an example playbook. The variable names are the role's interface: `timesync_ntp_servers` is a list of dictionaries, and a plain string there fails.
-
-| Role | Configures |
-| --- | --- |
-| `timesync` | Time synchronisation (chrony) |
-| `selinux` | SELinux mode, booleans, file contexts, ports |
-| `firewall` | firewalld services, ports and zones |
-| `network` | Network interfaces and connections |
-| `storage` | Partitions, LVM, file systems and mounts |
-| `sshd`, `ssh` | The SSH server and client |
-| `postfix` | The mail transfer agent |
-| `kdump`, `logging`, `certificate` | Crash dumps, log forwarding, certificates |
 
 ## Installing roles with ansible-galaxy
 
@@ -85,11 +63,14 @@ Read `README.md` for the variable names, and start from an example playbook. The
 > https://git.example.com/ops/ansible-role-banner.git,v1.2,acme.banner
 ```
 
-`-p roles` installs into the project's own `roles/` directory. Without it, the role goes to the first directory of `roles_path`, `~/.ansible/roles`, where every project of that user can see it.
+`-p roles` installs into the project's own `roles/` directory. Without it, the role goes to the first directory of `roles_path`, by default `~/.ansible/roles`, outside the project. `ansible-navigator` running in an execution environment cannot see that directory, and a colleague who clones the project will not have it.
 
-<Callout type="warning" title="Read a role before you run it">
-A role from the internet runs as root on your hosts. Open its `tasks/main.yml` and `defaults/main.yml` first, and pin the version you reviewed.
-</Callout>
+Set it once in the project's `ansible.cfg`, and both `install` and `list` use it without `-p`:
+
+```ini title="ansible.cfg"
+[defaults]
+roles_path = roles
+```
 
 ## A requirements file
 
@@ -97,11 +78,17 @@ Typing sources on the command line does not scale and is not repeatable. List th
 
 ```yaml title="roles/requirements.yml"
 ---
-# from a Git repository, at a tag
+# from a Git repository over HTTPS, at a tag
 - src: https://git.example.com/ops/ansible-role-banner.git
   scm: git
   version: v1.2
   name: acme.banner
+
+# from a Git repository over SSH, on a branch
+- src: git@git.example.com:ops/bash_env
+  scm: git
+  version: main
+  name: ops.bash_env
 
 # from an archive, by URL or file path
 - src: file:///home/student/project/archives/acme.motd-1.0.tar.gz
@@ -116,7 +103,7 @@ Typing sources on the command line does not scale and is not repeatable. List th
 | --- | --- |
 | `src` | Where the role comes from: a Galaxy name, a Git URL, or an archive URL or path |
 | `scm` | `git` when `src` is a Git repository |
-| `version` | A tag, branch or commit for Git; a release for Galaxy. Pin it |
+| `version` | A tag, branch or commit for Git; a release for Galaxy. Without it you get the latest commit of the default branch, so pin it for anything that matters |
 | `name` | The name the role is installed under, and used by in plays |
 
 Install everything in the file with `-r`:
@@ -129,7 +116,7 @@ Starting galaxy role install process
 - acme.motd was installed successfully
 ```
 
-Commit `requirements.yml`, not the downloaded roles. Anyone who clones the project runs the same command and gets the same versions.
+Commit `requirements.yml`, not the downloaded roles. Anyone who clones the project runs the same command and gets the same versions. Automation controller goes one step further and installs `roles/requirements.yml` automatically before each run.
 
 ## Listing and removing roles
 
@@ -141,7 +128,7 @@ Commit `requirements.yml`, not the downloaded roles. Anyone who clones the proje
 - successfully removed acme.motd
 ```
 
-`list` shows the roles in each directory it searches. A role installed from an archive has no version recorded, hence `(unknown version)`.
+`list` shows the roles in each directory it searches. A role installed from Git shows the branch or tag it came from; one installed from an archive has no version recorded, hence `(unknown version)`. Without `-p roles` (or `roles_path`), `list` does not look in the project at all, and a role you just installed seems to be missing.
 
 <Callout type="exam" title="The pattern to know">
 Write `roles/requirements.yml`, install with `ansible-galaxy role install -r roles/requirements.yml -p roles`, confirm with `ansible-galaxy role list -p roles`, then name the role in a play. Practise it with an archive source, which needs no internet access.
@@ -152,16 +139,16 @@ Write `roles/requirements.yml`, install with `ansible-galaxy role install -r rol
   title="Check your understanding"
   questions={[
     {
-      q: 'What is the fully qualified name of the time synchronisation system role?',
-      options: ['`timesync`', '`redhat.rhel_system_roles.timesync`', '`ansible.builtin.timesync`'],
-      answer: 1,
-      explain: 'It is a role in the redhat.rhel_system_roles collection. The plain-role name rhel-system-roles.timesync also works.',
+      q: 'Which requirements entry installs a role from a Git repository?',
+      options: ['`- src: git@git.example.com:ops/bash_env` with `scm: git`', '`- git: git@git.example.com:ops/bash_env`', '`- name: bash_env` with `type: git`'],
+      answer: 0,
+      explain: 'src says where it comes from, and scm: git says it is a Git repository.',
     },
     {
-      q: 'Where do you find the variables a system role accepts?',
-      options: ['In `/usr/share/doc/rhel-system-roles/ROLE/README.md`', 'In `/etc/ansible/roles.conf`', 'Only on the internet'],
-      answer: 0,
-      explain: 'Each role has a README and example playbooks installed locally.',
+      q: 'You install a role without `-p` and without `roles_path` in ansible.cfg. Where does it go?',
+      options: ['Into the project’s roles directory', 'Into ~/.ansible/roles, outside the project', 'Nowhere: -p is required'],
+      answer: 1,
+      explain: 'It goes to the first directory of the default roles_path, which navigator in an execution environment cannot see.',
     },
     {
       q: 'What does `-p roles` do in `ansible-galaxy role install`?',
