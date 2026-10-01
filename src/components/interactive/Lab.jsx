@@ -4,6 +4,7 @@ import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
 import { exerciseName } from '@/lib/labEnv';
 import { HomeSetup, LabPrep } from './Env';
+import OptionSwitch from './OptionSwitch';
 
 const LabContext = createContext(null);
 const EMPTY = [];
@@ -74,18 +75,16 @@ export function Lab({
           </div>
 
           {challenge && (
-            <div className="lab-mode" role="group" aria-label="Practice mode">
-              {['guided', 'challenge'].map((value) => (
-                <button
-                  key={value}
-                  aria-pressed={mode === value}
-                  className={`btn ${mode === value ? 'is-active' : ''}`}
-                  onClick={() => setMode(value)}
-                >
-                  {value === 'guided' ? 'Guided' : 'Challenge'}
-                </button>
-              ))}
-            </div>
+            <OptionSwitch
+              className="lab-mode"
+              label="Practice mode"
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: 'guided', label: 'Guided' },
+                { value: 'challenge', label: 'Challenge' },
+              ]}
+            />
           )}
           {mode === 'challenge' && (
             <p>Solve the requirements below before opening the walkthrough. Documentation and help are available whenever you need them.</p>

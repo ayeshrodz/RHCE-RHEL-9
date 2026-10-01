@@ -105,7 +105,7 @@ export default function ProgressPage() {
             : 'Try an integrated assessment or revisit a skill below.'}
         </p>
         {next && (
-          <Link className="btn btn-primary" to={next.path}>
+          <Link className="btn" to={next.path}>
             Continue lesson
           </Link>
         )}

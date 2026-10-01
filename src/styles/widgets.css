@@ -664,43 +664,11 @@
 }
 
 /* Practice controls use the same scale as other widgets. */
-.challenge h3 {
-  margin: 0 0 12px;
-  font: 600 17px/1.4 var(--font-sans);
-  letter-spacing: 0;
-}
-.challenge-scope,
+/* Practice inherits the quiz card, choices, feedback and reveal treatments. */
 .challenge-history,
 .quiz-history {
   font-size: 13px;
   color: var(--text-3);
-}
-.challenge fieldset {
-  border: 0;
-  padding: 0;
-  margin: 16px 0;
-}
-.challenge legend {
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-.challenge-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 6px;
-  cursor: pointer;
-}
-.challenge-option:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
-.challenge-option input {
-  margin-top: 4px;
-  flex-shrink: 0;
 }
 .challenge textarea {
   display: block;
@@ -715,53 +683,29 @@
   font: var(--code-size-sm)/1.6 var(--font-mono);
   margin: 8px 0 16px;
 }
-.challenge pre {
-  overflow-x: auto;
-  padding: 12px;
-  background: var(--code-bg);
-  border-radius: 8px;
-  font-size: var(--code-size-sm);
-}
-.challenge-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 16px 0;
-}
 .challenge [role='status']:empty {
   display: none;
-}
-.challenge [role='status'] p {
-  margin: 16px 0;
-  padding: 10px 12px;
-  border-radius: 8px;
-}
-.practice-pass {
-  border-left: 3px solid var(--ok);
-  background: var(--ok-soft);
-}
-.practice-retry {
-  border-left: 3px solid var(--changed);
-  background: var(--changed-soft);
 }
 .challenge-hints {
   margin: 16px 0 !important;
 }
-.challenge-solution {
-  margin-top: 16px;
-}
 .challenge-history {
   margin: 16px 0 0 !important;
 }
-.lab-mode {
-  display: flex;
-  gap: 6px;
+.challenge .reveal {
   margin: 16px 0;
 }
-.lab-mode .is-active {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent-text);
+.challenge .reveal-body {
+  font-size: 14px;
+}
+.challenge .reveal-body > :last-child {
+  margin-bottom: 0;
+}
+.lab-mode {
+  width: fit-content;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 .lab-head > p {
   margin: 0 0 16px;

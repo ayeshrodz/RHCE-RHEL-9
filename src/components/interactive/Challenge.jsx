@@ -2,6 +2,11 @@ import { useId, useState } from 'react';
 import { useStored } from '@/lib/storage';
 import { evaluateChallenge, solutionFor } from '@/lib/challengeEngine';
 import { challenges } from 'virtual:challenges';
+import { ActivityPanel, ActivityFeedback } from './ActivityPanel';
+import AnswerOptions from './AnswerOptions';
+import { Inline } from './inline';
+import { Reveal } from '@/components/mdx/Layout';
+import CodeBlock from '@/components/mdx/CodeBlock';
 
 export function Challenge({ challenge }) {
   const uid = useId();
@@ -20,33 +25,40 @@ export function Challenge({ challenge }) {
       ]);
   };
   return (
-    <section id={`challenge-${challenge.id}`} className="challenge widget" aria-labelledby={`${uid}-title`}>
-      <p className="widget-label">Browser practice · simulation</p>
-      <h3 id={`${uid}-title`}>{challenge.title}</h3>
-      <p>{challenge.prompt}</p>
-      <p className="challenge-scope">This activity checks the stated requirement. It does not run Ansible or change a machine.</p>
-      {challenge.inventory && <pre>{challenge.inventory}</pre>}
+    <ActivityPanel
+      id={`challenge-${challenge.id}`}
+      className="challenge"
+      aria-labelledby={`${uid}-title`}
+      title={challenge.title}
+      titleId={`${uid}-title`}
+      titleAs="h3"
+      meta="Browser practice"
+    >
+      <p className="quiz-q">
+        <span className="quiz-q-text">
+          <Inline text={challenge.prompt} />
+        </span>
+      </p>
+      <p className="widget-sub">Simulation: checks the stated requirement without running Ansible or changing a machine.</p>
+      {challenge.inventory && (
+        <CodeBlock data-title="Inventory" data-lang="ini">
+          <code>{challenge.inventory}</code>
+        </CodeBlock>
+      )}
       {challenge.type === 'choice' ? (
-        <fieldset>
-          <legend>Your answer</legend>
-          {challenge.options.map((o) => (
-            <label key={o} className="challenge-option">
-              <input
-                type="radio"
-                name={uid}
-                checked={input === o}
-                onChange={() => {
-                  setInput(o);
-                  setFeedback(null);
-                }}
-              />{' '}
-              {o}
-            </label>
-          ))}
-        </fieldset>
+        <AnswerOptions
+          options={challenge.options}
+          value={challenge.options.indexOf(input)}
+          onChange={(index) => {
+            setInput(challenge.options[index]);
+            setFeedback(null);
+          }}
+        />
       ) : (
         <>
-          <label htmlFor={`${uid}-input`}>Your {challenge.type === 'yaml' ? 'YAML' : 'answer'}</label>
+          <label className="widget-label" htmlFor={`${uid}-input`}>
+            Your {challenge.type === 'yaml' ? 'YAML' : 'answer'}
+          </label>
           <textarea
             id={`${uid}-input`}
             value={input}
@@ -60,8 +72,8 @@ export function Challenge({ challenge }) {
           />
         </>
       )}
-      <div className="challenge-actions">
-        <button className="btn btn-primary" onClick={check}>
+      <div className="quiz-foot activity-actions">
+        <button className="btn" onClick={check}>
           Check answer
         </button>
         <button className="btn" disabled={hints >= challenge.hints.length} onClick={() => setHints(hints + 1)}>
@@ -81,10 +93,9 @@ export function Challenge({ challenge }) {
       </div>
       <div aria-live="polite" role="status">
         {feedback && (
-          <p className={feedback.passed ? 'practice-pass' : 'practice-retry'}>
-            {feedback.passed ? 'Requirement met. ' : 'Try again. '}
-            {feedback.feedback}
-          </p>
+          <ActivityFeedback correct={feedback.passed} label={feedback.passed ? 'Requirement met.' : 'Try again.'}>
+            <Inline text={feedback.feedback} />
+          </ActivityFeedback>
         )}
       </div>
       {hints > 0 && (
@@ -94,19 +105,18 @@ export function Challenge({ challenge }) {
           ))}
         </ol>
       )}
-      <button className="btn" aria-expanded={showSolution} onClick={() => setShowSolution(!showSolution)}>
-        {showSolution ? 'Hide the explained solution' : 'Show an explained solution'}
-      </button>
-      {showSolution && (
-        <div className="challenge-solution">
-          <pre>{solutionFor(challenge)}</pre>
-          <p>{challenge.explain}</p>
-        </div>
-      )}
+      <Reveal title="Show an explained solution" open={showSolution} onOpenChange={setShowSolution}>
+        <CodeBlock data-lang={challenge.type === 'yaml' ? 'yaml' : 'text'}>
+          <code>{solutionFor(challenge)}</code>
+        </CodeBlock>
+        <p>
+          <Inline text={challenge.explain} />
+        </p>
+      </Reveal>
       <p className="challenge-history">
         {attempts.length} saved attempts · {attempts.filter((a) => a.passed).length} successful. Reading progress is tracked separately.
       </p>
-    </section>
+    </ActivityPanel>
   );
 }
 export default function ChapterPractice({ chapter, challenges: authored = challenges }) {

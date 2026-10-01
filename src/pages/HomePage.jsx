@@ -13,7 +13,12 @@ const features = [
     text: 'Every idea gets a clean diagram. Many are clickable or step through one stage at a time.',
     tone: 'purple',
   },
-  { icon: FlaskConical, title: 'Guided labs', text: 'Hands-on exercises as checklists that remember where you stopped.', tone: 'teal' },
+  {
+    icon: FlaskConical,
+    title: 'Hands-on exercises',
+    text: 'Hands-on exercises as checklists that remember where you stopped.',
+    tone: 'teal',
+  },
   {
     icon: CircleHelp,
     title: 'Knowledge checks',
@@ -35,7 +40,7 @@ const stages = [
   { title: 'Files and structure', chapters: [5, 6], text: 'Templates and file modules; host patterns, imports and includes.' },
   { title: 'Reuse', chapters: [7], text: 'Roles, collections and the system roles.' },
   { title: 'Real work', chapters: [8, 9], text: 'Troubleshooting, then software, users, storage and networking.' },
-  { title: 'Prove it', chapters: [10], text: 'Four review labs and two integrated assessments.' },
+  { title: 'Prove it', chapters: [10], text: 'Four review exercises and two integrated assessments.' },
   { title: 'Project workflow', chapters: [11], text: 'Git, editor containers, explicit runtimes, recovery and validated access.' },
 ];
 

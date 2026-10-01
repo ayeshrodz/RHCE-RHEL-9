@@ -71,6 +71,9 @@ try:
         page.wait_for_function("document.querySelector('.lab-walkthrough').open")
         assert page.locator('#task-56ef7e8d45cf').is_visible()
         page.get_by_role('button', name='Guided', exact=True).click()
+        assert page.locator('.lab-mode').evaluate('(e) => e.classList.contains("option-switch")')
+        assert not page.locator('.lab-mode .btn-primary').count()
+        assert page.locator('h1').inner_text().endswith('Exercise: Archive and restore a release')
         # Dashboard typography and action spacing in both themes and viewports.
         for theme in ['light', 'dark']:
             for width in [390, 1440]:
@@ -78,6 +81,7 @@ try:
                 page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
                 assert page.locator('h1').evaluate('(e) => getComputedStyle(e).fontWeight') == '500'
                 assert page.locator('.dashboard-card h2').first.evaluate('(e) => getComputedStyle(e).marginTop') == '0px'
+                assert not page.locator('.learning-dashboard .btn-primary').count()
                 assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == 34
                 assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
@@ -112,8 +116,23 @@ try:
         go(page, '/progress'); assert page.get_by_role('link', name='Which term best describes the Ansible architecture?').count()
         # Browser activity feedback and independence from reading completion.
         go(page, '/ch01/quiz'); activity = page.locator('.challenge').first
-        activity.get_by_label('ok', exact=True).check(); activity.get_by_role('button', name='Check answer').click()
+        activity.get_by_role('button', name='ok', exact=True).click(); activity.get_by_role('button', name='Check answer').click()
         assert 'Requirement met' in activity.inner_text()
+        # Practice reuses quiz chrome, answer rows, feedback and native reveals.
+        quiz = page.locator('.quiz').first
+        assert activity.evaluate('(e) => e.classList.contains("activity-panel") && e.classList.contains("quiz")')
+        for property in ['padding', 'borderRadius', 'backgroundColor']:
+            assert activity.evaluate('(e, prop) => getComputedStyle(e)[prop]', property) == quiz.evaluate('(e, prop) => getComputedStyle(e)[prop]', property)
+        assert not activity.locator('.btn-primary').count()
+        assert activity.locator('.quiz-title').evaluate('(e) => getComputedStyle(e).fontSize') == quiz.locator('.quiz-title').evaluate('(e) => getComputedStyle(e).fontSize')
+        assert activity.locator('.quiz-explain.is-correct').count() == 1
+        activity.locator('.reveal > summary').click()
+        assert activity.locator('.reveal').get_attribute('open') is not None
+        activity.get_by_role('button', name='Check answer').click()
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:challenge:desired-state')).at(-1).solutionViewed")
+        activity.get_by_role('button', name='Reset activity').click()
+        assert activity.locator('.reveal').get_attribute('open') is None
+        assert not activity.locator('.quiz-option[aria-pressed=true]').count()
         assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
         # Optional timer survives reload.
         go(page, '/ch10/assessment-release'); page.get_by_role('button', name='Start 90-minute timer').click()

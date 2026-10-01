@@ -173,6 +173,12 @@ Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/
 
 All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turned off so `!=` and `->` show as typed). Sizes come from `--code-size` (blocks and terminals), `--code-size-sm` (compact widgets) and `--code-inline` (inline code in text). Use these tokens rather than hard-coded values.
 
+## Visual consistency and exercise titles
+
+Reuse the existing component treatments and theme tokens. Browser practice and quizzes share `ActivityPanel`, `AnswerOptions`, and `ActivityFeedback`. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
+
+Use `Exercise: Topic` for practical exercise titles, whether they offer Guided or Challenge mode. Use `Assessment: Topic` for integrated assessments. Keep sentence case and a colon separator. Setup pages describe their setup step directly. Display titles can change without renaming published filenames, activity IDs, or objective IDs.
+
 ## 7. Stable activities and skills
 
 Give each question and task a unique, descriptive ID, such as `ch02-inventory-child-groups` or `ch02-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.

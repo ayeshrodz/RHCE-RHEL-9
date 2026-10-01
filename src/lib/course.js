@@ -9,7 +9,7 @@ export const objectives = manifest.objectives;
 
 export const kindLabel = {
   lesson: 'Lesson',
-  lab: 'Lab',
+  lab: 'Exercise',
   quiz: 'Quiz',
   summary: 'Summary',
 };

@@ -4,22 +4,30 @@ import { Children, isValidElement, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, House, School, WandSparkles } from 'lucide-react';
 import { ENVS, useLabEnv } from '@/lib/labEnv';
+import OptionSwitch from './OptionSwitch';
 
 const icons = { classroom: School, home: House };
 
 export function EnvSwitch({ label = 'Show commands for' }) {
   const [env, setEnv] = useLabEnv();
   return (
-    <div className="env-switch" role="group" aria-label={label}>
-      {ENVS.map(({ id, label: text }) => {
+    <OptionSwitch
+      className="env-switch"
+      label={label}
+      value={env}
+      onChange={setEnv}
+      options={ENVS.map(({ id, label: text }) => {
         const Icon = icons[id];
-        return (
-          <button key={id} aria-pressed={env === id} className={env === id ? 'is-active' : ''} onClick={() => setEnv(id)}>
-            <Icon size={13} /> {text}
-          </button>
-        );
+        return {
+          value: id,
+          label: (
+            <>
+              <Icon size={13} /> {text}
+            </>
+          ),
+        };
       })}
-    </div>
+    />
   );
 }
 

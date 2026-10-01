@@ -68,3 +68,12 @@ The feature checks above did not establish the editorial and visual quality of t
 - A fresh VS Code desktop/container walkthrough remains pending. Earlier archive/security VM results remain applicable to the unchanged solution behavior; this editorial review does not establish complete VM coverage of all 42 exercises. The existing pending lab validation remains in effect.
 
 Content CI now requires a purpose and multiple requirements in each challenge brief and rejects empty authored reveals or browser hints. Build, formatting, content validation, 39 JavaScript tests, six Python test cases, and the expanded production browser checks pass.
+
+## Shared activity styling and exercise naming
+
+- Knowledge checks and all 20 browser activities share the same panel header, answer rows, feedback treatment, theme tokens, and native solution reveal. New practice actions and the next-lesson action use neutral standard buttons; environment and exercise modes share the muted switch.
+- Forty practical pages use `Exercise: Topic`; the two integrated assessments use `Assessment: Topic`. The homepage and exercise-type labels follow that wording. Published filenames, heading anchors, activity IDs, grading identifiers, and progress keys remain unchanged.
+- Light desktop screenshots of practice, expanded solutions, exercise modes, and the dashboard were visually reviewed. Phone editor screenshots were reviewed in light and dark themes. Production browser checks compare practice and quiz panel styles and title sizes, reject primary buttons in the new controls, and verify solution disclosure/reset behavior and saved solution-use evidence.
+- Build, formatting, content validation, 39 JavaScript tests, six Python cases, and the production browser suite pass. All 125 routes and both modes of all 42 graded exercises remain covered. The existing pending VM and desktop workflow validation still applies; this styling and naming review does not change lab behavior.
+
+Contributor documentation records the shared rendering components and title conventions. Content validation enforces colon-separated exercise and assessment titles while MDX remains the source of learner-facing wording.

@@ -96,10 +96,19 @@ export function Tab({ children }) {
   return children;
 }
 
-export function Reveal({ title = 'Show answer', children }) {
-  const [open, setOpen] = useState(false);
+export function Reveal({ title = 'Show answer', children, open: controlledOpen, onOpenChange }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
   return (
-    <details className={`reveal ${open ? 'is-open' : ''}`} open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
+    <details
+      className={`reveal ${open ? 'is-open' : ''}`}
+      open={open}
+      onToggle={(event) => {
+        const next = event.currentTarget.open;
+        setInternalOpen(next);
+        onOpenChange?.(next);
+      }}
+    >
       <summary className="reveal-toggle">
         <ChevronDown size={16} />
         {open ? title.replace(/^Show/, 'Hide') : title}

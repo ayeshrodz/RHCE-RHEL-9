@@ -12,6 +12,8 @@ Published URLs use hash routing, for example `#/ch02/inventory`. A second hash i
 
 ## Learning activities
 
+`ActivityPanel`, `AnswerOptions`, and `ActivityFeedback` provide shared quiz/practice chrome. `OptionSwitch` renders both environment and exercise modes with the same muted treatment. `Reveal` supports optional controlled state for solution-view tracking; `CodeBlock` supplies the same code presentation throughout. Activity wording and grading definitions remain in MDX, separate from these rendering components.
+
 - `Quiz.jsx` stores attempts by question ID. Question revisions come from the question, options, and answer. Corrections request another attempt and retain history.
 - `Lab.jsx` stores checked task IDs separately from reading completion. Guided mode shows the procedure; Challenge mode renders explicit MDX `<LabChallenge>` requirements and keeps the full guided walkthrough closed until requested. `<LabNotes>` supplies MDX prerequisites, verification, and independent variations. Setup labs without challenge briefs expose only the walkthrough.
 - Chapter quiz MDX exports define twenty browser challenges; `scripts/read-practice.mjs` reads their JSON-compatible data and `plugins/practice-manifest.js` exposes the shared dashboard registry as `virtual:challenges`. `challengeEngine.js` checks a documented subset of YAML, inventory, template, and diagnostic behavior. These are simulations, with hints and explained solutions.

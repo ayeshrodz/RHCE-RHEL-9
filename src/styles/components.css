@@ -1201,14 +1201,14 @@
   border-radius: var(--radius);
   background: var(--bg);
 }
-.env-switch {
+.option-switch {
   display: flex;
   gap: 2px;
   padding: 4px;
   border-bottom: 1px solid var(--border);
   font-family: var(--font-sans);
 }
-.env-switch button {
+.option-switch button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1221,10 +1221,10 @@
   font-weight: 500;
   cursor: pointer;
 }
-.env-switch button:hover {
+.option-switch button:hover {
   color: var(--text);
 }
-.env-switch button.is-active {
+.option-switch button.is-active {
   background: var(--bg-sunken);
   color: var(--text);
 }
@@ -1370,4 +1370,25 @@ summary.reveal-toggle {
 }
 summary.reveal-toggle::-webkit-details-marker {
   display: none;
+}
+
+/* Shared knowledge-check and practice chrome; neutral selection, pale feedback. */
+.activity-panel .quiz-title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.quiz-option.is-selected {
+  border-color: var(--border-strong);
+  background: var(--bg-sunken);
+}
+.quiz-option.is-selected .quiz-letter {
+  background: var(--bg-elev);
+  color: var(--text);
+}
+.activity-actions {
+  justify-content: flex-start;
+  gap: 8px;
 }
