@@ -28,6 +28,7 @@ export function Lab({
   children,
 }) {
   const pageKey = usePageKey();
+  const [mode, setMode] = useStored('labMode', 'guided');
   const [done, setDone] = useStored(`lab:${pageKey}:${id}`, EMPTY);
 
   let n = 0;
@@ -46,7 +47,7 @@ export function Lab({
   const toggle = (i) => setDone((list) => (list.includes(i) ? list.filter((x) => x !== i) : [...list, i]));
 
   return (
-    <LabContext.Provider value={{ done, toggle }}>
+    <LabContext.Provider value={{ done, toggle, mode }}>
       <section className="lab">
         <header className="lab-head">
           <div className="lab-title-row">
@@ -62,6 +63,23 @@ export function Lab({
             <span style={{ width: `${pct}%` }} />
           </div>
 
+          <div className="lab-mode segmented" role="group" aria-label="Practice mode">
+            {['guided', 'challenge'].map((value) => (
+              <button
+                key={value}
+                aria-pressed={mode === value}
+                className={mode === value ? 'is-active' : ''}
+                onClick={() => setMode(value)}
+              >
+                {value === 'guided' ? 'Guided' : 'Challenge'}
+              </button>
+            ))}
+          </div>
+          {mode === 'challenge' && (
+            <p>
+              Work from the task titles and outcomes. Open the steps whenever you need help; marking a task complete is your own checklist.
+            </p>
+          )}
           <div className="lab-meta">
             {outcomes.length > 0 && (
               <div>
@@ -111,7 +129,7 @@ export function Lab({
 }
 
 export function Task({ n, title, children }) {
-  const { done, toggle } = useContext(LabContext);
+  const { done, toggle, mode } = useContext(LabContext);
   const checked = done.includes(n);
   return (
     <li className={`lab-task ${checked ? 'is-done' : ''}`}>
@@ -127,7 +145,16 @@ export function Task({ n, title, children }) {
         </button>
         <p className="lab-task-title">{title}</p>
       </div>
-      <div className="lab-task-body">{children}</div>
+      <div className="lab-task-body">
+        {mode === 'challenge' ? (
+          <details>
+            <summary>Open task requirements, hints, and steps</summary>
+            {children}
+          </details>
+        ) : (
+          children
+        )}
+      </div>
     </li>
   );
 }

@@ -52,7 +52,9 @@
     "labs": [
       "ch01/lab-installing-ansible"
     ],
-    "challenges": []
+    "challenges": [
+      "desired-state"
+    ]
   },
   {
     "id": "ch01.architecture",
@@ -63,7 +65,9 @@
     "labs": [
       "ch01/lab-installing-ansible"
     ],
-    "challenges": []
+    "challenges": [
+      "control-location"
+    ]
   },
   {
     "id": "ch01.distributions",
@@ -96,7 +100,9 @@
     "labs": [
       "ch02/lab-inventory"
     ],
-    "challenges": []
+    "challenges": [
+      "inventory-selection"
+    ]
   },
   {
     "id": "ch02.configuration",
@@ -118,7 +124,9 @@
     "labs": [
       "ch02/lab-playbooks"
     ],
-    "challenges": []
+    "challenges": [
+      "repair-play"
+    ]
   },
   {
     "id": "ch02.modules",
@@ -140,7 +148,9 @@
     "labs": [
       "ch03/lab-variables"
     ],
-    "challenges": []
+    "challenges": [
+      "variable-winner"
+    ]
   },
   {
     "id": "ch03.vault",
@@ -151,7 +161,9 @@
     "labs": [
       "ch03/lab-vault"
     ],
-    "challenges": []
+    "challenges": [
+      "vault-runtime"
+    ]
   },
   {
     "id": "ch03.facts",
@@ -173,7 +185,9 @@
     "labs": [
       "ch04/lab-loops-conditionals"
     ],
-    "challenges": []
+    "challenges": [
+      "conditional-task"
+    ]
   },
   {
     "id": "ch04.handlers",
@@ -184,7 +198,9 @@
     "labs": [
       "ch04/lab-handlers"
     ],
-    "challenges": []
+    "challenges": [
+      "handler-count"
+    ]
   },
   {
     "id": "ch04.failure",
@@ -206,7 +222,9 @@
     "labs": [
       "ch05/lab-file-modules"
     ],
-    "challenges": []
+    "challenges": [
+      "file-permissions"
+    ]
   },
   {
     "id": "ch05.templates",
@@ -217,7 +235,9 @@
     "labs": [
       "ch05/lab-templates"
     ],
-    "challenges": []
+    "challenges": [
+      "render-banner"
+    ]
   },
   {
     "id": "ch06.patterns",
@@ -228,7 +248,9 @@
     "labs": [
       "ch06/lab-host-patterns"
     ],
-    "challenges": []
+    "challenges": [
+      "exclude-staging"
+    ]
   },
   {
     "id": "ch06.reuse",
@@ -239,7 +261,9 @@
     "labs": [
       "ch06/lab-reuse"
     ],
-    "challenges": []
+    "challenges": [
+      "reuse-condition"
+    ]
   },
   {
     "id": "ch07.role-structure",
@@ -250,7 +274,9 @@
     "labs": [
       "ch07/lab-role-create"
     ],
-    "challenges": []
+    "challenges": [
+      "role-layout"
+    ]
   },
   {
     "id": "ch07.role-create",
@@ -283,7 +309,9 @@
     "labs": [
       "ch07/lab-role-collections"
     ],
-    "challenges": []
+    "challenges": [
+      "collection-location"
+    ]
   },
   {
     "id": "ch07.system-roles",
@@ -305,7 +333,9 @@
     "labs": [
       "ch08/lab-troubleshoot-playbook"
     ],
-    "challenges": []
+    "challenges": [
+      "verify-success"
+    ]
   },
   {
     "id": "ch08.host-errors",
@@ -316,7 +346,9 @@
     "labs": [
       "ch08/lab-troubleshoot-host"
     ],
-    "challenges": []
+    "challenges": [
+      "diagnose-unreachable"
+    ]
   },
   {
     "id": "ch09.software",
@@ -338,7 +370,9 @@
     "labs": [
       "ch09/lab-users"
     ],
-    "challenges": []
+    "challenges": [
+      "validate-sudo"
+    ]
   },
   {
     "id": "ch09.scheduling",
@@ -360,7 +394,9 @@
     "labs": [
       "ch09/lab-storage"
     ],
-    "challenges": []
+    "challenges": [
+      "persistent-mount"
+    ]
   },
   {
     "id": "ch09.network",
@@ -382,7 +418,9 @@
     "labs": [
       "ch10/lab-review-deploy"
     ],
-    "challenges": []
+    "challenges": [
+      "review-sequence"
+    ]
   },
   {
     "id": "ch10.deployment",
@@ -404,7 +442,9 @@
     "labs": [
       "ch10/lab-review-playbooks"
     ],
-    "challenges": []
+    "challenges": [
+      "review-recovery"
+    ]
   },
   {
     "id": "ch10.administration",

@@ -10,7 +10,7 @@ const APP_ID = 'playbook-path';
 const OLD_APP_IDS = ['rhce-field-guide'];
 const EXPORT_VERSION = 1;
 // Display preferences: kept on reset and left out of progress exports.
-const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv']);
+const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv', 'labMode']);
 const listeners = new Map();
 const cache = new Map();
 
@@ -133,7 +133,19 @@ export function validateProgress(payload) {
     else if (/^lab:ch\d+\/[a-z0-9-]+:[a-z0-9-]+$/.test(key)) valid = indices(value, 1);
     else if (/^quiz:ch\d+\/[a-z0-9-]+:[a-z0-9-]+$/.test(key)) {
       valid = record(value) && Object.entries(value).every(([k, v]) => /^\d+$/.test(k) && Number.isSafeInteger(v) && v >= 0);
-    }
+    } else if (/^challenge:[a-z0-9-]+$/.test(key))
+      valid =
+        Array.isArray(value) &&
+        value.length <= 50 &&
+        value.every(
+          (v) =>
+            record(v) &&
+            typeof v.at === 'string' &&
+            typeof v.passed === 'boolean' &&
+            Number.isInteger(v.hints) &&
+            v.hints >= 0 &&
+            typeof v.solutionViewed === 'boolean',
+        );
     if (!valid) throw new Error(`Invalid progress entry: ${key}`);
     data[key] = value;
   }

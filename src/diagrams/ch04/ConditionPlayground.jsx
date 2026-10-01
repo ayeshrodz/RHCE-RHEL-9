@@ -44,7 +44,7 @@ const PRESETS = [
     vars: 'run_my_task: "false"   # a string!',
     test: () => true,
     trap: true,
-    note: 'Trap: the value is the string "false", and any non-empty string counts as true in Ansible Core 2.12 and later, so the task RUNS.',
+    note: 'Trap: the value is the string "false", and any non-empty string counts as true on this course’s core 2.14 home lab, so the task RUNS. Core 2.19 requires a boolean condition instead.',
   },
   {
     expr: 'run_my_task | bool',
