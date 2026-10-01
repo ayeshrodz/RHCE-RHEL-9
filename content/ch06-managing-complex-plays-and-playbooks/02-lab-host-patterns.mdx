@@ -1,202 +1,323 @@
 ---
 title: "Guided exercise: Selecting hosts with host patterns"
 kind: lab
-minutes: 15
+minutes: 20
 ---
 
 <Lead>
-You will explore one inventory with a series of patterns, predicting each result before you check it, then use a pattern in a play and narrow a run with `--limit`. Nothing in this exercise changes the managed hosts.
+You will point one small play at two example inventories and change only its `hosts:` line, fourteen times, to see exactly what each kind of pattern selects. Predict each result before you run it. Nothing in this exercise connects to a managed host.
 </Lead>
 
-The project `~/pattern-hosts` has an `ansible.cfg`, a small playbook `who.yml`, and this inventory:
-
-```ini title="inventory"
-[web]
-servera.lab.example.com
-serverb.lab.example.com
-
-[db]
-serverc.lab.example.com
-serverd.lab.example.com
-
-[staging]
-servera.lab.example.com
-serverc.lab.example.com
-
-[production]
-serverb.lab.example.com
-serverd.lab.example.com
-
-[site:children]
-web
-db
-```
-
-Each host is in one *role* group (`web` or `db`) and one *environment* group (`staging` or `production`).
+The project `~/projects-host` has an `ansible.cfg`, two inventories and a playbook. Most hosts in `inventory1` do not exist. That does not matter: the play does not gather facts, and its only task, `debug`, runs on the control node, so Ansible never tries to connect. It just shows which hosts the pattern matched.
 
 <Lab
   id="patterns"
   title="Selecting hosts with host patterns"
-  classroom="lab start pattern-hosts"
-  own
+  classroom="lab start projects-host"
   hosts={['workstation']}
-  outcomes={['Predict and verify which hosts a pattern selects.', 'Use patterns in a play and with --limit.']}
+  outcomes={['Use names, groups, wildcards, lists, exclusions and intersections to select hosts from an inventory.']}
 >
-  <Task title="List a group and a list of groups">
-    Move into the project and ask Ansible which hosts two simple patterns select.
+  <Task title="Look at the project">
 
 ```console
-[student@workstation ~]$ cd ~/pattern-hosts
-[student@workstation pattern-hosts]$ ansible web --list-hosts
-  hosts (2):
-    servera.lab.example.com
-    serverb.lab.example.com
-[student@workstation pattern-hosts]$ ansible web,db --list-hosts
-  hosts (4):
-    servera.lab.example.com
-    serverb.lab.example.com
-    serverc.lab.example.com
-    serverd.lab.example.com
+[student@workstation ~]$ cd ~/projects-host
+[student@workstation projects-host]$ ls
+ansible.cfg  inventory1  inventory2  playbook.yml
+```
+
+    Read `inventory1`. It has four hosts outside any group, groups by function (`web`, `db`, `lb`), by city (`boston`, `london`) and by environment (`dev`, `stage`, `prod`, `new`), and three layers of parent groups. Some hosts are in `lab.example.com`, some directly in `example.com`, and `new` lists three IP addresses.
+
+```ini title="inventory1 (the groups)"
+[web]
+jupiter.lab.example.com
+saturn.example.com
+
+[db]
+db1.example.com
+db2.example.com
+db3.example.com
+
+[lb]
+lb1.lab.example.com
+lb2.lab.example.com
+
+[boston]
+db1.example.com
+jupiter.lab.example.com
+lb2.lab.example.com
+
+[london]
+db2.example.com
+db3.example.com
+file1.lab.example.com
+lb1.lab.example.com
+
+[dev]
+web1.lab.example.com
+db3.example.com
+
+[stage]
+file2.example.com
+db2.example.com
+
+[prod]
+lb2.lab.example.com
+db1.example.com
+jupiter.lab.example.com
+
+[function:children]
+web
+db
+lb
+city
+
+[city:children]
+boston
+london
+environments
+
+[environments:children]
+dev
+stage
+prod
+new
+
+[new]
+172.25.252.23
+172.25.252.44
+172.25.252.32
+```
+
+    `inventory2` is much smaller: `workstation.lab.example.com` outside any group, one server in each of `london`, `berlin`, `tokyo` and `atlanta`, and a parent group `europe` made of `london` and `berlin`.
+
+    The playbook prints the name of each host it matches:
+
+```yaml title="playbook.yml"
+---
+- name: Resolve host patterns
+  hosts: db1.example.com
+  gather_facts: false
+  tasks:
+    - name: Display managed hosts matching the host pattern
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}"
 ```
   </Task>
 
-  <Task title="Exclude and intersect">
-    Before running each command, decide from the inventory which hosts you expect.
+  <Task title="One host by name">
+    Run the playbook against `inventory1` as it is:
 
 ```console
-[student@workstation pattern-hosts]$ ansible 'web,!staging' --list-hosts
-  hosts (1):
-    serverb.lab.example.com
-[student@workstation pattern-hosts]$ ansible 'web,&production' --list-hosts
-  hosts (1):
-    serverb.lab.example.com
-```
+[student@workstation projects-host]$ ansible-navigator run \
+> -m stdout playbook.yml -i inventory1
 
-    Two different patterns, one answer: serverb is the only web server that is not in staging, and the only one in production.
-  </Task>
+PLAY [Resolve host patterns] ***************************************************
 
-  <Task title="Use wildcards and a regular expression">
-
-```console
-[student@workstation pattern-hosts]$ ansible 'prod*' --list-hosts
-  hosts (2):
-    serverb.lab.example.com
-    serverd.lab.example.com
-[student@workstation pattern-hosts]$ ansible '~server[ab]' --list-hosts
-  hosts (2):
-    servera.lab.example.com
-    serverb.lab.example.com
-```
-
-    `prod*` matched no host name. It matched the **group** `production` and selected its members.
-  </Task>
-
-  <Task title="Select by position">
-
-```console
-[student@workstation pattern-hosts]$ ansible 'db[0]' --list-hosts
-  hosts (1):
-    serverc.lab.example.com
-[student@workstation pattern-hosts]$ ansible 'site[1:2]' --list-hosts
-  hosts (2):
-    serverb.lab.example.com
-    serverc.lab.example.com
-```
-
-    `site` contains `web` then `db`, so its hosts are in the order a, b, c, d; positions 1 to 2 are serverb and serverc.
-  </Task>
-
-  <Task title="Make a typo on purpose">
-
-```console
-[student@workstation pattern-hosts]$ ansible 'web,nosuch' --list-hosts
-[WARNING]: Could not match supplied host pattern, ignoring: nosuch
-  hosts (2):
-    servera.lab.example.com
-    serverb.lab.example.com
-```
-
-    A warning, not an error. The rest of the pattern still applies.
-  </Task>
-
-  <Task title="Narrow a play with --limit">
-    `who.yml` has one play for `all` hosts that prints each host's groups. Run it for the web servers that are not in staging:
-
-```console
-[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --limit 'web,!staging'
-
-PLAY [Show which hosts a pattern selects] **************************************
-
-TASK [Say hello from each selected host] ***************************************
-ok: [serverb.lab.example.com] => {
-    "msg": "serverb.lab.example.com is in: production, site, web"
+TASK [Display managed hosts matching the host pattern] *************************
+ok: [db1.example.com] => {
+    "msg": "db1.example.com"
 }
 
 PLAY RECAP *********************************************************************
-serverb.lab.example.com    : ok=1    changed=0    unreachable=0    failed=0  ...
+db1.example.com            : ok=1    changed=0    unreachable=0    failed=0  ...
+```
+
+    For the rest of the exercise, only change the `hosts:` line and run the same command. The outputs below show just the `ok:` line of each matched host.
+  </Task>
+
+  <Task title="One host by IP address">
+    Set `hosts: 172.25.252.44`.
+
+```text
+ok: [172.25.252.44]
+```
+
+    This works only because the inventory lists that address. An address that merely resolves to an inventory host, or a DNS name that the inventory does not contain, matches nothing.
+  </Task>
+
+  <Task title="Every host">
+    Set `hosts: all`. All seventeen hosts are listed: the four without a group, the eleven named hosts in groups, and the three addresses.
+  </Task>
+
+  <Task title="A domain, with a wildcard">
+    Set `hosts: '*example.com'`, with the quotes.
+
+```text
+ok: [srv1.example.com]
+ok: [srv2.example.com]
+ok: [s1.lab.example.com]
+ok: [s2.lab.example.com]
+ok: [jupiter.lab.example.com]
+ok: [saturn.example.com]
+ok: [db1.example.com]
+ok: [db2.example.com]
+ok: [db3.example.com]
+ok: [lb1.lab.example.com]
+ok: [lb2.lab.example.com]
+ok: [file1.lab.example.com]
+ok: [web1.lab.example.com]
+ok: [file2.example.com]
+```
+
+    Fourteen hosts: every name that ends in `example.com`, including those in `lab.example.com`. Only the three IP addresses are left out.
+
+    <Callout type="warning" title="Quote a pattern that starts with *">
+    Without the quotes, YAML reads `*example.com` as a reference to an anchor, and the playbook does not even load: `ERROR! We were unable to read either as JSON nor YAML`.
+    </Callout>
+  </Task>
+
+  <Task title="Leave out a subdomain">
+    Keep the hosts in `example.com` but drop everything in `lab.example.com`:
+
+```yaml
+  hosts: '*.example.com, !*.lab.example.com'
+```
+
+```text
+ok: [srv1.example.com]
+ok: [srv2.example.com]
+ok: [saturn.example.com]
+ok: [db1.example.com]
+ok: [db2.example.com]
+ok: [db3.example.com]
+ok: [file2.example.com]
 ```
   </Task>
 
-  <Task title="Put a pattern in the play">
-    Edit `who.yml` so the play itself targets the staging database servers. The value starts with a letter, but it contains `&`, so quote it anyway.
+  <Task title="A list of hosts">
+    Without using any group, select exactly `lb1.lab.example.com`, `s1.lab.example.com` and `db1.example.com`.
 
-```yaml title="who.yml"
----
-- name: Show which hosts a pattern selects
-  hosts: 'staging,&db'
-  gather_facts: false
-  tasks:
-    - name: Say hello from each selected host
-      ansible.builtin.debug:
-        msg: "{{ inventory_hostname }} is in: {{ group_names | join(', ') }}"
+    <Reveal title="Show the pattern">
+
+```yaml
+  hosts: lb1.lab.example.com,s1.lab.example.com,db1.example.com
 ```
 
-    Check what the play would run on, then run it:
-
-```console
-[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --list-hosts
-
-playbook: /home/student/pattern-hosts/who.yml
-
-  play #1 (staging,&db): Show which hosts a pattern selects	TAGS: []
-    pattern: ['staging,&db']
-    hosts (1):
-      serverc.lab.example.com
-[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml
-...output omitted...
-ok: [serverc.lab.example.com] => {
-    "msg": "serverc.lab.example.com is in: db, site, staging"
-}
+```text
+ok: [lb1.lab.example.com]
+ok: [s1.lab.example.com]
+ok: [db1.example.com]
 ```
+    </Reveal>
   </Task>
 
-  <Task title="Limit to hosts the play does not include">
-    The play now targets serverc only. Limit the run to `web`:
+  <Task title="Addresses by prefix">
+    Select every host whose address starts with `172.25.`
+
+    <Reveal title="Show the pattern">
+
+```yaml
+  hosts: '172.25.*'
+```
+
+```text
+ok: [172.25.252.23]
+ok: [172.25.252.44]
+ok: [172.25.252.32]
+```
+    </Reveal>
+  </Task>
+
+  <Task title="A wildcard that matches a group">
+    Set `hosts: 's*'` and predict the result before you run it.
+
+```text
+ok: [file2.example.com]
+ok: [db2.example.com]
+ok: [srv1.example.com]
+ok: [srv2.example.com]
+ok: [s1.lab.example.com]
+ok: [s2.lab.example.com]
+ok: [saturn.example.com]
+```
+
+    `file2` and `db2` do not start with `s`. They are here because they are in the group `stage`, which does. A wildcard is matched against host names **and** group names, and it cannot tell them apart.
+  </Task>
+
+  <Task title="Mix groups and wildcards">
+    In one pattern, select the hosts in `prod`, every address that starts with `172`, and every host with `lab` in its name.
+
+    <Reveal title="Show the pattern">
+
+```yaml
+  hosts: 'prod,172*,*lab*'
+```
+
+```text
+ok: [lb2.lab.example.com]
+ok: [db1.example.com]
+ok: [jupiter.lab.example.com]
+ok: [172.25.252.23]
+ok: [172.25.252.44]
+ok: [172.25.252.32]
+ok: [s1.lab.example.com]
+ok: [s2.lab.example.com]
+ok: [lb1.lab.example.com]
+ok: [file1.lab.example.com]
+ok: [web1.lab.example.com]
+```
+
+    Each host appears once, even when several terms match it.
+    </Reveal>
+  </Task>
+
+  <Task title="Hosts in two groups at once">
+    Select the hosts that are in both `db` and `london`.
+
+    <Reveal title="Show the pattern">
+
+```yaml
+  hosts: db,&london
+```
+
+```text
+ok: [db2.example.com]
+ok: [db3.example.com]
+```
+
+    `db1` is in `db` but in `boston`, so the intersection drops it.
+    </Reveal>
+  </Task>
+
+  <Task title="Groups and nested groups in inventory2">
+    Switch to the second inventory and try three patterns, running with `-i inventory2`:
 
 ```console
-[student@workstation pattern-hosts]$ ansible-navigator run -m stdout who.yml --limit web
+[student@workstation projects-host]$ ansible-navigator run \
+> -m stdout playbook.yml -i inventory2
+```
 
-PLAY [Show which hosts a pattern selects] **************************************
+    | `hosts:` | Matches |
+    | --- | --- |
+    | `london` | servera.lab.example.com |
+    | `europe` | servera.lab.example.com, serverb.lab.example.com |
+    | `ungrouped` | workstation.lab.example.com |
+
+    `europe` has no hosts of its own; it contains the hosts of its child groups. `ungrouped` is a built-in group of the hosts that are in no other group.
+  </Task>
+
+  <Task title="A group that does not exist">
+    Set `hosts: australia` and run against `inventory2`:
+
+```console
+[student@workstation projects-host]$ ansible-navigator run \
+> -m stdout playbook.yml -i inventory2
+[WARNING]: Could not match supplied host pattern, ignoring: australia
+
+PLAY [Resolve host patterns] ***************************************************
 skipping: no hosts matched
 
 PLAY RECAP *********************************************************************
 ```
 
-    `--limit` can only narrow a play. It cannot make it run on hosts its own pattern left out.
+    Not an error: a warning, and a play that does nothing. A misspelled group name behaves exactly like this, which is why the warning is worth reading.
   </Task>
 
   <Task title="Finish">
-    <Env>
-      <Classroom>
-        Nothing to clean up: this exercise only read the inventory.
-      </Classroom>
-      <HomeLab>
-        Run `lab finish pattern-hosts` on workstation to put the project away in `~/lab-archive/`. Nothing to reset: this exercise changed nothing on the servers.
-      </HomeLab>
-    </Env>
+    <Finish name="projects-host" />
   </Task>
 </Lab>
 
 ## Try it again, differently
 
-Without running anything first, write down the hosts for each of these, then check with `--list-hosts`: `'all,!site[0]'`, `'staging,production,&db'`, `'*a.lab.example.com,*d.lab.example.com'`, `'~server[a-c]\.,!web'`.
+Without running anything first, write down the hosts each pattern selects from `inventory1`, then check with `ansible 'PATTERN' -i inventory1 --list-hosts`: `'city,!london'`, `'environments,&*.lab.example.com'`, `'d*'`, `'all,!function'`.

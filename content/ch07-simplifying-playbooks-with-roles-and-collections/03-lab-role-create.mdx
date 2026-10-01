@@ -1,65 +1,86 @@
 ---
-title: "Guided exercise: Creating a role"
+title: "Guided exercise: Creating roles"
 kind: lab
 minutes: 25
 ---
 
 <Lead>
-You will build a role from an empty skeleton: tasks, defaults, a handler and two templates. Then you will use it in a play, override one of its settings, and watch the handler run only when the configuration really changes.
+You will turn the setup of an Apache virtual host into a role, `myvhost`: a skeleton from `ansible-galaxy`, tasks, a handler and a template. Then you will use it from a play that also has tasks before and after the role, and check the result with three small verification playbooks.
 </Lead>
 
-The project `~/role-create` has an `ansible.cfg` and an `inventory` with a `web` group containing `servera` and `serverb`. You write everything else.
+The project `~/role-create` has an `ansible.cfg`, an `inventory` with `servera.lab.example.com` in the `webservers` group, a template `vhost.conf.j2`, and three playbooks named `verify-*.yml`.
 
 <Lab
-  id="role"
-  title="Creating a role"
+  id="role-create"
+  title="Creating roles"
   classroom="lab start role-create"
-  own
-  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
-  outcomes={['Create a role with ansible-galaxy role init and fill in its parts.', 'Use the role in a play and override its defaults.']}
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Create a role that uses variables and a handler, and use it in a play together with pre_tasks and post_tasks.']}
 >
-  <Task title="Create the skeleton">
-    Create a role called `web_site` in a `roles` directory, then remove the directories this role will not use.
+  <Task title="Create the role skeleton">
 
 ```console
 [student@workstation ~]$ cd ~/role-create
-[student@workstation role-create]$ ansible-galaxy role init roles/web_site
-- Role roles/web_site was created successfully
-[student@workstation role-create]$ rm -rf roles/web_site/{tests,files,vars}
-[student@workstation role-create]$ ls roles/web_site
-defaults  handlers  meta  README.md  tasks  templates
+[student@workstation role-create]$ mkdir -v roles
+mkdir: created directory 'roles'
+[student@workstation role-create]$ cd roles
+[student@workstation roles]$ ansible-galaxy init myvhost
+- Role myvhost was created successfully
 ```
+
+    This role needs no defaults, internal variables or tests. Remove those directories, then go back to the project:
+
+```console
+[student@workstation roles]$ rm -rvf myvhost/{defaults,vars,tests}
+removed 'myvhost/defaults/main.yml'
+removed directory 'myvhost/defaults'
+removed 'myvhost/vars/main.yml'
+removed directory 'myvhost/vars'
+removed 'myvhost/tests/test.yml'
+removed 'myvhost/tests/inventory'
+removed directory 'myvhost/tests'
+[student@workstation roles]$ cd ..
+```
+
+    `ansible-galaxy init` and `ansible-galaxy role init` are the same command; the short form is older.
   </Task>
 
-  <Task title="Set the defaults">
-    The role has two settings: the page heading and the administrator's address.
+  <Task title="Write the tasks">
+    Replace the contents of `roles/myvhost/tasks/main.yml` with three tasks: install `httpd`, start and enable it, and install the virtual host configuration from a template, notifying a handler.
 
-```yaml title="roles/web_site/defaults/main.yml"
+```yaml title="roles/myvhost/tasks/main.yml"
 ---
-web_site_title: Welcome
-web_site_admin: root@localhost
-```
-  </Task>
+# tasks file for myvhost
+- name: Ensure httpd is installed
+  ansible.builtin.dnf:
+    name: httpd
+    state: latest
 
-  <Task title="Write the templates">
-    One template for an Apache configuration snippet, one for the page.
+- name: Ensure httpd is started and enabled
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true
 
-```jinja title="roles/web_site/templates/site.conf.j2"
-# {{ ansible_managed }}
-ServerAdmin {{ web_site_admin }}
-ServerName {{ ansible_facts['fqdn'] }}
+- name: vhost file is installed
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: /etc/httpd/conf.d/vhost.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - restart httpd
 ```
 
-```jinja title="roles/web_site/templates/index.html.j2"
-<h1>{{ web_site_title }}</h1>
-<p>Served by {{ ansible_facts['fqdn'] }}</p>
-```
+    `src: vhost.conf.j2` has no directory: inside a role, the `template` module looks in the role's own `templates/` directory.
   </Task>
 
   <Task title="Write the handler">
 
-```yaml title="roles/web_site/handlers/main.yml"
+```yaml title="roles/myvhost/handlers/main.yml"
 ---
+# handlers file for myvhost
 - name: restart httpd
   ansible.builtin.service:
     name: httpd
@@ -67,148 +88,198 @@ ServerName {{ ansible_facts['fqdn'] }}
 ```
   </Task>
 
-  <Task title="Write the tasks">
-    In `roles/web_site/tasks/main.yml`, make sure that: `httpd` and `firewalld` are installed; `firewalld` is running and allows `http`; both templates are deployed, to `/etc/httpd/conf.d/site.conf` and `/var/www/html/index.html`; and `httpd` is running. Only the configuration template should notify the handler.
+  <Task title="Move the template into the role">
+    Look at the template the project provides. Every host-specific value comes from a fact, so the role needs no variables of its own:
 
-    <Reveal title="Show roles/web_site/tasks/main.yml">
+```jinja title="vhost.conf.j2"
+# {{ ansible_managed }}
 
-```yaml title="roles/web_site/tasks/main.yml"
----
-- name: Web packages are installed
-  ansible.builtin.dnf:
-    name:
-      - httpd
-      - firewalld
-    state: present
+<VirtualHost *:80>
+    ServerAdmin webmaster@{{ ansible_facts['fqdn'] }}
+    ServerName {{ ansible_facts['fqdn'] }}
+    ErrorLog logs/{{ ansible_facts['hostname'] }}-error.log
+    CustomLog logs/{{ ansible_facts['hostname'] }}-common.log common
+    DocumentRoot /var/www/vhosts/{{ ansible_facts['hostname'] }}/
 
-- name: firewalld is running
-  ansible.builtin.service:
-    name: firewalld
-    state: started
-    enabled: true
-
-- name: http is allowed through the firewall
-  ansible.posix.firewalld:
-    service: http
-    permanent: true
-    immediate: true
-    state: enabled
-
-- name: Site configuration is in place
-  ansible.builtin.template:
-    src: site.conf.j2
-    dest: /etc/httpd/conf.d/site.conf
-    mode: "0644"
-  notify: restart httpd
-
-- name: Home page is in place
-  ansible.builtin.template:
-    src: index.html.j2
-    dest: /var/www/html/index.html
-    mode: "0644"
-
-- name: httpd is running
-  ansible.builtin.service:
-    name: httpd
-    state: started
-    enabled: true
+    <Directory /var/www/vhosts/{{ ansible_facts['hostname'] }}/>
+        Options +Indexes +FollowSymlinks +Includes
+        Require all granted
+    </Directory>
+</VirtualHost>
 ```
-    </Reveal>
 
-    Notice there is no `hosts`, no `become` and no path in front of the template names.
+```console
+[student@workstation role-create]$ mv -v vhost.conf.j2 roles/myvhost/templates/
+renamed 'vhost.conf.j2' -> 'roles/myvhost/templates/vhost.conf.j2'
+```
+  </Task>
+
+  <Task title="Create the web content">
+    The content is not part of the role: it belongs to this project. Put it in `files/html/`:
+
+```console
+[student@workstation role-create]$ mkdir -pv files/html
+mkdir: created directory 'files'
+mkdir: created directory 'files/html'
+[student@workstation role-create]$ echo 'simple index' > files/html/index.html
+```
   </Task>
 
   <Task title="Use the role in a play">
-    Create `site.yml`. It applies the role to the `web` group and overrides the heading.
+    Create `use-vhost-role.yml`. The play for `webservers` prints a message **before** the role, applies `myvhost`, then copies the content and prints a message **after** it:
 
-```yaml title="site.yml"
+```yaml title="use-vhost-role.yml"
 ---
-- name: Web servers run the site
-  hosts: web
+- name: Use myvhost role playbook
+  hosts: webservers
+  pre_tasks:
+    - name: pre_tasks message
+      ansible.builtin.debug:
+        msg: 'Ensure web server configuration.'
+
   roles:
-    - role: web_site
-      vars:
-        web_site_title: Staff intranet
+    - myvhost
+
+  post_tasks:
+    - name: HTML content is installed
+      ansible.builtin.copy:
+        src: files/html/
+        dest: "/var/www/vhosts/{{ ansible_facts['hostname'] }}"
+
+    - name: post_tasks message
+      ansible.builtin.debug:
+        msg: 'Web server is configured.'
 ```
+
+    The trailing `/` on `src: files/html/` copies the **contents** of the directory. Without it, `copy` would create an `html` directory inside the destination.
   </Task>
 
-  <Task title="List the tasks, then run">
+  <Task title="Run it">
 
 ```console
-[student@workstation role-create]$ ansible-navigator run -m stdout site.yml --list-tasks
+[student@workstation role-create]$ ansible-navigator run \
+> -m stdout use-vhost-role.yml --syntax-check
+playbook: /home/student/role-create/use-vhost-role.yml
+[student@workstation role-create]$ ansible-navigator run -m stdout use-vhost-role.yml
 
-playbook: /home/student/role-create/site.yml
+PLAY [Use myvhost role playbook] ***********************************************
 
-  play #1 (web): Web servers run the site	TAGS: []
-    tasks:
-      web_site : Web packages are installed	TAGS: []
-      web_site : firewalld is running	TAGS: []
-      web_site : http is allowed through the firewall	TAGS: []
-      web_site : Site configuration is in place	TAGS: []
-      web_site : Home page is in place	TAGS: []
-      web_site : httpd is running	TAGS: []
-[student@workstation role-create]$ ansible-navigator run -m stdout site.yml
-...output omitted...
-RUNNING HANDLER [web_site : restart httpd] *************************************
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [pre_tasks message] *******************************************************
+ok: [servera.lab.example.com] => {
+    "msg": "Ensure web server configuration."
+}
+
+TASK [myvhost : Ensure httpd is installed] *************************************
 changed: [servera.lab.example.com]
-changed: [serverb.lab.example.com]
+
+TASK [myvhost : Ensure httpd is started and enabled] ***************************
+changed: [servera.lab.example.com]
+
+TASK [myvhost : vhost file is installed] ***************************************
+changed: [servera.lab.example.com]
+
+RUNNING HANDLER [myvhost : restart httpd] **************************************
+changed: [servera.lab.example.com]
+
+TASK [HTML content is installed] ***********************************************
+changed: [servera.lab.example.com]
+
+TASK [post_tasks message] ******************************************************
+ok: [servera.lab.example.com] => {
+    "msg": "Web server is configured."
+}
 
 PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=8    changed=6    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=8    changed=6    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=8    changed=5    unreachable=0    failed=0  ...
 ```
+
+    Notice where the handler ran: after the role's tasks and **before** `post_tasks`. Handlers notified in each stage of a play run at the end of that stage.
   </Task>
 
-  <Task title="Check the result">
+  <Task title="Verify the service">
+    The project's verification playbooks each run a command and print what it returned:
+
+```console
+[student@workstation role-create]$ ansible-navigator run -m stdout verify-httpd.yml
+...output omitted...
+TASK [Is the httpd service installed] ******************************************
+ok: [servera.lab.example.com] => {
+    "installed.stdout": "httpd-2.4.62-13.el9_8.6.x86_64"
+}
+...output omitted...
+TASK [Is the httpd service started] ********************************************
+ok: [servera.lab.example.com] => {
+    "started.stdout": "active"
+}
+...output omitted...
+TASK [Is the httpd service enabled] ********************************************
+ok: [servera.lab.example.com] => {
+    "enabled.stdout": "enabled"
+}
+...output omitted...
+```
+
+    The exact `httpd` version depends on your repositories.
+  </Task>
+
+  <Task title="Verify the configuration and the content">
+
+```console
+[student@workstation role-create]$ ansible-navigator run -m stdout verify-config.yml
+...output omitted...
+TASK [What does the httpd config file contain] *********************************
+ok: [servera.lab.example.com] => {
+    "config.stdout_lines": [
+        "# Ansible managed",
+        "",
+        "<VirtualHost *:80>",
+        "    ServerAdmin webmaster@servera.lab.example.com",
+        "    ServerName servera.lab.example.com",
+...output omitted...
+[student@workstation role-create]$ ansible-navigator run -m stdout verify-content.yml
+...output omitted...
+TASK [What does the index.html file contain] ***********************************
+ok: [servera.lab.example.com] => {
+    "content.stdout": "simple index"
+}
+...output omitted...
+```
+
+    Finally, ask the web server itself:
+
+    <Env>
+      <Classroom>
 
 ```console
 [student@workstation role-create]$ curl http://servera.lab.example.com
-<h1>Staff intranet</h1>
-<p>Served by servera.lab.example.com</p>
-[student@workstation role-create]$ ssh devops@servera cat /etc/httpd/conf.d/site.conf
-# Ansible managed
-ServerAdmin root@localhost
-ServerName servera.lab.example.com
+simple index
 ```
-
-    The heading came from the play; the administrator address is still the role's default. Run the playbook again: `ok=7 changed=0`, and no handler.
-  </Task>
-
-  <Task title="Override a default from the command line">
-    Change only the administrator address, without editing any file:
+      </Classroom>
+      <HomeLab>
+        The home-lab servers run `firewalld` with only SSH open, and this role does not touch the firewall. Open `http` with an ad hoc command first, then ask:
 
 ```console
-[student@workstation role-create]$ ansible-navigator run -m stdout site.yml \
-> -e web_site_admin=webmaster@example.com
+[student@workstation role-create]$ ansible webservers -m ansible.posix.firewalld \
+> -a 'service=http permanent=true immediate=true state=enabled'
+servera.lab.example.com | CHANGED => {
 ...output omitted...
-TASK [web_site : Site configuration is in place] *******************************
-changed: [servera.lab.example.com]
-changed: [serverb.lab.example.com]
-...output omitted...
-RUNNING HANDLER [web_site : restart httpd] *************************************
-changed: [servera.lab.example.com]
-changed: [serverb.lab.example.com]
-
-PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
-serverb.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
+[student@workstation role-create]$ curl http://servera.lab.example.com
+simple index
 ```
+      </HomeLab>
+    </Env>
 
-    Two changes per host: the configuration file, and the restart it triggered. The home page task reported `ok`, because its template does not use that variable.
+    Run `use-vhost-role.yml` once more: `ok=7 changed=0`. Nothing changed, so the handler did not run.
   </Task>
 
   <Task title="Finish">
-    <Env>
-      <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean the two web servers the way your classroom provides before the next exercise.
-      </Classroom>
-      <HomeLab>
-        Two steps. On workstation, `lab finish role-create` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+    <Finish name="role-create" />
   </Task>
 </Lab>
 
 ## Try it again, differently
 
-Move `web_site_admin` from `defaults/main.yml` to a new `vars/main.yml` in the role and run the play with `vars: web_site_admin: someone@example.com` on the role entry. The role's own value wins. Then pass it with `-e`: now yours does. Move it back to `defaults` when you have seen both.
+Give the role a `defaults/main.yml` with `vhost_admin: webmaster`, use it in the template as `ServerAdmin {{ vhost_admin }}@{{ ansible_facts['fqdn'] }}`, and override it in the play with `vars:` under the role entry. Run it and look at the diff with `--diff`.

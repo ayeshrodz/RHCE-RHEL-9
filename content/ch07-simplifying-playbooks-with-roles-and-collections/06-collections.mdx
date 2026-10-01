@@ -25,6 +25,18 @@ A collection can contain modules, roles, plug-ins such as filters, and documenta
 
 Using the full name in every task means a playbook says exactly which module it wants, and keeps working when two collections each have a module called, say, `user`.
 
+The first part of the name, the **namespace**, tells you who maintains it: `community.*` collections (`community.general`, `community.crypto`, `community.mysql`) come from the Ansible community, `redhat.*` (`redhat.rhel_system_roles`, `redhat.insights`, `redhat.satellite`) from Red Hat, and vendors publish their own (`cisco.ios`, `amazon.aws`). Splitting content this way lets each vendor release updates on its own schedule, and lets you install only what a project needs, at the versions it needs.
+
+## Where collections come from
+
+| Source | What it offers |
+| --- | --- |
+| **Automation hub** (console.redhat.com) | Red Hat Certified collections, supported by Red Hat and its partners; needs a subscription |
+| **Private automation hub** | An organisation's own server, with its approved collections and its own |
+| **Ansible Galaxy** (galaxy.ansible.com) | Community collections, without support |
+| A **Git repository** or an **archive** | A collection built and published by anyone |
+| The **execution environment** | Collections already inside the container image, such as `ansible.builtin` and a supported set |
+
 <Callout type="note" title="Short names and the collections keyword">
 A play can list collections under a `collections:` keyword so that tasks may use short module names. It saves typing and costs clarity. Write the full name; it is what `ansible-navigator doc` and error messages use.
 </Callout>
@@ -77,6 +89,12 @@ The source can be:
 | An archive at a URL | `http://utility.lab.example.com/files/ansible-posix-1.5.4.tar.gz` |
 | A Git repository | `git+https://git.example.com/ops/acme.tools.git,v1.0` |
 
+A Git repository must contain a `galaxy.yml` or a `MANIFEST.json` at its top level, which is how `ansible-galaxy` recognises it as a collection.
+
+<Callout type="important" title="Always use -p collections for a project">
+Without `-p`, the collection goes into the first directory of `collections_path`, `~/.ansible/collections` by default. An execution environment cannot see that directory. If `-p` names a directory that is not in `collections_path`, `ansible-galaxy` warns that the collection will not be picked up; a `collections` directory next to the playbook is found anyway, so for a project that warning can be ignored.
+</Callout>
+
 ### Pin the version
 
 A collection declares which versions of `ansible-core` it supports. The newest release of a collection often needs a newer `ansible-core` than RHEL 9 provides, and Ansible then refuses to load it. Decide on a version that supports your `ansible-core`, and write it down.
@@ -102,9 +120,30 @@ community.crypto:2.26.0 was installed successfully
 
 One file may hold both a `roles:` and a `collections:` list. `ansible-galaxy collection install -r` installs the collections from it; `ansible-galaxy role install -r` installs the roles.
 
-<Callout type="note" title="Other content servers">
-By default `ansible-galaxy` downloads from the public Ansible Galaxy site. An organisation can run its own server, and Red Hat customers can use automation hub for certified content. Those are configured in a `[galaxy]` section of `ansible.cfg` with a `server_list` and one section, with a URL and a token, for each server.
-</Callout>
+Automation controller installs `collections/requirements.yml` for you before each run, just as it does for roles.
+
+### Other content servers
+
+By default `ansible-galaxy` downloads from the public Ansible Galaxy site. To use automation hub, a private automation hub, or several servers in order, list them in a `[galaxy]` section of `ansible.cfg`, with one section per server:
+
+```ini title="ansible.cfg"
+[galaxy]
+server_list = automation_hub, galaxy
+
+[galaxy_server.automation_hub]
+url=https://console.redhat.com/api/automation-hub/
+auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token=eyJh...Jf0o
+
+[galaxy_server.galaxy]
+url=https://galaxy.ansible.com/
+```
+
+`ansible-galaxy` tries the servers in the order of `server_list`. The token for automation hub comes from its web console. A token is a password: rather than committing it in `ansible.cfg`, set it in the environment, with a variable named after the server:
+
+```console
+[student@workstation project]$ export ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN='eyJh...Jf0o'
+```
 
 ## Using what you installed
 
@@ -128,7 +167,10 @@ Documentation works for any collection Ansible can see:
 
 ```console
 [student@workstation project]$ ansible-navigator doc community.crypto.openssl_privatekey -m stdout
+[student@workstation project]$ ansible-navigator collections
 ```
+
+`ansible-navigator collections`, in its interactive mode, lists every collection it can find, including the project's own `collections/` directory. Type a collection's number (`:17`) to see its modules and roles, and a module's number to read its documentation.
 
 ## Two errors you will meet
 

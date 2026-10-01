@@ -1,3 +1,8 @@
-# Chapter lab: Roles and collections
+# Chapter lab: Simplifying playbooks with roles and content collections
 ansible.cfg
 inventory
+developer_tasks.yml
+developer.conf.j2
+web_developers.yml
+selinux.yml
+@setup.sh

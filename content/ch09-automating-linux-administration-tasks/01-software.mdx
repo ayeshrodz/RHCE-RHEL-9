@@ -48,11 +48,42 @@ A few more forms of `name`:
 | `httpd` | The package |
 | `"@Development Tools"` | A package group (quote it: `@` is special in YAML) |
 | `"*"` with `state: latest` | Update every package on the host |
+| `"@perl:5.26/minimal"` | A module stream and profile; leave out `/profile` for the stream's default |
 | `https://…/tool-1.0.rpm` or a local path | An RPM file |
 
 <Callout type="note" title="ansible.builtin.package">
 `ansible.builtin.package` calls whichever package manager the host uses, so one task works on RHEL and on Debian. It only supports the options all managers share. On RHEL, `dnf` gives you everything.
 </Callout>
+
+<Callout type="tip" title="Read the module's documentation">
+`ansible-navigator doc ansible.builtin.dnf -m stdout` lists every option, with examples at the end.
+</Callout>
+
+## Registering a system
+
+A RHEL host needs a subscription before it can install from Red Hat's repositories. Two modules from `community.general` handle it: `redhat_subscription` registers the host (and attaches a subscription pool), and `rhsm_repository` enables repositories.
+
+```yaml
+- name: Register and subscribe the system
+  community.general.redhat_subscription:
+    username: yourusername
+    password: yourpassword
+    pool_ids: poolID
+    state: present
+
+- name: Enable Red Hat repositories
+  community.general.rhsm_repository:
+    name:
+      - rhel-9-for-x86_64-baseos-rpms
+      - rhel-9-for-x86_64-appstream-rpms
+    state: present
+```
+
+`state: absent` unregisters the host. These are community modules, not supported by Red Hat; running `subscription-manager` through `ansible.builtin.command` is the alternative.
+
+<HomeLab>
+Rocky Linux needs no subscription: its BaseOS and AppStream repositories are enabled from the start. Skip registration in the home lab.
+</HomeLab>
 
 ## Repositories and signing keys
 

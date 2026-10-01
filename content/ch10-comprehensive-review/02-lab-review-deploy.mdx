@@ -5,251 +5,290 @@ minutes: 40
 ---
 
 <Lead>
-Start from an empty directory and end with a project that reaches four servers, configures a package repository on all of them with ad hoc commands, and creates an account from a vaulted password. Solutions are hidden under each task. Try each one yourself first.
+Set up workstation as a control node for servera and serverb, then write, fix and extend small playbooks that use variables, facts and loops. Solutions are hidden under each task. Try each one yourself first.
 </Lead>
 
-This lab covers chapters 1 to 3: configuration files, inventories, ad hoc commands, playbooks, variables and Ansible Vault. The directory `~/review-deploy` is empty; you write every file.
+This lab covers chapters 1 to 4 and 8. Your project directory is `~/review-deploy`; `lab start` puts two playbooks in it, `packages.yml` and `verify_user.yml`. You write everything else.
 
 <Lab
   id="review-deploy"
   title="Deploying Ansible"
   classroom="lab start review-deploy"
-  own
-  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com', 'serverc.lab.example.com', 'serverd.lab.example.com']}
-  outcomes={[
-    'Write ansible.cfg and a static inventory with nested groups.',
-    'Run ad hoc commands that are safe to repeat.',
-    'Encrypt a variables file with Ansible Vault and use it in a playbook.',
-  ]}
+  hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
+  outcomes={['Install and configure Ansible.', 'Create, modify and troubleshoot playbooks.']}
 >
   <HomeSetup>
-    Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. This lab's repository task uses Rocky Linux's CRB repository, reached through the lab's internet access.
+    Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. `ansible-navigator` is already installed on workstation (section 0.6), and the home lab runs without an execution environment, so the first task's EE steps do not apply.
   </HomeSetup>
 
-  <Task title="Configure the project">
-    In `~/review-deploy`, create `ansible.cfg` so that Ansible:
+  <Task title="Install the control node tools">
+    Install automation content navigator on workstation; the repository that contains it is already configured.
 
-    - uses the inventory file `./inventory`,
-    - connects as the user `devops`,
-    - becomes `root` with `sudo` for every task, without asking for a password.
+    <Env>
+      <Classroom>
+        <Reveal title="Show solution">
 
-    <Reveal title="Show solution">
-
-```ini title="ansible.cfg"
-[defaults]
-inventory = ./inventory
-remote_user = devops
-interpreter_python = auto_silent
-
-[privilege_escalation]
-become = true
-become_method = sudo
-become_user = root
-become_ask_pass = false
+```console
+[student@workstation ~]$ sudo dnf install ansible-navigator
+...output omitted...
+Complete!
 ```
+        </Reveal>
+      </Classroom>
+      <HomeLab>
+        Nothing to install: check that it is there.
 
-    `interpreter_python = auto_silent` only hides the warning about the Python interpreter Ansible discovers on each host.
-    </Reveal>
+```console
+[student@workstation ~]$ ansible-navigator --version
+ansible-navigator 26.9.0
+```
+      </HomeLab>
+    </Env>
   </Task>
 
-  <Task title="Write the inventory">
-    Create `inventory` with these groups:
-
-    | Group | Members |
-    | --- | --- |
-    | `dev` | servera.lab.example.com |
-    | `test` | serverb.lab.example.com |
-    | `prod` | serverc.lab.example.com, serverd.lab.example.com |
-    | `webservers` | every host in `prod`, as a child group |
+  <Task title="Inventory and configuration">
+    In `~/review-deploy`, create an `inventory` with a group `dev` containing `servera.lab.example.com` and `serverb.lab.example.com`, and an `ansible.cfg` that uses it.
 
     <Reveal title="Show solution">
 
 ```ini title="inventory"
 [dev]
 servera.lab.example.com
-
-[test]
 serverb.lab.example.com
+```
 
-[prod]
-serverc.lab.example.com
-serverd.lab.example.com
-
-[webservers:children]
-prod
+```ini title="ansible.cfg"
+[defaults]
+inventory=./inventory
 ```
     </Reveal>
-  </Task>
 
-  <Task title="Prove that the project works">
-    Show the inventory as a tree, then check that every host answers.
+    <HomeLab>
+      In a classroom, `ansible-navigator` runs the playbooks inside an execution environment, which connects to the managed hosts as `root`. The home lab runs them directly on workstation, as `student`, who cannot add users. Add `remote_user=root` to `[defaults]` to get the same behaviour; section 0.6 installed `student`'s key for `root` on every server.
 
-```console
-[student@workstation ~]$ cd ~/review-deploy
-[student@workstation review-deploy]$ ansible-navigator inventory -m stdout --graph
-@all:
-  |--@ungrouped:
-  |--@dev:
-  |  |--servera.lab.example.com
-  |--@test:
-  |  |--serverb.lab.example.com
-  |--@webservers:
-  |  |--@prod:
-  |  |  |--serverc.lab.example.com
-  |  |  |--serverd.lab.example.com
-[student@workstation review-deploy]$ ansible all -m ansible.builtin.ping -o
-serverb.lab.example.com | SUCCESS => {"ansible_facts": {...}, "changed": false, "ping": "pong"}
-serverc.lab.example.com | SUCCESS => {"ansible_facts": {...}, "changed": false, "ping": "pong"}
-serverd.lab.example.com | SUCCESS => {"ansible_facts": {...}, "changed": false, "ping": "pong"}
-servera.lab.example.com | SUCCESS => {"ansible_facts": {...}, "changed": false, "ping": "pong"}
+```ini title="ansible.cfg"
+[defaults]
+inventory=./inventory
+remote_user=root
 ```
-
-    `webservers` contains `prod`, not the hosts directly. If the tree is flat, check the `:children` suffix.
+    </HomeLab>
   </Task>
 
-  <Task title="Configure a repository with ad hoc commands">
-    Write an executable shell script `adhoc.sh` that runs two ad hoc commands against all hosts:
-
-    1. Trust the signing key `/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9`.
-    2. Define a repository named `lab-crb`, described as `Rocky Linux 9 CRB (lab)`, from the mirror list `https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever`, with GPG checking on, using the key above, and enabled.
-
-    The script must be safe to run again.
+  <Task title="The execution environment">
+    Create `ansible-navigator.yml` so that navigator uses the image `utility.lab.example.com/ee-supported-rhel8:latest`, and pulls it only if it is missing. Log in to the private automation hub on `utility.lab.example.com` (user `admin`, password `redhat`), then run `ansible-navigator` once to pull the image.
 
     <Env>
       <Classroom>
-        Use the repository URL and key your classroom provides; the modules and options are the same.
+        <Reveal title="Show solution">
+
+```yaml title="ansible-navigator.yml"
+---
+ansible-navigator:
+  execution-environment:
+    image: utility.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+```
+
+```console
+[student@workstation review-deploy]$ podman login utility.lab.example.com
+Username: admin
+Password: redhat
+Login Succeeded!
+[student@workstation review-deploy]$ ansible-navigator
+...output omitted...
+Execution environment image name:     utility.lab.example.com/ee-supported-rhel8:latest
+Execution environment pull policy:    missing
+Execution environment pull needed:    True
+...output omitted...
+```
+        </Reveal>
       </Classroom>
       <HomeLab>
-        Use the values above.
+        Skip this task: the home lab has no private automation hub and runs without an execution environment, which your `~/.ansible-navigator.yml` already says.
       </HomeLab>
     </Env>
+  </Task>
+
+  <Task title="Two users with one task">
+    Write `users.yml` with one play for `dev` that adds the users `joe` and `sam`, with a single task. Run it.
 
     <Reveal title="Show solution">
 
-```bash title="adhoc.sh"
-#!/bin/bash
-# Configure the lab-crb repository on every managed host with ad hoc commands.
-ansible all -m ansible.builtin.rpm_key -a "key=/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9 state=present"
-ansible all -m ansible.builtin.yum_repository -a "name=lab-crb description='Rocky Linux 9 CRB (lab)' mirrorlist='https://mirrors.rockylinux.org/mirrorlist?arch=\$basearch&repo=CRB-\$releasever' gpgcheck=yes gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9 enabled=yes state=present"
-```
-
-```console
-[student@workstation review-deploy]$ chmod +x adhoc.sh
-```
-
-    Two details decide whether this works. The argument string is in double quotes so the shell passes it as one piece, which means each `$` of a dnf variable must be escaped as `\$`. Values that contain spaces or `&` are wrapped in single quotes inside it.
-    </Reveal>
-  </Task>
-
-  <Task title="Run it twice">
-
-```console
-[student@workstation review-deploy]$ ./adhoc.sh
-serverb.lab.example.com | SUCCESS => {
-servera.lab.example.com | SUCCESS => {
-...output omitted...
-servera.lab.example.com | CHANGED => {
-serverc.lab.example.com | CHANGED => {
-...output omitted...
-[student@workstation review-deploy]$ ./adhoc.sh
-...output omitted...
-[student@workstation review-deploy]$ ansible all -m ansible.builtin.command -a 'dnf repolist' | grep -c lab-crb
-4
-```
-
-    The key was already trusted, so the first command reports `SUCCESS`. The repository is new, so the second reports `CHANGED` on the first run and `SUCCESS` on the second. The count shows the repository enabled on all four hosts.
-  </Task>
-
-  <Task title="Protect a secret">
-    Create the variables file `secret.yml`, encrypted with Ansible Vault using the password `redhat`, containing:
-
-    - `dbadmin_password` with the value `Secret123`
-
-    Save the vault password in `vault-pass`, readable only by you, so the playbook can run without prompting.
-
-    <Reveal title="Show solution">
-
-```console
-[student@workstation review-deploy]$ echo redhat > vault-pass
-[student@workstation review-deploy]$ chmod 600 vault-pass
-[student@workstation review-deploy]$ ansible-vault create --vault-password-file vault-pass secret.yml
-```
-
-```yaml title="secret.yml (as typed in the editor)"
+```yaml title="users.yml"
 ---
-dbadmin_password: Secret123
-```
-
-```console
-[student@workstation review-deploy]$ head -1 secret.yml
-$ANSIBLE_VAULT;1.1;AES256
-[student@workstation review-deploy]$ ansible-vault view --vault-password-file vault-pass secret.yml
----
-dbadmin_password: Secret123
-```
-
-    Without `--vault-password-file`, both commands prompt for the password instead.
-    </Reveal>
-  </Task>
-
-  <Task title="Use the secret">
-    Write `dbadmin.yml` with one play for the `dev` group. It must load `secret.yml` and create the user `dbadmin` with `dbadmin_password` as the password, stored as a SHA-512 hash. A second run must not change anything.
-
-    <Reveal title="Show solution">
-
-```yaml title="dbadmin.yml"
----
-- name: The database administrator exists on dev
+- name: Add users
   hosts: dev
-  vars_files:
-    - secret.yml
+
   tasks:
-    - name: dbadmin exists with the vaulted password
+    - name: Add the users joe and sam
       ansible.builtin.user:
-        name: dbadmin
-        password: "{{ dbadmin_password | password_hash('sha512', 'reviewsalt') }}"
-        state: present
+        name: "{{ item }}"
+      loop:
+        - joe
+        - sam
 ```
 
-    The fixed salt makes the hash the same on every run, so the second run reports `ok`. Without it, `password_hash` picks a new salt each time and the task always reports `changed`. The other way to reach the same result is `update_password: on_create`.
-    </Reveal>
-
 ```console
-[student@workstation review-deploy]$ ansible-navigator run -m stdout dbadmin.yml --vault-password-file vault-pass
-...output omitted...
+[student@workstation review-deploy]$ ansible-navigator run -m stdout users.yml
+
+PLAY [Add users] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+ok: [serverb.lab.example.com]
+
+TASK [Add the users joe and sam] ***********************************************
+changed: [serverb.lab.example.com] => (item=joe)
+changed: [servera.lab.example.com] => (item=joe)
+changed: [serverb.lab.example.com] => (item=sam)
+changed: [servera.lab.example.com] => (item=sam)
+
+PLAY RECAP *********************************************************************
 servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
-[student@workstation review-deploy]$ ansible-navigator run -m stdout dbadmin.yml --vault-password-file vault-pass
-...output omitted...
-servera.lab.example.com    : ok=2    changed=0    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
 ```
 
-    The play runs only on servera, the one host in `dev`.
+    In the home lab without `remote_user=root`, every item fails with `useradd: Permission denied`: the playbook connected as `student`.
+    </Reveal>
   </Task>
 
-  <Task title="Verify">
+  <Task title="Packages from a variable">
+    Look at `packages.yml`. In its play, define a variable `packages` with the list `httpd` and `mariadb-server`. Run it.
+
+    <Reveal title="Show solution">
+
+```yaml title="packages.yml"
+---
+- name: Install packages
+  hosts: dev
+  vars:
+    packages:
+      - httpd
+      - mariadb-server
+
+  tasks:
+    - name: Install the required packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+```
 
 ```console
-[student@workstation review-deploy]$ ssh devops@servera 'sudo grep ^dbadmin /etc/shadow | cut -c1-24'
-dbadmin:$6$reviewsalt$ay
-[student@workstation review-deploy]$ ssh devops@serverb 'id dbadmin'
-id: ‘dbadmin’: no such user
+[student@workstation review-deploy]$ ansible-navigator run -m stdout packages.yml
+...output omitted...
+TASK [Install the required packages] *******************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+...output omitted...
 ```
-
-    `$6$` marks a SHA-512 hash, followed by the salt. The account exists on servera only.
+    </Reveal>
   </Task>
 
-  <Task title="Finish">
-    <Env>
-      <Classroom>
-        This lab is not part of a course, so there is no `lab grade` or `lab finish` for it. Check your work against the outputs above, then reset the servers the way your classroom provides.
-      </Classroom>
-      <HomeLab>
-        There is no grading script: the checks above are the test. Then `lab finish review-deploy` on workstation moves your project to `~/lab-archive/`, and `rht-vmctl reset servers` on the Ubuntu host puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+  <Task title="A package that depends on a fact">
+    Add a task to `packages.yml` that installs `redis` only if the host has more than 10 MB of swap space. Run the playbook again.
+
+    <Reveal title="Show solution">
+
+```yaml
+    - name: Install redis
+      ansible.builtin.dnf:
+        name: redis
+        state: latest
+      when: ansible_facts['swaptotal_mb'] > 10
+```
+
+```console
+[student@workstation review-deploy]$ ansible-navigator run -m stdout packages.yml
+...output omitted...
+TASK [Install redis] ***********************************************************
+skipping: [servera.lab.example.com]
+skipping: [serverb.lab.example.com]
+...output omitted...
+[student@workstation review-deploy]$ ansible dev -m ansible.builtin.setup -a 'filter=ansible_swaptotal_mb'
+servera.lab.example.com | SUCCESS => {
+    "ansible_facts": {
+        "ansible_swaptotal_mb": 0,
+...output omitted...
+```
+
+    The home-lab servers have no swap, so both skip the task. In a classroom where one server has swap, that one installs `redis`.
+    </Reveal>
+  </Task>
+
+  <Task title="Fix verify_user.yml">
+    `verify_user.yml` should check, without creating it, that the user `sam` exists, and then write a line to `/home/student/verify.txt`. Run it with `--check` and fix what it reports, until a check run passes. Then run it normally.
+
+    <Reveal title="Show solution">
+
+```console
+[student@workstation review-deploy]$ ansible-navigator run -m stdout verify_user.yml --check
+ERROR! couldn't resolve module/action 'ansible.buildin.user'. This often indicates a misspelling, missing collection, or incorrect module path.
+
+The error appears to be in '/home/student/review-deploy/verify_user.yml': line 6, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+...output omitted...
+```
+
+    The module name is misspelled: `ansible.buildin.user` should be `ansible.builtin.user`. Fix it and check again:
+
+```console
+[student@workstation review-deploy]$ ansible-navigator run -m stdout verify_user.yml --check
+...output omitted...
+TASK [Output sam user status to file] ******************************************
+fatal: [serverb.lab.example.com]: FAILED! => {"changed": false, "msg": "Unsupported parameters for (ansible.builtin.lineinfile) module: when. Supported parameters include: attributes, backrefs, backup, create, firstmatch, group, insertafter, insertbefore, line, ...output omitted..."}
+...output omitted...
+```
+
+    `when` is indented as if it were an option of `lineinfile`. It is a task keyword, so it belongs at the level of the module name:
+
+```yaml title="verify_user.yml"
+---
+- name: Verify the sam user was created
+  hosts: dev
+
+  tasks:
+    - name: Verify the sam user exists
+      ansible.builtin.user:
+        name: sam
+      check_mode: true
+      register: sam_check
+
+    - name: Sam was created
+      ansible.builtin.debug:
+        msg: "Sam was created"
+      when: sam_check['changed'] == false
+
+    - name: Output sam user status to file
+      ansible.builtin.lineinfile:
+        path: /home/student/verify.txt
+        line: "Sam was created"
+        create: true
+      when: sam_check['changed'] == false
+```
+
+```console
+[student@workstation review-deploy]$ ansible-navigator run -m stdout verify_user.yml
+...output omitted...
+TASK [Sam was created] *********************************************************
+ok: [servera.lab.example.com] => {
+    "msg": "Sam was created"
+}
+...output omitted...
+TASK [Output sam user status to file] ******************************************
+changed: [servera.lab.example.com]
+changed: [serverb.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0  ...
+serverb.lab.example.com    : ok=4    changed=1    unreachable=0    failed=0  ...
+```
+
+    `check_mode: true` on the user task means it can never create `sam`: if it would have to, it reports `changed`, and that is the test.
+    </Reveal>
+  </Task>
+
+  <Task title="Grade and finish">
+    <Finish name="review-deploy" grade />
   </Task>
 </Lab>
-
-<Callout type="exam" title="What this lab rehearses">
-A project from nothing, groups of groups, ad hoc commands with tricky quoting, and a vaulted variable used in a playbook that stays idempotent. If you can do it without looking anything up, chapters 1 to 3 are solid.
-</Callout>

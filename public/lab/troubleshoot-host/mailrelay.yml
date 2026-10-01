@@ -1,0 +1,50 @@
+---
+- name: Create mail relay servers
+  hosts: mailrelay
+
+  tasks:
+    - name: Install postfix package
+      ansible.builtin.dnf:
+        name: postfix
+        state: installed
+
+    - name: Install mail config files
+      ansible.builtin.template:
+        src: postfix-relay-main.conf.j2
+        dest: /etc/postfix/main.cf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart postfix
+
+    - name: Check main.cf file
+      ansible.builtin.stat:
+        path: /etc/postfix/main.cf
+      register: maincf
+
+    - name: Verify main.cf file exists
+      ansible.builtin.debug:
+        msg: "The main.cf file exists"
+      when: maincf['stat']['exists']
+
+    - name: Start and enable mail services
+      ansible.builtin.service:
+        name: postfix
+        state: started
+        enabled: true
+
+    - name: Check for always_bcc
+      ansible.builtin.command: /usr/sbin/postconf always_bcc
+      register: bcc_state
+      changed_when: false
+
+    - name: Report an always_bcc setting
+      ansible.builtin.debug:
+        msg: "always_bcc is set: {{ bcc_state['stdout'] }}"
+      when: bcc_state['stdout'] != 'always_bcc ='
+
+  handlers:
+    - name: restart postfix
+      ansible.builtin.service:
+        name: postfix
+        state: restarted

@@ -1,0 +1,76 @@
+---
+# start of secure web server playbook
+- name: Create secure web service
+  hosts: webservers
+  remote_user: students
+  vars:
+    random_var: This is colon: test
+
+  tasks:
+    - name: Install web server packages
+      ansible.builtin.dnf:
+        name: {{ item }}
+        state: latest
+      notify:
+        - Restart services
+      loop:
+        - httpd
+        - mod_ssl
+
+    - name: Create the web site directory
+      ansible.builtin.file:
+        path: /var/www/vhosts/serverb-secure
+        state: directory
+        mode: "0755"
+
+    - name: Create a self-signed certificate
+      ansible.builtin.command:
+        cmd: >
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048
+          -subj /CN=serverb.lab.example.com
+          -keyout /etc/pki/tls/private/serverb.lab.example.com.key
+          -out /etc/pki/tls/certs/serverb.lab.example.com.crt
+      args:
+        creates: /etc/pki/tls/certs/serverb.lab.example.com.crt
+
+    - name: Install the virtual host configuration
+      ansible.builtin.copy:
+        src: vhosts.conf
+        dest: /etc/httpd/conf.d/vhosts.conf
+        mode: "0644"
+      notify:
+        - Restart services
+
+      - name: Start and enable web services
+        ansible.builtin.service:
+          name: httpd
+          state: started
+          enabled: true
+
+    - name: Check the httpd configuration
+      ansible.builtin.command: /sbin/httpd -t
+      register: httpd_conf_syntax
+      changed_when: false
+
+    - name: Httpd_conf_syntax variable
+      ansible.builtin.debug:
+        msg: "The httpd_conf_syntax variable value is {{ httpd_conf_syntax }}"
+
+    - name: Deliver content
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/vhosts/serverb-secure/index.html
+        mode: "0644"
+
+    - name: Allow https through the firewall
+      ansible.posix.firewalld:
+        service: https
+        permanent: true
+        immediate: true
+        state: enabled
+
+  handlers:
+    - name: Restart services
+      ansible.builtin.service:
+        name: httpd
+        state: restarted

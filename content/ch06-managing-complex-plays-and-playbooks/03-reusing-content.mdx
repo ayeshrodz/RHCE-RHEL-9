@@ -58,9 +58,18 @@ You can mix imported playbooks and ordinary plays in one file; everything runs i
 
 Each imported file stays a normal playbook that you can also run by itself, which is what makes the split worthwhile: `web.yml` for a quick change to the web servers, `site.yml` for everything.
 
+An imported playbook can take `vars:` as well. The values apply to every play in that file, which lets one generic playbook serve several purposes:
+
+```yaml
+- name: Database tier
+  ansible.builtin.import_playbook: install.yml
+  vars:
+    package: mariadb-server
+```
+
 ## Task files
 
-A **task file** is a flat YAML list of tasks. It has no `hosts:` and no `tasks:` keyword, because it is not a play:
+A **task file** is a flat YAML list of tasks. It has no `hosts:` and no `tasks:` keyword, because it is not a play. Keep them together in a `tasks/` directory next to the playbook, so the structure of a large project stays easy to see:
 
 ```yaml title="tasks/install.yml"
 ---
@@ -168,8 +177,19 @@ included: /home/student/project/tasks/firewall.yml for servera.lab.example.com =
 included: /home/student/project/tasks/firewall.yml for servera.lab.example.com => (item=https)
 ```
 
-<Callout type="note" title="Handlers still work across files">
-A task in an imported or included file can `notify` a handler defined in the play that pulled it in. Handler names are looked up in the play, not in the file.
+<Callout type="note" title="Handlers and task files">
+A task in an imported or included file can `notify` a handler defined in the play that pulled it in: handler names are looked up in the play, not in the file. A handler can itself be an `include_tasks`; notify it by the handler's name and every task in the included file runs. What you cannot do is notify the name of one task inside that included file.
+</Callout>
+
+## Where task files pay off
+
+- **Building a new server** in stages: users, packages, services, sudo rules, shared file systems, hardening, updates, monitoring. Each stage is its own file, easy to find and to test.
+- **Several teams, one playbook.** Developers, system administrators and database administrators each own a task file; one playbook brings them together.
+- **Optional configuration**, included only when a condition says a host needs it.
+- **Group-specific work**: a task file imported in a play that targets only that group.
+
+<Callout type="warning" title="Old playbooks: include">
+Older playbooks use a bare `include:` for both task files and playbooks. Its behaviour changed between releases and it was deprecated in favour of `include_tasks`, `import_tasks` and `import_playbook`, which say exactly what they do. If you find `include:` in a playbook, replace it with one of those.
 </Callout>
 
 ## A file name that depends on the host
@@ -186,6 +206,8 @@ The same line with `import_tasks` fails before the play starts, because facts ar
 ```text
 ERROR! Error when evaluating variable in import path: tasks/{{ ansible_facts['os_family'] }}.yml.
 ```
+
+The same limit applies to host and group variables from the inventory: they belong to individual hosts, and an import is resolved once for the whole play. A variable in an import path can come from the play, a variables file or the command line (`-e`), but not from the inventory.
 
 <Callout type="exam" title="Roles are the next step">
 Task files are the simplest form of reuse. When a set of tasks also needs its own variables, templates, files and handlers, package it as a **role**: chapter 7.

@@ -5,152 +5,197 @@ minutes: 20
 ---
 
 <Lead>
-You will give three developers accounts on serverb: a shared group, a password, key-based login, and sudo rights through a validated drop-in file. The list of people lives in a variables file, so the playbook itself never names anyone.
+The web servers need the same five administrator accounts, all in a `webadmin` group, each with an SSH key, and with sudo rights that need no password. Root must no longer be able to log in over SSH. You will do all of it from one variables file and one play.
 </Lead>
 
-The project `~/system-users` has an `ansible.cfg`, an `inventory` with serverb in `servers`, and `vars/users.yml`:
-
-```yaml title="vars/users.yml"
----
-# The people who need accounts. All of them join the webdev group.
-users:
-  - name: jane
-    comment: Jane Doe
-  - name: omar
-    comment: Omar Haddad
-  - name: li
-    comment: Li Wei
-```
+The project `~/system-users` has an `ansible.cfg`, an `inventory` with servera in `webservers`, the variables file `vars/users_vars.yml`, and one public key per user in `files/`.
 
 <Lab
   id="users"
   title="Managing users and authentication"
   classroom="lab start system-users"
-  own
-  hosts={['workstation', 'serverb.lab.example.com']}
-  outcomes={['Create a group and users from a variables file.', 'Install SSH keys and a validated sudoers rule.']}
+  hosts={['workstation', 'servera.lab.example.com']}
+  outcomes={['Create users and a group from a variables file.', 'Install SSH keys, a sudo rule and an SSH server setting.']}
 >
-  <Task title="Create the group and the users">
-    Create `users.yml`: one play for `servers` that loads `vars/users.yml`, defines `user_password: redhat`, creates the group `webdev`, and creates each user in it with a bash shell and that password. Set the password only when an account is created.
+  <HomeSetup>
+    `lab start system-users` creates a key pair for each user in `files/`: `user1.key` and `user1.key.pub`, and so on. Only the `.pub` files go to the servers.
+  </HomeSetup>
 
-    <Reveal title="Show the start of users.yml">
+  <Task title="Look at the data">
+
+```yaml title="vars/users_vars.yml"
+---
+users:
+  - username: user1
+    groups: webadmin
+  - username: user2
+    groups: webadmin
+  - username: user3
+    groups: webadmin
+  - username: user4
+    groups: webadmin
+  - username: user5
+    groups: webadmin
+```
+  </Task>
+
+  <Task title="Create the group and the users">
+    Create `users.yml` with one play for `webservers` that loads the variables file, creates the group `webadmin`, and creates each user as a member of it.
 
 ```yaml title="users.yml"
 ---
-- name: Web developers have accounts
-  hosts: servers
+- name: Create multiple local users
+  hosts: webservers
   vars_files:
-    - vars/users.yml
-  vars:
-    user_password: redhat          # in real life: in a Vault-encrypted file
+    - vars/users_vars.yml
+
   tasks:
-    - name: The webdev group exists
+    - name: Add webadmin group
       ansible.builtin.group:
-        name: webdev
+        name: webadmin
         state: present
 
-    - name: Each user exists, in webdev
+    - name: Create user accounts
       ansible.builtin.user:
-        name: "{{ item['name'] }}"
-        comment: "{{ item['comment'] }}"
-        groups: webdev
-        append: true
-        shell: /bin/bash
-        password: "{{ user_password | password_hash('sha512', 'labsalt' ~ item['name']) }}"
-        update_password: on_create
-        state: present
+        name: "{{ item['username'] }}"
+        groups: "{{ item['groups'] }}"
       loop: "{{ users }}"
 ```
 
-    The fixed salt (`labsalt` followed by the user name) keeps the hash the same on every run; `update_password: on_create` would be enough on its own.
-    </Reveal>
+    The group must exist before a user can be added to it, so its task comes first.
   </Task>
 
-  <Task title="Install student's key for each of them">
-    Add a task that installs the public key `/home/student/.ssh/id_ed25519.pub` (on workstation) for every user.
-
-    <Reveal title="Show the task">
+  <Task title="Install each user's key">
+    Add a task that puts each user's public key, `files/USERNAME.key.pub`, into their `authorized_keys`:
 
 ```yaml
-    - name: Each user can log in with student's key
+    - name: Add authorized keys
       ansible.posix.authorized_key:
-        user: "{{ item['name'] }}"
-        key: "{{ lookup('ansible.builtin.file', '/home/student/.ssh/id_ed25519.pub') }}"
-        state: present
+        user: "{{ item['username'] }}"
+        key: "{{ lookup('file', 'files/'+ item['username'] + '.key.pub') }}"
       loop: "{{ users }}"
 ```
 
-    In practice each person has their own key file in the project; one shared key keeps the exercise short.
-    </Reveal>
+    The `file` lookup runs on the control node and returns the contents of the file; `+` joins strings to build its name for each user.
   </Task>
 
-  <Task title="Grant sudo through a drop-in file">
-    Add a task that lets members of `webdev` run any command as root without a password, in `/etc/sudoers.d/webdev`, checked with `visudo` before it is installed.
-
-    <Reveal title="Show the task">
+  <Task title="Let webadmin use sudo">
+    Members of `webadmin` may run any command as root without a password. Put the rule in `/etc/sudoers.d/webadmin`, and have it checked before it is installed:
 
 ```yaml
-    - name: webdev members may run commands as root
-      ansible.builtin.copy:
-        content: "%webdev ALL=(ALL) NOPASSWD: ALL\n"
-        dest: /etc/sudoers.d/webdev
-        owner: root
-        group: root
+    - name: Modify sudo config to allow webadmin users sudo without a password
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/webadmin
+        state: present
+        create: true
         mode: "0440"
+        line: "%webadmin ALL=(ALL) NOPASSWD: ALL"
         validate: /usr/sbin/visudo -cf %s
 ```
-    </Reveal>
+
+    `%` marks a group in a sudoers rule. `validate` runs `visudo` on a temporary copy and installs the file only if the check passes: a broken sudoers file could lock everyone out of sudo.
   </Task>
 
-  <Task title="Run it twice">
+  <Task title="Stop root logging in over SSH">
+    Set `PermitRootLogin no` in `/etc/ssh/sshd_config`, and restart `sshd` when it changes. Put the handler before the tasks, as a reminder that order in the file does not matter:
+
+```yaml
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+
+  tasks:
+    ...output omitted...
+    - name: Disable root login via SSH
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+      notify: Restart sshd
+```
+
+    `regexp` finds an existing line to replace; if there is none, `lineinfile` adds `line` at the end of the file.
+  </Task>
+
+  <Task title="Run it">
 
 ```console
-[student@workstation ~]$ cd ~/system-users
 [student@workstation system-users]$ ansible-navigator run -m stdout users.yml
+
+PLAY [Create multiple local users] *********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Add webadmin group] ******************************************************
+changed: [servera.lab.example.com]
+
+TASK [Create user accounts] ****************************************************
+changed: [servera.lab.example.com] => (item={'username': 'user1', 'groups': 'webadmin'})
+changed: [servera.lab.example.com] => (item={'username': 'user2', 'groups': 'webadmin'})
+changed: [servera.lab.example.com] => (item={'username': 'user3', 'groups': 'webadmin'})
+changed: [servera.lab.example.com] => (item={'username': 'user4', 'groups': 'webadmin'})
+changed: [servera.lab.example.com] => (item={'username': 'user5', 'groups': 'webadmin'})
+
+TASK [Add authorized keys] *****************************************************
+changed: [servera.lab.example.com] => (item={'username': 'user1', 'groups': 'webadmin'})
 ...output omitted...
-serverb.lab.example.com    : ok=5    changed=4    unreachable=0    failed=0  ...
-[student@workstation system-users]$ ansible-navigator run -m stdout users.yml
-...output omitted...
-serverb.lab.example.com    : ok=5    changed=0    unreachable=0    failed=0  ...
-```
 
-    `changed=0` the second time, including the password: that is the fixed salt at work.
+TASK [Modify sudo config to allow webadmin users sudo without a password] ******
+changed: [servera.lab.example.com]
+
+TASK [Disable root login via SSH] **********************************************
+changed: [servera.lab.example.com]
+
+RUNNING HANDLER [Restart sshd] *************************************************
+changed: [servera.lab.example.com]
+
+PLAY RECAP *********************************************************************
+servera.lab.example.com    : ok=7    changed=6    unreachable=0    failed=0  ...
+```
   </Task>
 
-  <Task title="Log in as a new user">
+  <Task title="Log in as user1, and use sudo">
 
-```console
-[student@workstation system-users]$ ssh jane@serverb 'id; sudo -n id -un'
-uid=1002(jane) gid=1003(jane) groups=1003(jane),1002(webdev) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-root
-```
-
-    The key worked, jane is in `webdev`, and `sudo -n` (never prompt) succeeded.
-  </Task>
-
-  <Task title="See the validation catch a mistake">
-    Change the `content` line to something `visudo` rejects, for example `%webdev ALL=(ALL NOPASSWD: ALL` (a missing bracket), and run the playbook:
-
-```text
-fatal: [serverb.lab.example.com]: FAILED! => {… "msg": "failed to validate", …
-"stderr": "…/source:1:18: syntax error\n%webdev ALL=(ALL NOPASSWD: ALL\n                 ^~~~~~~~~\n" …}
-```
-
-    The broken file never reached `/etc/sudoers.d/`, and `sudo` keeps working. Put the line back and run again.
-  </Task>
-
-  <Task title="Finish">
     <Env>
       <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean serverb the way your classroom provides before the next exercise.
+
+```console
+[student@workstation system-users]$ ssh user1@servera
+[user1@servera ~]$ sudo -i
+[root@servera ~]# exit
+[user1@servera ~]$ exit
+```
       </Classroom>
       <HomeLab>
-        Two steps. On workstation, `lab finish system-users` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
+        The keys in `files/` are new, so tell `ssh` which private key to use:
+
+```console
+[student@workstation system-users]$ ssh -i files/user1.key user1@servera 'id; sudo -n id -un'
+uid=1002(user1) gid=1003(user1) groups=1003(user1),1002(webadmin) ...
+root
+```
       </HomeLab>
     </Env>
   </Task>
+
+  <Task title="Confirm root cannot log in">
+
+```console
+[student@workstation system-users]$ ssh root@servera
+root@servera: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+```
+
+    In a classroom that also asks for a password, the answer is `Permission denied, please try again.` Either way, the root account is refused.
+  </Task>
+
+  <Task title="Finish">
+    <Finish name="system-users" />
+  </Task>
 </Lab>
 
-## Try it again, differently
-
-Add a fourth person to `vars/users.yml` and run again: only their account, key and group membership change. Then give `li` the extra field `state: absent` in the list and make the user task use `state: "{{ item['state'] | default('present') }}"` with `remove: true`, so the same loop can remove people too.
+<Callout type="warning" title="Reset afterwards in the home lab">
+This exercise disables root's SSH login on servera, which other exercises use. Reset the servers when you finish.
+</Callout>

@@ -1,12 +1,3 @@
-[dev]
-servera.lab.example.com
-
-[test]
+[webdev]
 serverb.lab.example.com
-
-[prod]
 serverc.lab.example.com
-serverd.lab.example.com
-
-[webservers:children]
-prod

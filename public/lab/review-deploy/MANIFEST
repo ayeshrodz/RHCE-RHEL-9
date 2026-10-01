@@ -1,1 +1,3 @@
-# Review lab: Deploying Ansible (empty project: you write every file)
+# Review lab: Deploying Ansible
+packages.yml
+verify_user.yml

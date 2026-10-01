@@ -1,0 +1,7 @@
+# Getting roles and modules from content collections
+ansible.cfg
+inventory
+bck.yml
+new_system.yml
+requirements.yml
+@setup.sh

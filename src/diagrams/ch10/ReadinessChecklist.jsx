@@ -19,10 +19,10 @@ const LABS = {
 const PRACTICE = {
   1: ['lab_deploy'],
   2: ['lab_deploy', 'lab_playbooks'],
-  3: ['lab_deploy', 'lab_playbooks'],
-  4: ['lab_playbooks'],
+  3: ['lab_deploy', 'lab_admin'],
+  4: ['lab_deploy', 'lab_playbooks'],
   5: ['lab_playbooks', 'lab_roles'],
-  6: ['lab_admin'],
+  6: ['lab_playbooks', 'lab_admin'],
   7: ['lab_admin', 'lab_roles'],
   8: ['lab_deploy', 'lab_playbooks', 'lab_admin', 'lab_roles'],
   9: ['lab_admin'],

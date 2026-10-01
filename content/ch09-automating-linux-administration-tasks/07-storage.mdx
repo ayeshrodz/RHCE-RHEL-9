@@ -25,6 +25,70 @@ Step through the layers from a blank disk to a mounted file system:
 The lab VMs' spare disk is `/dev/sdb`; on many virtual machines it would be `/dev/vdb`. The storage modules live in `community.general` and `ansible.posix`, both installed on workstation.
 </HomeLab>
 
+## Two ways to do it
+
+There are two ways to build that stack with Ansible:
+
+- the **storage system role**, `redhat.rhel_system_roles.storage`, which takes a description of the result you want and works out every step, and is supported by Red Hat;
+- one **module per layer**: `parted`, `lvg`, `lvol`, `filesystem` from `community.general` and `mount` from `ansible.posix`. These give finer control (partitions, exact options) but are community modules.
+
+## The storage system role
+
+The role supports two layouts: a file system directly on a whole, unpartitioned disk, and LVM with whole unpartitioned disks as physical volumes. You describe them in two variables.
+
+`storage_volumes` puts a file system on a whole disk:
+
+```yaml
+- name: Extra disk for /opt/extra
+  hosts: all
+  roles:
+    - name: redhat.rhel_system_roles.storage
+      storage_volumes:
+        - name: extra
+          type: disk
+          disks:
+            - /dev/vdg
+          fs_type: xfs
+          mount_point: /opt/extra
+```
+
+`storage_pools` builds a volume group and logical volumes in it:
+
+```yaml
+- name: LVM on the spare disk
+  hosts: all
+  roles:
+    - name: redhat.rhel_system_roles.storage
+      storage_pools:
+        - name: vg01
+          type: lvm
+          disks:
+            - /dev/vdb
+          volumes:
+            - name: lvol01
+              size: 128m
+              mount_point: "/data"
+              fs_type: xfs
+              state: present
+            - name: lvol02
+              size: 256m
+              mount_point: "/backup"
+              fs_type: xfs
+              state: present
+```
+
+The pool's `name` is the volume group; each volume's `name` is a logical volume. The role creates the physical volume, the group and the volumes, makes the file systems, and mounts them persistently. To grow a volume, increase its `size` and run the play again: the role grows the logical volume and its file system.
+
+A swap volume is a logical volume with `fs_type: swap`; the role adds it to `/etc/fstab` and enables it:
+
+```yaml
+          volumes:
+            - name: lvswap
+              size: 512m
+              fs_type: swap
+              state: present
+```
+
 ## Partitions
 
 ```yaml
@@ -109,7 +173,20 @@ Facts describe the disks and volumes, so a play can check before it acts:
   when: "'sdb' in ansible_facts['devices']"
 ```
 
-`ansible_facts['devices']['sdb']['size']` gives the size, and `ansible_facts['lvm']['vgs']` lists volume groups with their free space.
+Each entry of `ansible_facts['devices']` has the disk's `size`, `model`, `sectors` and `sectorsize`, and its `partitions`, each with a size of its own: `ansible_facts['devices']['sdb']['partitions']['sdb1']['size']`. `ansible_facts['lvm']['vgs']` lists volume groups with their free space.
+
+`ansible_facts['mounts']` is a list of the mounted file systems, with their device, type, options, and free space in blocks:
+
+```yaml
+- name: Print free space on / file system
+  ansible.builtin.debug:
+    msg: >
+      The root file system on {{ ansible_facts['fqdn'] }} has
+      {{ item['block_available'] * item['block_size'] / 1000000 }}
+      megabytes free.
+  loop: "{{ ansible_facts['mounts'] }}"
+  when: item['mount'] == '/'
+```
 
 <Quiz
   id="check"

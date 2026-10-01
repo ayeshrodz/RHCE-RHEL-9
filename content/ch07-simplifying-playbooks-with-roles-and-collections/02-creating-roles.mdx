@@ -99,6 +99,19 @@ dependencies:
   - role: firewall_base
 ```
 
+A dependency can pass its own variables to the role it pulls in:
+
+```yaml
+dependencies:
+  - role: apache
+    port: 8080
+  - role: postgres
+    dbname: serverlist
+    admin_user: felix
+```
+
+A dependency runs **once per play**, however many roles in that play depend on it. If a role really must run every time it is listed, set `allow_duplicates: true` in that role's `meta/main.yml`.
+
 <Callout type="note" title="Use dependencies sparingly">
 A dependency is invisible from the playbook: a reader of the play cannot see that another role will run. Listing both roles in the play is often clearer. Keep dependencies for roles that truly cannot work without another.
 </Callout>
@@ -114,6 +127,28 @@ A dependency is invisible from the playbook: a reader of the play cannot see tha
       vars:
         web_site_title: Staff intranet
 ```
+
+## Changing a role's behaviour with variables
+
+A well-written role takes its settings from variables, so one role can serve many hosts. Where you set them decides whether they win:
+
+| Set in | Overrides the role's `defaults/`? | Overrides the role's `vars/`? |
+| --- | --- | --- |
+| The inventory, `group_vars/` or `host_vars/` | Yes | No |
+| The play's `vars:` | Yes | No |
+| `vars:` under the role entry in `roles:` | Yes | No |
+| A **role parameter**: a key written directly on the role entry | Yes | Yes |
+| `include_vars`, `set_fact`, registered variables | Yes | Yes |
+
+A role parameter looks like this, with the variable at the same level as `role:`:
+
+```yaml
+  roles:
+    - role: motd
+      system_owner: someone@host.example.com
+```
+
+That very high precedence is exactly why `vars/` is the place for values the role needs to work, and `defaults/` for everything a user is meant to change. Never put secrets in either: a role is meant to be shared. Let the playbook supply them, from an Ansible Vault file.
 
 Task names in the output are prefixed with the role name, which shows at a glance where each task comes from:
 
@@ -139,9 +174,14 @@ RUNNING HANDLER [web_site : restart httpd] *************************************
     Run the play twice; the second run must report `changed=0`. Use modules, not `command`, wherever a module exists.
   </Step>
   <Step title="Documented">
-    List the variables and show an example play in `README.md`. Future you is the most likely reader.
+    List the variables and show an example play in `README.md`, and keep `meta/main.yml` accurate. Future you is the most likely reader.
+  </Step>
+  <Step title="Versioned">
+    Keep each role in its own version control repository. Projects then pin the version they were tested with, and a bad change can be rolled back.
   </Step>
 </Steps>
+
+When a role does not quite fit a new case, improve the role (add a variable, split a task) rather than copying it into a near-duplicate. Test the change against the plays that already use it.
 
 <Callout type="exam" title="Build the skeleton fast">
 `ansible-galaxy role init roles/NAME`, fill `tasks/main.yml` and `defaults/main.yml`, write a three-line play that uses it, run it twice. Practise until that takes a few minutes; everything else about roles builds on it.

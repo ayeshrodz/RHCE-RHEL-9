@@ -1,4 +1,6 @@
 # Review lab: Creating roles
 ansible.cfg
 inventory
-@setup.sh
+ansible-httpd.yml
+templates/httpd.conf.j2
+files/index.html

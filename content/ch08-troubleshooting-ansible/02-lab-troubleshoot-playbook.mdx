@@ -1,209 +1,214 @@
 ---
-title: "Guided exercise: Troubleshooting a playbook"
+title: "Guided exercise: Troubleshooting playbooks"
 kind: lab
-minutes: 25
+minutes: 20
 ---
 
 <Lead>
-The playbook in this exercise has five mistakes, one of each common kind. You will find them the way you would at work: run, read the message, decide at which stage it failed, fix, and run again. The last one is the kind Ansible cannot see at all.
+A colleague's playbook that should set up a Samba server on servera does not run. You will turn on logging, then fix it one error at a time, reading each message for the line, the column and the hint it gives.
 </Lead>
 
-The project `~/troubleshoot-playbook` has an `ansible.cfg`, an `inventory` with servera in the `web` group, and `site.yml`: one play that should publish a web page on servera, and a second play that checks the page from workstation. Do not fix anything until a message leads you to it.
+The project `~/troubleshoot-playbook` has an `inventory` with servera in the `samba_servers` group, the playbook `samba.yml`, and a template `samba.conf.j2`. There is no `ansible.cfg` yet.
 
 <Lab
-  id="tsplaybook"
-  title="Troubleshooting a playbook"
+  id="troubleshoot-playbook"
+  title="Troubleshooting playbooks"
   classroom="lab start troubleshoot-playbook"
-  own
   hosts={['workstation', 'servera.lab.example.com']}
-  outcomes={[
-    'Find and fix YAML, indentation, variable and argument errors from their messages.',
-    'Rerun from a failed task, and find a problem that Ansible cannot detect.',
-  ]}
+  outcomes={['Read error messages, find the problems in a playbook and fix them.']}
 >
-  <Task title="Check the syntax">
+  <Task title="Log everything">
+    In `~/troubleshoot-playbook`, create `ansible.cfg` so that Ansible uses the project's inventory and writes a log file in the project:
+
+```ini title="ansible.cfg"
+[defaults]
+log_path = /home/student/troubleshoot-playbook/ansible.log
+inventory = /home/student/troubleshoot-playbook/inventory
+```
+
+    The playbook sets `remote_user` and `become` itself, so nothing else is needed.
+  </Task>
+
+  <Task title="Run it, and read the first error">
 
 ```console
 [student@workstation ~]$ cd ~/troubleshoot-playbook
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml --syntax-check
-[WARNING]: While constructing a mapping from /home/student/troubleshoot-
-playbook/site.yml, line 26, column 7, found a duplicate dict key (name). Using
-last defined value only.
+[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout samba.yml
 ERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:
 JSON: Expecting value: line 1 column 1 (char 0)
 
 Syntax Error while loading YAML.
-  found unacceptable key (unhashable type: 'AnsibleMapping')
+  mapping values are not allowed in this context
 
-The error appears to be in '/home/student/troubleshoot-playbook/site.yml': line 11, column 16, but may
+The error appears to be in '/home/student/troubleshoot-playbook/samba.yml': line 8, column 30, but may
 be elsewhere in the file depending on the exact syntax problem.
 
 The offending line appears to be:
 
-      ansible.builtin.dnf:
-        name: {{ web_package }}
-               ^ here
+    install_state: installed
+    random_var: This is colon: test
+                             ^ here
+Please review the log for errors.
+```
+
+    The same message is in the log, with a time stamp on each line:
+
+```console
+[student@workstation troubleshoot-playbook]$ tail ansible.log
 ...output omitted...
 ```
 
-    Two problems are reported. Deal with the `ERROR!` first. It points at line 11, a value that starts with `{{` without quotes, and the end of the message even suggests the fix.
-
-    <Reveal title="Show the fix">
+    The value of `random_var` contains a colon followed by a space, which YAML reads as the start of another key. Quote the value:
 
 ```yaml
-        name: "{{ web_package }}"
+    random_var: "This is colon: test"
 ```
-    </Reveal>
-
-    Keep the `[WARNING]` in mind: a duplicate key `name` at line 26. It is the next problem.
   </Task>
 
   <Task title="Check the syntax again">
 
 ```console
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml --syntax-check
-...output omitted...
-ERROR! conflicting action statements: ansible.builtin.service, state
+[student@workstation troubleshoot-playbook]$ ansible-navigator run \
+> -m stdout samba.yml --syntax-check
+ERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:
+JSON: Expecting value: line 1 column 1 (char 0)
 
-The error appears to be in '/home/student/troubleshoot-playbook/site.yml': line 26, column 7, but may
+Syntax Error while loading YAML.
+  did not find expected '-' indicator
+
+The error appears to be in '/home/student/troubleshoot-playbook/samba.yml': line 38, column 6, but may
 be elsewhere in the file depending on the exact syntax problem.
 
 The offending line appears to be:
 
-    - name: Web service is running
-      ^ here
+     - name: Deliver samba config
+     ^ here
 ```
 
-    Look at the whole task at line 26. Its arguments are at the same level as `ansible.builtin.service:`, so Ansible reads `state` as a second module, and `name` twice, which explains the earlier warning.
-
-    <Reveal title="Show the fix">
+    The `Deliver samba config` task is indented one space more than the tasks around it. Line it up with the others:
 
 ```yaml
-    - name: Web service is running
-      ansible.builtin.service:
-        name: "{{ web_srv }}"
-        state: start
-        enabled: true
+    - name: Deliver samba config
+      ansible.builtin.template:
+        src: samba.j2
+        dest: /etc/samba/smb.conf
+        owner: root
+        group: root
+        mode: "0644"
 ```
-    </Reveal>
-
-    Run `--syntax-check` once more: it now prints only the playbook name. The file can be read; what remains only shows up when tasks run.
   </Task>
 
-  <Task title="Run the playbook">
+  <Task title="And again">
 
 ```console
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml
+[student@workstation troubleshoot-playbook]$ ansible-navigator run \
+> -m stdout samba.yml --syntax-check
 ...output omitted...
-TASK [Web service is running] **************************************************
-fatal: [servera.lab.example.com]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'web_srv' is undefined. 'web_srv' is undefined …"}
+Syntax Error while loading YAML.
+  found unacceptable key (unhashable type: 'AnsibleMapping')
+
+The error appears to be in '/home/student/troubleshoot-playbook/samba.yml': line 14, column 17, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+        name: samba
+        state: {{ install_state }}
+                ^ here
+We could be wrong, but this one looks like it might be an issue with
+missing quotes. Always quote template expression brackets when they
+start a value. For instance:
+
+    with_items:
+      - {{ foo }}
+
+Should be written as:
+
+    with_items:
+      - "{{ foo }}"
+```
+
+    This time the message even suggests the fix. A value that starts with `{{` must be quoted:
+
+```yaml
+    - name: Install samba
+      ansible.builtin.dnf:
+        name: samba
+        state: "{{ install_state }}"
+```
+
+```console
+[student@workstation troubleshoot-playbook]$ ansible-navigator run \
+> -m stdout samba.yml --syntax-check
+playbook: /home/student/troubleshoot-playbook/samba.yml
+```
+  </Task>
+
+  <Task title="Run it">
+
+```console
+[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout samba.yml
+
+PLAY [Install a samba server] **************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Install samba] ***********************************************************
+changed: [servera.lab.example.com]
+
+TASK [Install firewalld] *******************************************************
+ok: [servera.lab.example.com]
+
+TASK [Debug install_state variable] ********************************************
+ok: [servera.lab.example.com] => {
+    "msg": "The state for the samba service is installed"
+}
+
+TASK [Start firewalld] *********************************************************
+ok: [servera.lab.example.com]
+
+TASK [Configure firewall for samba] ********************************************
+changed: [servera.lab.example.com]
+
+TASK [Deliver samba config] ****************************************************
+An exception occurred during task execution. To see the full traceback, use -vvv. The error was: If you are using a module and expect the file to exist on the remote, see the remote_src option
+fatal: [servera.lab.example.com]: FAILED! => {"changed": false, "msg": "Could not find or access 'samba.j2'\nSearched in:\n\t/home/student/troubleshoot-playbook/templates/samba.j2\n\t/home/student/troubleshoot-playbook/samba.j2\n\t/home/student/troubleshoot-playbook/templates/samba.j2\n\t/home/student/troubleshoot-playbook/samba.j2 on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}
 
 PLAY RECAP *********************************************************************
-servera.lab.example.com    : ok=4    changed=3    unreachable=0    failed=1  ...
+servera.lab.example.com    : ok=6    changed=2    unreachable=0    failed=1  ...
 ```
 
-    Three tasks made changes before this one failed. The variable `web_srv` is not defined; compare with the `vars` section at the top of the play.
-
-    <Reveal title="Show the fix">
-
-    The play defines `web_service`. Use that name: `name: "{{ web_service }}"`.
-    </Reveal>
-  </Task>
-
-  <Task title="Rerun from the failed task">
-    The first three tasks already worked. Start at the one that failed:
-
-```console
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml \
-> --start-at-task "Web service is running"
-...output omitted...
-TASK [Web service is running] **************************************************
-fatal: [servera.lab.example.com]: FAILED! => {"changed": false, "msg": "value of state must be one of: reloaded, restarted, started, stopped, got: start"}
-```
-
-    The variable is fixed; now the module rejects a value, and the message lists the accepted ones.
-
-    <Reveal title="Show the fix">
+    The syntax is right now, and the play gets as far as the template. The message lists every place Ansible looked for `samba.j2`; the project has `samba.conf.j2`. Fix the `src` line:
 
 ```yaml
-        state: started
+        src: samba.conf.j2
 ```
-    </Reveal>
   </Task>
 
-  <Task title="Run everything again">
+  <Task title="Run it once more">
 
 ```console
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml
+[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout samba.yml
 ...output omitted...
-TASK [Home page returns our text] **********************************************
-fatal: [localhost]: FAILED! => {… "content": "<!doctype html>\n<html>\n  <head>\n … <title>HTTP Server Test Page …", … "failed_when_result": true, … "status": 403, …}
+TASK [Deliver samba config] ****************************************************
+changed: [servera.lab.example.com]
+
+TASK [Start samba] *************************************************************
+changed: [servera.lab.example.com]
 
 PLAY RECAP *********************************************************************
-localhost                  : ok=0    changed=0    unreachable=0    failed=1  ...
-servera.lab.example.com    : ok=5    changed=1    unreachable=0    failed=0  ...
+servera.lab.example.com    : ok=8    changed=2    unreachable=0    failed=0  ...
 ```
 
-    Every task on servera succeeded, and yet the check fails. The web server answered with **403** and its test page, not our text. Ansible did exactly what the playbook says; the playbook says the wrong thing.
-  </Task>
-
-  <Task title="Investigate the host">
-    Look at what the server returns, and where the page actually went:
-
-```console
-[student@workstation troubleshoot-playbook]$ curl -s -o /dev/null -w '%{http_code}\n' http://servera.lab.example.com
-403
-[student@workstation troubleshoot-playbook]$ ssh devops@servera 'ls -l /var/www/index.html /var/www/html/'
--rw-r--r--. 1 root root 20 … /var/www/index.html
-
-/var/www/html/:
-total 0
-```
-
-    <Reveal title="Show the cause and the fix">
-
-    The page was written to `/var/www/index.html`, but Apache serves `/var/www/html`, which is empty. With no index page it shows its test page with status 403. Fix the variable:
-
-```yaml
-    web_root: /var/www/html
-```
-    </Reveal>
-  </Task>
-
-  <Task title="Confirm, and confirm again">
-
-```console
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml
-...output omitted...
-localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
-servera.lab.example.com    : ok=5    changed=1    unreachable=0    failed=0  ...
-[student@workstation troubleshoot-playbook]$ ansible-navigator run -m stdout site.yml
-...output omitted...
-localhost                  : ok=1    changed=0    unreachable=0    failed=0  ...
-servera.lab.example.com    : ok=5    changed=0    unreachable=0    failed=0  ...
-```
-
-    The test passes, and the second run changes nothing. The stray `/var/www/index.html` is harmless; delete it with an ad hoc `file` command if you like.
+    Every task succeeds. A further run reports `changed=0`.
   </Task>
 
   <Task title="Finish">
-    <Env>
-      <Classroom>
-        This exercise is not part of a course, so there is no `lab finish` for it. Reset or clean servera the way your classroom provides before the next exercise.
-      </Classroom>
-      <HomeLab>
-        Two steps. On workstation, `lab finish troubleshoot-playbook` moves your project to `~/lab-archive/`. Then, on the Ubuntu host, `rht-vmctl reset servers` puts every managed host back to the clean baseline.
-      </HomeLab>
-    </Env>
+    <Finish name="troubleshoot-playbook" />
   </Task>
 </Lab>
 
 ## What you practised
 
-| Mistake | Found by | Stage |
-| --- | --- | --- |
-| Unquoted `{{ }}` at the start of a value | `--syntax-check` | Read |
-| Arguments not indented under the module | `--syntax-check` | Read |
-| Misspelt variable name | Running the play | Task |
-| Value the module does not accept | Running from that task | Task |
-| Page written to the wrong directory | A test play, then `curl` and `ssh` | Result |
+Four errors, each found by a different clue: the column marker under a colon, a `-` that did not line up, a hint about quoting, and a list of search paths. Fix one, run again, read the next. The syntax check found three of them without touching servera; only the missing file needed a real run.

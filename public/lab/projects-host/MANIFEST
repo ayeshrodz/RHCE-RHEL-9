@@ -1,0 +1,5 @@
+# Selecting hosts with host patterns
+ansible.cfg
+inventory1
+inventory2
+playbook.yml

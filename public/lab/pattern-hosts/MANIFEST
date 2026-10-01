@@ -1,4 +1,0 @@
-# Selecting hosts with host patterns
-ansible.cfg
-inventory
-who.yml

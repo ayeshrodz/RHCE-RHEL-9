@@ -40,6 +40,8 @@ ok: [serverb.lab.example.com] => {
 }
 ```
 
+Each interface's fact holds its `active` state, `device`, `ipv4` (`address`, `broadcast`, `netmask`, `network`, `prefix`), `ipv6` (a list), `macaddress`, `module` (the driver), `mtu` and `type`. The host name that the inventory uses is not a fact: it is the magic variable `inventory_hostname`, which may differ from `ansible_facts['fqdn']`.
+
 `gather_subset: network` collects only the network facts, which is quicker when that is all you need.
 
 ## Changing connections
@@ -84,6 +86,38 @@ With the system role, the same result is a variable:
     - redhat.rhel_system_roles.network
 ```
 
+### The network role's variables
+
+`network_provider` chooses `nm` (NetworkManager, the default on RHEL 9) or `initscripts`. Each entry of `network_connections` describes one connection profile:
+
+| Key | Meaning |
+| --- | --- |
+| `name` | The connection profile's name |
+| `state` | `up` (active) or `down` |
+| `persistent_state` | `present` (the profile exists) or `absent` (deleted) |
+| `type` | `ethernet`, `bridge`, `bond`, `team`, `vlan`, `macvlan`, `infiniband`, `wireless`, `dummy` … |
+| `interface_name`, `mac` | Which device the profile applies to |
+| `autoconnect` | Bring the connection up at boot |
+| `zone` | The firewalld zone for the interface |
+| `ip` | `address` (a list), `gateway4`, `gateway6`, `dns`, `dhcp4`, `auto6` |
+
+```yaml
+network_connections:
+  - name: eth0
+    persistent_state: present
+    type: ethernet
+    autoconnect: true
+    mac: 00:00:5e:00:53:5d
+    ip:
+      address:
+        - 172.25.250.40/24
+      dns:
+        - 8.8.8.8
+    zone: external
+```
+
+Set `state: down` to deactivate a connection and keep its profile; add `persistent_state: absent` to delete the profile too. Like the other system roles' variables, `network_connections` usually lives in `group_vars` or `host_vars`, not in the play. The role's `README.md` has a section for each kind of setting.
+
 <Callout type="warning" title="Do not saw off the branch you sit on">
 Changing the address or gateway of the interface Ansible connects through can drop the SSH session halfway through the play, and leave the host unreachable. Practise on an extra interface, as the exercise does with a dummy interface. Make changes to the main interface from a console, or with the network role, which is designed to apply a whole configuration in one go.
 </Callout>
@@ -93,6 +127,8 @@ The lab VMs have one network card, managed by the connection `System enp5s0`. Th
 </HomeLab>
 
 ## Names
+
+`ansible.builtin.hostname` sets the host name; it does not change `/etc/hosts`, which you manage separately:
 
 ```yaml
 - name: The host name is set
@@ -118,6 +154,17 @@ Opening a service or port is part of most network changes. You have used `ansibl
     service: https
     permanent: true
     immediate: true
+    state: enabled
+```
+
+The module manages more than services: `port` (`8080/tcp`), `source` (an address range), `rich_rule`, `interface`, and the `zone` each of those belongs to. This moves an interface into the `external` zone:
+
+```yaml
+- name: eth0 is in the external zone
+  ansible.posix.firewalld:
+    zone: external
+    interface: eth0
+    permanent: true
     state: enabled
 ```
 

@@ -13,8 +13,8 @@ The chapter on one page: one module per job in each of the five areas, and flash
 - **`dnf`** installs, updates and removes packages; **`yum_repository`** and **`rpm_key`** configure where they come from; **`package_facts`** reports what is installed.
 - **`group`**, **`user`** and **`authorized_key`** manage accounts and logins; sudo rules go in validated files in `/etc/sudoers.d/`.
 - **`cron`** and **`at`** schedule work; **`service`** controls daemons; the default target is a link, and **`reboot`** waits for the host to come back.
-- Storage is a stack: **`parted`**, **`lvg`**, **`lvol`**, **`filesystem`**, **`mount`**, each idempotent, with `resizefs` to grow online.
-- Network facts describe the configuration; **`nmcli`** or the **network system role** change it, preferably not on the interface Ansible is using.
+- Storage is a stack: the **storage system role** builds it from `storage_pools` (volume groups and volumes, file systems, mounts, swap); the modules **`parted`**, **`lvg`**, **`lvol`**, **`filesystem`** and **`mount`** do it layer by layer.
+- Network facts describe the configuration; the **network system role** (`network_connections`) or **`nmcli`** change it, preferably not on the interface Ansible is using.
 - Keep people, sizes and names in variables, so the tasks never change when the data does.
 
 ## Cheat sheet
@@ -82,6 +82,23 @@ The chapter on one page: one module per job in each of the five areas, and flash
 
   </Tab>
   <Tab label="Storage">
+
+```yaml
+- name: LVM with the storage role
+  hosts: webservers
+  roles:
+    - name: redhat.rhel_system_roles.storage
+      storage_pools:
+        - name: apache-vg
+          type: lvm
+          disks: [/dev/vdb]
+          volumes:
+            - name: content-lv
+              size: 64m
+              mount_point: /var/www
+              fs_type: xfs
+              state: present
+```
 
 ```yaml
 - community.general.parted:

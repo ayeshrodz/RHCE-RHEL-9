@@ -1,3 +1,5 @@
 # Managing network configuration
 ansible.cfg
 inventory
+get-eth1.yml
+@setup.sh

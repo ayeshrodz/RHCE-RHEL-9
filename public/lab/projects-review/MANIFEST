@@ -1,0 +1,6 @@
+# Chapter lab: Managing complex plays and playbooks
+ansible.cfg
+inventory
+playbook.yml
+host-test.yml
+files/tune.conf

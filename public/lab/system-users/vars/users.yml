@@ -1,9 +1,0 @@
----
-# The people who need accounts. All of them join the webdev group.
-users:
-  - name: jane
-    comment: Jane Doe
-  - name: omar
-    comment: Omar Haddad
-  - name: li
-    comment: Li Wei

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+mail_owner = postfix
+myhostname = {{ ansible_facts['fqdn'] }}
+mydomain = lab.example.com
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+mydestination = $myhostname, localhost.$mydomain, localhost
+mynetworks = 127.0.0.0/8, 172.25.250.0/24
+relayhost =
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+compatibility_level = 2

@@ -76,6 +76,33 @@ Keep the plain password in a Vault-encrypted file (chapter 3), never in the play
 
 The `file` lookup reads a file **on the control node**. Keep public keys in the project, one file per person.
 
+A user's own key pair can be created on the managed host by the `user` module:
+
+```yaml
+- name: user1 has an SSH key pair
+  ansible.builtin.user:
+    name: user1
+    generate_ssh_key: true
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_my_rsa
+```
+
+It never overwrites an existing key unless you add `force: true`.
+
+### Known host keys
+
+`ansible.builtin.known_hosts` adds a server's public host key to a `known_hosts` file, so that SSH clients on the managed host trust that server without asking:
+
+```yaml
+- name: servera is a known host for everyone
+  ansible.builtin.known_hosts:
+    path: /etc/ssh/ssh_known_hosts
+    name: servera.lab.example.com
+    key: "{{ lookup('ansible.builtin.file', 'pubkeys/servera') }}"
+```
+
+The key line has the form `servera.lab.example.com,172.25.250.10 ssh-ed25519 AAAA…`: the names, the key type and the key. `ansible-navigator doc -l -t lookup` lists the other lookups you can read values with.
+
 ## Sudo rights
 
 Never edit `/etc/sudoers` itself. Put each rule in its own file in `/etc/sudoers.d/`, and let `visudo` check it before it is installed:

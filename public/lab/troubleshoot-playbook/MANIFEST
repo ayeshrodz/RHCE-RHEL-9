@@ -1,4 +1,4 @@
-# Troubleshooting a playbook (site.yml has five mistakes)
-ansible.cfg
+# Troubleshooting playbooks
 inventory
-site.yml
+samba.yml
+samba.conf.j2
