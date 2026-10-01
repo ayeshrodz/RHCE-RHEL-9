@@ -14,7 +14,7 @@ const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv']
 const listeners = new Map();
 const cache = new Map();
 
-function read(key, fallback) {
+export function readStored(key, fallback) {
   if (cache.has(key)) return cache.get(key);
   let value = fallback;
   try {
@@ -31,7 +31,7 @@ function notify(key) {
   listeners.get(key)?.forEach((fn) => fn());
 }
 
-function write(key, value) {
+export function writeStored(key, value) {
   cache.set(key, value);
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value));
@@ -66,21 +66,27 @@ if (typeof window !== 'undefined') {
 export function useStored(key, fallback) {
   const value = useSyncExternalStore(
     (fn) => subscribe(key, fn),
-    () => read(key, fallback),
+    () => readStored(key, fallback),
     () => fallback,
   );
-  const set = useCallback((next) => write(key, typeof next === 'function' ? next(read(key, fallback)) : next), [key, fallback]);
+  const set = useCallback((next) => writeStored(key, typeof next === 'function' ? next(readStored(key, fallback)) : next), [key, fallback]);
   return [value, set];
 }
 
 function progressKeys() {
+  const keys = [...cache.keys()].filter((k) => !PREFERENCES.has(k));
   try {
-    return Object.keys(localStorage)
-      .filter((k) => k.startsWith(PREFIX))
-      .map((k) => k.slice(PREFIX.length))
-      .filter((k) => !PREFERENCES.has(k));
+    return [
+      ...new Set([
+        ...keys,
+        ...Object.keys(localStorage)
+          .filter((k) => k.startsWith(PREFIX))
+          .map((k) => k.slice(PREFIX.length))
+          .filter((k) => !PREFERENCES.has(k)),
+      ]),
+    ];
   } catch {
-    return [];
+    return keys;
   }
 }
 
@@ -102,21 +108,42 @@ export function resetAllProgress() {
 /** Everything the reader has done (not the theme), as a JSON-safe object. */
 export function exportProgress() {
   const data = {};
-  for (const key of progressKeys()) data[key] = read(key, null);
+  for (const key of progressKeys()) data[key] = readStored(key, null);
   return { app: APP_ID, version: EXPORT_VERSION, exportedAt: new Date().toISOString(), data };
 }
 
-/** Restore a file produced by exportProgress(). Replaces current progress. */
-export function importProgress(payload) {
-  if (!payload || (payload.app !== APP_ID && !OLD_APP_IDS.includes(payload.app)) || typeof payload.data !== 'object') {
+const record = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+const indices = (v, min = 0) => Array.isArray(v) && v.every((n) => Number.isSafeInteger(n) && n >= min);
+
+export function validateProgress(payload) {
+  if (!record(payload) || ![APP_ID, ...OLD_APP_IDS].includes(payload.app) || !record(payload.data)) {
     throw new Error('This file is not a Playbook Path progress export.');
   }
-  if (payload.version > EXPORT_VERSION) {
-    throw new Error('This export was made by a newer version of the guide.');
+  if (!Number.isInteger(payload.version) || payload.version < 1 || payload.version > EXPORT_VERSION) {
+    throw new Error('This progress export version is not supported.');
   }
-  resetAllProgress();
+  if (JSON.stringify(payload).length > 2_000_000) throw new Error('This progress file is too large.');
+  const data = {};
   for (const [key, value] of Object.entries(payload.data)) {
-    if (!PREFERENCES.has(key)) write(key, value);
+    if (PREFERENCES.has(key)) continue;
+    let valid = false;
+    if (key === 'completed') valid = Array.isArray(value) && value.every((v) => typeof v === 'string');
+    else if (key === 'lastVisited') valid = value === null || typeof value === 'string';
+    else if (key === 'readiness') valid = record(value) && Object.values(value).every((v) => [0, 1, 2].includes(v));
+    else if (/^lab:ch\d+\/[a-z0-9-]+:[a-z0-9-]+$/.test(key)) valid = indices(value, 1);
+    else if (/^quiz:ch\d+\/[a-z0-9-]+:[a-z0-9-]+$/.test(key)) {
+      valid = record(value) && Object.entries(value).every(([k, v]) => /^\d+$/.test(k) && Number.isSafeInteger(v) && v >= 0);
+    }
+    if (!valid) throw new Error(`Invalid progress entry: ${key}`);
+    data[key] = value;
   }
-  return Object.keys(payload.data).length;
+  return data;
+}
+
+/** Validate everything before replacing current progress. */
+export function importProgress(payload) {
+  const data = validateProgress(payload);
+  resetAllProgress();
+  for (const [key, value] of Object.entries(data)) writeStored(key, value);
+  return Object.keys(data).length;
 }

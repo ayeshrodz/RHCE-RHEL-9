@@ -31,7 +31,7 @@ Select a file to see what it is for:
 
 <RoleAnatomy />
 
-Only `tasks/main.yml` is required. Leave out, or delete, any directory a role does not use.
+No individual file is mandatory: a role may provide tasks, variables, handlers, or files. A role that runs tasks normally uses `tasks/main.yml`. Leave out, or delete, any directory a role does not use.
 
 | Directory | Holds |
 | --- | --- |
@@ -70,7 +70,7 @@ To set a role's variables for one play, give the role entry a `vars` section:
 
 ## The order things run in
 
-A play can contain roles and its own tasks. Ansible does not run them in the order they are written. It runs **`pre_tasks`**, then **`roles`**, then **`tasks`**, then **`post_tasks`**, and it runs pending handlers between those stages. Select a step to see where it comes from:
+A play can contain roles and its own tasks. Ansible does not run them in the order they are written. It runs **`pre_tasks`**, then **`roles`**, then **`tasks`**, then **`post_tasks`**, with handler flushes after `pre_tasks`, after `roles` and `tasks` together, and after `post_tasks`. Select a step to see where it comes from:
 
 <PlayOrder />
 
@@ -124,10 +124,10 @@ Pass passwords and keys into a role as variables from a Vault-encrypted file (ch
   title="Check your understanding"
   questions={[
     {
-      q: 'Which file must a role have?',
+      q: 'Which file normally contains the tasks that a role runs?',
       options: ['`meta/main.yml`', '`tasks/main.yml`', '`defaults/main.yml`', '`README.md`'],
       answer: 1,
-      explain: 'Every other directory is optional.',
+      explain: 'tasks/main.yml is the default task entry point; roles can also supply only variables or files.',
     },
     {
       q: 'A play has `tasks`, `roles` and `pre_tasks`, written in that order. What runs first?',

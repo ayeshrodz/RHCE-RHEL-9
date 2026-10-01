@@ -16,7 +16,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\" plugins vite.config.js",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" plugins vite.config.js"
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" plugins vite.config.js",
+    "test": "node --test tests/*.test.js"
   },
   "devDependencies": {
     "@mdx-js/react": "^3.1.1",

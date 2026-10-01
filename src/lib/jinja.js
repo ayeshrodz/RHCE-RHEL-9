@@ -229,7 +229,7 @@ function parseExpr(src) {
       if (/^(true|True)$/.test(t.v)) return () => true;
       if (/^(false|False)$/.test(t.v)) return () => false;
       if (/^(none|None)$/.test(t.v)) return () => null;
-      return (c) => (t.v in c ? c[t.v] : new Undefined(t.v));
+      return (c) => (Object.hasOwn(c, t.v) ? c[t.v] : new Undefined(t.v));
     }
     if (t.v === '(') {
       const e = or();
@@ -261,7 +261,7 @@ function need(v) {
 }
 function lookup(obj, key, label) {
   if (isUndef(obj)) return obj;
-  if (obj === null || typeof obj !== 'object' || !(key in obj)) {
+  if (obj === null || typeof obj !== 'object' || !Object.hasOwn(obj, key)) {
     return new Undefined(label, `'${describe(obj)}' has no attribute ${typeof key === 'number' ? key : `'${key}'`}`);
   }
   return obj[key];
@@ -270,7 +270,7 @@ const describe = (v) =>
   Array.isArray(v) ? 'list object' : v && typeof v === 'object' ? 'dict object' : typeof v === 'string' ? 'str object' : 'value';
 const truthy = (v) =>
   !(
-    isUndef(v) ||
+    isUndef(need(v)) ||
     v === null ||
     v === false ||
     v === 0 ||
@@ -278,7 +278,18 @@ const truthy = (v) =>
     (Array.isArray(v) && !v.length) ||
     (typeof v === 'object' && v && !Array.isArray(v) && !Object.keys(v).length)
   );
-const equal = (a, b) => (a && typeof a === 'object' ? JSON.stringify(a) === JSON.stringify(b) : a === b);
+const equal = (a, b) => {
+  if (Array.isArray(a)) return Array.isArray(b) && a.length === b.length && a.every((v, i) => equal(v, b[i]));
+  if (a && typeof a === 'object')
+    return (
+      b !== null &&
+      typeof b === 'object' &&
+      !Array.isArray(b) &&
+      Object.keys(a).length === Object.keys(b).length &&
+      Object.keys(a).every((k) => Object.hasOwn(b, k) && equal(a[k], b[k]))
+    );
+  return a === b;
+};
 const contains = (hay, x) =>
   typeof hay === 'string'
     ? hay.includes(String(x))
@@ -436,32 +447,37 @@ function parse(tokens) {
   return body();
 }
 
-function run(nodes, ctx) {
+function run(nodes, ctx, budget) {
   let out = '';
   for (const node of nodes) {
+    if (--budget.steps < 0) throw new Error('Template exceeded the 10,000 step playground limit.');
     if (node.n === 'text') out += node.v;
     else if (node.n === 'out') out += str(need(node.expr(ctx)));
     else if (node.n === 'set') ctx[node.name] = need(node.expr(ctx));
     else if (node.n === 'if') {
       const hit = node.branches.find((b) => truthy(b.cond(ctx)));
-      out += run(hit ? hit.body : node.otherwise, ctx);
+      out += run(hit ? hit.body : node.otherwise, ctx, budget);
     } else if (node.n === 'for') {
       let items = need(node.list(ctx));
       if (items && typeof items === 'object' && !Array.isArray(items)) items = Object.keys(items);
       if (typeof items === 'string') items = [...items];
       if (!Array.isArray(items)) throw new Error(`'${str(items)}' is not something a for loop can go through`);
+      if (items.length > 5000) throw new Error('Loop is limited to 5,000 items.');
       if (node.cond) items = items.filter((it) => truthy(node.cond({ ...ctx, [node.name]: it })));
-      if (!items.length) out += run(node.empty, ctx);
+      if (!items.length) out += run(node.empty, ctx, budget);
       items.forEach((it, idx) => {
         const loop = { index: idx + 1, index0: idx, first: idx === 0, last: idx === items.length - 1, length: items.length };
-        out += run(node.body, { ...ctx, [node.name]: it, loop });
+        out += run(node.body, { ...ctx, [node.name]: it, loop }, budget);
       });
     }
+    if (out.length > 200000) throw new Error('Rendered output is limited to 200 KB.');
   }
   return out;
 }
 
 /** Render a template with a context object. Throws Error with a readable message. */
 export function render(template, context) {
-  return run(parse(lex(template)), { ...context });
+  if (template.length > 20000) throw new Error('Template is limited to 20 KB.');
+  if ((template.match(/\{%/g) ?? []).length > 100) throw new Error('Use fewer than 100 block tags.');
+  return run(parse(lex(template)), { ...context }, { steps: 10000 });
 }

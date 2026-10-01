@@ -45,8 +45,8 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
     Write `storage.yml`, which uses the storage role on `webservers`:
 
     - a volume group `vg_web` on `/dev/vdb`,
-    - a logical volume `lv_content`, 128 MiB, XFS, mounted on `/var/www/html/content`,
-    - a logical volume `lv_uploads`, 256 MiB, XFS, mounted on `/var/www/html/uploads`.
+    - a logical volume `lv_content`, 768 MiB, XFS, mounted on `/var/www/html/content`,
+    - a logical volume `lv_uploads`, 1024 MiB, XFS, mounted on `/var/www/html/uploads`.
 
     Run it.
 
@@ -66,12 +66,12 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
             - /dev/vdb
           volumes:
             - name: lv_content
-              size: 128m
+              size: 768m
               mount_point: "/var/www/html/content"
               fs_type: xfs
               state: present
             - name: lv_uploads
-              size: 256m
+              size: 1024m
               mount_point: "/var/www/html/uploads"
               fs_type: xfs
               state: present

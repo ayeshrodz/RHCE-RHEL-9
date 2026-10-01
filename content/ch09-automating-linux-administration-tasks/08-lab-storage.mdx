@@ -25,7 +25,7 @@ The project `~/system-storage` has an `ansible.cfg`, an `inventory` with servera
     On servera:
 
     - `/dev/vdb` is the physical volume of a volume group `apache-vg`,
-    - two logical volumes in it: `content-lv`, 64 MiB, and `logs-lv`, 128 MiB,
+    - two logical volumes in it: `content-lv`, 512 MiB, and `logs-lv`, 768 MiB,
     - both formatted with XFS,
     - `content-lv` mounted persistently on `/var/www`, and `logs-lv` on `/var/log/httpd`.
   </Task>
@@ -58,18 +58,18 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
             - /dev/vdb
           volumes:
             - name: content-lv
-              size: 64m
+              size: 512m
               mount_point: "/var/www"
               fs_type: xfs
               state: present
             - name: logs-lv
-              size: 128m
+              size: 768m
               mount_point: "/var/log/httpd"
               fs_type: xfs
               state: present
 ```
 
-    The variables are given on the role entry itself, so they apply to this role only. There is no task for the physical volume, the file systems or `/etc/fstab`: the role works those out from the description.
+    The variables are passed as role parameters. On older cores, role variables can also be visible elsewhere in the play; use names prefixed for the role to avoid collisions. There is no task for the physical volume, the file systems or `/etc/fstab`: the role works those out from the description.
   </Task>
 
   <Task title="Run it">
@@ -100,7 +100,7 @@ TASK [Display physical volumes] ************************************************
 ok: [servera.lab.example.com] => {
     "msg": [
         "  PV         VG        Fmt  Attr PSize  PFree ",
-        "  /dev/sdb   apache-vg lvm2 a--  <5.00g <4.81g"
+        "  /dev/sdb   apache-vg lvm2 a--  <5.00g <3.75g"
     ]
 }
 ...output omitted...
@@ -108,8 +108,8 @@ TASK [Display logical volumes] *************************************************
 ok: [servera.lab.example.com] => {
     "msg": [
         "  LV         VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert",
-        "  content-lv apache-vg -wi-ao----  64.00m                                                    ",
-        "  logs-lv    apache-vg -wi-ao---- 128.00m                                                    "
+        "  content-lv apache-vg -wi-ao----  512.00m                                                    ",
+        "  logs-lv    apache-vg -wi-ao---- 768.00m                                                    "
     ]
 }
 ...output omitted...
@@ -142,4 +142,4 @@ ok: [servera.lab.example.com] => {
 
 ## Try it again, differently
 
-Grow `content-lv` to 128 MiB by changing its `size` and running the play again, then check with `df -h /var/www`. Then add a third volume, `swap-lv`, 64 MiB, with `fs_type: swap`, and look at `swapon --show` on servera.
+Grow `content-lv` to 1024 MiB by changing its `size` and running the play again, then check with `df -h /var/www`. Then add a third volume, `swap-lv`, 64 MiB, with `fs_type: swap`, and look at `swapon --show` on servera.

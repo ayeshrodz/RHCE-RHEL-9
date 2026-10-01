@@ -115,7 +115,7 @@ collections_path = ./collections:~/.ansible/collections:/usr/share/ansible/colle
 <Flashcards
   title="Chapter 7 flashcards"
   cards={[
-    { front: 'Which file is the only one a role must have?', back: '`tasks/main.yml`' },
+    { front: 'Where do a role’s tasks normally start?', back: '`tasks/main.yml`. No individual file is mandatory for every kind of role.' },
     { front: 'Where do user-changeable role settings go?', back: '`defaults/main.yml`: lowest precedence, so anything overrides them.' },
     { front: 'What is special about `vars/main.yml` in a role?', back: 'High precedence: inventory and play variables do **not** override it.' },
     { front: 'In what order does a play run its sections?', back: '`pre_tasks` → roles → `tasks` → `post_tasks`, with handlers flushed between stages.' },

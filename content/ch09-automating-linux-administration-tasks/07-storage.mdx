@@ -66,12 +66,12 @@ The role supports two layouts: a file system directly on a whole, unpartitioned 
             - /dev/vdb
           volumes:
             - name: lvol01
-              size: 128m
+              size: 768m
               mount_point: "/data"
               fs_type: xfs
               state: present
             - name: lvol02
-              size: 256m
+              size: 1024m
               mount_point: "/backup"
               fs_type: xfs
               state: present

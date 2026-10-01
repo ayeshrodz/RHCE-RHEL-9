@@ -62,7 +62,7 @@ Most mistakes in a timed task are not about Ansible. They come from misreading a
     `ansible-doc MODULE` and its EXAMPLES section are faster than remembering option names. Copy an example and adapt it.
   </Step>
   <Step title="Run it twice">
-    A second run must report `changed=0`. Anything that changes again is either not idempotent or not doing what you think.
+    For these configuration tasks, expect `changed=0` on an immediate second run. Investigate repeat changes. Deliberate actions such as rebooting, restarting a service, or installing newly available updates can legitimately report changes.
   </Step>
   <Step title="Verify from outside">
     Check the result the way a user would: `curl` the page, `ssh` in and run `id`, `df`, `crontab -l`. A green recap proves only that Ansible ran.
