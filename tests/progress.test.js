@@ -78,6 +78,7 @@ test('lab reports require supported versions, valid checks and complete coverage
     { ...report, checks: report.checks.slice(1) },
     { ...report, checks: [...report.checks, report.checks[0]] },
     { ...report, checkedAt: 'invalid' },
+    { ...report, checks: [...report.checks, { ...report.checks[0], id: 'unknown-check' }] },
     { ...report, exerciseVersion: 99 },
   ])
     assert.throws(() => validateLabReport(invalid, catalog));

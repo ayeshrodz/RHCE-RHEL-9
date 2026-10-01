@@ -53,4 +53,4 @@ The three additional system cases used isolated VMs that already contained earli
 
 Reboot checks for the three additional cases remain pending: SSH did not return for the isolated guests during the final reboot attempt. Earlier reboot evidence for archive, security, storage, networking, and both assessments remains recorded above.
 
-At the end of this run, LXD still had a storage-copy operation and a validation-guest start operation pending. Original lab instances and clean snapshots were preserved. Isolated validation copies were retained for the remaining host checks.
+At the end of this run, LXD still had a storage-copy operation pending, and a validation-guest restart could not complete. The copy operation rejected cancellation. Original lab instances and clean snapshots were preserved. Isolated validation copies were retained for the remaining host checks.
