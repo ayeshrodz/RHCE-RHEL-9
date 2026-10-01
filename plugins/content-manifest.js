@@ -78,12 +78,13 @@ export default function contentManifest({ dir = 'content' } = {}) {
           title: meta.title ?? titleCase(name.replace(/^ch\d+-/, '')),
           goal: meta.goal ?? '',
           objectives: meta.objectives ?? [],
+          objectiveIds: meta.objectiveIds ?? [],
           topics: meta.topics ?? [],
           sections,
           comingSoon: meta.status === 'planned' || sections.length === 0,
         };
       });
-    return { course, chapters };
+    return { course, chapters, objectives: readYaml(path.join(contentDir, '_objectives.yml')) };
   }
 
   return {

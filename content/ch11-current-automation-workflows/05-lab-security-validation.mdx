@@ -1,0 +1,48 @@
+---
+title: Lab — validate access configuration
+kind: lab
+minutes: 20
+---
+
+<Lead>Build a small privileged operation without accidentally breaking access: create a user, validate a sudo policy, and keep the connection account usable.</Lead>
+
+<Lab id="access-policy" title="Validate an access policy" classroom="lab start bridge-security" own hosts={['servera.lab.example.com']} outcomes={['Deploy a validated sudoers file and verify the account’s allowed command.']}>
+<Task title="Define the result">
+Create an account `auditor`. Allow it to run `/usr/bin/id` as root without a password. Keep `devops` and its SSH access unchanged. Save the playbook as `access.yml`.
+</Task>
+<Task title="Deploy a validated policy">
+Use `ansible.builtin.user`, then `ansible.builtin.copy` to create `/etc/sudoers.d/auditor`. Set owner and group to root, mode to `0440`, and `validate: /usr/sbin/visudo -cf %s`.
+<Reveal title="Hint: a narrowly scoped rule">
+The file can contain `auditor ALL=(root) NOPASSWD: /usr/bin/id`. Validation checks the temporary file before Ansible replaces the destination.
+</Reveal>
+</Task>
+<Task title="Verify the policy and connection">
+Run the playbook, check `visudo -c`, and run `sudo -u auditor sudo -n /usr/bin/id` as root on the managed host. Confirm it prints `uid=0`. Confirm Ansible can still connect as devops. Run the playbook again and investigate any repeat changes.
+</Task>
+<Task title="Test a rejected change">
+In this disposable lab, change the policy to invalid syntax and rerun. The copy task must fail validation and leave the last valid destination file intact. Restore the valid source, rerun, and verify access again.
+</Task>
+</Lab>
+
+<Reveal title="One working solution">
+
+```yaml title="access.yml"
+- name: Configure a limited audit account
+  hosts: servera.lab.example.com
+  become: true
+  tasks:
+    - name: Create the account
+      ansible.builtin.user:
+        name: auditor
+        state: present
+    - name: Install a validated sudo policy
+      ansible.builtin.copy:
+        content: "auditor ALL=(root) NOPASSWD: /usr/bin/id\n"
+        dest: /etc/sudoers.d/auditor
+        owner: root
+        group: root
+        mode: '0440'
+        validate: /usr/sbin/visudo -cf %s
+```
+
+</Reveal>

@@ -1,0 +1,63 @@
+---
+title: Track your automation with Git
+kind: lesson
+minutes: 8
+---
+
+<Lead>A working playbook is valuable. A history showing what changed and why makes it easier to maintain and recover.</Lead>
+
+## Practise with a local remote
+
+This exercise needs no online account. On workstation, create a bare repository to represent your remote, then clone it:
+
+```bash
+mkdir -p ~/git-practice
+cd ~/git-practice
+git init --bare remote.git
+git clone remote.git workspace
+cd workspace
+git config user.name 'Lab learner'
+git config user.email 'learner@example.com'
+```
+
+An empty-repository warning is expected. These identity settings apply to this practice repository only.
+
+Create `hello.yml`:
+
+```yaml title="hello.yml"
+- name: Explain where automation runs
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Show a message
+      ansible.builtin.debug:
+        msg: My playbook is version controlled.
+```
+
+Run `ansible-playbook hello.yml`. Then review and save the change:
+
+```bash
+git status
+git add hello.yml
+git diff --cached
+git commit -m 'Add a local automation check'
+git push -u origin HEAD
+git log --oneline
+```
+
+`add` selects the content for the next commit. `commit` records it locally. `push` sends commits to the remote. None of these operations runs your playbook.
+
+## Try a small change
+
+Change the message. Run `git diff` before staging it. Commit and push it, then clone `../remote.git` into another directory and run the playbook there. You have proved that your work can be recovered from source control.
+
+<Reveal title="Keep credentials out of the repository">
+
+Add Vault password files, private keys, virtual environments, and run logs to `.gitignore`. An encrypted variables file can be committed; its decryption password must be stored separately. Check `git diff --cached` before every commit.
+
+</Reveal>
+
+<Quiz id="git-check" questions={[
+  { q: 'You have committed locally. What sends that commit to origin?', options: ['git add', 'git push', 'ansible-playbook'], answer: 1, explain: 'push sends commits. A playbook run changes the target systems independently of Git.' },
+  { q: 'Which command shows exactly what you are about to commit?', options: ['git diff --cached', 'git log --all', 'git clone'], answer: 0, explain: 'The cached diff compares the staging area with the current commit.' }
+]} />

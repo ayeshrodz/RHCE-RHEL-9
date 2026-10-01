@@ -5,6 +5,7 @@ import manifest from 'virtual:course';
 
 export const course = manifest.course;
 export const chapters = manifest.chapters;
+export const objectives = manifest.objectives;
 
 export const kindLabel = {
   lesson: 'Lesson',

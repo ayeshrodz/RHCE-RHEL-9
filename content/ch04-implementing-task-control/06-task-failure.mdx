@@ -1,7 +1,7 @@
 ---
 title: Handling task failure
 kind: lesson
-minutes: 14
+minutes: 12
 ---
 
 <Lead>
@@ -220,3 +220,7 @@ A `when` on the block applies to its `rescue` and `always` sections too. If `res
     },
   ]}
 />
+
+## Takeaway
+
+Keep a play running after a failure with `ignore_errors`, and still run handlers with `force_handlers`. Use the chapter lab to check this on a real host.

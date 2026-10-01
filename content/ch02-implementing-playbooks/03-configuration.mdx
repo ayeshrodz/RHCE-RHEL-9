@@ -1,7 +1,7 @@
 ---
 title: Managing Ansible configuration files
 kind: lesson
-minutes: 14
+minutes: 12
 ---
 
 <Lead>
@@ -279,6 +279,8 @@ become_ask_pass = false
 
 ## Comments
 
+<Reveal title="Read the supporting details">
+
 Both files accept `#` at the start of a line as a comment. `ansible.cfg` also accepts `;`, which comments out everything to its right.
 
 ```ini title="ansible.cfg"
@@ -315,3 +317,9 @@ inventory = ./inventory   ; the rest of this line is a comment
     },
   ]}
 />
+
+</Reveal>
+
+## Takeaway
+
+Write an `ansible.cfg` with `[defaults]` and `[privilege_escalation]` sections. Use the chapter lab to check this on a real host.

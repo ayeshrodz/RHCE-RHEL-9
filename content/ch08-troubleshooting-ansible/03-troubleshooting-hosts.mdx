@@ -99,6 +99,8 @@ Install Python on that host (with the `raw` module, which needs no Python), or p
 
 ## Testing with ad hoc commands
 
+<Reveal title="Read the supporting details">
+
 An ad hoc command is the fastest way to test one thing on one host, outside any playbook:
 
 ```console
@@ -121,6 +123,8 @@ servera.lab.example.com | SUCCESS => {
 Ad hoc commands run with the `ansible-core` installed on the control node itself, not in an execution environment, so only the collections installed there are available. Without `-m`, `ansible` runs the `command` module; name it anyway, so the command says what it does.
 
 When `ansible` works but `ansible-navigator run` does not, the connection is fine: look at the playbook and the inventory it uses.
+
+</Reveal>
 
 ## Testing a host's state with Ansible
 
@@ -247,3 +251,7 @@ In check mode, a `template` task writing `/etc/motd` without privilege escalatio
     },
   ]}
 />
+
+## Takeaway
+
+Test connections with the `ping` module and find out why a host is unreachable. Use the chapter lab to check this on a real host.

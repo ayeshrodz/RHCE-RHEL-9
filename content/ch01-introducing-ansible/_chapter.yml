@@ -5,3 +5,8 @@ objectives:
   - "Describe the Ansible architecture: control node, managed hosts, inventory, playbooks, plays, tasks and modules."
   - Distinguish community Ansible, ansible-core in RHEL, and Red Hat Ansible Automation Platform 2.
   - Install ansible-navigator and pull an automation execution environment.
+objectiveIds:
+  - ch01.automation
+  - ch01.architecture
+  - ch01.distributions
+  - ch01.runtime
