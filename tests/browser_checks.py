@@ -40,6 +40,41 @@ try:
             assert not page.locator('.load-error').count(), route
             assert 'This activity could not load' not in page.inner_text('body'), route
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), route
+        # The platform badge navigates to a track-owned MDX reference page.
+        go(page, '/')
+        lesson_before_reference = page.evaluate("localStorage.getItem('rhce:lastVisited')")
+        page.get_by_role('link', name='RHEL 9: platform and versions', exact=True).click()
+        page.get_by_role('heading', name='RHEL 9: Platform and versions', exact=True).wait_for()
+        assert page.url.endswith('#/platform')
+        assert not page.get_by_role('dialog').count()
+        assert page.title() == 'RHEL 9: Platform and versions · Playbook Path'
+        page.get_by_role('tab', name='Home lab', exact=True).click()
+        diagram = page.locator('.tabs-panel:not([hidden]) .diagram')
+        diagram.get_by_role('button', name='Runtime', exact=True).click()
+        assert 'baseline disables execution environments' in diagram.locator('.dg-info-text').inner_text()
+        page.get_by_role('tab', name='Classroom reference', exact=True).click()
+        diagram = page.locator('.tabs-panel:not([hidden]) .diagram')
+        runtime = diagram.get_by_role('button', name='EE container', exact=True)
+        runtime.focus(); page.keyboard.press('Enter')
+        assert 'does not mean the managed hosts must run RHEL 8' in diagram.locator('.dg-info-text').inner_text()
+        assert runtime.get_attribute('aria-pressed') == 'true'
+        diagram.locator('.dg-node').first.click()
+        assert diagram.get_by_role('button', name='Project', exact=True).get_attribute('aria-pressed') == 'true'
+        page.get_by_role('tab', name='Classroom reference', exact=True).focus(); page.keyboard.press('Home')
+        assert page.get_by_role('tab', name='Home lab', exact=True).get_attribute('aria-selected') == 'true'
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
+        assert not page.locator('.complete-btn').count()
+        assert page.evaluate("localStorage.getItem('rhce:lastVisited')") == lesson_before_reference
+        for theme in ['light', 'dark']:
+            for width in [390, 1440]:
+                page.set_viewport_size({'width': width, 'height': 1000})
+                go(page, '/platform#check-what-will-actually-run')
+                page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
+                page.wait_for_function("document.getElementById('check-what-will-actually-run').getBoundingClientRect().top < 150")
+                assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'platform {theme} {width}'
+                page.reload(); page.locator('#check-what-will-actually-run').wait_for()
+                assert page.title() == 'RHEL 9: Platform and versions · Playbook Path'
+        page.set_viewport_size({'width': 1440, 'height': 1000})
         # Every graded lab has a separately authored challenge; help is closed by default.
         lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'public/lab/graders.json').read_text())['exercises'].values()]
         for route in lab_routes:
@@ -85,7 +120,7 @@ try:
                 assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == 34
                 assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
-        for route in ['/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:
+        for route in ['/platform', '/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:
             page.set_viewport_size({'width': 390, 'height': 844}); go(page, route)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'mobile {route}'
         # Mobile drawer focus and Escape return.

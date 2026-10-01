@@ -8,8 +8,10 @@ The `content/` folder is the single source of truth. A Vite plugin (`plugins/con
 
 ```
 content/
-  _course.yml                      site title, exam, RHEL / AAP / Ansible Core versions
-  _platform.mdx                    text of the "RHEL 9.0" dialog in the header
+  _course.yml                      site title, repository, selected track ID
+  tracks/rhel9/
+    _track.yml                     track identity, versions, reference filename
+    platform.mdx                   platform page metadata, explanations, diagrams
   ch02-implementing-playbooks/
     _chapter.yml                   title, goal, objectives
     01-inventory.mdx               section 2.1
@@ -37,6 +39,24 @@ content/
 While `npm run dev` is running, everything updates live. Body edits hot-reload in place; adding, removing or renaming files, or changing frontmatter and `_chapter.yml`, reloads the page with the new navigation.
 
 The page title, number, breadcrumb, reading time, table of contents, "mark complete" button and previous/next links are generated. **Do not** put an `# H1` in the MDX file.
+
+## Track reference pages
+
+`_course.yml` selects the current `track` ID. Its reference material lives in `content/tracks/<id>/`: `_track.yml` supplies the label, version metadata, and `platform` filename. The MDX frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/platform`; `ReferencePage` renders the selected track's MDX with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
+
+`FlowMap` renders a two-to-four-step sequence using the existing pale diagram tones. Author its wording in MDX; each step needs a unique `id`, `title`, and explanatory `text`, with optional `sub` and `tone`. `connections` labels the arrows. For example:
+
+```mdx
+<FlowMap title="A playbook's journey" caption="Choose a step for its explanation."
+  connections={["SSH"]} steps={[
+    { id: "control", title: "Control node", sub: "starts tasks", tone: "purple", text: "Read the project and run its tasks." },
+    { id: "managed", title: "Managed host", sub: "stores the result", tone: "green", text: "Verify the requested state here." }
+  ]} />
+```
+
+Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in MDX or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
+
+Only RHEL 9 is selectable today. Adding another track's metadata is a content boundary, not a complete course switch: chapters, objectives, downloads, graders, and browser progress must also be scoped together before another track is published.
 
 ## 2. Page shape
 

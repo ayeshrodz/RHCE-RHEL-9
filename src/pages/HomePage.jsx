@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Check, CircleHelp, FlaskConical, ListChecks } from 'lucide-react';
-import { chapters, course, pages } from '@/lib/course';
+import { chapters, course, track, pages } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { useStored } from '@/lib/storage';
 import { Arrow, Diagram, Group, Node } from '@/diagrams/kit';
@@ -68,7 +68,7 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-text">
           <p className="page-eyebrow">
-            Free and open source · Ansible on RHEL {course.rhel} · {course.exam}-focused
+            Free and open source · Ansible on RHEL {track.rhel} · {track.exam}-focused
           </p>
           <h1>{course.tagline}.</h1>
           <p className="hero-sub">
@@ -76,7 +76,7 @@ export default function HomePage() {
             exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.
           </p>
           <p className="hero-focus">
-            The path follows the objectives of the Red Hat Certified Engineer ({course.exam}) exam, so it doubles as exam preparation.
+            The path follows the objectives of the Red Hat Certified Engineer ({track.exam}) exam, so it doubles as exam preparation.
           </p>
           <div className="hero-actions">
             <Link className="btn btn-lg" to="/progress">

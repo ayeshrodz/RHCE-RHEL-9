@@ -10,6 +10,7 @@ import Quiz from '@/components/interactive/Quiz';
 import AssessmentTimer from '@/components/interactive/AssessmentTimer';
 import { lazyWidget } from '@/components/interactive/LazyWidget';
 import chapterDiagrams from 'virtual:chapter-widgets';
+const FlowMap = lazyWidget(() => import('@/components/interactive/FlowMap'));
 const ChapterPractice = lazyWidget(() => import('@/components/interactive/Challenge'));
 import Flashcards from '@/components/interactive/Flashcards';
 import { Lab, Task, LabChallenge, LabNotes } from '@/components/interactive/Lab';
@@ -23,7 +24,7 @@ function Code({ children, ...props }) {
 
 // The router owns the URL hash, so heading links carry the heading after a
 // second "#": "#/ch00/page#heading" opens a page at a heading, "#heading"
-// scrolls this one. SectionPage does the scrolling.
+// scrolls this one. Page renderers share heading navigation.
 function Anchor({ href = '', onClick, ...props }) {
   const navigate = useNavigate();
   if (href.startsWith('#/') && href.indexOf('#', 1) > 0) {
@@ -109,6 +110,7 @@ export const mdxComponents = {
   Term,
   Quiz,
   ChapterPractice,
+  FlowMap,
   AssessmentTimer,
   Flashcards,
   Lab,

@@ -9,7 +9,7 @@ These six branches form an ordered PR stack. Use merge commits while the stack i
 | 3 | [#14](https://github.com/ayeshrodz/playbook-path/pull/14) | `feat/browser-practice` | Twenty challenges, immediate feedback, Guided and Challenge lab modes |
 | 4 | [#15](https://github.com/ayeshrodz/playbook-path/pull/15) | `feat/lab-grading` | Read-only exercise checks, checkpoints, reliable preparation |
 | 5 | [#16](https://github.com/ayeshrodz/playbook-path/pull/16) | `feat/learning-progress` | Stable history, dashboard, report imports, integrated assessments |
-| 6 | [#17](https://github.com/ayeshrodz/playbook-path/pull/17) | `chore/platform-quality` | Dashboard and practice UI refinement, MDX-authored challenge briefs, expanded workflow lessons, accessibility, lazy loading, content/browser CI, contributor documentation, grading corrections |
+| 6 | [#17](https://github.com/ayeshrodz/playbook-path/pull/17) | `chore/platform-quality` | Platform reference and track-owned metadata, shared activity styling, dashboard refinement, MDX-authored challenge briefs, expanded workflow lessons, accessibility, lazy loading, content/browser CI, contributor documentation, grading corrections |
 
 Each PR describes its checks and outstanding validation. VM-dependent PRs remain drafts until their required host runs pass. [Validation evidence](VALIDATION.md) distinguishes real host checks from fixtures and lists pending work.
 

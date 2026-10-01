@@ -6,8 +6,10 @@ import HomePage from '@/pages/HomePage';
 import ChapterPage from '@/pages/ChapterPage';
 import SectionPage from '@/pages/SectionPage';
 import NotFound from '@/pages/NotFound';
+import { track } from '@/lib/course';
 import { mdxComponents } from '@/components/mdx';
 
+const ReferencePage = lazy(() => import('@/pages/ReferencePage'));
 const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
 
 // Hash routing keeps deep links working on GitHub Pages without a
@@ -24,6 +26,14 @@ export default function App() {
               element={
                 <Suspense fallback={<p role="status">Loading your learning…</p>}>
                   <ProgressPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="platform"
+              element={
+                <Suspense fallback={<p role="status">Loading reference…</p>}>
+                  <ReferencePage page={track.platform} />
                 </Suspense>
               }
             />

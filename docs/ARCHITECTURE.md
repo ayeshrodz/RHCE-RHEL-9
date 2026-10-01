@@ -10,6 +10,14 @@ Published URLs use hash routing, for example `#/ch02/inventory`. A second hash i
 
 `content/_objectives.yml` maps stable skill IDs to lessons, challenges, and labs. Each chapter lists its objective IDs; quizzes and labs reference the skills they practise.
 
+## Track boundary and platform reference
+
+Site metadata lives in `content/_course.yml`; it names the active track. Track identity and version metadata live in `content/tracks/<id>/_track.yml`. `scripts/read-track.mjs` is shared by the content manifest and validation, and supplies the track's reference page metadata and content location. `src/lib/course.js` exposes the `track` alongside the course/chapter data.
+
+The header badge links to `#/platform`. The lazy `ReferencePage` receives a page descriptor and loads its MDX; it contains no RHEL-specific wording. `FlowMap` renders authored steps with the existing diagram kit and muted controls. Lessons and reference pages share `useHeadingNavigation` for copied links, table-of-contents navigation, and opening optional details. Reference pages have no completion key and do not replace the last visited lesson.
+
+This starts the content boundary for multiple tracks; it does not implement track switching. Before publishing a second track, scope chapter/objective manifests, lab downloads/grading contracts, activity IDs, and progress by track. Migrate existing saved RHEL 9 progress explicitly and preserve published URLs. Prefer explicit track URLs for shared links, and reuse components and grading engines across content packages. Keep the current RHEL 9 curriculum in place until that migration is implemented and verified.
+
 ## Learning activities
 
 `ActivityPanel`, `AnswerOptions`, and `ActivityFeedback` provide shared quiz/practice chrome. `OptionSwitch` renders both environment and exercise modes with the same muted treatment. `Reveal` supports optional controlled state for solution-view tracking; `CodeBlock` supplies the same code presentation throughout. Activity wording and grading definitions remain in MDX, separate from these rendering components.

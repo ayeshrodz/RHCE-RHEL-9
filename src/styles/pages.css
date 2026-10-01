@@ -735,3 +735,14 @@
     text-align: right;
   }
 }
+
+/* Standalone content pages use the established lesson header and article grid. */
+.reference-intro {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--text-2);
+  font: 18px/1.6 var(--font-reading);
+}
+.reference-page .prose > :first-child {
+  margin-top: 0;
+}

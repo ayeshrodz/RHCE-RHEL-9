@@ -50,7 +50,8 @@ npm run test:labs
 
 ```
 content/                         everything readers see (see docs/AUTHORING.md)
-  _course.yml, _platform.mdx
+  _course.yml                     site metadata and selected track
+  tracks/rhel9/                   track metadata and platform reference MDX
   ch01-introducing-ansible/      _chapter.yml + one .mdx per section
 plugins/content-manifest.js      builds the course manifest from content/
 src/

@@ -1,11 +1,9 @@
-import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { course } from '@/lib/course';
+import { course, track } from '@/lib/course';
 import ProgressMenu from './ProgressMenu';
 import Logo from './Logo';
-import PlatformDialog from './PlatformDialog';
 
 // lucide-react has no brand icons, so the GitHub mark is inline.
 function GithubIcon({ size = 17 }) {
@@ -22,8 +20,6 @@ export default function Header({ onMenu, onSearch, navigationOpen }) {
   const { pref, cycle } = useTheme();
   const ThemeIcon = themeIcon[pref] ?? Monitor;
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
-  const [platformOpen, setPlatformOpen] = useState(false);
-  const closePlatform = useCallback(() => setPlatformOpen(false), []);
 
   return (
     <header className="header">
@@ -41,15 +37,15 @@ export default function Header({ onMenu, onSearch, navigationOpen }) {
         <Logo />
         <span className="brand-name">{course.title}</span>
       </Link>
-      <button
+      <Link
         className="brand-pill"
-        onClick={() => setPlatformOpen(true)}
-        aria-haspopup="dialog"
-        title={`About Red Hat Enterprise Linux ${course.rhel} and the Ansible versions used`}
+        to={track.platform.path}
+        aria-label={`${track.label}: platform and versions`}
+        title="Platform and versions"
       >
-        <span>RHEL {course.rhel}</span>
-        <span>{course.exam}</span>
-      </button>
+        <span>{track.label}</span>
+        <span>{track.exam}</span>
+      </Link>
 
       <button className="search-trigger" onClick={onSearch}>
         <Search size={15} />
@@ -78,7 +74,6 @@ export default function Header({ onMenu, onSearch, navigationOpen }) {
           </a>
         )}
       </div>
-      {platformOpen && <PlatformDialog onClose={closePlatform} />}
     </header>
   );
 }

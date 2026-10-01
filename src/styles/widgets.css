@@ -768,3 +768,12 @@
 .lab-notes .reveal {
   margin: 12px 0 0;
 }
+
+/* Content-authored sequence diagrams share the standard muted controls. */
+.flow-map-options {
+  flex-wrap: wrap;
+  margin-top: 12px;
+  border-bottom: 0;
+  border-radius: var(--radius);
+  background: var(--bg);
+}

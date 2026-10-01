@@ -8,6 +8,7 @@ import remarkGfm from 'remark-gfm';
 import YAML from 'yaml';
 import GithubSlugger from 'github-slugger';
 import { readPractice } from '../scripts/read-practice.mjs';
+import { readTrack } from '../scripts/read-track.mjs';
 const challenges = readPractice();
 
 const processor = createProcessor({ remarkPlugins: [remarkFrontmatter, remarkGfm] });
@@ -16,6 +17,9 @@ const catalog = JSON.parse(fs.readFileSync('public/lab/graders.json', 'utf8'));
 const objectiveIds = new Set(objectives.map((o) => o.id));
 assert.equal(objectiveIds.size, objectives.length, 'Duplicate objective IDs');
 const routes = new Map([['/', new Set()], ['/progress', new Set()]]);
+const course = YAML.parse(fs.readFileSync('content/_course.yml', 'utf8'));
+const track = readTrack('content', course.track);
+routes.set(track.platform.path, new Set());
 const pages = [], links = [], activityIds = new Set(), labs = new Set();
 let questions = 0, tasks = 0;
 const literal = (node) => node?.type === 'ArrayExpression' ? node.elements.map(literal) : node?.type === 'TemplateLiteral' ? node.quasis.map((q) => q.value.cooked).join('') : node?.value;
@@ -27,6 +31,16 @@ const textOf = (node) => node.value ?? (node.children ?? []).map(textOf).join(''
 function stable(id, context) {
   assert.match(id ?? '', /^[a-z][a-z0-9-]+$/, `Missing or invalid stable ID: ${context}`);
   assert(!activityIds.has(id), `Duplicate activity ID ${id}`); activityIds.add(id);
+}
+function validateFlowMap(node, route) {
+  const steps = node.attributes.find((a) => a.name === 'steps')?.value?.data?.estree?.body[0]?.expression?.elements;
+  assert(steps && steps.length >= 2 && steps.length <= 4, `${route}: FlowMap needs two to four steps`);
+  const ids = new Set();
+  for (const item of steps) {
+    const step = Object.fromEntries(item.properties.map((p) => [p.key.name, literal(p.value)]));
+    for (const field of ['id', 'title', 'text']) assert(typeof step[field] === 'string' && step[field].trim(), `${route}: missing diagram ${field}`);
+    assert(!ids.has(step.id), `${route}: duplicate diagram step ${step.id}`); ids.add(step.id);
+  }
 }
 for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort()) {
   const chapter = dir.match(/^ch\d+/)[0];
@@ -60,6 +74,7 @@ for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort
           const refs = attr(node, 'objectives'); assert(Array.isArray(refs) && refs.length, `${route}: ${node.name} needs objective references`);
           for (const ref of refs) assert(objectiveIds.has(ref), `${route}: unknown objective ${ref}`);
         }
+        if (node.name === 'FlowMap') validateFlowMap(node, route);
         if (node.name === 'Reveal') {
           assert((node.children ?? []).some((child) => textOf(child).trim() || child.name), `${route}: empty disclosure ${attr(node, 'title')}`);
         }
@@ -93,6 +108,18 @@ for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort
     visit(processor.parse(source));
   }
 }
+// Reference pages share MDX headings and internal links, without adding reading progress.
+const referenceSource = fs.readFileSync(`content/${track.platform.contentFile}`, 'utf8');
+const referenceSlugger = new GithubSlugger();
+function visitReference(node) {
+  const route = track.platform.path;
+  if (node.type === 'heading') routes.get(route).add(referenceSlugger.slug(textOf(node)));
+  if (node.type === 'link' && node.url.startsWith('#')) links.push([route, node.url]);
+  if (node.name === 'Reveal') assert(textOf(node).trim(), `${route}: empty disclosure`);
+  if (node.name === 'FlowMap') validateFlowMap(node, route);
+  for (const child of node.children ?? []) visitReference(child);
+}
+visitReference(processor.parse(referenceSource));
 for (const [source, link] of links) {
   const [route, fragment] = link.startsWith('#/') ? link.slice(1).split('#') : [source, link.slice(1)];
   assert(routes.has(route), `${source}: broken link ${link}`);

@@ -77,3 +77,13 @@ Content CI now requires a purpose and multiple requirements in each challenge br
 - Build, formatting, content validation, 39 JavaScript tests, six Python cases, and the production browser suite pass. All 125 routes and both modes of all 42 graded exercises remain covered. The existing pending VM and desktop workflow validation still applies; this styling and naming review does not change lab behavior.
 
 Contributor documentation records the shared rendering components and title conventions. Content validation enforces colon-separated exercise and assessment titles while MDX remains the source of learner-facing wording.
+
+## Platform reference page and track content boundary
+
+- The header's RHEL 9 badge opens `#/platform` as a page. Its title, introduction, explanations, version comparison, and diagram data come from track-owned MDX and metadata under `content/tracks/rhel9/`. The previous modal and its styles were removed.
+- Shared `ReferencePage`, `FlowMap`, and heading navigation render the page using existing typography, cards, tables, reveals, diagram tones, and controls. The diagrams use a vertical layout on phones and native buttons for keyboard selection.
+- Content validation covers the additional route, reference frontmatter, internal heading links, and diagram step definitions. Three additional JavaScript cases verify selected-track discovery, an independent fixture track, missing metadata, and unsafe paths. All 42 JavaScript cases pass; the existing six Python lab-tool cases pass.
+- Production Chromium checks cover all 126 routes, header navigation, title/reload persistence, native tab keyboard behavior, selecting both execution paths, and light/dark phone/desktop heading links without page overflow. Reference visits leave lesson completion unchanged. All previous 42 exercise mode checks remain covered.
+- Desktop and phone reference screenshots were visually reviewed in light and dark themes. Build, formatting, content validation, and browser checks pass. The earlier pending VM exercise matrix remains unchanged; no lab execution or grading behavior changed here.
+
+Public AAP 2.2 execution-environment documentation and navigator settings documentation were checked for the reference explanation and inspection commands. The current EX294 page was checked for its latest-product objective scope, Git/editor/container objectives, and version-selection guidance; the platform page links those sources.
