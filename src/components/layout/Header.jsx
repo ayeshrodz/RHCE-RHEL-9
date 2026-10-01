@@ -47,7 +47,7 @@ export default function Header({ onMenu, onSearch }) {
 
       <button className="search-trigger" onClick={onSearch}>
         <Search size={15} />
-        <span>Search the guide</span>
+        <span>Search the course</span>
         <kbd>{isMac ? '⌘' : 'Ctrl'} K</kbd>
       </button>
 

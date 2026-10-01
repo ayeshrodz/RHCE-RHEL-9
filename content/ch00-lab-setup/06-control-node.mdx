@@ -160,7 +160,7 @@ ssh student@serverb hostname         # serverb.lab.example.com
     In a training classroom, each exercise starts with `lab start NAME`, which creates the exercise's project folder and starter files. That command exists only inside the classroom, so this guide provides its own small script with the same syntax. It downloads the starter files for an exercise from this site into `~/NAME`. It is a short shell script; [read it first](lab/lab) if you like.
 
 ```bash title="student@workstation"
-curl -fsSL https://ayeshrodz.github.io/RHCE-RHEL-9/lab/lab -o ~/.local/bin/lab
+curl -fsSL https://ayeshrodz.github.io/playbook-path/lab/lab -o ~/.local/bin/lab
 chmod +x ~/.local/bin/lab
 lab version                          # lab 2
 lab list                             # every exercise that has starter files
@@ -175,6 +175,10 @@ lab check                            # key logins, collections and starter files
     | `lab check` | Tests that the lab is ready: key logins to every machine, collections, starter files |
     | `lab update` | Replaces the command with the newest version from this site |
     | `lab grade playbook-basic` | No automatic grading at home; tells you how to check your work |
+
+    <Callout type="note" title="Installed lab before October 2026?">
+    The site moved to a new address, and older copies of `lab` still download from the old one, so `lab start` and `lab update` fail. Run the `curl` and `chmod` lines above again to install the current version.
+    </Callout>
 
     <Callout type="important" title="lab cannot reset the servers">
     `lab` runs on workstation, inside the sealed lab network, which has no way to reach the Ubuntu host. Putting the managed hosts back to `clean` is always a second command, on the host: `rht-vmctl reset servers`. Finishing an exercise is therefore two steps: `lab finish NAME` on workstation, then the reset on the host.

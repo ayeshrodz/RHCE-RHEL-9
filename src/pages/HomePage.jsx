@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, CircleHelp, FlaskConical, ListChecks } from 'lucide-react';
+import { ArrowRight, BookOpen, Check, CircleHelp, FlaskConical, ListChecks } from 'lucide-react';
 import { chapters, course, pages } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { useStored } from '@/lib/storage';
@@ -28,6 +28,16 @@ const features = [
   },
 ];
 
+// The course in stages; each links to its first chapter.
+const stages = [
+  { title: 'Foundations', chapters: [1, 2], text: 'What Ansible is, inventories, configuration, and your first playbooks.' },
+  { title: 'Data and control', chapters: [3, 4], text: 'Variables, facts and secrets; loops, conditions, handlers and errors.' },
+  { title: 'Files and structure', chapters: [5, 6], text: 'Templates and file modules; host patterns, imports and includes.' },
+  { title: 'Reuse', chapters: [7], text: 'Roles, collections and the system roles.' },
+  { title: 'Real work', chapters: [8, 9], text: 'Troubleshooting, then software, users, storage and networking.' },
+  { title: 'Prove it', chapters: [10], text: 'Four review labs that bring everything together.' },
+];
+
 const labHosts = [
   ['workstation · 172.25.250.9', 'Control node. You write and run playbooks here.'],
   ['servera … serverd · .10–.13', 'Managed hosts that your playbooks configure, each with a spare disk.'],
@@ -38,7 +48,7 @@ export default function HomePage() {
   const { done, percent } = useProgress();
 
   useEffect(() => {
-    document.title = `${course.title} · a community RHCE study guide`;
+    document.title = `${course.title} · ${course.tagline}`;
   }, []);
 
   const [lastVisited] = useStored('lastVisited', null);
@@ -52,12 +62,15 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-text">
           <p className="page-eyebrow">
-            Free study guide · {course.exam} · Red Hat Enterprise Linux {course.rhel}
+            Free and open source · Ansible on RHEL {course.rhel} · {course.exam}-focused
           </p>
-          <h1>Learn Ansible the way the RHCE exam tests it.</h1>
+          <h1>{course.tagline}.</h1>
           <p className="hero-sub">
-            A calm, visual walk through Ansible automation on Red Hat Enterprise Linux. Concepts are drawn as diagrams, exercises are
-            checklists you can tick off, and every chapter ends with a quiz and a cheat sheet.
+            A hands-on path from your first playbook to automating real Linux administration. Every idea is drawn as a diagram, every
+            exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.
+          </p>
+          <p className="hero-focus">
+            The path follows the objectives of the Red Hat Certified Engineer ({course.exam}) exam, so it doubles as exam preparation.
           </p>
           <div className="hero-actions">
             <Link className="btn btn-primary btn-lg" to={started ? resume.path : firstLesson.path}>
@@ -86,6 +99,33 @@ export default function HomePage() {
             <p className="feature-text">{text}</p>
           </div>
         ))}
+      </section>
+
+      <section className="home-section">
+        <h2>The path</h2>
+        <p className="home-section-sub">Six stages, each building on the last. Your progress is saved in this browser.</p>
+        <ol className="path">
+          {stages.map((stage, i) => {
+            const inStage = chapters.filter((c) => stage.chapters.includes(c.number));
+            const total = inStage.reduce((n, c) => n + chapterProgress(c, done).total, 0);
+            const count = inStage.reduce((n, c) => n + chapterProgress(c, done).count, 0);
+            const state = total && count === total ? 'is-done' : count > 0 ? 'is-started' : '';
+            return (
+              <li key={stage.title} className={`path-stage ${state}`}>
+                <Link to={`/ch${String(stage.chapters[0]).padStart(2, '0')}`} className="path-link">
+                  <span className="path-dot">{state === 'is-done' ? <Check size={14} strokeWidth={3} /> : i + 1}</span>
+                  <span className="path-body">
+                    <span className="path-title">{stage.title}</span>
+                    <span className="path-chapters">
+                      Chapter{stage.chapters.length > 1 ? 's' : ''} {stage.chapters.join('–')}
+                    </span>
+                    <span className="path-text">{stage.text}</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
       <section className="home-section">

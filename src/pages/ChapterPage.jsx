@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowRight, Check, Clock } from 'lucide-react';
-import { findChapter, kindLabel } from '@/lib/course';
+import { course, findChapter, kindLabel } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { kindIcon } from '@/components/layout/Sidebar';
 import NotFound from './NotFound';
@@ -12,7 +12,7 @@ export default function ChapterPage() {
   const { done, isDone } = useProgress();
 
   useEffect(() => {
-    if (chapter) document.title = `Chapter ${chapter.number}: ${chapter.title} · RHCE Field Guide`;
+    if (chapter) document.title = `Chapter ${chapter.number}: ${chapter.title} · ${course.title}`;
   }, [chapter]);
 
   if (!chapter) return <NotFound />;

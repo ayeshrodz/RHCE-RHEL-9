@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Question or idea
-    url: https://github.com/ayeshrodz/RHCE-RHEL-9/discussions
+    url: https://github.com/ayeshrodz/playbook-path/discussions
     about: Ask a question or suggest a topic (if Discussions is not enabled yet, open a content issue instead).

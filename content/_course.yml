@@ -1,6 +1,7 @@
-title: RHCE Field Guide
+title: Playbook Path
+tagline: Learn Ansible automation by doing
 exam: RHCE
 rhel: "9.0"
 aap: "2.2"
 ansibleCore: "2.13"
-repo: https://github.com/ayeshrodz/RHCE-RHEL-9
+repo: https://github.com/ayeshrodz/playbook-path

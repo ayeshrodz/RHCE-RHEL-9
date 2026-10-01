@@ -1,6 +1,6 @@
 # System Architecture & Technical Design
 
-This document details the software architecture, component model, and build pipeline for the **RHCE Field Guide** web application.
+This document details the software architecture, component model, and build pipeline for the **Playbook Path** web application.
 
 ---
 

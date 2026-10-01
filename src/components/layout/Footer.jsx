@@ -15,7 +15,7 @@ export default function Footer() {
             <Logo /> {course.title}
           </p>
           <p>
-            A community study companion, written by learners for learners while we work towards the RHCE certification ourselves. Free to
+            {course.tagline}: a free, community-made course written by learners for learners, focused on the RHCE exam objectives. Free to
             read, free to reuse, open to contributions.
           </p>
         </div>

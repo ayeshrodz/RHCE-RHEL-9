@@ -1,15 +1,15 @@
 {
-  "name": "rhce-study-guide",
+  "name": "playbook-path",
   "private": true,
   "version": "1.0.0",
-  "description": "A free, interactive study guide and home-lab build for the RHCE certification, made by the community",
+  "description": "Learn Ansible automation by doing: a free, hands-on course with a home lab, focused on the RHCE exam objectives",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ayeshrodz/RHCE-RHEL-9.git"
+    "url": "git+https://github.com/ayeshrodz/playbook-path.git"
   },
-  "homepage": "https://ayeshrodz.github.io/RHCE-RHEL-9/",
-  "bugs": "https://github.com/ayeshrodz/RHCE-RHEL-9/issues",
+  "homepage": "https://ayeshrodz.github.io/playbook-path/",
+  "bugs": "https://github.com/ayeshrodz/playbook-path/issues",
   "type": "module",
   "scripts": {
     "dev": "vite",
