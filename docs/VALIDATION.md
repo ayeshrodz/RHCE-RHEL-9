@@ -52,3 +52,5 @@ These results validate the listed cases on this stack. The remaining exercises a
 The three additional system cases used isolated VMs that already contained earlier validation work. The TLS case needed Apache cycled after installing mod_ssl to create the distribution's default certificate; a fresh-start run remains pending. A further clean reset and volume copy encountered long-running LXD operations. This limits the reset evidence and does not replace the remaining full exercise/checkpoint matrix.
 
 Reboot checks for the three additional cases remain pending: SSH did not return for the isolated guests during the final reboot attempt. Earlier reboot evidence for archive, security, storage, networking, and both assessments remains recorded above.
+
+At the end of this run, LXD still had a storage-copy operation and a validation-guest start operation pending. Original lab instances and clean snapshots were preserved. Isolated validation copies were retained for the remaining host checks.
