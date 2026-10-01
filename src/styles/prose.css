@@ -191,41 +191,85 @@ a.page-eyebrow:hover {
   word-break: break-word;
 }
 
-/* Tables */
+/* Shared content tables: stay within the article and give prose room to wrap. */
 .table-wrap {
   margin: 1.6em 0;
-  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
+  container: content-table / inline-size;
+}
+.table-frame {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-elev);
 }
-.prose table {
+.prose .content-table {
   width: 100%;
-  border-collapse: collapse;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
   font-family: var(--font-sans);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
-.prose th {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
+.prose .content-table th {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-strong);
   background: var(--bg-sunken);
   color: var(--text-2);
   font-size: 12.5px;
   font-weight: 600;
   text-align: left;
-  white-space: nowrap;
-}
-.prose td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
-.prose tr:last-child td {
+.prose .content-table thead th:first-child {
+  border-top-left-radius: calc(var(--radius) - 1px);
+}
+.prose .content-table thead th {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 1;
+}
+.prose .content-table thead th:last-child {
+  border-top-right-radius: calc(var(--radius) - 1px);
+}
+.prose .content-table td {
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  vertical-align: top;
+}
+.prose .content-table td:first-child {
+  color: var(--text);
+  font-weight: 500;
+}
+.prose .content-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-sunken) 22%, var(--bg-elev));
+}
+.prose .content-table tbody tr:hover,
+.prose .content-table tbody tr:focus-within {
+  background: color-mix(in srgb, var(--bg-sunken) 45%, var(--bg-elev));
+}
+.prose .content-table tr:last-child td {
   border-bottom: 0;
 }
-.prose td code {
-  white-space: nowrap;
+.prose .content-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: calc(var(--radius) - 1px);
+}
+.prose .content-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: calc(var(--radius) - 1px);
+}
+.prose .content-table th,
+.prose .content-table td,
+.prose .content-table .td-val {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.prose .content-table th code,
+.prose .content-table td code {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 /* Everything that is UI rather than reading text uses the sans face. */
@@ -372,10 +416,9 @@ a.page-eyebrow:hover {
   margin: 0;
 }
 
-/* On phones, a table becomes a stack of cards: one per row, each value under its column heading. */
-@media (max-width: 640px) {
-  .table-wrap {
-    overflow: visible;
+/* Preserve the mobile row cards, using actual content width for nested tables too. */
+@container content-table (max-width: 640px) {
+  .table-frame {
     border: 0;
     border-radius: 0;
     background: none;
@@ -387,12 +430,21 @@ a.page-eyebrow:hover {
     display: block;
     width: auto;
   }
+  .prose .table-wrap colgroup {
+    display: none;
+  }
+  .prose .table-wrap .content-table {
+    line-height: 1.5;
+  }
   .prose .table-wrap thead {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+  .prose .table-wrap thead th {
+    position: static;
   }
   .prose .table-wrap tr {
     margin-bottom: 8px;
@@ -403,6 +455,8 @@ a.page-eyebrow:hover {
   }
   .prose .table-wrap td {
     display: grid;
+    font-weight: 400;
+    color: var(--text);
     grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
     gap: 0 12px;
     align-items: baseline;
@@ -436,6 +490,14 @@ a.page-eyebrow:hover {
   .prose .table-wrap .td-val {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+  .prose .table-wrap tbody tr:nth-child(even),
+  .prose .table-wrap tbody tr:hover,
+  .prose .table-wrap tbody tr:focus-within {
+    background: var(--bg-elev);
+  }
+  .prose .table-wrap tbody tr:last-child td {
+    border-radius: 0;
   }
   .prose .table-wrap td:first-child .td-val {
     font-weight: 500;

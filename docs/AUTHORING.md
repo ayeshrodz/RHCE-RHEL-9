@@ -193,6 +193,14 @@ Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/
 
 All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turned off so `!=` and `->` show as typed). Sizes come from `--code-size` (blocks and terminals), `--code-size-sm` (compact widgets) and `--code-inline` (inline code in text). Use these tokens rather than hard-coded values.
 
+## Content tables
+
+Write ordinary Markdown tables in MDX. Every table uses `Table.jsx`; no per-page classes or width settings are needed. Desktop tables stay inside the reading area with content-based column widths, a muted header, lightly shaded alternate rows, and headers that remain visible while scrolling. Commands and long paths wrap visually; their original text remains available for selection and copying.
+
+The established labelled row cards appear when a table's container is 640 pixels wide or narrower. This uses the available content space, so tables inside a narrow lab task also adapt on a desktop. Keep headers short and descriptive: they become each value's label in the card layout. Empty headers remain supported, and Markdown column alignment is preserved. Add a code block below a table when a whole procedure needs a copy button.
+
+Keep explanations in the content and shared presentation in the renderer/styles. Do not add horizontal scrolling, fixed pixel widths, clipped descriptions, or per-lesson table designs to work around long content.
+
 ## Visual consistency and exercise titles
 
 Reuse the existing component treatments and theme tokens. Browser practice and quizzes share `ActivityPanel`, `AnswerOptions`, and `ActivityFeedback`. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.

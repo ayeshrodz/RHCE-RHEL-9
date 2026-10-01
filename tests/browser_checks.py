@@ -40,6 +40,54 @@ try:
             assert not page.locator('.load-error').count(), route
             assert 'This activity could not load' not in page.inner_text('body'), route
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), route
+            overflowing_tables = page.locator('.table-wrap').evaluate_all('(tables) => tables.filter(t => t.clientWidth && t.scrollWidth > t.clientWidth + 1).map(t => t.querySelector("thead")?.textContent)')
+            assert not overflowing_tables, f'tables overflow on {route}: {overflowing_tables}'
+        # Shared tables fit their containers, retain header associations and never alter commands.
+        table_routes = ['/ch00/troubleshooting', '/ch00/overview', '/ch00/create-and-verify-vms', '/ch02/lab-inventory', '/ch05/file-modules', '/ch09/storage', '/platform']
+        for theme in ['light', 'dark']:
+            for width in [390, 768, 1024, 1440]:
+                page.set_viewport_size({'width': width, 'height': 1000})
+                for route in table_routes:
+                    go(page, route)
+                    page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
+                    errors_in_tables = page.locator('.table-wrap').evaluate_all("""(tables) => tables.filter(t => t.clientWidth).flatMap(t => {
+                        const problems = [];
+                        if (t.scrollWidth > t.clientWidth + 1) problems.push('horizontal scrolling');
+                        for (const c of t.querySelectorAll('td, th')) {
+                            if (c.clientWidth && c.scrollWidth > c.clientWidth + 1) problems.push('overflowing cell');
+                        }
+                        const table = t.querySelector('table');
+                        if (table.getAttribute('role') !== 'table') problems.push('missing table semantics');
+                        const labels = [...table.querySelectorAll('thead th')].map(h => h.textContent.trim());
+                        if ([...table.querySelectorAll('thead th')].some(h => h.scope !== 'col')) problems.push('missing header scope');
+                        for (const row of table.querySelectorAll('tbody tr')) {
+                            [...row.cells].forEach((cell, i) => {
+                                if (cell.dataset.label !== labels[i]) problems.push('incorrect mobile label');
+                            });
+                        }
+                        if (t.clientWidth <= 640 && getComputedStyle(table).display !== 'block') problems.push('missing row cards');
+                        if (t.clientWidth > 640 && getComputedStyle(table).tableLayout !== 'fixed') problems.push('missing desktop columns');
+                        return problems;
+                    })""")
+                    assert not errors_in_tables, f'{route} {theme} {width}: {errors_in_tables}'
+                    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+        page.set_viewport_size({'width': 1440, 'height': 1000}); go(page, '/ch00/troubleshooting#general-problems')
+        command = page.locator('.content-table code').filter(has_text='sudo iptables -I DOCKER-USER -i rhcebr0 -j ACCEPT').first
+        assert command.inner_text() == 'sudo iptables -I DOCKER-USER -i rhcebr0 -j ACCEPT'
+        selected_command = command.evaluate("""(e) => {
+            const range = document.createRange(); range.selectNodeContents(e);
+            const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+            const text = selection.toString(); selection.removeAllRanges(); return text;
+        }""")
+        assert selected_command == command.text_content(), 'Soft wrapping must preserve copied commands'
+        table = page.locator('.table-wrap').nth(1)
+        row = table.locator('tbody tr').filter(has_text="VMs can't reach the internet")
+        row.evaluate("(e) => e.scrollIntoView({block: 'start', behavior: 'instant'})")
+        pinned_header = table.locator('thead th').first.bounding_box()
+        assert abs(pinned_header['y'] - page.locator('.header').bounding_box()['height']) <= 1
+        link = table.get_by_role('link', name='repair the lab', exact=True).first
+        link.focus(); assert link.evaluate('(e) => e === document.activeElement')
+        link.click(); page.wait_for_function("document.getElementById('repair-an-existing-lab').getBoundingClientRect().top < 150")
         # The platform badge navigates to a track-owned MDX reference page.
         go(page, '/')
         lesson_before_reference = page.evaluate("localStorage.getItem('rhce:lastVisited')")
@@ -217,7 +265,7 @@ try:
         assert corrupt_page.locator('h1').inner_text() == 'Your learning'
         assert corrupt_page.evaluate("localStorage.getItem('rhce:completed')") == 'false'
         assert not errors, errors
-        print(f'PASS: {len(routes)} routes, {len(lab_routes)} authored lab modes, light/dark dashboard spacing, mobile layouts, keyboard dialogs, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
+        print(f'PASS: {len(routes)} routes, {len(lab_routes)} authored lab modes, light/dark dashboard spacing, mobile layouts, keyboard dialogs, responsive table layouts, unchanged command selection, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
         browser.close()
 finally:
     if server:
