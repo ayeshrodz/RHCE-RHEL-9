@@ -22,6 +22,44 @@ This lab covers chapters 3, 6, 7 and 9. The project `~/review-admin` has an `ans
     'Schedule a cron job.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade review-admin
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the nightly schedule and prove the existing storage and account settings remain idempotent.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Prepare the webservers for an administrator and persistent web data; compose the four playbooks in `site.yml`.
+
+- `storage.yml`: `vg_web` on the empty extra disk with XFS `lv_content` (768 MiB, `/var/www/html/content`) and `lv_uploads` (1024 MiB, `/var/www/html/uploads`).
+- `dev-users.yml`: account and group `webdev`, password from the supplied vaulted hash, and validated passwordless sudo for that group.
+- `network.yml`: persistent secondary address, `172.25.250.45/24` on classroom eth1 or `192.0.2.45/24` on home dummy eth1, stored in group variables.
+- `log-rotate.yml`: `/etc/cron.d/rotate_web` must schedule `logrotate -f /etc/logrotate.d/httpd` as devops at midnight daily.
+- Compose storage, users, network, then scheduling. Verify repeatability, access, and persistent configuration.
+
+</LabChallenge>
+
   <HomeSetup>
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. As in chapter 9, the spare disk is `/dev/sdb`, and `eth1` is a dummy interface with an address from `192.0.2.0/24`.
   </HomeSetup>

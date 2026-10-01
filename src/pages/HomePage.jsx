@@ -36,6 +36,7 @@ const stages = [
   { title: 'Reuse', chapters: [7], text: 'Roles, collections and the system roles.' },
   { title: 'Real work', chapters: [8, 9], text: 'Troubleshooting, then software, users, storage and networking.' },
   { title: 'Prove it', chapters: [10], text: 'Four review labs and two integrated assessments.' },
+  { title: 'Project workflow', chapters: [11], text: 'Git, editor containers, explicit runtimes, recovery and validated access.' },
 ];
 
 const labHosts = [
@@ -106,8 +107,8 @@ export default function HomePage() {
 
       <section className="home-section">
         <h2>The path</h2>
-        <p className="home-section-sub">Six stages, each building on the last. Your progress is saved in this browser.</p>
-        <ol className="path">
+        <p className="home-section-sub">Each stage builds on the last. Your progress is saved in this browser.</p>
+        <ol className="path" style={{ '--path-stages': stages.length }}>
           {stages.map((stage, i) => {
             const inStage = chapters.filter((c) => stage.chapters.includes(c.number));
             const total = inStage.reduce((n, c) => n + chapterProgress(c, done).total, 0);

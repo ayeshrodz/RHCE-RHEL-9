@@ -7,7 +7,8 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import YAML from 'yaml';
 import GithubSlugger from 'github-slugger';
-import { challenges } from '../src/data/challenges.js';
+import { readPractice } from '../scripts/read-practice.mjs';
+const challenges = readPractice();
 
 const processor = createProcessor({ remarkPlugins: [remarkFrontmatter, remarkGfm] });
 const objectives = YAML.parse(fs.readFileSync('content/_objectives.yml', 'utf8'));
@@ -56,6 +57,13 @@ for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort
           const refs = attr(node, 'objectives'); assert(Array.isArray(refs) && refs.length, `${route}: ${node.name} needs objective references`);
           for (const ref of refs) assert(objectiveIds.has(ref), `${route}: unknown objective ${ref}`);
         }
+        if (node.name === 'Reveal') {
+          assert((node.children ?? []).some((child) => textOf(child).trim() || child.name), `${route}: empty disclosure ${attr(node, 'title')}`);
+        }
+        if (node.name === 'LabChallenge') {
+          assert(textOf(node).trim().length >= 80 && node.children.some((child) => child.type === 'list' && child.children.length >= 2), `${route}: challenge needs a purpose and explicit requirements`);
+          assert(!node.children.some((child) => child.type === 'code'), `${route}: keep solution code in the walkthrough, outside LabChallenge`);
+        }
         if (node.name === 'Task') { const id = attr(node, 'id'); stable(id, route); headings.add(id); tasks++; }
         if (node.name === 'Quiz') {
           const expression = node.attributes.find((a) => a.name === 'questions').value.data.estree.body[0].expression;
@@ -71,7 +79,10 @@ for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort
         if (node.name === 'ChapterPractice') for (const c of challenges.filter((c) => c.chapter === attr(node, 'chapter'))) headings.add(`challenge-${c.id}`);
         if (node.name === 'Lab') {
           const command = attr(node, 'classroom');
-          if (command) { const name = command.match(/^lab start ([a-z0-9-]+)$/)?.[1]; assert(name, `${route}: invalid lab command`); labs.add(name); assert(catalog.exercises[name], `${name}: no grader`); }
+          if (command) {
+            assert.equal(node.children.filter((child) => child.name === 'LabChallenge').length, 1, `${route}: graded lab needs one authored challenge brief`);
+            assert.equal(node.children.filter((child) => child.name === 'LabNotes').length, 1, `${route}: graded lab needs authored prerequisites and verification`);
+            const name = command.match(/^lab start ([a-z0-9-]+)$/)?.[1]; assert(name, `${route}: invalid lab command`); labs.add(name); assert(catalog.exercises[name], `${name}: no grader`); }
         }
       }
       for (const child of node.children ?? []) visit(child);
@@ -88,7 +99,10 @@ for (const objective of objectives) {
   for (const route of [...objective.lessons, ...objective.labs]) assert(routes.has('/' + route), `${objective.id}: missing page ${route}`);
   for (const id of objective.challenges) assert(challenges.some((c) => c.id === id && c.objective === objective.id), `${objective.id}: mismatched challenge ${id}`);
 }
-for (const challenge of challenges) { assert(objectiveIds.has(challenge.objective), `Unknown objective ${challenge.objective}`); stable(challenge.id, 'challenge'); }
+for (const challenge of challenges) {
+  for (const field of ['id', 'chapter', 'objective', 'title', 'prompt', 'type', 'explain']) assert(typeof challenge[field] === 'string' && challenge[field].trim(), `Missing challenge ${field}`);
+  assert(Array.isArray(challenge.hints) && challenge.hints.length && challenge.hints.every((hint) => typeof hint === 'string' && hint.trim()), `${challenge.id}: empty hints`);
+  assert(objectiveIds.has(challenge.objective), `Unknown objective ${challenge.objective}`); stable(challenge.id, 'challenge'); }
 const manifests = fs.readdirSync('public/lab').filter((d) => fs.existsSync(`public/lab/${d}/MANIFEST`));
 assert.deepEqual([...labs].sort(), manifests.sort(), 'Published labs and manifests differ');
 assert.deepEqual(Object.keys(catalog.exercises).sort(), manifests.sort(), 'Graders and manifests differ');

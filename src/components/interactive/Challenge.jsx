@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { useStored } from '@/lib/storage';
 import { evaluateChallenge, solutionFor } from '@/lib/challengeEngine';
-import { challenges } from '@/data/challenges';
+import { challenges } from 'virtual:challenges';
 
 export function Challenge({ challenge }) {
   const uid = useId();
@@ -61,14 +61,14 @@ export function Challenge({ challenge }) {
         </>
       )}
       <div className="challenge-actions">
-        <button className="btn btn-primary btn-sm" onClick={check}>
+        <button className="btn btn-primary" onClick={check}>
           Check answer
         </button>
-        <button className="btn btn-sm" disabled={hints >= challenge.hints.length} onClick={() => setHints(hints + 1)}>
+        <button className="btn" disabled={hints >= challenge.hints.length} onClick={() => setHints(hints + 1)}>
           Next hint
         </button>
         <button
-          className="btn btn-sm"
+          className="btn"
           onClick={() => {
             setInput(challenge.starter);
             setFeedback(null);
@@ -94,11 +94,11 @@ export function Challenge({ challenge }) {
           ))}
         </ol>
       )}
-      <button className="btn btn-ghost btn-sm" aria-expanded={showSolution} onClick={() => setShowSolution(!showSolution)}>
+      <button className="btn" aria-expanded={showSolution} onClick={() => setShowSolution(!showSolution)}>
         {showSolution ? 'Hide the explained solution' : 'Show an explained solution'}
       </button>
       {showSolution && (
-        <div>
+        <div className="challenge-solution">
           <pre>{solutionFor(challenge)}</pre>
           <p>{challenge.explain}</p>
         </div>
@@ -109,10 +109,10 @@ export function Challenge({ challenge }) {
     </section>
   );
 }
-export default function ChapterPractice({ chapter }) {
+export default function ChapterPractice({ chapter, challenges: authored = challenges }) {
   return (
     <div className="chapter-practice">
-      {challenges
+      {authored
         .filter((c) => c.chapter === chapter)
         .map((c) => (
           <Challenge key={c.id} challenge={c} />

@@ -189,9 +189,34 @@ Give each question and task a unique, descriptive ID, such as `ch02-inventory-ch
 
 Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
 
-Browser challenges live in `src/data/challenges.js`. Supply a stable `id`, chapter, objective, type, requirement, starter input or choices, expected result, progressive hints, explanation, and solution. Keep simulations within the supported parser behavior. Test correct, incorrect, incomplete, and equivalent answers in `tests/challenges.test.js`; compare relevant cases with actual Ansible.
+Browser challenges are authored in their chapter's quiz MDX, as a JSON-compatible `export const practice = [...]` followed by `<ChapterPractice chapter="chNN" challenges={practice} />`. Supply a stable `id`, chapter, objective, type, `prompt`, starter input or choices, `expected` result, nonempty progressive hints, explanation, and optional explicit solution. The build reads the same export for the dashboard; editing wording needs no React change. Keep simulations within the supported parser behavior. Test correct, incorrect, incomplete, and equivalent answers in `tests/challenges.test.js`; compare relevant cases with actual Ansible.
 
-A lab brief needs prerequisites, outcomes, verification, progressive hints, and an independent variation. Catalog brief metadata appears through `LabBrief`; task solutions can use `<Reveal>`. Challenge mode exposes requirements first. Keep task requirements understandable without reading the solution.
+Lab wording belongs in MDX. A graded `<Lab>` contains exactly one `<LabNotes>` and one `<LabChallenge>`, alongside its existing `<Task>` children. `LabNotes` holds prerequisites and optional verification/variation reveals. `LabChallenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
+
+```mdx
+<Lab id="site" classroom="lab start example-site" objectives={["ch02.playbooks"]}>
+  <LabNotes>
+    **Prerequisites:** working SSH and sudo access to the target.
+
+    <Reveal title="Verify your work">
+      Fetch the page from workstation, repeat the deployment, and inspect unexpected changes.
+    </Reveal>
+  </LabNotes>
+  <LabChallenge>
+    Publish the supplied page on the inventory's web hosts.
+
+    - Apache must run now and start at boot.
+    - Workstation must receive the supplied content over HTTP.
+  </LabChallenge>
+  <Task id="example-site-service" title="Prepare the web service">
+    Explain the purpose, show the small step, and say how to verify it.
+  </Task>
+</Lab>
+```
+
+Guided mode renders tasks normally. Challenge mode renders the authored requirement brief and keeps the entire task walkthrough/checklist closed until requested. Components never guess which child is a question or manufacture a hint from the remaining children. Setup labs without an authored challenge show the walkthrough only. Keep solutions inside nonempty `<Reveal>` elements; never publish an empty disclosure.
+
+The grading catalog contains only machine-check contracts and intentionally broken fixture declarations. Teaching text is not fetched from it.
 
 For a new exercise, add a starter manifest and index entry plus a `graders.json` entry. Each probe needs stable IDs, required target hosts, read-only commands, and a useful failure explanation. Use named checkpoints where later tasks intentionally remove earlier results. Increment the exercise version when the grading contract changes and regenerate the browser report schema:
 

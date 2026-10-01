@@ -40,6 +40,47 @@ try:
             assert not page.locator('.load-error').count(), route
             assert 'This activity could not load' not in page.inner_text('body'), route
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), route
+        # Every graded lab has a separately authored challenge; help is closed by default.
+        lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'public/lab/graders.json').read_text())['exercises'].values()]
+        for route in lab_routes:
+            go(page, route)
+            page.get_by_role('button', name='Challenge', exact=True).click()
+            brief = page.locator('.lab-challenge')
+            assert brief.is_visible() and brief.locator('li').count() >= 2, route
+            walkthrough = page.locator('.lab-walkthrough')
+            assert walkthrough.get_attribute('open') is None, route
+            assert not page.locator('.lab-task').first.is_visible(), route
+            assert not brief.locator('pre').count(), route
+            assert not page.get_by_text('Open hints and steps', exact=True).count(), route
+            walkthrough.locator(':scope > summary').click()
+            assert page.locator('.lab-task').first.is_visible(), route
+            assert all(text.strip() for text in page.locator('.lab-task').all_inner_texts()), route
+            page.get_by_role('button', name='Guided', exact=True).click()
+            assert not page.locator('.lab-challenge').count(), route
+            assert page.locator('.lab-task').first.is_visible(), route
+        # Setup instructions remain a walkthrough; task checks survive mode changes/reload.
+        go(page, '/ch00/prepare-host')
+        assert not page.locator('.lab-mode').count()
+        go(page, '/ch11/lab-archive-recovery')
+        task = page.locator('.lab-task').first
+        task.get_by_role('checkbox').click()
+        page.get_by_role('button', name='Challenge', exact=True).click()
+        page.reload(); page.locator('.lab-walkthrough > summary').click()
+        assert page.locator('.lab-task').first.get_by_role('checkbox').get_attribute('aria-checked') == 'true'
+        go(page, '/ch11/lab-archive-recovery#task-56ef7e8d45cf')
+        page.wait_for_function("document.querySelector('.lab-walkthrough').open")
+        assert page.locator('#task-56ef7e8d45cf').is_visible()
+        page.get_by_role('button', name='Guided', exact=True).click()
+        # Dashboard typography and action spacing in both themes and viewports.
+        for theme in ['light', 'dark']:
+            for width in [390, 1440]:
+                page.set_viewport_size({'width': width, 'height': 1000}); go(page, '/progress')
+                page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
+                assert page.locator('h1').evaluate('(e) => getComputedStyle(e).fontWeight') == '500'
+                assert page.locator('.dashboard-card h2').first.evaluate('(e) => getComputedStyle(e).marginTop') == '0px'
+                assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == 34
+                assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
+                assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         for route in ['/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:
             page.set_viewport_size({'width': 390, 'height': 844}); go(page, route)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'mobile {route}'
@@ -109,7 +150,7 @@ try:
         # Cross-tab updates.
         go(page, '/progress'); other = context.new_page(); go(other, '/')
         other.evaluate("localStorage.setItem('rhce:completed', JSON.stringify(['ch01/why-automate']))")
-        page.wait_for_function("document.body.innerText.includes('1 sections marked read')")
+        page.wait_for_function("document.querySelector('.dashboard-stats dd').innerText.trim().split(/\\s+/)[0] === '1'")
         # Readiness migration and preference updates should stay independent.
         other.close()
         blocked = browser.new_context()
@@ -122,7 +163,7 @@ try:
         assert corrupt_page.locator('h1').inner_text() == 'Your learning'
         assert corrupt_page.evaluate("localStorage.getItem('rhce:completed')") == 'false'
         assert not errors, errors
-        print(f'PASS: {len(routes)} routes, mobile layouts, keyboard dialogs, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
+        print(f'PASS: {len(routes)} routes, {len(lab_routes)} authored lab modes, light/dark dashboard spacing, mobile layouts, keyboard dialogs, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
         browser.close()
 finally:
     if server:

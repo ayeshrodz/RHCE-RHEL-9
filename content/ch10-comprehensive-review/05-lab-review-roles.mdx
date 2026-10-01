@@ -17,6 +17,43 @@ This lab covers chapters 5 and 7. The project `~/review-roles` has an `ansible.c
   hosts={['workstation', 'serverb.lab.example.com', 'serverc.lab.example.com']}
   outcomes={['Create a role from an existing playbook.', 'Create a playbook to apply the role to managed hosts.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade review-roles
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Expose one safe page setting as a role default and override it for only one target host.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Refactor `ansible-httpd.yml` into the reusable `ansible-httpd` role and apply it to `webdev` through `site.yml`.
+
+- Retain all package, service, configuration, page, firewall, and handler behavior.
+- Put each asset in its conventional role location; keep internal service values within the role.
+- Document variables, dependencies, usage, author, and BSD license; remove unused skeleton directories.
+- Verify the resulting web service and configuration on serverb and serverc. A repeat application must make no unintended change.
+
+</LabChallenge>
+
   <HomeSetup>
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host.
   </HomeSetup>

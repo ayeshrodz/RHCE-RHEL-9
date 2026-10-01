@@ -9,6 +9,7 @@ import { transformerNotationHighlight } from '@shikijs/transformers';
 import { fileURLToPath, URL } from 'node:url';
 import contentManifest from './plugins/content-manifest.js';
 import chapterWidgets from './plugins/chapter-widgets.js';
+import practiceManifest from './plugins/practice-manifest.js';
 
 // Copies ```lang title="file.yml"``` metadata onto the <pre> so the
 // CodeBlock component can render a filename / language header.
@@ -44,6 +45,7 @@ export default defineConfig({
   plugins: [
     contentManifest(),
     chapterWidgets(),
+    practiceManifest(),
     mdxPages({
       providerImportSource: '@mdx-js/react',
       remarkPlugins: [remarkFrontmatter, remarkGfm],

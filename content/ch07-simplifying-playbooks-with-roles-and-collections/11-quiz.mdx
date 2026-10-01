@@ -120,4 +120,45 @@ Fifteen questions on roles and collections. Aim for at least nine before moving 
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch07" />
+export const practice = [
+  {
+    "id": "role-layout",
+    "chapter": "ch07",
+    "objective": "ch07.role-structure",
+    "title": "Place the role files",
+    "prompt": "Map each file to its relative role path: defaults, handler, and template. Keep the YAML keys below.",
+    "type": "yaml",
+    "starter": "defaults: vars/main.yml\nhandler: tasks/main.yml\ntemplate: files/site.j2\n",
+    "expected": {
+      "defaults": "defaults/main.yml",
+      "handler": "handlers/main.yml",
+      "template": "templates/site.j2"
+    },
+    "hints": [
+      "User-adjustable settings belong in defaults.",
+      "Templates and handlers each have their own directory."
+    ],
+    "explain": "The standard layout lets Ansible discover each kind of content."
+  },
+  {
+    "id": "collection-location",
+    "chapter": "ch07",
+    "objective": "ch07.collections",
+    "title": "Find the dependency",
+    "prompt": "A play runs inside an EE and cannot find ansible.posix.firewalld. The collection is installed only on workstation. What should you inspect first?",
+    "type": "choice",
+    "starter": "",
+    "expected": "The EE collection list and requirements",
+    "hints": [
+      "Runtime content belongs to the selected environment."
+    ],
+    "explain": "Inspect the execution environment and its requirements; workstation packages alone do not populate the image.",
+    "options": [
+      "The web page",
+      "The EE collection list and requirements",
+      "The managed host’s SSH banner"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch07" challenges={practice} />

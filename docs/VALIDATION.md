@@ -54,3 +54,17 @@ The three additional system cases used isolated VMs that already contained earli
 Reboot checks for the three additional cases remain pending: SSH did not return for the isolated guests during the final reboot attempt. Earlier reboot evidence for archive, security, storage, networking, and both assessments remains recorded above.
 
 At the end of this run, LXD still had a storage-copy operation pending, and a validation-guest restart could not complete. The copy operation rejected cancellation. Original lab instances and clean snapshots were preserved. Isolated validation copies were retained for the remaining host checks.
+
+## Content and visual review after feature delivery
+
+The feature checks above did not establish the editorial and visual quality of the new learning flows. A further review addressed the dashboard, lab mode semantics, empty disclosures, and the workflow bridge:
+
+- All 42 graded labs now have independently authored MDX challenge requirements, prerequisites, verification notes, and specific variations. Guided steps and solutions remain available inside a closed walkthrough in Challenge mode. The 13 setup walkthroughs do not offer a simulated challenge mode.
+- All 20 browser activity definitions moved to their chapter quiz MDX exports. The renderer and grading engine remain reusable code; the build shares those definitions with the dashboard. Lab grading JSON contains machine contracts rather than learner-facing briefs.
+- Chapter 11 explains its place in the course, prerequisites, environment boundaries, purpose of each workflow, expected output, recovery checks, and policy validation. Existing routes, activity IDs, and heading anchors are retained.
+- The learning dashboard uses shared page typography and card styling. Practice controls use standard buttons, with deliberate spacing for feedback and solutions. Desktop and phone screenshots were visually reviewed; automated checks verify light/dark dashboard heading margins, button height, action spacing, and page overflow.
+- Production Chromium checks pass on all 125 routes and both modes of all 42 graded labs. Mode changes/reloads retain task completion; closed walkthroughs hide guided instructions; keyboard dialogs, report imports, export/import round trips, storage failures, and cross-tab progress updates still pass.
+- The revised Git workflow was executed on workstation with ansible-core 2.14.18: initial localhost run, commit/push, message change, second commit/push, second clone, two-commit history, and recovered localhost run passed. Only a temporary practice directory was used and removed afterward. Navigator's installed exec help confirms the documented subcommand/options.
+- A fresh VS Code desktop/container walkthrough remains pending. Earlier archive/security VM results remain applicable to the unchanged solution behavior; this editorial review does not establish complete VM coverage of all 42 exercises. The existing pending lab validation remains in effect.
+
+Content CI now requires a purpose and multiple requirements in each challenge brief and rejects empty authored reveals or browser hints. Build, formatting, content validation, 39 JavaScript tests, six Python test cases, and the expanded production browser checks pass.

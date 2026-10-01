@@ -17,6 +17,43 @@ The project `~/file-review` has an `ansible.cfg`, an `inventory` with one group,
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Build a template file from host facts.', 'Deploy it, and other files and links, from one playbook.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade file-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add the OS distribution to the login message. Predict which files and tasks should change.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Provide a useful login message and consistent banner on the inventory hosts.
+
+- `serverb_facts.yml` must expose the facts needed to identify memory and processor count.
+- `templates/motd.j2`, deployed by `motd.yml`, must show those host-specific values in root-owned `/etc/motd` with mode `0644`.
+- Publish `files/issue` as root-owned `/etc/issue`, mode `0644`; `/etc/issue.net` must be a symbolic link to it, replacing the existing regular file.
+- Record the file metadata and confirm the login message. Banner display also depends on the SSH daemon's Banner setting.
+
+</LabChallenge>
+
   <Task id="task-a9597a31b2fd" legacyIndex={1} title="Review the inventory">
 
 ```console

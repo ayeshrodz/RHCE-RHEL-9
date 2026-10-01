@@ -17,6 +17,43 @@ The project `~/projects-host` has an `ansible.cfg`, two inventories and a playbo
   hosts={['workstation']}
   outcomes={['Use names, groups, wildcards, lists, exclusions and intersections to select hosts from an inventory.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade projects-host
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Find hosts in London that are not databases. Predict their names before testing your pattern.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Predict and verify host selection without altering any systems. Use the two supplied inventories and `playbook.yml`.
+
+- In `inventory1`, select a single named host, a listed IP, all hosts, names ending in `example.com`, and that domain excluding `lab.example.com`.
+- Select exactly `lb1.lab.example.com`, `s1.lab.example.com`, and `db1.example.com`; then select addresses beginning `172.25.`.
+- Compare a wildcard that matches `stage` with one that matches individual host names. Select the union of production, addresses beginning `172`, and names containing `lab`; then the intersection of database and London hosts.
+- In `inventory2`, verify London, Europe, ungrouped, and the missing Australia group. Explain why a missing group can produce a successful run that performs no work.
+
+</LabChallenge>
+
   <Task id="task-f242ad3b5bb6" legacyIndex={1} title="Look at the project">
 
 ```console
@@ -136,7 +173,7 @@ ok: [172.25.252.44]
   </Task>
 
   <Task id="task-117e9b17ddc2" legacyIndex={4} title="Every host">
-    Set `hosts: all`. All seventeen hosts are listed: the four without a group, the eleven named hosts in groups, and the three addresses.
+    Set `hosts: all`. All seventeen hosts are listed: the four without a group, the ten named hosts in groups, and the three addresses.
   </Task>
 
   <Task id="task-0d976cb50072" legacyIndex={5} title="A domain, with a wildcard">

@@ -17,6 +17,43 @@ The project `~/system-users` has an `ansible.cfg`, an `inventory` with servera i
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Create users and a group from a variables file.', 'Install SSH keys, a sudo rule and an SSH server setting.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-users
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add one disposable administrator and key through the data file only, then verify that account’s access.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Prepare the administrator accounts listed in `vars/users_vars.yml` on `webservers`, using `users.yml`.
+
+- All five users must belong to `webadmin` and have their corresponding supplied public key authorized.
+- Members of `webadmin` must have passwordless sudo access through a validated policy.
+- Direct SSH login as root must be disabled. Keep devops access usable.
+- Verify a user1 key login and sudo command, and separately demonstrate root login refusal. Policy text alone is not proof that access works.
+
+</LabChallenge>
+
   <HomeSetup>
     `lab start system-users` creates a key pair for each user in `files/`: `user1.key` and `user1.key.pub`, and so on. Only the `.pub` files go to the servers.
   </HomeSetup>

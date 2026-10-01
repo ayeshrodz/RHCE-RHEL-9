@@ -40,7 +40,7 @@ Reports use `app: "playbook-path-lab"` and `version: 1`. They include `exerciseI
 
 ## Contributing checks
 
-Edit `public/lab/graders.json`. Every published starter manifest needs an exercise entry with a lesson, prerequisites, a brief, an independent variation, and a `final` checkpoint. List required project files and add narrowly scoped, read-only probes for the resulting host state. Every probe must declare its required inventory host names in `targets`; omitting a host must not turn a partial result into a pass.
+Edit `public/lab/graders.json`. Every published starter manifest needs an exercise entry with a version, lesson link, and `final` checkpoint. Keep prerequisites, the challenge brief, verification guidance, and independent variations in the lesson’s MDX `<LabNotes>` and `<LabChallenge>`; see [authoring](AUTHORING.md). List required project files and add narrowly scoped, read-only probes for the resulting host state. Every probe must declare its required inventory host names in `targets`; omitting a host must not turn a partial result into a pass.
 
 Add a named checkpoint when later tasks remove or replace earlier results. Keep intentionally broken troubleshooting starters identified in `intentionalFaults`. Never call a learner playbook from the grader. Avoid output containing passwords, private keys, or password hashes.
 

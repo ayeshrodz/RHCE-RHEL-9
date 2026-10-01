@@ -4,12 +4,6 @@
     "intro-install": {
       "version": 1,
       "lesson": "#/ch01/lab-installing-ansible",
-      "brief": "In this exercise you turn `workstation` into a working control node: install automation content navigator, log in to the classroom registry, and download the execution environment that later chapters use.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [],
@@ -30,12 +24,6 @@
     "playbook-inventory": {
       "version": 1,
       "lesson": "#/ch02/lab-inventory",
-      "brief": "You will build a static inventory for four web servers, grouping them three different ways (by city, by environment, and by country), then prove the groups are right with `ansible-navigator inventory`.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -66,12 +54,6 @@
     "playbook-manage": {
       "version": 1,
       "lesson": "#/ch02/lab-configuration",
-      "brief": "You will give a project its own navigator settings, its own `ansible.cfg` and its own inventory, then use small ping playbooks to prove each piece works, finishing with sudo escalation that prompts for a password.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -92,12 +74,6 @@
     "playbook-basic": {
       "version": 1,
       "lesson": "#/ch02/lab-playbooks",
-      "brief": "You will write your first real playbook: one play that installs Apache, deploys a web page and starts the service on two hosts. Then you will syntax-check it, run it, run it again to prove it is idempotent, and test the result with `curl`.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -142,12 +118,6 @@
     "playbook-multi": {
       "version": 1,
       "lesson": "#/ch02/lab-multiple-plays",
-      "brief": "You will write `intranet.yml`, a playbook with two plays. The first configures `servera` as an intranet web server with root privileges. The second runs unprivileged on localhost and checks that the site answers.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -189,12 +159,6 @@
     "playbook-review": {
       "version": 1,
       "lesson": "#/ch02/chapter-lab",
-      "brief": "The chapter's end-of-chapter lab: no step-by-step code this time. Build a two-play playbook that sets up a PHP and MariaDB web server on `serverb`, then tests it from the workstation. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -236,12 +200,6 @@
     "data-variables": {
       "version": 1,
       "lesson": "#/ch03/lab-variables",
-      "brief": "You will rewrite a web server play so that every package and service name comes from a variable, then add a second play that checks the site is reachable.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -283,12 +241,6 @@
     "data-secret": {
       "version": 1,
       "lesson": "#/ch03/lab-vault",
-      "brief": "You will unlock an encrypted variables file, use its secrets in a playbook that creates a user, run the playbook first with a password prompt and then with a password file, and finally log in as the new user to prove the password was set.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -324,12 +276,6 @@
     "data-facts": {
       "version": 1,
       "lesson": "#/ch03/lab-facts",
-      "brief": "You will print a host's facts, pick out specific ones, then create a custom fact file on servera and write a play that decides what to install and start purely from that file.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -365,12 +311,6 @@
     "data-review": {
       "version": 1,
       "lesson": "#/ch03/chapter-lab",
-      "brief": "Put the whole chapter together: a play whose every name and path is a variable, a web page built from facts, and a test play that logs in with a password kept in a Vault-encrypted file. Try each task yourself before opening the solution.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -431,12 +371,6 @@
     "control-flow": {
       "version": 2,
       "lesson": "#/ch04/lab-loops-conditionals",
-      "brief": "You will install MariaDB with a looping task, then add a condition so the installation only happens on Red Hat Enterprise Linux, and run it against a second group.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -461,12 +395,6 @@
     "control-handlers": {
       "version": 1,
       "lesson": "#/ch04/lab-handlers",
-      "brief": "You will finish a playbook that deploys nginx and php-fpm, so that each service restarts only when its own configuration file changes, then run it twice to watch the handlers fire and then stay quiet.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -499,12 +427,6 @@
     "control-errors": {
       "version": 1,
       "lesson": "#/ch04/lab-task-failure",
-      "brief": "You will make a task fail on purpose, then handle that failure four different ways: ignore it, rescue it with a block, stop a read-only command from reporting changes, and invent your own failure condition.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -528,12 +450,6 @@
     "control-review": {
       "version": 1,
       "lesson": "#/ch04/chapter-lab",
-      "brief": "Use everything in this chapter to deploy an HTTPS web server: stop early on unsuitable hosts, install and start everything with loops, copy the TLS files as a recoverable block, open the firewall, and restart the web server only when its configuration changes.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -575,12 +491,6 @@
     "file-manage": {
       "version": 1,
       "lesson": "#/ch05/lab-file-modules",
-      "brief": "You will collect a log file from every managed host, copy a file out with a specific owner, mode and SELinux type, reset that SELinux context to the default, add a line and then a block to the file, and finally remove it.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -666,12 +576,6 @@
     "file-template": {
       "version": 1,
       "lesson": "#/ch05/lab-templates",
-      "brief": "You will write a small template for the message of the day and a playbook that deploys it, so that each machine greets its users with its own name, its distribution and the address of its owner.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -707,12 +611,6 @@
     "file-review": {
       "version": 1,
       "lesson": "#/ch05/chapter-lab",
-      "brief": "The end-of-chapter lab combines both halves of the chapter: find the facts you need, build a template from them, deploy it, check it with `stat`, copy a second file beside it and link a third. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -756,12 +654,6 @@
     "projects-host": {
       "version": 1,
       "lesson": "#/ch06/lab-host-patterns",
-      "brief": "You will point one small play at two example inventories and change only its `hosts:` line, fourteen times, to see exactly what each kind of pattern selects. Predict each result before you run it. Nothing in this exercise connects to a managed host.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -783,12 +675,6 @@
     "projects-file": {
       "version": 1,
       "lesson": "#/ch06/lab-reuse",
-      "brief": "You will assemble a playbook almost entirely out of existing pieces: three task files, pulled into a play with one include and two imports, each given its own variables, and a whole play imported from another playbook to test the result.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -834,12 +720,6 @@
     "projects-review": {
       "version": 1,
       "lesson": "#/ch06/chapter-lab",
-      "brief": "You have inherited a working playbook from the previous administrator of four web servers. It does its job, but it lists every host by hand and keeps every task in one play. Make it easier to maintain with a host pattern, task files and one reusable, parameterised task file. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -894,12 +774,6 @@
     "role-create": {
       "version": 1,
       "lesson": "#/ch07/lab-role-create",
-      "brief": "You will turn the setup of an Apache virtual host into a role, `myvhost`: a skeleton from `ansible-galaxy`, tasks, a handler and a template. Then you will use it from a play that also has tasks before and after the role, and check the result with three small verification playbooks.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -936,12 +810,6 @@
     "role-galaxy": {
       "version": 1,
       "lesson": "#/ch07/lab-role-galaxy",
-      "brief": "You will install a role that another team keeps in a Git repository, use it to set the default shell environment for new users, and then switch to a newer branch of the same role and see what changes.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -988,12 +856,6 @@
     "role-collections": {
       "version": 1,
       "lesson": "#/ch07/lab-role-collections",
-      "brief": "You will install a collection from an archive, explore what it contains, and use one of its modules and one of its roles in a playbook. Then you will install several collections at once from a requirements file and run a playbook that depends on them.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1018,12 +880,6 @@
     "role-system": {
       "version": 1,
       "lesson": "#/ch07/lab-role-system",
-      "brief": "You will install the system roles collection into a project, read the timesync role's documentation, and use the role to synchronise time on two database servers. Then you will set a different time zone for each data centre with tasks after the role and a handler that reboots the host.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1060,12 +916,6 @@
     "role-review": {
       "version": 1,
       "lesson": "#/ch07/chapter-lab",
-      "brief": "Your developers need a web server of their own. It must be configured like production, which the infrastructure team manages with its own role; each developer gets a directory served on a personal, non-standard port; and SELinux must stay enforcing. You will combine a role from Git, a role you create, and a system role from a collection in one play. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1102,12 +952,6 @@
     "troubleshoot-playbook": {
       "version": 1,
       "lesson": "#/ch08/lab-troubleshoot-playbook",
-      "brief": "A colleague's playbook that should set up a Samba server on servera does not run. You will turn on logging, then fix it one error at a time, reading each message for the line, the column and the hint it gives.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1133,12 +977,6 @@
     "troubleshoot-host": {
       "version": 1,
       "lesson": "#/ch08/lab-troubleshoot-host",
-      "brief": "You will troubleshoot two playbooks that fail on a managed host: one that fails only in check mode, and one that cannot reach its host at all, even though an ad hoc command can.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1169,12 +1007,6 @@
     "troubleshoot-review": {
       "version": 2,
       "lesson": "#/ch08/chapter-lab",
-      "brief": "The playbook `secure-web.yml` should set up Apache with TLS on the web servers, but several problems stop it: in the playbook, in the inventory and in how it connects. Find and fix each one until the playbook runs cleanly. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1222,12 +1054,6 @@
     "system-software": {
       "version": 1,
       "lesson": "#/ch09/lab-software",
-      "brief": "Your web servers need a package that is only published in an internal repository, whose packages are signed. You will configure the repository and its key, install the package, and use the package facts to report on it before and after.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1277,12 +1103,6 @@
     "system-users": {
       "version": 1,
       "lesson": "#/ch09/lab-users",
-      "brief": "The web servers need the same five administrator accounts, all in a `webadmin` group, each with an SSH key, and with sudo rights that need no password. Root must no longer be able to log in over SSH. You will do all of it from one variables file and one play.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1334,12 +1154,6 @@
     "system-process": {
       "version": 1,
       "lesson": "#/ch09/lab-boot-and-scheduling",
-      "brief": "You will schedule a recurring job with cron and remove it again, schedule a one-off job with at, change the default boot target, and reboot a server from a playbook, checking each result on the host.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1406,12 +1220,6 @@
     "system-storage": {
       "version": 1,
       "lesson": "#/ch09/lab-storage",
-      "brief": "The web servers need separate file systems for their content and their logs. You will build both with the storage system role, from one variable, and then inspect the result: physical volume, volume group, logical volumes, mounts and `/etc/fstab`.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1444,12 +1252,6 @@
     "system-network": {
       "version": 1,
       "lesson": "#/ch09/lab-network",
-      "brief": "servera has a second network interface, `eth1`, that is not configured yet. You will give it a static address with the network system role, keeping the setting in `group_vars`, and then read the result back from the facts.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1475,12 +1277,6 @@
     "system-review": {
       "version": 1,
       "lesson": "#/ch09/chapter-lab",
-      "brief": "Five small playbooks, one for each area of the chapter, prepare the web servers: a package from a signed repository, two operators in a group, storage from the storage role, a scheduled disk report, and an address on a second interface. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1553,12 +1349,6 @@
     "review-deploy": {
       "version": 1,
       "lesson": "#/ch10/lab-review-deploy",
-      "brief": "Set up workstation as a control node for servera and serverb, then write, fix and extend small playbooks that use variables, facts and loops. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1596,12 +1386,6 @@
     "review-playbooks": {
       "version": 2,
       "lesson": "#/ch10/lab-review-playbooks",
-      "brief": "Write three playbooks: one that installs and configures web servers from a template, with a handler; one that tests the result from workstation and records any failure with a block and rescue; and one that imports the other two. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1723,12 +1507,6 @@
     "review-admin": {
       "version": 1,
       "lesson": "#/ch10/lab-review-admin",
-      "brief": "Use two system roles and a few modules to prepare a web server: logical volumes for its content, an administrator with sudo rights and a vaulted password, an address on a second interface, and a nightly log rotation job. Then run everything from one playbook. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1793,12 +1571,6 @@
     "review-roles": {
       "version": 1,
       "lesson": "#/ch10/lab-review-roles",
-      "brief": "Turn a working playbook into a role: create the skeleton, move the variables, tasks, template, file and handler into it, document it, remove what it does not use, and apply it to two web servers with a three-line play. Solutions are hidden under each task. Try each one yourself first.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1847,12 +1619,6 @@
     "bridge-archive": {
       "version": 1,
       "lesson": "#/ch11/lab-archive-recovery",
-      "brief": "Practise a recovery job: package a small release, extract it into a new location, and prove that its content and access survived.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1894,12 +1660,6 @@
     "bridge-security": {
       "version": 1,
       "lesson": "#/ch11/lab-security-validation",
-      "brief": "Build a small privileged operation without accidentally breaking access: create a user, validate a sudo policy, and keep the connection account usable.",
-      "prerequisites": [
-        "Complete the Linux readiness check and control-node setup.",
-        "Use clean managed hosts; read the task brief before running playbooks."
-      ],
-      "variation": "Repeat from a clean reset with one host, variable, or resource name changed; update your verification to match.",
       "checkpoints": {
         "final": {
           "files": [
@@ -1950,12 +1710,6 @@
     "assessment-release": {
       "version": 1,
       "lesson": "#/ch10/assessment-release",
-      "brief": "Deploy a reusable, protected web release and prove it can be recovered.",
-      "prerequisites": [
-        "Complete chapters 2\u20137 and the archive lab.",
-        "Start with a clean serverb and use the release_hosts inventory group."
-      ],
-      "variation": "Override release_id with an extra variable and explain which value wins.",
       "checkpoints": {
         "final": {
           "files": [
@@ -2052,12 +1806,6 @@
     "assessment-operations": {
       "version": 1,
       "lesson": "#/ch10/assessment-operations",
-      "brief": "Prepare persistent storage, a reporting account, a schedule, and a secondary network connection.",
-      "prerequisites": [
-        "Complete chapter 9.",
-        "Use a clean serverc and verify the empty extra disk before running your solution."
-      ],
-      "variation": "Add a second reporting group member with a different SSH key while preserving the first account.",
       "checkpoints": {
         "final": {
           "files": [

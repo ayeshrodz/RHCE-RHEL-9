@@ -4,7 +4,6 @@ import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
 import { exerciseName } from '@/lib/labEnv';
 import { HomeSetup, LabPrep } from './Env';
-import LabBrief from './LabBrief';
 
 const LabContext = createContext(null);
 const EMPTY = [];
@@ -13,7 +12,9 @@ const EMPTY = [];
  * Hands-on exercise with persisted task checkboxes.
  * <Lab id="inventory" outcomes={[...]} classroom="lab start playbook-inventory" hosts={[...]}>
  *   <HomeSetup>optional extra notes for the home lab</HomeSetup>
- *   <Task title="...">...</Task>
+ *   <LabNotes>MDX prerequisites, verification, and variation</LabNotes>
+ *   <LabChallenge>MDX purpose and independent requirements</LabChallenge>
+ *   <Task id="stable-task-id" title="...">...</Task>
  * </Lab>
  * `starter={false}` for exercises that have no starter project (nothing for `lab start` to create at home).
  * `own` for exercises that exist only in this guide (no classroom equivalent).
@@ -29,7 +30,11 @@ export function Lab({
   children,
 }) {
   const pageKey = usePageKey();
-  const [mode, setMode] = useStored('labMode', 'guided');
+  const [preferredMode, setMode] = useStored('labMode', 'guided');
+  const parts = Children.toArray(children);
+  const challenge = parts.find((child) => isValidElement(child) && child.type === LabChallenge);
+  const notes = parts.find((child) => isValidElement(child) && child.type === LabNotes);
+  const mode = challenge ? preferredMode : 'guided';
   const [done, setDone] = useStored(`lab:${pageKey}:${id}`, EMPTY);
 
   let n = 0;
@@ -39,6 +44,7 @@ export function Lab({
       homeSetup.push(child.props.children);
       return null;
     }
+    if (isValidElement(child) && [LabChallenge, LabNotes].includes(child.type)) return null;
     return isValidElement(child) && child.type === Task ? cloneElement(child, { n: ++n }) : child;
   });
   const total = n;
@@ -51,7 +57,7 @@ export function Lab({
   const toggle = (i) => setDone((list) => (list.includes(i) ? list.filter((x) => x !== i) : [...list, i]));
 
   return (
-    <LabContext.Provider value={{ done, toggle, mode }}>
+    <LabContext.Provider value={{ done, toggle }}>
       <section className="lab">
         <header className="lab-head">
           <div className="lab-title-row">
@@ -67,22 +73,22 @@ export function Lab({
             <span style={{ width: `${pct}%` }} />
           </div>
 
-          <div className="lab-mode segmented" role="group" aria-label="Practice mode">
-            {['guided', 'challenge'].map((value) => (
-              <button
-                key={value}
-                aria-pressed={mode === value}
-                className={mode === value ? 'is-active' : ''}
-                onClick={() => setMode(value)}
-              >
-                {value === 'guided' ? 'Guided' : 'Challenge'}
-              </button>
-            ))}
-          </div>
+          {challenge && (
+            <div className="lab-mode" role="group" aria-label="Practice mode">
+              {['guided', 'challenge'].map((value) => (
+                <button
+                  key={value}
+                  aria-pressed={mode === value}
+                  className={`btn ${mode === value ? 'is-active' : ''}`}
+                  onClick={() => setMode(value)}
+                >
+                  {value === 'guided' ? 'Guided' : 'Challenge'}
+                </button>
+              ))}
+            </div>
+          )}
           {mode === 'challenge' && (
-            <p>
-              Work from the task titles and outcomes. Open the steps whenever you need help; marking a task complete is your own checklist.
-            </p>
+            <p>Solve the requirements below before opening the walkthrough. Documentation and help are available whenever you need them.</p>
           )}
           <div className="lab-meta">
             {outcomes.length > 0 && (
@@ -120,8 +126,18 @@ export function Lab({
           )}
         </header>
 
-        {classroom && <LabBrief name={exerciseName(classroom)} />}
-        <ol className="lab-tasks">{numbered}</ol>
+        {notes}
+        {mode === 'challenge' ? (
+          <>
+            {challenge}
+            <details className="lab-walkthrough" key="challenge-help">
+              <summary>Open guided walkthrough and task checklist</summary>
+              <ol className="lab-tasks">{numbered}</ol>
+            </details>
+          </>
+        ) : (
+          <ol className="lab-tasks">{numbered}</ol>
+        )}
 
         {total > 0 && count === total && (
           <footer className="lab-done">
@@ -134,10 +150,10 @@ export function Lab({
 }
 
 export function Task({ id, n, title, children }) {
-  const { done, toggle, mode } = useContext(LabContext);
+  const { done, toggle } = useContext(LabContext);
   const checked = done.includes(id);
   return (
-    <li className={`lab-task ${checked ? 'is-done' : ''}`}>
+    <li id={id} className={`lab-task ${checked ? 'is-done' : ''}`}>
       <div className="lab-task-head">
         <button
           className="lab-check"
@@ -150,19 +166,20 @@ export function Task({ id, n, title, children }) {
         </button>
         <p className="lab-task-title">{title}</p>
       </div>
-      <div className="lab-task-body">
-        {mode === 'challenge' ? (
-          <>
-            {Children.toArray(children)[0]}
-            <details>
-              <summary>Open hints and steps</summary>
-              {Children.toArray(children).slice(1)}
-            </details>
-          </>
-        ) : (
-          children
-        )}
-      </div>
+      <div className="lab-task-body">{children}</div>
     </li>
   );
+}
+
+// Instructional content belongs to the MDX page; these are presentation markers.
+export function LabChallenge({ children }) {
+  return (
+    <div className="lab-challenge">
+      <p className="lab-meta-label">Your challenge</p>
+      {children}
+    </div>
+  );
+}
+export function LabNotes({ children }) {
+  return <div className="lab-notes">{children}</div>;
 }

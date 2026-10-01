@@ -17,6 +17,44 @@ The project `~/system-software` has an `ansible.cfg` and an `inventory` with ser
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Configure a repository and its GPG key.', 'Install a package from it, and report on it with package_facts.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-software
+lab grade system-software --checkpoint installed
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+After cleanup, rerun the installation and compare package facts before and after.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Install a package from a trusted repository with `repo_playbook.yml`, then return the hosts to the published cleanup state.
+
+- Report whether the selected package exists before and after installation using newly gathered package facts.
+- The configured repository must enforce package-signature checking and trust its matching signing key.
+- Use the classroom's internal package when available. At home, use the Rocky CRB repository and `python3-pyxattr` as described in the environment notes.
+- Verify the installed checkpoint before removing the practice package. Keep the repository configuration and playbook for inspection.
+
+</LabChallenge>
+
   <HomeSetup>
     The home lab has no internal repository, so the exercise uses Rocky Linux's **CRB** repository, through the lab's internet access, and the package `python3-pyxattr`, which only CRB provides. Its signing key is already on every server, in `/etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9`.
   </HomeSetup>

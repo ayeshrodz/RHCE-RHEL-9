@@ -94,4 +94,45 @@ Twelve questions on host patterns, imports and includes. Aim for at least nine b
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch06" />
+export const practice = [
+  {
+    "id": "exclude-staging",
+    "chapter": "ch06",
+    "objective": "ch06.patterns",
+    "title": "Keep staging untouched",
+    "prompt": "Select production web hosts only: web1, excluding staging web2.",
+    "type": "inventory",
+    "starter": "web",
+    "expected": [
+      "web1"
+    ],
+    "hints": [
+      "Combine web with an exclusion.",
+      "Try web,!staging."
+    ],
+    "explain": "The exclusion removes staging hosts from the web group.",
+    "inventory": "[web]\nweb1\nweb2\n[staging]\nweb2",
+    "solution": "web,!staging"
+  },
+  {
+    "id": "reuse-condition",
+    "chapter": "ch06",
+    "objective": "ch06.reuse",
+    "title": "Choose an include",
+    "prompt": "The first task changes a flag. You want one condition to decide whether the entire task file runs. Which keyword fits?",
+    "type": "choice",
+    "starter": "",
+    "expected": "include_tasks",
+    "hints": [
+      "An import copies the condition onto every task."
+    ],
+    "explain": "include_tasks checks its condition once at the include. import_tasks checks it on each imported task.",
+    "options": [
+      "import_tasks",
+      "include_tasks",
+      "import_playbook inside tasks"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch06" challenges={practice} />

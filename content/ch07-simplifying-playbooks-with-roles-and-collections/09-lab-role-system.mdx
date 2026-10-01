@@ -21,6 +21,43 @@ The project `~/role-system` has an `ansible.cfg`, an `inventory`, and the collec
     'Configure time synchronisation and time zones with a system role and tasks.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade role-system
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Give one lab host a different time zone through host variables and explain how it overrides the group value.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Configure time on `database_servers` with `configure_time.yml`.
+
+- The project's system-roles collection must be discoverable from `collections/`.
+- Use the timesync role with the time source described for your environment below; at home, use the public pool rather than the classroom's private source.
+- Hosts in `na_datacenter` must use `America/Chicago`; hosts in `europe_datacenter` must use `Europe/Helsinki`.
+- Change zones only when needed and reboot after a zone change. Verify synchronization configuration and each zone after reboot; another run must make no change.
+
+</LabChallenge>
+
   <HomeSetup>
     `lab start role-system` packages the `redhat.rhel_system_roles` collection that section 0.6 installed on workstation as `redhat-rhel_system_roles-1.120.5.tar.gz` (your version may differ). This exercise reboots servera and serverb at the end.
   </HomeSetup>

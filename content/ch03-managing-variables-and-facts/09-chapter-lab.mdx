@@ -40,6 +40,43 @@ Notice that `secrets_dest` is built from another variable.
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Define variables and use facts in a playbook, and use variables defined in an encrypted file.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade data-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Try an incorrect guest password in the verification play. Explain the HTTP response and restore the correct secret.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Deliver an authenticated HTTPS page on serverb from `playbook.yml`, using the variables and supplied configuration files described above.
+
+- Install the web, firewall, and TLS packages. Apache and the firewall must run and start at boot; HTTPS must be allowed persistently.
+- Configuration files must be root-owned, mode `0644`. The secrets directory must be apache-owned, mode `0500`; its password file and the web-root `.htaccess` must be apache-owned, mode `0400`.
+- The index page must identify the host's FQDN and default IPv4 address using facts.
+- A workstation play must retrieve it as `guest` using `web_pass` from encrypted `vars/secret.yml` (practice password `redhat`). The lab's self-signed certificate is expected.
+
+</LabChallenge>
+
   <HomeSetup>
     `files/httpd.conf` is Rocky's stock Apache configuration with one change: `AllowOverride AuthConfig` for the document root, so that `.htaccess` can require a login. `files/htpasswd` is generated on your workstation with one user, `guest`, password `redhat`.
   </HomeSetup>

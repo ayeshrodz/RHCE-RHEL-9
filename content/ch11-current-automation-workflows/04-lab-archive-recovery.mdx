@@ -7,20 +7,83 @@ minutes: 20
 <Lead>Practise a recovery job: package a small release, extract it into a new location, and prove that its content and access survived.</Lead>
 
 <Lab objectives={["ch11.archives"]} id="archive-recovery" title="Recover a release" classroom="lab start bridge-archive" own hosts={['servera.lab.example.com']} outcomes={['Create an archive and restore it with explicit ownership and permissions.']}>
+<LabNotes>
+
+**Prerequisites:** Complete chapters 2 and 5. Use servera with devops SSH and sudo access, and a project with the community.general collection installed.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade bridge-archive
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a second file to the release. Prove it is absent from the old archive and present after rebuilding.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Recover a release into a separate directory on servera, using `release.yml`.
+
+- Root-owned `/srv/release` (mode `0755`) must contain `version.txt` with `release-1` followed by a newline, root-owned, mode `0644`.
+- Package its contents as `/tmp/release.tar.gz`. Restore them so `/srv/restored/version.txt` exists directly under the restore directory.
+- Prove the restored file matches the source's bytes, ownership, and mode.
+- Then publish `release-2`, rebuild the archive, and demonstrate that the recovered file reflects the new release. Keep the first-version evidence before moving on.
+
+</LabChallenge>
+
 <Task id="task-612e24cb8c2a" legacyIndex={1} title="Prepare a release">
-Create `release.yml` targeting servera with privilege escalation. Create `/srv/release` as root with mode `0755`, then copy a file `version.txt` containing `release-1\n`, owned by root with mode `0644`.
+Work in `~/bridge-archive`, which `lab start` prepares with the inventory and project configuration. Save your tasks in `release.yml`, targeting `servera.lab.example.com` with privilege escalation.
+
+First create `/srv/release` as root:root with mode `0755`, using `ansible.builtin.file`. Then use `ansible.builtin.copy` to create `/srv/release/version.txt` containing `release-1` followed by a newline, owned by root:root with mode `0644`.
+
+This directory represents a small application release. Keeping its version in a file gives you a simple way to prove which release an archive contains. The directory permissions permit traversal; the file permissions permit reading without allowing ordinary users to change it.
 </Task>
 <Task id="task-56ef7e8d45cf" legacyIndex={2} title="Archive and restore">
-Use `community.general.archive` to create `/tmp/release.tar.gz` from `/srv/release/`. Create `/srv/restored`, then use `ansible.builtin.unarchive` with `remote_src: true` to extract the archive there. Read the module documentation to choose the correct archive layout.
+Add a `community.general.archive` task that packages `/srv/release/` as `/tmp/release.tar.gz`, with format `gz` and archive mode `0644`. Both paths are on servera. The trailing slash chooses the directory's contents, so the recovered file can sit directly in the restore directory.
+
+Next create `/srv/restored` as root:root, mode `0755`. Add `ansible.builtin.unarchive` with the archive as its source, that directory as its destination, root ownership, and `remote_src: true`.
+
+`remote_src` tells Ansible the archive is already on servera; otherwise the module looks for it on the control node. The destination directory must exist before extraction. Read the installed module documentation if you are unsure about either option:
+
+```bash
+ansible-doc community.general.archive
+ansible-doc ansible.builtin.unarchive
+```
 <Reveal title="Hint: the archive layout matters">
 Use `path: /srv/release/` to archive the directory contents. After extraction, `/srv/restored/version.txt` should exist. `remote_src` means the archive is already on the managed host.
 </Reveal>
 </Task>
 <Task id="task-4f1408ad97e1" legacyIndex={3} title="Verify recovery">
-Run the playbook. Read `/srv/restored/version.txt`, check owner and mode with `stat`, and compare the two files with `cmp`. Read-only checks should use `changed_when: false`. Rerun: archive creation may report a deliberate change, while the desired restored content should remain the same.
+Check the syntax and run your playbook from workstation:
+
+```bash
+ansible-playbook release.yml --syntax-check
+ansible-playbook release.yml
+ssh devops@servera.lab.example.com 'cat /srv/restored/version.txt; stat -c "%a:%U:%G" /srv/restored/version.txt; cmp /srv/release/version.txt /srv/restored/version.txt'
+lab grade bridge-archive
+```
+
+Expect `release-1`, then `644:root:root`, and no output from `cmp` with exit status zero. A readable archive alone is insufficient: these checks prove that extraction produced the right bytes and access permissions.
+
+Run the playbook again. Archive creation can report a change because it rebuilds the archive; the recovered file must still match the source. If you put read-only verification commands in the playbook, use `changed_when: false` so they do not inflate the change count.
 </Task>
 <Task id="task-ed2f86815758" legacyIndex={4} title="Try a different release">
-Change the source to `release-2`, rebuild the archive, and restore it again. Confirm the destination changed. Explain why the first archive could not contain a change made after it was created.
+In your copy task, change the version content to `release-2` followed by a newline. Run the playbook and repeat the checks above: the recovered file should now say `release-2` and still match the source.
+
+An archive is a snapshot, not a live link to a directory. Changing the source after packaging does not change an existing archive. Rebuilding it and testing a restore proves that your recovery process can deliver the next release.
 </Task>
 </Lab>
 
@@ -35,6 +98,8 @@ Change the source to `release-2`, rebuild the archive, and restore it again. Con
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
+        owner: root
+        group: root
         mode: '0755'
       loop: [/srv/release, /srv/restored]
     - name: Publish the version
@@ -60,3 +125,7 @@ Change the source to `release-2`, rebuild the archive, and restore it again. Con
 ```
 
 </Reveal>
+
+## Recap
+
+Package the intended directory layout, restore to a separate location, and compare content and permissions. Repeat the recovery with a new version to prove you restored the new archive rather than an old file.

@@ -26,6 +26,44 @@ Use everything in this chapter to deploy an HTTPS web server: stop early on unsu
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Define conditionals, loops and handlers in a playbook.', 'Handle task errors with a block.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade control-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Raise the minimum RAM above your VM allocation. Verify the play stops before changing the web service, then restore it.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Complete the supplied HTTPS deployment using the values in `vars.yml`.
+
+- Reject hosts below `min_ram_mb` or outside the required OS before installation. For the home lab, accept the RedHat OS family; the classroom requires the RedHat distribution.
+- Install the listed packages and start and enable the listed services through loops.
+- Deploy all TLS and web configuration files as a recoverable group of tasks. On a configuration failure, report that failure clearly.
+- Allow HTTP and HTTPS immediately and persistently. Configuration changes must request one web-service restart per handler stage.
+- Prove serverb serves the expected HTTPS content with its lab certificate.
+
+</LabChallenge>
+
   <HomeSetup>
     `server.key` and `server.crt` are a self-signed certificate that `lab start` generates on your workstation for `serverb.lab.example.com`. `ssl.conf` is Rocky's stock file with its two certificate paths pointed at `/etc/httpd/conf.d/ssl/`.
   </HomeSetup>

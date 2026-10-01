@@ -1,16 +1,18 @@
 ---
 title: Bridge to current objectives
 kind: lesson
-minutes: 5
+minutes: 6
 ---
 
-<Lead>Your RHEL 9 lab teaches the foundations. This chapter adds development workflows and practical tasks you can carry into newer environments.</Lead>
+<Lead>You can already write automation for the RHEL 9 home lab. This chapter helps you carry those skills into a project that someone else can clone, edit, run, and recover.</Lead>
 
 ## Know which environment you are using
 
-The main home lab runs Rocky Linux 9 and ansible-core 2.14. Classroom examples describe a different stack. Execution environments package their own engine, Python, and collections: installing a collection on workstation does not install it inside a container.
+There are two questions to answer before running a project: **where are my tools installed?** and **where will my playbook execute?** A host installation, an editor container, and an execution image can each contain different versions and collections.
 
-Before practising, record:
+The main home lab uses Rocky Linux 9 and ansible-core 2.14. Keep that working baseline for chapters 1–10. This bridge introduces another workflow without requiring you to upgrade the lab.
+
+On workstation, record these commands' output in a short `environment-notes.md` file:
 
 ```bash
 ansible --version
@@ -19,17 +21,27 @@ ansible-galaxy collection list
 ansible-navigator settings --mode stdout
 ```
 
-Compare both local and container versions. A change in output is not automatically a problem; a change in supported syntax needs investigation.
+The first command identifies the engine and configuration path. The second identifies navigator. The collection list shows locally installed content. Navigator's settings tell you whether it will run locally or start an execution environment. **Local versions do not describe the contents of an execution image.**
 
 ## What this bridge covers
 
-- Git: clone, inspect changes, commit, and push a playbook.
-- VS Code: edit and run automation inside a development container.
-- Navigator: choose an execution environment, inventory, and configuration deliberately.
-- Archives and security: practise recovery and configuration validation with real hosts.
+Follow the first two lessons in order, then choose either system lab:
 
-The [public EX294 objectives](https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux) were reviewed on **2 October 2026**. Match your preparation to the version you book. Git and VS Code development-container workflows are included in the current list; this course’s lab baseline does not imply an exact match to every exam version.
+| Step | Why it matters | Evidence you will produce |
+| --- | --- | --- |
+| [Git](#/ch11/git-for-automation) | Recover and review project changes | A playbook pushed to a local remote and recovered in a second clone |
+| [Development containers and navigator](#/ch11/development-containers) | Make editing tools and runtime dependencies explicit | The same small playbook run locally and in a container |
+| [Archive recovery](#/ch11/lab-archive-recovery) | A backup is useful only if you can restore it | A recovered file with matching bytes and access permissions |
+| [Access-policy validation](#/ch11/lab-security-validation) | Reject a broken configuration before it replaces working access | A narrow sudo rule and a rejected invalid replacement |
+
+**Prerequisites:** complete chapters 2 and 5 for Git and containers; complete chapter 9’s user-management lesson before the access-policy lab. The editor exercise needs a desktop with a working container engine. The two system labs run on servera through workstation.
+
+## Connect the bridge to your preparation
+
+The [public EX294 objectives](https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux) were reviewed on **2 October 2026**. They include Git and VS Code development-container workflows. Check the version you book: the home-lab baseline is a practice environment, and exam versions can use different tools.
+
+The archive lab is also useful before the integrated release assessment in chapter 10. You can return here from that assessment without completing the editor workflow first.
 
 ## A habit that transfers
 
-Keep the playbook, inventory, requirements, and tool settings in one project. Record the environment that ran it. Rebuild from those files and verify the resulting system. That makes the work easier to reproduce in an exam, on a team, or months later.
+Keep playbooks, inventory, dependency requirements, and tool settings together. Save changes in Git, record the runtime you tested, and verify the resulting host. By the end of this chapter, you should be able to explain **what was run, where it ran, and how to reproduce the result**.

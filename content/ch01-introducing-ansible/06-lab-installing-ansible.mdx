@@ -16,6 +16,43 @@ In this exercise you turn `workstation` into a working control node: install aut
   hosts={['workstation', 'utility.lab.example.com']}
   outcomes={['Install automation content navigator on a control node.', 'Download an execution environment image and list it.']}
 >
+<LabNotes>
+
+**Prerequisites:** For the free home path, complete [control-node setup](#/ch00/control-node). Classroom-only registry steps require credentials supplied by that classroom.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade intro-install
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Explain how you would identify a missing collection inside an execution image when it is installed on workstation.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Make workstation ready to run and inspect Ansible content.
+
+- Navigator must start and report its version.
+- At home, use the community tools installed in chapter 0 and confirm that runs use workstation's Ansible engine. No registry account is required.
+- If using the classroom environment, its assigned execution image must be available locally and the registry login must succeed.
+- Record which engine and runtime you will use before starting chapter 2.
+
+</LabChallenge>
+
   <HomeSetup>
     There is nothing to download for this exercise. Workstation already has everything from [section 0.6](#/ch00/control-node); each task below shows what to run at home to confirm it.
   </HomeSetup>

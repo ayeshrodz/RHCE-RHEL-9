@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { challenges } from '../src/data/challenges.js';
+import { readPractice } from '../scripts/read-practice.mjs';
+const challenges = readPractice();
 import { evaluateChallenge, solutionFor } from '../src/lib/challengeEngine.js';
 test('two linked challenges exist for every core chapter', () => {
   assert.equal(new Set(challenges.map((c) => c.id)).size, 20);

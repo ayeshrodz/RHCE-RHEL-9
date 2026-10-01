@@ -26,6 +26,43 @@ The play targets the `webserver` group, which contains `servera.lab.example.com`
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Define variables in a playbook.', 'Create tasks that use those variables.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade data-variables
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change one package or service variable to an invalid value. Identify which task fails and why, then restore it.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Deploy the web service on servera with `playbook.yml`, using the six variables in the table above.
+
+- Package, service, and firewall names must come from those variables, so changing a value changes the corresponding task's behavior.
+- The required packages must be current, the services running and enabled, and HTTP allowed now and persistently.
+- The page must say `Example web content`.
+- A separate unprivileged play on workstation must verify an HTTP 200 response.
+
+</LabChallenge>
+
   <Task id="task-a787b59f1544" legacyIndex={1} title="Move into the project directory">
 
 ```console

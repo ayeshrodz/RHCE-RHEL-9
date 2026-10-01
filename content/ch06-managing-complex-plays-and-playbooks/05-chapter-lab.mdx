@@ -27,6 +27,43 @@ The project `~/projects-review` has an `ansible.cfg`, an `inventory`, the inheri
     'Replace similar tasks with one task file driven by variables.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade projects-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Parameterize the tuning-file destination and explain which layer should supply its value.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Refactor the inherited playbook without changing the desired host state.
+
+- One wildcard host pattern must select exactly servera through serverd; verify it with `host-test.yml`.
+- Web and firewall work must be separated into `tasks/web_tasks.yml` and `tasks/firewall_tasks.yml`.
+- Their shared package-and-service behavior must appear once in `tasks/install_and_enable.yml`, parameterized by `package` and `service`.
+- The refactored `playbook.yml` must leave both services running, HTTP allowed, and the supplied tuning configuration installed. Repeat it and check for unintended changes.
+
+</LabChallenge>
+
   <Task id="task-be615ad83aee" legacyIndex={1} title="Read the inherited playbook">
 
 ```console

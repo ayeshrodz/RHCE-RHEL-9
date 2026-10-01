@@ -12,7 +12,7 @@ import { lazyWidget } from '@/components/interactive/LazyWidget';
 import chapterDiagrams from 'virtual:chapter-widgets';
 const ChapterPractice = lazyWidget(() => import('@/components/interactive/Challenge'));
 import Flashcards from '@/components/interactive/Flashcards';
-import { Lab, Task } from '@/components/interactive/Lab';
+import { Lab, Task, LabChallenge, LabNotes } from '@/components/interactive/Lab';
 import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';
 
 // Inline code (and the <code> inside highlighted blocks, which CodeBlock handles).
@@ -112,6 +112,8 @@ export const mdxComponents = {
   AssessmentTimer,
   Flashcards,
   Lab,
+  LabChallenge,
+  LabNotes,
   Task,
   Env,
   Classroom,

@@ -43,6 +43,43 @@ The project `~/control-handlers` has a `configure_webapp.yml` playbook that star
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Define handlers in playbooks and notify them to apply configuration changes.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade control-handlers
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change only the php-fpm configuration. Verify that nginx does not restart.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Complete the supplied deployment so nginx and php-fpm restart only when their own configuration changes.
+
+- Install the packages named by the project variables, then start and enable both services.
+- Deploy the supplied nginx and php-fpm configurations to the destinations specified by the project.
+- A change to one configuration must restart only its corresponding service. An unchanged repeat run must restart neither.
+- Save the complete playbook and explain when the notified handlers execute.
+
+</LabChallenge>
+
   <HomeSetup>
     The two `.standard` files are the stock Rocky Linux configuration files with one comment line added at the top. That extra line is what makes the copy tasks report `changed` on the first run.
   </HomeSetup>

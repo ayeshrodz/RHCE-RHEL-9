@@ -112,10 +112,10 @@
   font-size: 15px;
 }
 
-/* The path: six stages in a row, joined by a line, each linking to its first chapter. */
+/* Course stages share a row on desktop and a vertical timeline on mobile. */
 .path {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--path-stages, 6), minmax(0, 1fr));
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -556,4 +556,182 @@
 }
 .home-lab-cta {
   margin-top: 16px;
+}
+
+/* Learning dashboard follows the chapter page's width, type and card style. */
+.learning-dashboard {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 40px 80px;
+}
+.dashboard-intro {
+  color: var(--text-2);
+  max-width: 68ch;
+  margin: 0;
+  font: 18px/1.6 var(--font-reading);
+}
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 24px;
+}
+.dashboard-stats > div {
+  padding: 16px;
+  background: var(--bg-sunken);
+  border-radius: var(--radius);
+}
+.dashboard-stats dt {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+.dashboard-stats dd {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.dashboard-stats small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-3);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.dashboard-card {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elev);
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.dashboard-card h2 {
+  margin: 0 0 12px;
+  font: 500 23px/1.3 var(--font-reading);
+}
+.dashboard-card p {
+  margin: 0 0 16px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.dashboard-card > :last-child {
+  margin-bottom: 0;
+}
+.dashboard-card a:not(.btn) {
+  color: var(--accent-text);
+  text-underline-offset: 3px;
+}
+.dashboard-card .page-eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent-text);
+  font-size: 12px;
+}
+.dashboard-grid {
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.dashboard-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.dashboard-list > li {
+  padding: 12px 0;
+  line-height: 1.5;
+}
+.dashboard-list > li + li {
+  border-top: 1px solid var(--border);
+}
+.dashboard-list > li:last-child {
+  padding-bottom: 0;
+}
+.dashboard-list small {
+  display: block;
+  color: var(--text-3);
+  font-size: 12.5px;
+  margin-top: 5px;
+}
+.dashboard-card summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.dashboard-card details {
+  margin-top: 16px;
+}
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+.dashboard-actions span,
+.dashboard-card .dashboard-note {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.dashboard-card code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--code-inline-bg);
+  padding: 2px 5px;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+.dashboard-card .dashboard-note {
+  margin-top: 16px;
+}
+.dashboard-status:not(:empty),
+.dashboard-warning {
+  padding: 12px;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-size: 14px;
+}
+.dashboard-skill-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .learning-dashboard {
+    padding: 32px 20px 56px;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .dashboard-card {
+    padding: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .dashboard-stats > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .dashboard-stats dt {
+    margin: 0;
+  }
+  .dashboard-stats dd {
+    font-size: 20px;
+    text-align: right;
+  }
 }

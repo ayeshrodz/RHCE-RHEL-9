@@ -445,3 +445,12 @@ a.page-eyebrow:hover {
     overflow-wrap: anywhere;
   }
 }
+
+/* Links styled as controls retain the shared button treatment inside MDX. */
+.prose a.btn {
+  color: var(--text);
+  text-decoration: none;
+}
+.prose a.btn-primary {
+  color: #fff;
+}

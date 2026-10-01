@@ -176,4 +176,41 @@ Twenty questions across the whole course, roughly in chapter order. Aim for at l
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch10" />
+export const practice = [
+  {
+    "id": "review-sequence",
+    "chapter": "ch10",
+    "objective": "ch10.review",
+    "title": "Order your verification",
+    "prompt": "Put these letters in order, separated by commas: A verify service; B syntax-check; C write playbook; D apply; E rerun and inspect changes.",
+    "type": "text",
+    "starter": "",
+    "expected": "C,B,D,A,E",
+    "hints": [
+      "Start with the source, then check it before applying.",
+      "Verify the service before judging repeat-run behavior."
+    ],
+    "explain": "Write, syntax-check, apply, verify the outcome, then rerun and investigate repeat changes."
+  },
+  {
+    "id": "review-recovery",
+    "chapter": "ch10",
+    "objective": "ch10.composition",
+    "title": "Recover without hiding errors",
+    "prompt": "A deployment task fails. You want recovery and an explicit failure if recovery also fails. Which structure fits?",
+    "type": "choice",
+    "starter": "",
+    "expected": "block with rescue and a verified recovery",
+    "hints": [
+      "Silencing a failure does not prove recovery."
+    ],
+    "explain": "A rescue block can recover and verify. If rescue fails, the host remains failed; unreachable errors need connection repair.",
+    "options": [
+      "ignore_errors on every task",
+      "block with rescue and a verified recovery",
+      "changed_when: false everywhere"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch10" challenges={practice} />

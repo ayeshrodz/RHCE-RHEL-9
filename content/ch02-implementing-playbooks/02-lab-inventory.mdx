@@ -26,6 +26,42 @@ The US cities (Raleigh and Mountain View) must also be children of a `us` group,
   hosts={['workstation', 'servera … serverd']}
   outcomes={['Create a custom static inventory with groups and child groups.', 'Verify hosts and groups with ansible-navigator inventory.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade playbook-inventory
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a fifth host in London for testing. Predict which city, country, environment, and function selections change.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+An operations team needs to target these four servers by function, city, environment, and country.
+
+- Save a static `inventory` matching the host table above, using lowercase group names: `webservers`, `raleigh`, `mountainview`, `london`, `development`, `testing`, and `production`.
+- `us` must contain the Raleigh and Mountain View groups. Every host must belong to a named group.
+- Prove the complete host list, the production membership, and the inherited membership of `us`. No server configuration should change.
+
+</LabChallenge>
+
   <Task id="task-fa234038afb7" legacyIndex={1} title="Move into the project directory">
 
 ```console

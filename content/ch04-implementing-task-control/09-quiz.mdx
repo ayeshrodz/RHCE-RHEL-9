@@ -99,4 +99,47 @@ Twelve questions on loops, conditionals, handlers and failure handling. Aim for 
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch04" />
+export const practice = [
+  {
+    "id": "conditional-task",
+    "chapter": "ch04",
+    "objective": "ch04.loops-conditions",
+    "title": "Use a fact in a condition",
+    "prompt": "Write one task using ansible.builtin.debug with msg Ready and when enabled (without template delimiters).",
+    "type": "yaml",
+    "starter": "- ansible.builtin.debug:\n    msg: Ready\n  when: \"{{ enabled }}\"\n",
+    "expected": [
+      {
+        "ansible.builtin.debug": {
+          "msg": "Ready"
+        },
+        "when": "enabled"
+      }
+    ],
+    "hints": [
+      "when is already a Jinja expression."
+    ],
+    "explain": "The condition is enabled. Interpolation delimiters are unnecessary and can be rejected on newer cores."
+  },
+  {
+    "id": "handler-count",
+    "chapter": "ch04",
+    "objective": "ch04.handlers",
+    "title": "Count the handler runs",
+    "prompt": "Two changed tasks notify the same handler during the tasks stage. There is no explicit flush. How many times does that handler run at the end of the stage?",
+    "type": "choice",
+    "starter": "",
+    "expected": "Once",
+    "hints": [
+      "Notifications are deduplicated until the next flush."
+    ],
+    "explain": "A notified handler runs once per flush, even if several tasks notify it.",
+    "options": [
+      "Never",
+      "Once",
+      "Twice"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch04" challenges={practice} />

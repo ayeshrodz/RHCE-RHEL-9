@@ -13,6 +13,45 @@ minutes: 90
 Use a clean **serverb** and the tools from chapter 0. Complete chapters 2–7 and the archive lab first. Save everything in `~/assessment-release`. Choose Challenge mode to work from requirements; keep documentation available. The default checkpoint is the finished deployment.
 
 <Lab objectives={["ch03.vault","ch05.templates","ch07.role-create","ch10.composition","ch10.reusable-roles"]} id="release" title="Release a web service" classroom="lab start assessment-release" own hosts={['serverb.lab.example.com']} outcomes={['Deploy a reusable web role with protected variables.', 'Verify HTTP, archive recovery, repeatability, and reboot persistence.']}>
+<LabNotes>
+
+**Prerequisites:** Complete the prerequisite chapters named above. Use the specified clean host and work as student on workstation.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade assessment-release
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Deploy release-3 after recording the graded release-2 state. Prove the page and recovery copy agree.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Deliver a reproducible web release on serverb from `site.yml` in `~/assessment-release`.
+
+- Connect as devops with sudo through project-local configuration. Role `release_web` must default `release_id` to `release-1`; the `release_hosts` group must override it to `release-2`.
+- Encrypted `vault.yml` must hold disposable `release_token: practice-only`. The deployed `/etc/playbook-path/release-token` must be root-owned, mode `0600`, with its task output suppressed.
+- Apache and firewalld must run and start at boot, with HTTP allowed persistently. Root-owned `/var/www/html/index.html` (mode `0644`) must identify the resolved release and inventory host.
+- `/etc/httpd/conf.d/release.conf` must contain `ServerTokens Prod` and `ServerSignature Off`; changes must trigger a named restart handler in the role.
+- `/srv/release-site.tar.gz` must contain the web-root contents. Restored `/srv/site-recovered/index.html` must match content, ownership, and mode.
+- Verify from workstation, repeat the playbook, and check again after an explicit reboot.
+
+</LabChallenge>
+
 <Task id="release-inventory" title="Prepare a reproducible project">
 Use the `release_hosts` group from the starter inventory. Keep configuration local to the project, connect as devops with sudo, and create `site.yml` plus a role named `release_web`. Put `release_id: release-1` in the role defaults and override it to `release-2` in `group_vars/release_hosts/main.yml`.
 </Task>

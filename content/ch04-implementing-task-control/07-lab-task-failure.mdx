@@ -21,6 +21,44 @@ The inventory in `~/control-errors` puts `servera.lab.example.com` in the `datab
     'Implement block, rescue and always.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade control-errors
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Remove the artificial failure condition and compare the recap with the previous recovered run.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Explore failure reporting in `playbook.yml` without confusing it with the underlying host state.
+
+- Use the intentionally nonexistent web package `http` to demonstrate an ordinary failure, then an ignored failure.
+- Demonstrate recovery that installs MariaDB after the web task fails and a final action that starts MariaDB for both successful and recovered paths.
+- Correct the package to `httpd` and prove that the recovery path is skipped.
+- A read-only time check must capture and display its result without reporting a change. Finally, make the successful web task report failure deliberately and explain why recovery runs.
+- Keep evidence of each stage before advancing to the next checkpoint.
+
+</LabChallenge>
+
   <Task id="task-4890067ca913" legacyIndex={1} title="Write a play with a deliberate mistake">
     In `~/control-errors`, create `playbook.yml`. The value `http` is **intentionally wrong**: there is no package with that name.
 

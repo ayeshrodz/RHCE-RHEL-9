@@ -17,6 +17,43 @@ The project `~/system-storage` has an `ansible.cfg`, an `inventory` with servera
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Use the storage system role to create, format and persistently mount LVM volumes.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-storage
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+After a clean VM and data-volume reset, choose different volume names and update the mount verification.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Provide persistent, separate web-content and web-log filesystems on servera using `storage.yml` and the storage system role.
+
+- Use the confirmed empty extra disk: `/dev/sdb` at home, `/dev/vdb` in the classroom. Preserve the root disk.
+- Volume group `apache-vg` must contain `content-lv` (512 MiB) and `logs-lv` (768 MiB), both XFS.
+- Mount them persistently on `/var/www` and `/var/log/httpd` respectively.
+- Verify every storage layer, repeat without unintended changes, and check mounts after an explicit reboot.
+
+</LabChallenge>
+
   <HomeSetup>
     The spare disk in the home lab is `/dev/sdb`, not `/dev/vdb`: use `sdb` wherever the steps say `vdb`. `lab start system-storage` packages the system roles collection installed on workstation as `redhat-rhel_system_roles-1.120.5.tar.gz` (your version may differ).
   </HomeSetup>

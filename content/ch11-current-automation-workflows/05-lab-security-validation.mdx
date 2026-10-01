@@ -7,20 +7,82 @@ minutes: 20
 <Lead>Build a small privileged operation without accidentally breaking access: create a user, validate a sudo policy, and keep the connection account usable.</Lead>
 
 <Lab objectives={["ch11.security"]} id="access-policy" title="Validate an access policy" classroom="lab start bridge-security" own hosts={['servera.lab.example.com']} outcomes={['Deploy a validated sudoers file and verify the account’s allowed command.']}>
+<LabNotes>
+
+**Prerequisites:** Complete chapters 2 and 9’s user-management lesson. Use disposable servera with devops SSH and sudo access; keep a second working connection while testing policies.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade bridge-security
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Try an unlisted sudo command as auditor and confirm it is refused without broadening the policy.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Provide narrowly scoped privileged access on servera using `access.yml`.
+
+- Account `auditor` must exist and be allowed to run `/usr/bin/id` as root without a password, through `/etc/sudoers.d/auditor`.
+- The policy must belong to root:root with mode `0440`. Invalid policy content must be rejected before replacing the installed file.
+- Demonstrate the allowed command returns root's identity, then demonstrate an invalid replacement leaves the working policy intact.
+- Restore the valid source and prove repeatability. Keep devops SSH and sudo access usable throughout.
+
+</LabChallenge>
+
 <Task id="task-e4230a35326c" legacyIndex={1} title="Define the result">
-Create an account `auditor`. Allow it to run `/usr/bin/id` as root without a password. Keep `devops` and its SSH access unchanged. Save the playbook as `access.yml`.
+Work in `~/bridge-security`, which `lab start` prepares. Save `access.yml` with a play for `servera.lab.example.com` and privilege escalation.
+
+The account `auditor` needs one privileged diagnostic operation: `/usr/bin/id`. It must not receive general administrator access. Keep devops, the connection account, unchanged so you can correct your work if a policy is rejected.
+
+The desired result is a narrowly scoped sudo policy, installed only after a syntax check. You will prove both the permitted action and the protection against an invalid replacement.
 </Task>
 <Task id="task-38874ab662ff" legacyIndex={2} title="Deploy a validated policy">
-Use `ansible.builtin.user`, then `ansible.builtin.copy` to create `/etc/sudoers.d/auditor`. Set owner and group to root, mode to `0440`, and `validate: /usr/sbin/visudo -cf %s`.
+Add an `ansible.builtin.user` task to ensure `auditor` exists. Then add an `ansible.builtin.copy` task for `/etc/sudoers.d/auditor`, owned by root:root with mode `0440`.
+
+Its content should permit auditor to run the required command as root without a password. Read the hint if you need the sudoers rule syntax. Add `validate: /usr/sbin/visudo -cf %s` to the copy task.
+
+`%s` is replaced with a temporary file path. Ansible asks `visudo` to check that file **before** replacing the destination. Root ownership and mode `0440` protect the installed policy from ordinary-user edits; validation protects it from malformed replacements.
 <Reveal title="Hint: a narrowly scoped rule">
 The file can contain `auditor ALL=(root) NOPASSWD: /usr/bin/id`. Validation checks the temporary file before Ansible replaces the destination.
 </Reveal>
 </Task>
 <Task id="task-ef043f5acd2d" legacyIndex={3} title="Verify the policy and connection">
-Run the playbook, check `visudo -c`, and run `sudo -u auditor sudo -n /usr/bin/id` as root on the managed host. Confirm it prints `uid=0`. Confirm Ansible can still connect as devops. Run the playbook again and investigate any repeat changes.
+From workstation, check syntax, run the play, and inspect the resulting policy and behavior:
+
+```bash
+ansible-playbook access.yml --syntax-check
+ansible-playbook access.yml
+ssh devops@servera.lab.example.com 'sudo visudo -c'
+ssh devops@servera.lab.example.com 'sudo -u auditor sudo -n /usr/bin/id'
+ansible servera.lab.example.com -m ansible.builtin.ping
+lab grade bridge-security
+```
+
+`visudo` should report the policy files parsed successfully. The identity command should print `uid=0(root)`: its inner sudo runs as auditor and requests no interactive password. The Ansible ping proves devops still connects and executes a module.
+
+Repeat the playbook and expect no configuration changes. Checking syntax alone would miss an overly broad rule or an unusable account, so inspect both the policy and the command result.
 </Task>
 <Task id="task-c8141a8b7639" legacyIndex={4} title="Test a rejected change">
-In this disposable lab, change the policy to invalid syntax and rerun. The copy task must fail validation and leave the last valid destination file intact. Restore the valid source, rerun, and verify access again.
+In the **playbook source**, temporarily replace the rule with `auditor ALL=(root` (an incomplete rule). Rerun `access.yml`. The copy task should fail its validation, and the previously installed valid policy should remain intact.
+
+Read the installed file with `ssh devops@servera.lab.example.com 'sudo cat /etc/sudoers.d/auditor'` and repeat the allowed identity command. Both should still reflect the working policy. This demonstrates rejection before replacement.
+
+Restore the valid content in your playbook, run it again, and grade the restored state. Avoid editing the live sudoers file to introduce this fault: doing so would bypass the validation mechanism you are practising.
 </Task>
 </Lab>
 
@@ -46,3 +108,7 @@ In this disposable lab, change the policy to invalid syntax and rerun. The copy 
 ```
 
 </Reveal>
+
+## Recap
+
+Restrict the allowed operation, protect the policy's permissions, validate before replacement, and verify actual access. A deliberately rejected source change should leave the last valid installed policy usable.

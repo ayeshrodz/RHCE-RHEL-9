@@ -21,6 +21,43 @@ The project `~/role-collections` has an `ansible.cfg`, an `inventory` with `serv
     'Use modules and roles from collections in a playbook.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade role-collections
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Restore the saved backup into a safe temporary directory using the collection’s restore documentation.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Use collection content from this project, without relying on an unrelated global installation.
+
+- Install the supplied `gls.utils` archive and identify its module and role documentation.
+- Complete `bck.yml`: check servera and back up `/etc/sysconfig` and `/etc/yum.repos.d` under the identifier `backup_etc` using that collection.
+- Install the dependencies listed in the project's collection requirements, then run `new_system.yml` to apply its DNF setting while retaining SELinux enforcing.
+- Demonstrate which collection path is used and why collection content needs its full namespace.
+
+</LabChallenge>
+
   <HomeSetup>
     `lab start role-collections` builds the archives in the project: `gls-utils-0.0.1.tar.gz`, a small collection written for this exercise, and copies of the `redhat.rhel_system_roles` and `community.general` collections already installed on workstation. Their versions match what section 0.6 installed, so your file names may differ slightly from the ones shown.
   </HomeSetup>
