@@ -162,8 +162,8 @@ export function Finish({ name, grade = false }) {
           {grade && (
             <>
               {' '}
-              There is no <code>lab grade</code> at home: use the checks in the last tasks, and run the playbook a second time to confirm{' '}
-              <code>changed=0</code>.
+              Run <code>lab grade {name}</code> before finishing. Also repeat your playbook and inspect unexpected changes; deliberate
+              restarts and commands may still report changes.
             </>
           )}
         </p>

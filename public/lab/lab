@@ -2,12 +2,13 @@
 # lab - starts and finishes exercises on the Playbook Path home lab
 # (same syntax as a classroom 'lab' command). Runs on workstation as student.
 # Install or update: see section 0.6 of the guide, or run: lab update
-# Version 2
-set -uo pipefail
+# Version 3
+set -euo pipefail
 
-VERSION=2
+VERSION=3
 BASE="${LAB_URL:-https://ayeshrodz.github.io/playbook-path/lab}"
-ARCHIVE="$HOME/lab-archive"
+LAB_ROOT="${LAB_HOME:-$HOME}"
+ARCHIVE="$LAB_ROOT/lab-archive"
 SERVERS=(servera serverb serverc serverd)
 
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
@@ -21,7 +22,7 @@ lab v$VERSION - Playbook Path home lab exercises
 
   lab start  NAME [--force]    create ~/NAME with the exercise's starter files
   lab finish NAME [--delete]   put ~/NAME away in ~/lab-archive (or delete it)
-  lab grade  NAME              how to check your work (no grading at home)
+  lab grade  NAME [--checkpoint ID] [--json]   read-only project and host checks
   lab list                     exercises that have starter files
   lab check                    is the lab ready for the exercises?
   lab update                   download the newest version of this command
@@ -39,44 +40,47 @@ stamp() { date +%Y%m%d-%H%M%S; }
 
 cmd_start() {
   need_name "${1:-}"; valid_name "$1"
-  local name="$1" force="${2:-}" dir="$HOME/$1" manifest line dest src hooks=() h tmp count=0
-  manifest=$(fetch "$name/MANIFEST" 2>/dev/null) || die "no exercise called '$name', or no connection to $BASE (see: lab list)"
-  [[ $manifest == \#* ]] || die "unexpected answer from $BASE/$name/MANIFEST"
-
-  if [[ -e $dir ]]; then
-    [[ $force == --force ]] || die "~/$name already exists. Keep working in it, put it away with 'lab finish $name', or start over with 'lab start $name --force'"
-    mkdir -p "$ARCHIVE" && mv "$dir" "$ARCHIVE/$name-$(stamp)" && warn "your previous ~/$name is now in ~/lab-archive"
-  fi
-  mkdir -p "$dir" || die "cannot create ~/$name"
-  say "$(head -1 <<< "$manifest" | sed 's/^# *//')"
-
+  local name="$1" force="${2:-}" dir="$LAB_ROOT/$1" stage manifest line dest src h hooks=() count=0
+  [[ -z $force || $force == --force ]] || die "unknown option: $force"
+  [[ ! -e $dir || $force == --force ]] || die "~/$name already exists (use --force to archive and restart)"
+  stage=$(mktemp -d "$LAB_ROOT/.lab-$name.XXXXXX")
+  LAB_TEMP_DIR="$stage"
+  trap 'rm -rf -- "$LAB_TEMP_DIR"' EXIT
+  manifest=$(fetch "$name/MANIFEST") || die "cannot download $name/MANIFEST; existing work is unchanged"
+  [[ $manifest == \#* ]] || die "invalid manifest"
   while IFS= read -r line; do
     line="${line%%#*}"; line="${line//[[:space:]]/}"
     [[ -z $line ]] && continue
     if [[ $line == @* ]]; then hooks+=("${line#@}"); continue; fi
     dest="${line%%=*}"; src="${line#*=}"
-    [[ $dest == /* || $dest == *..* || $src == *..* ]] && die "refusing unsafe path in manifest: $line"
-    mkdir -p "$dir/$(dirname "$dest")"
-    fetch "$name/$src" > "$dir/$dest" || die "could not download $src"
-    echo "  $dest"; count=$((count + 1))
+    [[ $dest =~ ^[a-zA-Z0-9_./-]+$ && $src =~ ^[a-zA-Z0-9_./-]+$ && $dest != /* && $src != /* && $dest != *..* && $src != *..* ]] || die "unsafe manifest path"
+    mkdir -p "$stage/$(dirname "$dest")"
+    fetch "$name/$src" > "$stage/$dest" || die "download failed: $src; exercise is not ready"
+    count=$((count + 1))
   done <<< "$manifest"
-
-  for h in "${hooks[@]:-}"; do
-    [[ -n $h ]] || continue
-    tmp=$(mktemp)
-    fetch "$name/$h" > "$tmp" || die "could not download $h"
-    (cd "$dir" && bash "$tmp") || warn "$h reported a problem"
-    rm -f "$tmp"
+  for h in "${hooks[@]}"; do
+    [[ $h =~ ^[a-zA-Z0-9_.-]+$ && $h != *..* ]] || die "unsafe hook name"
+    fetch "$name/$h" > "$stage/.lab-hook-$h" || die "download failed: $h"
+    # Some setup hooks use the published ~/NAME path. Download every file first,
+    # then move the complete project into place and explicitly mark hook failures.
   done
-  (( count == 0 && ${#hooks[@]} == 0 )) && echo "  (no starter files: you write everything in this exercise)"
-
-  say "~/$name is ready:  cd ~/$name"
-  echo "  Start from clean servers: on the Ubuntu host, run  rht-vmctl reset servers"
+  if [[ -e $dir ]]; then
+    mkdir -p "$ARCHIVE"; mv "$dir" "$ARCHIVE/$name-$(stamp)-$$"
+    warn "previous work was archived"
+  fi
+  mv "$stage" "$dir"; trap - EXIT
+  touch "$dir/.lab-not-ready"
+  for h in "${hooks[@]}"; do
+    (cd "$dir" && bash -e ".lab-hook-$h") || die "setup failed: $h; exercise is not ready. Fix the reported error and restart with --force"
+  done
+  rm -f "$dir"/.lab-hook-* "$dir/.lab-not-ready"
+  say "~/$name is ready: cd ~/$name"
+  echo "  Start from clean servers. Read the requirements before running playbooks."
 }
 
 cmd_finish() {
   need_name "${1:-}"; valid_name "$1"
-  local name="$1" opt="${2:-}" dir="$HOME/$1" dest
+  local name="$1" opt="${2:-}" dir="$LAB_ROOT/$1" dest
   if [[ ! -e $dir ]]; then
     warn "there is no ~/$name on workstation (already finished?)"
   elif [[ $opt == --delete ]]; then
@@ -92,10 +96,15 @@ cmd_finish() {
 }
 
 cmd_grade() {
-  need_name "${1:-}"
-  warn "there is no automatic grading on the home lab"
-  echo "  Check your work with the verification tasks at the end of the exercise,"
-  echo "  then run the playbook a second time: it should report changed=0."
+  need_name "${1:-}"; valid_name "$1"
+  [[ ! -e "$LAB_ROOT/$1/.lab-not-ready" ]] || { warn "setup incomplete; restart this exercise before grading"; return 2; }
+  local work
+  work=$(mktemp -d)
+  LAB_TEMP_DIR="$work"
+  trap 'rm -rf -- "$LAB_TEMP_DIR"' EXIT
+  fetch grade.py > "$work/grade.py" || { warn "cannot download grader"; return 2; }
+  fetch graders.json > "$work/graders.json" || { warn "cannot download checks"; return 2; }
+  python3 "$work/grade.py" "$@" --project "$LAB_ROOT/$1" --catalog "$work/graders.json"
 }
 
 cmd_list() { fetch INDEX || die "no connection to $BASE"; }
