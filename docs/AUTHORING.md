@@ -20,6 +20,7 @@ content/
 
 - **Order** comes from the numeric filename prefix (`01-`, `02-`…).
 - **URL slug** is the filename without its prefix: `03-configuration.mdx` → `#/ch02/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
+- **Section links** add the heading's id after a second `#`: `#/ch07/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading from MDX with `[text](#/ch00/page#heading-id)`.
 - **Frontmatter** at the top of each `.mdx`:
 
   ```yaml
