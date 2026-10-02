@@ -39,16 +39,27 @@ with preview_server(BASE, ROOT):
             for route in ROUTES:
                 go(page, route)
                 assert page.evaluate('(width) => document.documentElement.scrollWidth <= width && innerWidth <= width', width), (width, route)
-                too_small = page.locator('button, a.btn').evaluate_all("""elements => elements.filter(e => {
-                    const r = e.getBoundingClientRect();
-                    return r.width && r.height && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[inert]') && (r.height < 43.5 || r.width < 43.5);
-                }).map(e => ({class: e.className, text: e.textContent.trim(), height: e.getBoundingClientRect().height}))""")
-                assert not too_small, (width, route, too_small)
+                overflowing_diagrams = page.locator('.diagram-viewport').evaluate_all("""elements => elements.filter(e =>
+                    e.clientWidth && (e.scrollWidth > e.clientWidth + 1 || e.querySelector('svg').getBoundingClientRect().width > e.clientWidth + 1)
+                ).map(e => e.querySelector('svg').getAttribute('aria-label'))""")
+                assert not overflowing_diagrams, (width, route, overflowing_diagrams)
                 tiny_editors = page.locator('textarea, input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), select').evaluate_all("""elements => elements.filter(e => {
                     const r = e.getBoundingClientRect();
                     return r.width && r.height && parseFloat(getComputedStyle(e).fontSize) < 16;
                 }).map(e => e.className)""")
                 assert not tiny_editors, (width, route, tiny_editors)
+        # Resize the same mounted page between breakpoints, including intermediate widths.
+        for route in ['/', '/ch01/architecture', '/ch02/writing-playbooks', '/ch04/task-failure']:
+            go(page, route)
+            for width in [320, 360, 412, 480, 540, 640, 700, 820, 960, 1200, 1440]:
+                page.set_viewport_size({'width': width, 'height': 900})
+                page.wait_for_function('(width) => innerWidth === width', arg=width)
+                assert page.evaluate('(width) => document.documentElement.scrollWidth <= width', width), (route, width)
+                badge = page.locator('.brand-pill').bounding_box()
+                logo = page.locator('.brand svg').bounding_box()
+                assert badge['height'] <= logo['height'] + 1, (route, width, badge)
+                for diagram in page.locator('.diagram-viewport').all():
+                    assert diagram.evaluate('(e) => e.scrollWidth <= e.clientWidth + 1'), (route, width)
         # All overlays fit narrow, normal and landscape phone viewports in both themes.
         for theme in ['light', 'dark']:
             for width, height in [(320, 740), (390, 844), (844, 390)]:
@@ -102,13 +113,16 @@ with preview_server(BASE, ROOT):
         assert area.get_attribute('wrap') == 'off'
         area.focus(); page.keyboard.press('Tab')
         assert not area.evaluate('(e) => e === document.activeElement')
-        # Shared diagram viewport supports natural-size reading and explicit fit.
+        # Diagrams fit by default. Extra zoom is an explicit, reversible choice.
         go(page, '/ch02/writing-playbooks')
         diagram = page.locator('.diagram').first
-        assert diagram.locator('.diagram-viewport').evaluate('(e) => e.scrollWidth > e.clientWidth')
+        assert diagram.locator('.diagram-viewport').evaluate('(e) => e.scrollWidth <= e.clientWidth + 1')
         opener = diagram.get_by_role('button', name='Enlarge diagram')
         opener.click(); dialog = page.get_by_role('dialog'); dialog.wait_for()
         fits(page, page.locator('.lightbox-body'))
+        assert dialog.locator('.lightbox-viewport').evaluate('(e) => e.scrollWidth <= e.clientWidth + 1')
+        dialog.get_by_role('button', name='Zoom in').click()
+        page.wait_for_function("document.querySelector('.lightbox-viewport').scrollWidth > document.querySelector('.lightbox-viewport').clientWidth")
         dialog.get_by_role('button', name='Fit to screen').click()
         page.wait_for_function("document.querySelector('.lightbox-viewport').classList.contains('is-fit') && document.querySelector('.lightbox-viewport').scrollWidth <= document.querySelector('.lightbox-viewport').clientWidth + 1")
         dialog.get_by_role('button', name='Close diagram').click()

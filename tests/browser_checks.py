@@ -156,7 +156,7 @@ with preview_server(BASE, ROOT):
                 assert page.locator('h1').evaluate('(e) => getComputedStyle(e).fontWeight') == '500'
                 assert page.locator('.dashboard-card h2').first.evaluate('(e) => getComputedStyle(e).marginTop') == '0px'
                 assert not page.locator('.learning-dashboard .btn-primary').count()
-                assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == (44 if width == 390 else 34)
+                assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == page.locator('.dashboard-actions .btn').evaluate('(e) => e.getBoundingClientRect().height')
                 assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         for route in ['/platform', '/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:

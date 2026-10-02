@@ -5,7 +5,6 @@ import { createContext, useContext, useId, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, RotateCcw, X } from 'lucide-react';
 
 import { useOverlay } from '@/hooks/useOverlay';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { formatCopy } from '@/components/interactive/TeachingContent';
 import { interfaceContent } from '@/lib/course';
 
@@ -14,9 +13,8 @@ const MarkerContext = createContext('dg');
 export function Diagram({ width = 680, height, title, caption, children, below, className = '', expandable = true }) {
   const uid = useId().replace(/:/g, '');
   const [zoom, setZoom] = useState(false);
-  const [fit, setFit] = useState(false);
+  const [fit, setFit] = useState(true);
   const dialogRef = useRef(null);
-  const mobile = useMediaQuery('(max-width: 640px)');
   const copy = interfaceContent.Diagram.text;
   useOverlay(dialogRef, zoom, () => setZoom(false));
 
@@ -55,40 +53,32 @@ export function Diagram({ width = 680, height, title, caption, children, below, 
 
   return (
     <figure className={`diagram ${className}`}>
-      <div className="diagram-canvas" style={{ '--diagram-width': `${width}px` }}>
+      <div className="diagram-canvas">
         <div className="diagram-tools">
-          {mobile && <span className="diagram-mobile-title">{title}</span>}
           {expandable && (
-            <button className="diagram-zoom" onClick={() => setZoom(true)} aria-label={copy.enlarge}>
+            <button
+              className="diagram-zoom"
+              onClick={() => {
+                setFit(true);
+                setZoom(true);
+              }}
+              aria-label={copy.enlarge}
+            >
               <Maximize2 size={14} />
             </button>
           )}
         </div>
-        <div
-          className="diagram-viewport"
-          tabIndex={mobile ? 0 : undefined}
-          role={mobile ? 'region' : undefined}
-          aria-label={mobile ? title : undefined}
-        >
-          {svg('inline')}
-        </div>
-        {mobile && width > 320 && <p className="diagram-explore">{copy.explore}</p>}
+        <div className="diagram-viewport">{svg('inline')}</div>
         {below}
       </div>
       {caption && <figcaption>{caption}</figcaption>}
       {zoom && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label={title} onClick={() => setZoom(false)}>
-          <div
-            ref={dialogRef}
-            tabIndex={-1}
-            className="lightbox-body"
-            style={{ '--diagram-width': `${width}px` }}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div ref={dialogRef} tabIndex={-1} className="lightbox-body" onClick={(e) => e.stopPropagation()}>
             <div className="lightbox-toolbar">
               <span>{title}</span>
-              <button className="btn btn-sm" aria-pressed={fit} onClick={() => setFit((v) => !v)}>
-                {fit ? copy.actual : copy.fit}
+              <button className="btn btn-sm" aria-pressed={!fit} onClick={() => setFit((v) => !v)}>
+                {fit ? copy.zoom : copy.fit}
               </button>
             </div>
             <button className="icon-btn lightbox-close" onClick={() => setZoom(false)} aria-label={copy.close}>
