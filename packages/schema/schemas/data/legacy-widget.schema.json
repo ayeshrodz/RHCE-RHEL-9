@@ -8,13 +8,43 @@
   "properties": {
     "text": {
       "type": "object",
-      "propertyNames": { "pattern": "^[a-zA-Z][a-zA-Z0-9]*$" },
-      "additionalProperties": { "type": "string", "maxLength": 4000 }
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
     },
-    "data": { "type": "object" },
+    "data": {
+      "type": "object"
+    },
     "props": {
       "description": "Values the page passed as attributes before the migration.",
       "type": "object"
+    },
+    "dependencies": {
+      "description": "Copy for widgets this widget renders inside itself, keyed by widget name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
     }
   }
 }

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/bundle/search.schema.json",
+  "title": "Compiled search index",
+  "description": "One program's searchable text, chunked by heading. Plain text only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "entries"
+  ],
+  "properties": {
+    "apiVersion": {
+      "$ref": "../common.schema.json#/$defs/apiVersion"
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "page",
+          "text"
+        ],
+        "properties": {
+          "page": {
+            "type": "string",
+            "pattern": "^(?:ch[0-9]{2}/[a-z0-9]+(?:-[a-z0-9]+)*|home|details)$"
+          },
+          "heading": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "anchor": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-][a-z0-9_-]{0,119}$"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 100000
+          }
+        }
+      }
+    }
+  }
+}

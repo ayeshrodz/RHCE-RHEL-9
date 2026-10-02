@@ -421,8 +421,8 @@
         },
         "hosts": {
           "type": "string[]",
-          "description": "Machines the exercise uses.",
-          "format": "hostName",
+          "description": "Labels for the machines the exercise uses, such as 'workstation' or 'Ubuntu host'.",
+          "format": "shortText",
           "maxItems": 12
         },
         "outcomes": {

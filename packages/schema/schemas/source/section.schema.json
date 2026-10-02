@@ -42,6 +42,10 @@
     },
     "draft": {
       "type": "boolean"
+    },
+    "eyebrow": {
+      "description": "A short line above the title on reference pages.",
+      "$ref": "../common.schema.json#/$defs/shortText"
     }
   }
 }

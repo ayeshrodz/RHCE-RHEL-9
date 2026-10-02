@@ -1,11 +1,8 @@
 import legacy from '../data/legacyActivityMap.json' with { type: 'json' };
 
-export function questionRevision(question) {
-  const text = JSON.stringify([question.q, question.options, question.answer]);
-  let hash = 2166136261;
-  for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
-  return (hash >>> 0).toString(16);
-}
+import { questionRevision } from '@kernel-path/schema/revision';
+
+export { questionRevision };
 
 /** Frozen positional maps make older data independent of today's content order. */
 export function migrateEntry(key, value) {
