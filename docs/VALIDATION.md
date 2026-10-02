@@ -2,6 +2,10 @@
 
 Results recorded on 2 October 2026. VM work uses isolated copies of clean lab snapshots and separate copied data volumes.
 
+## Merge readiness
+
+On 2 October 2026, the maintainer requested that PRs #12–#17 be made ready to merge. All six now target `main` and have ready status. Earlier draft-status notes below record the delivery state at the time of validation. The pending VM exercise/checkpoint matrix, clean-reset/reboot checks, and desktop VS Code/container walkthrough remain pending; changing PR status adds no validation evidence. See `DELIVERY.md` for the ordered merge procedure.
+
 ## Documented lab stack
 
 - Rocky Linux 9.8 guests on LXD virtual machines.

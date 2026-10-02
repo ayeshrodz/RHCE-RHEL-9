@@ -1,6 +1,6 @@
 # Delivery and merge order
 
-These six branches form an ordered PR stack. Use merge commits while the stack is open. After each merge, retarget the next PR to `main` and rerun its checks. Squashing or rebasing requires updating the dependent branches before continuing.
+These six branches form an ordered PR stack. All six PRs target `main` and are ready for the maintainer to merge. Use GitHub's **Create a merge commit** option in the order below. Later branches include earlier work; their diffs shrink as preceding PRs merge. Squashing or rebasing requires updating the dependent branches before continuing.
 
 | Order | PR | Branch | Scope |
 | --- | --- | --- | --- |
@@ -11,6 +11,8 @@ These six branches form an ordered PR stack. Use merge commits while the stack i
 | 5 | [#16](https://github.com/ayeshrodz/playbook-path/pull/16) | `feat/learning-progress` | Stable history, dashboard, report imports, integrated assessments |
 | 6 | [#17](https://github.com/ayeshrodz/playbook-path/pull/17) | `chore/platform-quality` | Platform reference and track-owned metadata, shared activity and table styling, dashboard refinement, MDX-authored challenge briefs, expanded workflow lessons, accessibility, lazy loading, content/browser CI, contributor documentation, grading corrections |
 
-Each PR describes its checks and outstanding validation. VM-dependent PRs remain drafts until their required host runs pass. [Validation evidence](VALIDATION.md) distinguishes real host checks from fixtures and lists pending work.
+Each PR describes its checks and outstanding validation. The maintainer requested ready-to-merge status on 2 October 2026; remaining VM and desktop workflow checks are still pending. Ready status does not establish that those checks passed. [Validation evidence](VALIDATION.md) distinguishes real host checks from fixtures and lists pending work.
+
+PR #11, the earlier site rename, is already merged. No branch-protection rules have been relaxed to enable these merges.
 
 Merging to `main` triggers the existing GitHub Pages workflow. The maintainer controls merging and deployment. Learning stays free, static, and usable without accounts or telemetry.

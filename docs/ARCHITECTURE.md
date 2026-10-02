@@ -56,4 +56,4 @@ React 19, React Router 7, Vite 8, MDX, Shiki, and CSS build into `dist/`. `base:
 
 PR CI runs formatting, content validation, JavaScript regressions, Python lab-tool tests, a production build, and Chromium learning-flow checks. Content validation covers routes and heading links, activity/objective IDs, quiz answers, starter manifests, setup syntax, and grader coverage. Browser checks cover every route plus mobile layouts, focus, persistence, and imports.
 
-`.github/workflows/deploy.yml` publishes pushes to `main`. Maintainers control merging. VM-dependent changes stay in draft until their required host checks are recorded in [validation evidence](VALIDATION.md).
+`.github/workflows/deploy.yml` publishes pushes to `main`. Maintainers control PR readiness and merging. Outstanding VM and desktop workflow checks remain recorded in [validation evidence](VALIDATION.md), including when the maintainer requests ready status before those checks are complete.
