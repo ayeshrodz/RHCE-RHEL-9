@@ -9,10 +9,12 @@
 }
 .code-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  height: 36px;
-  padding: 0 8px 0 14px;
+  gap: 4px 8px;
+  min-height: 36px;
+  padding: 4px 8px 4px 14px;
   border-bottom: 1px solid var(--border);
   color: var(--text-3);
   font-family: var(--font-sans);
@@ -20,17 +22,25 @@
 }
 .code-label {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   gap: 7px;
   min-width: 0;
+  overflow-wrap: anywhere;
+}
+.code-label > svg,
+.code-lang {
+  flex-shrink: 0;
 }
 .code-label .is-file {
+  min-width: 0;
   color: var(--text-2);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
 }
 .code-lang {
+  white-space: nowrap;
   padding: 1px 6px;
   border-radius: 4px;
   background: var(--bg-hover);
