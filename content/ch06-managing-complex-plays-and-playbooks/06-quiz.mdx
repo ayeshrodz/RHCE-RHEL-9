@@ -100,19 +100,17 @@ export const practice = [
     "chapter": "ch06",
     "objective": "ch06.patterns",
     "title": "Keep staging untouched",
-    "prompt": "Select production web hosts only: web1, excluding staging web2.",
-    "type": "inventory",
-    "starter": "web",
-    "expected": [
-      "web1"
+    "prompt": "Which pattern selects the production web host web1 and leaves the staging host web2 alone?",
+    "type": "choice",
+    "code": "[web]\nweb1\nweb2\n[staging]\nweb2",
+    "options": [
+      "`web,!staging`",
+      "`web,&staging`",
+      "`web:staging`",
+      "`staging`"
     ],
-    "hints": [
-      "Combine web with an exclusion.",
-      "Try web,!staging."
-    ],
-    "explain": "The exclusion removes staging hosts from the web group.",
-    "inventory": "[web]\nweb1\nweb2\n[staging]\nweb2",
-    "solution": "web,!staging"
+    "expected": "`web,!staging`",
+    "explain": "`!staging` removes staging hosts from the web group. `&staging` keeps only hosts in both groups, which is web2."
   },
   {
     "id": "reuse-condition",
@@ -121,17 +119,13 @@ export const practice = [
     "title": "Choose an include",
     "prompt": "The first task changes a flag. You want one condition to decide whether the entire task file runs. Which keyword fits?",
     "type": "choice",
-    "starter": "",
-    "expected": "include_tasks",
-    "hints": [
-      "An import copies the condition onto every task."
-    ],
-    "explain": "include_tasks checks its condition once at the include. import_tasks checks it on each imported task.",
     "options": [
       "import_tasks",
       "include_tasks",
       "import_playbook inside tasks"
-    ]
+    ],
+    "expected": "include_tasks",
+    "explain": "include_tasks checks its condition once at the include. import_tasks checks it on each imported task."
   }
 ];
 

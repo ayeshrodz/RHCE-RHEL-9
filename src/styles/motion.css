@@ -198,7 +198,6 @@
   animation: km-nudge 0.32s ease-in-out;
 }
 .quiz-explain,
-.challenge [role='status']:not(:empty),
 .quiz-foot {
   animation: km-rise 0.28s var(--ease-out);
 }

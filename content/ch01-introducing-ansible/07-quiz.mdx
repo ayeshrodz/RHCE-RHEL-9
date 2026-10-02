@@ -97,17 +97,13 @@ export const practice = [
     "title": "A second run",
     "prompt": "A copy task already has the requested content and mode. Predict its second-run result.",
     "type": "choice",
-    "starter": "",
-    "expected": "ok",
-    "hints": [
-      "Compare the current file with the requested state."
-    ],
-    "explain": "copy reports ok when content and attributes already match.",
     "options": [
       "ok",
       "changed",
       "failed"
-    ]
+    ],
+    "expected": "ok",
+    "explain": "copy reports ok when content and attributes already match."
   },
   {
     "id": "control-location",
@@ -116,17 +112,13 @@ export const practice = [
     "title": "Where does it run?",
     "prompt": "Which machine reads the playbook and coordinates the managed hosts?",
     "type": "choice",
-    "starter": "",
-    "expected": "Control node",
-    "hints": [
-      "The hosts receive module work over a connection."
-    ],
-    "explain": "The control node reads the project and coordinates execution.",
     "options": [
       "Every managed host",
       "Control node",
       "DNS server"
-    ]
+    ],
+    "expected": "Control node",
+    "explain": "The control node reads the project and coordinates execution."
   }
 ];
 

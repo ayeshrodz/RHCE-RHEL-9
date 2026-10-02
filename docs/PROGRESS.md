@@ -7,7 +7,7 @@ The dashboard keeps these signals independent:
 - Reading completion uses published page keys.
 - Quiz questions use explicit stable IDs and retain up to 50 attempts each. Each attempt stores the choice, result, time, and a revision derived from the question, choices, and correct answer.
 - Lab checklists store task IDs. They are learner checklists, separate from verified host results.
-- Browser challenges retain up to 50 attempts, including hints and solution use.
+- Chapter practice questions retain up to 50 attempts each. Answers are also kept like any other quiz answer.
 - Lab reports retain up to 100 imports with exercise and checkpoint versions.
 - Confidence uses objective IDs. Assessment timers store an end time and continue across reloads.
 

@@ -105,21 +105,17 @@ export const practice = [
     "chapter": "ch04",
     "objective": "ch04.loops-conditions",
     "title": "Use a fact in a condition",
-    "prompt": "Write one task using ansible.builtin.debug with msg Ready and when enabled (without template delimiters).",
-    "type": "yaml",
-    "starter": "- ansible.builtin.debug:\n    msg: Ready\n  when: \"{{ enabled }}\"\n",
-    "expected": [
-      {
-        "ansible.builtin.debug": {
-          "msg": "Ready"
-        },
-        "when": "enabled"
-      }
+    "prompt": "This task should run only when the variable `enabled` is true. How should the `when` line be written?",
+    "type": "choice",
+    "code": "- ansible.builtin.debug:\n    msg: Ready\n  when: \"{{ enabled }}\"",
+    "options": [
+      "`when: enabled`",
+      "`when: \"{{ enabled }}\"`",
+      "`when: {{ enabled }}`",
+      "`when: \"$enabled\"`"
     ],
-    "hints": [
-      "when is already a Jinja expression."
-    ],
-    "explain": "The condition is enabled. Interpolation delimiters are unnecessary and can be rejected on newer cores."
+    "expected": "`when: enabled`",
+    "explain": "`when` is already a Jinja2 expression, so the variable is written bare. Template delimiters are unnecessary there and newer ansible-core versions warn about or reject them."
   },
   {
     "id": "handler-count",
@@ -128,17 +124,13 @@ export const practice = [
     "title": "Count the handler runs",
     "prompt": "Two changed tasks notify the same handler during the tasks stage. There is no explicit flush. How many times does that handler run at the end of the stage?",
     "type": "choice",
-    "starter": "",
-    "expected": "Once",
-    "hints": [
-      "Notifications are deduplicated until the next flush."
-    ],
-    "explain": "A notified handler runs once per flush, even if several tasks notify it.",
     "options": [
       "Never",
       "Once",
       "Twice"
-    ]
+    ],
+    "expected": "Once",
+    "explain": "A notified handler runs once per flush, even if several tasks notify it."
   }
 ];
 

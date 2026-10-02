@@ -188,25 +188,19 @@ with preview_server(BASE, ROOT):
         first.locator('.quiz-option').nth(1).click()
         page.reload(); first.wait_for(); assert 'Not quite.' in first.inner_text()
         go(page, '/progress'); assert page.get_by_role('link', name='Which term best describes the Ansible architecture?').count()
-        # Browser activity feedback and independence from reading completion.
-        go(page, '/ch01/quiz'); activity = page.locator('.challenge').first
-        activity.get_by_role('button', name='ok', exact=True).click(); activity.get_by_role('button', name='Check answer').click()
-        assert 'Requirement met' in activity.inner_text()
-        # Practice reuses quiz chrome, answer rows, feedback and native reveals.
+        # Chapter practice uses the same multiple-choice quiz as every other question,
+        # logs attempts for the dashboard, and stays independent of reading completion.
+        go(page, '/ch01/quiz'); activity = page.locator('.quiz').nth(1)
+        assert activity.locator('#challenge-desired-state').count()
+        assert not activity.get_by_role('button', name='Check answer').count()
+        assert not activity.locator('textarea').count()
         quiz = page.locator('.quiz').first
-        assert activity.evaluate('(e) => e.classList.contains("activity-panel") && e.classList.contains("quiz")')
         for property in ['padding', 'borderRadius', 'backgroundColor']:
             assert activity.evaluate('(e, prop) => getComputedStyle(e)[prop]', property) == quiz.evaluate('(e, prop) => getComputedStyle(e)[prop]', property)
-        assert not activity.locator('.btn-primary').count()
-        assert activity.locator('.quiz-title').evaluate('(e) => getComputedStyle(e).fontSize') == quiz.locator('.quiz-title').evaluate('(e) => getComputedStyle(e).fontSize')
+        activity.locator('#challenge-desired-state').get_by_role('button', name='ok', exact=True).click()
         assert activity.locator('.quiz-explain.is-correct').count() == 1
-        activity.locator('.reveal > summary').click()
-        assert activity.locator('.reveal').get_attribute('open') is not None
-        activity.get_by_role('button', name='Check answer').click()
-        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:challenge:desired-state')).at(-1).solutionViewed")
-        activity.get_by_role('button', name='Reset activity').click()
-        assert activity.locator('.reveal').get_attribute('open') is None
-        assert not activity.locator('.quiz-option[aria-pressed=true]').count()
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:challenge:desired-state')).at(-1).passed")
+        page.reload(); activity.wait_for(); assert activity.locator('.quiz-explain.is-correct').count() == 1
         assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
         # Optional timer survives reload.
         go(page, '/ch10/assessment-release'); page.get_by_role('button', name='Start 90-minute timer').click()

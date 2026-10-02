@@ -659,43 +659,9 @@
   }
 }
 
-/* Practice controls use the same scale as other widgets. */
-/* Practice inherits the quiz card, choices, feedback and reveal treatments. */
-.challenge-history,
 .quiz-history {
   font-size: 13px;
   color: var(--text-3);
-}
-.challenge textarea {
-  display: block;
-  width: 100%;
-  resize: vertical;
-  min-height: 96px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--code-bg);
-  color: var(--text);
-  font: var(--code-size-sm)/1.6 var(--font-mono);
-  margin: 8px 0 16px;
-}
-.challenge [role='status']:empty {
-  display: none;
-}
-.challenge-hints {
-  margin: 16px 0 !important;
-}
-.challenge-history {
-  margin: 16px 0 0 !important;
-}
-.challenge .reveal {
-  margin: 16px 0;
-}
-.challenge .reveal-body {
-  font-size: 14px;
-}
-.challenge .reveal-body > :last-child {
-  margin-bottom: 0;
 }
 .lab-mode {
   width: fit-content;
@@ -750,9 +716,6 @@
   margin-bottom: 0;
 }
 @media (max-width: 600px) {
-  .challenge textarea {
-    font-size: 16px;
-  }
   .lab-meta {
     grid-template-columns: 1fr;
   }
