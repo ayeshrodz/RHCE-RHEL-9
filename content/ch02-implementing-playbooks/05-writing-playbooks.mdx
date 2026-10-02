@@ -242,24 +242,24 @@ Here the dry run predicts that the httpd task would make a change.
 
 <SafeWorkflow />
 
-<Quiz
+<Quiz objectives={["ch02.playbooks"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-a4931ed68e9e', legacyIndex: 0,
       q: 'What is wrong with this play?',
       code: '- name: Install web server\n  hosts: web\n   tasks:\n    - name: httpd is installed\n      ansible.builtin.dnf:\n        name: httpd',
       options: ['Nothing', '`tasks` is indented one space more than `name` and `hosts`', '`hosts` must come before `name`'],
       answer: 1,
       explain: '`name`, `hosts` and `tasks` are keys of the same play, so they must line up exactly. Key order within a play does not matter.',
     },
-    {
+    { id: 'q-433e747817d5', legacyIndex: 1,
       q: 'Which option reports what a playbook would change, without changing anything?',
       options: ['`--syntax-check`', '`--check`', '`-vvv`'],
       answer: 1,
       explain: '`--check` performs a dry run against the hosts. `--syntax-check` only parses the file and never contacts a host.',
     },
-    {
+    { id: 'q-b15e5bffaa45', legacyIndex: 2,
       q: 'What is the FQCN of the `service` module that ships with Ansible Core?',
       options: ['`service`', '`ansible.service`', '`ansible.builtin.service`', '`builtin.service`'],
       answer: 2,

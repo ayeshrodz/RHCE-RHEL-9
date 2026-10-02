@@ -10,14 +10,14 @@ You will troubleshoot two playbooks that fail on a managed host: one that fails 
 
 The project `~/troubleshoot-host` has an `ansible.cfg`, an `inventory`, the playbooks `mailrelay.yml` and `samba.yml`, and their templates. `mailrelay.yml` sets up servera as a Postfix mail relay; `samba.yml` is the playbook you fixed in the previous exercise.
 
-<Lab
+<Lab objectives={["ch08.host-errors"]}
   id="troubleshoot-host"
   title="Troubleshooting Ansible managed hosts"
   classroom="lab start troubleshoot-host"
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Troubleshoot managed hosts with check mode, ad hoc commands and verbose output.']}
 >
-  <Task title="Try the mail relay in check mode">
+  <Task id="task-260280c9d635" legacyIndex={1} title="Try the mail relay in check mode">
 
 ```console
 [student@workstation ~]$ cd ~/troubleshoot-host
@@ -50,7 +50,7 @@ servera.lab.example.com    : ok=4    changed=2    unreachable=0    failed=1    s
     `Check main.cf file` uses the `stat` module, and `Verify main.cf file exists` reports only when the file is there. Both tell the same story: in check mode the `postfix` package was not really installed, so neither its configuration file nor its service exists. The failure is an artefact of check mode, not a problem in the playbook.
   </Task>
 
-  <Task title="Run it for real">
+  <Task id="task-0eaaea1c8a3d" legacyIndex={2} title="Run it for real">
 
 ```console
 [student@workstation troubleshoot-host]$ ansible-navigator run -m stdout mailrelay.yml
@@ -73,7 +73,7 @@ servera.lab.example.com    : ok=8    changed=4    unreachable=0    failed=0    s
     The error is gone.
   </Task>
 
-  <Task title="Let mail in through the firewall">
+  <Task id="task-c3eaa3944498" legacyIndex={3} title="Let mail in through the firewall">
     Postfix runs, but other hosts cannot reach it. Add a task at the end of the play, before the handlers, that enables the `smtp` service in the firewall:
 
 ```yaml
@@ -96,7 +96,7 @@ servera.lab.example.com    : ok=8    changed=1    unreachable=0    failed=0    s
 ```
   </Task>
 
-  <Task title="Test the mail port">
+  <Task id="task-abda28e1c058" legacyIndex={4} title="Test the mail port">
 
     <Env>
       <Classroom>
@@ -127,7 +127,7 @@ Connection closed by foreign host.
     The relay answers on TCP port 25.
   </Task>
 
-  <Task title="Run the Samba playbook">
+  <Task id="task-a780e5758806" legacyIndex={5} title="Run the Samba playbook">
 
 ```console
 [student@workstation troubleshoot-host]$ ansible-navigator run -m stdout samba.yml
@@ -144,7 +144,7 @@ servera.lab.exammple.com   : ok=0    changed=0    unreachable=1    failed=0  ...
     The very first task cannot connect. In a classroom the message may instead end in `Connection timed out`; either way, SSH never reached a server.
   </Task>
 
-  <Task title="Is it the connection?">
+  <Task id="task-c389582f9dd3" legacyIndex={6} title="Is it the connection?">
     Check, outside Ansible, that you can log in to servera as `devops`, then with an ad hoc command:
 
 ```console
@@ -163,7 +163,7 @@ servera.lab.example.com | SUCCESS => {
     Both work. So the keys, the user and SSH are fine: the problem is in what the playbook asks Ansible to connect to.
   </Task>
 
-  <Task title="Ask for detail">
+  <Task id="task-80dee2838b4c" legacyIndex={7} title="Ask for detail">
 
 ```console
 [student@workstation troubleshoot-host]$ ansible-navigator run -m stdout samba.yml -vvvv
@@ -185,7 +185,7 @@ fatal: [servera.lab.exammple.com]: UNREACHABLE! => {
     The first lines show which configuration file and inventory are in use. `ESTABLISH SSH CONNECTION` shows the name Ansible is really connecting to: `servera.lab.exammple.com`, with two `m`s.
   </Task>
 
-  <Task title="Fix the inventory">
+  <Task id="task-d2c1463dbdea" legacyIndex={8} title="Fix the inventory">
     The host in the `samba_servers` group is misspelled. Correct it:
 
 ```ini title="inventory"
@@ -206,7 +206,7 @@ servera.lab.example.com    : ok=8    changed=4    unreachable=0    failed=0  ...
     Every task succeeds. If you did not reset the servers after the previous exercise, Samba is already set up and the run reports `changed=0` instead.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-40692fc504fd" legacyIndex={9} title="Finish">
     <Finish name="troubleshoot-host" />
   </Task>
 </Lab>

@@ -33,7 +33,7 @@ Use these play variables:
 
 Notice that `secrets_dest` is built from another variable.
 
-<Lab
+<Lab objectives={["ch03.variables","ch03.vault","ch03.facts"]}
   id="review"
   title="Managing variables and facts"
   classroom="lab start data-review"
@@ -44,7 +44,7 @@ Notice that `secrets_dest` is built from another variable.
     `files/httpd.conf` is Rocky's stock Apache configuration with one change: `AllowOverride AuthConfig` for the document root, so that `.htaccess` can require a login. `files/htpasswd` is generated on your workstation with one user, `guest`, password `redhat`.
   </HomeSetup>
 
-  <Task title="Start the play and its variables">
+  <Task id="task-baa87f70759f" legacyIndex={1} title="Start the play and its variables">
     In `~/data-review`, create `playbook.yml` with a play named `install and configure webserver with basic auth` for the `webserver` group, and define all the variables from the table.
 
     <Reveal title="Show solution">
@@ -70,7 +70,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Install the packages">
+  <Task id="task-40b08c71d240" legacyIndex={2} title="Install the packages">
     Add `tasks` and one task that installs the latest `firewall_pkg`, `web_pkg` and `ssl_pkg`.
 
     <Reveal title="Show solution">
@@ -88,7 +88,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Deploy the Apache configuration">
+  <Task id="task-cef4c99e072d" legacyIndex={3} title="Deploy the Apache configuration">
     Copy `httpdconf_src` to `httpdconf_dest`, owned by `root:root`, mode `0644`.
 
     <Reveal title="Show solution">
@@ -105,7 +105,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Create the secrets directory">
+  <Task id="task-d88c9c2dac5a" legacyIndex={4} title="Create the secrets directory">
     Use `ansible.builtin.file` to create `secrets_dir`, owned by `apache:apache`, mode `0500`.
 
     <Reveal title="Show solution">
@@ -122,7 +122,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Install the password file">
+  <Task id="task-b587159d1829" legacyIndex={5} title="Install the password file">
     Copy `secrets_src` to `secrets_dest`, owned by `apache:apache`, mode `0400`.
 
     <Reveal title="Show solution">
@@ -139,7 +139,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Install .htaccess in the document root">
+  <Task id="task-40318d27146d" legacyIndex={6} title="Install .htaccess in the document root">
     Copy `htaccess_src` to `{{ web_root }}/.htaccess`, owned by `apache:apache`, mode `0400`.
 
     <Reveal title="Show solution">
@@ -156,7 +156,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Build index.html from facts">
+  <Task id="task-584ea28704ce" legacyIndex={7} title="Build index.html from facts">
     Create `{{ web_root }}/index.html` with the content `HOSTNAME (IPADDRESS) has been customized by Ansible.`, where HOSTNAME is the host's FQDN and IPADDRESS its default IPv4 address. Use `ansible.builtin.copy` with `content:`.
 
     <Reveal title="Show solution">
@@ -170,7 +170,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Start the firewall, open HTTPS, start Apache">
+  <Task id="task-6f5c50fc77c9" legacyIndex={8} title="Start the firewall, open HTTPS, start Apache">
     Three tasks: enable and start `firewall_svc`; permanently and immediately allow the `https` service in firewalld; enable and start `web_svc`.
 
     <Reveal title="Show solution">
@@ -198,7 +198,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Add a test play that uses a secret">
+  <Task id="task-3f9eafae9edf" legacyIndex={9} title="Add a test play that uses a secret">
     Add a second play, `test web server with basic auth`, on `workstation`, without privilege escalation. Give it a play variable `web_user: guest`, and load `vars/secret.yml` with `vars_files` (you create that file next). Its tasks:
     1. request `https://serverb.lab.example.com` with `ansible.builtin.uri`, using basic authentication as `web_user` / `web_pass`, expecting status 200, and register the result as `auth_test`. serverb's certificate is not trusted, so turn off certificate validation;
     2. print `auth_test.content`.
@@ -231,7 +231,7 @@ Notice that `secrets_dest` is built from another variable.
     </Reveal>
   </Task>
 
-  <Task title="Create the encrypted secret">
+  <Task id="task-23d9f57f129f" legacyIndex={10} title="Create the encrypted secret">
     Create `vars/secret.yml` with Ansible Vault, password `redhat`, containing `web_pass: redhat`.
 
 ```console
@@ -246,7 +246,7 @@ web_pass: redhat
 ```
   </Task>
 
-  <Task title="Check the syntax, then run">
+  <Task id="task-08c7f598a53d" legacyIndex={11} title="Check the syntax, then run">
 
 ```console
 [student@workstation data-review]$ ansible-navigator run -m stdout \
@@ -273,7 +273,7 @@ workstation                : ok=3    changed=0    unreachable=0    failed=0  ...
     The content returned over HTTPS, after authenticating with the vaulted password, is the page you built from serverb's facts.
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-4dce4e5ad1cb" legacyIndex={12} title="Grade and finish">
     <Finish name="data-review" grade />
   </Task>
 </Lab>

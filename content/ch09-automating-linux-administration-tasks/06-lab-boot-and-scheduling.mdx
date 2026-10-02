@@ -10,14 +10,14 @@ You will schedule a recurring job with cron and remove it again, schedule a one-
 
 The project `~/system-process` has an `ansible.cfg` and an `inventory` with servera in `webservers`. Every playbook in this exercise has one play for `webservers`, with privilege escalation.
 
-<Lab
+<Lab objectives={["ch09.scheduling"]}
   id="process"
   title="Managing the boot process and scheduled processes"
   classroom="lab start system-process"
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Schedule cron and at jobs.', 'Set the default boot target, and reboot hosts from a playbook.']}
 >
-  <Task title="A recurring cron job">
+  <Task id="task-04bbcd8bfdf4" legacyIndex={1} title="A recurring cron job">
     Create `create_crontab_file.yml`. Every two minutes from 09:00 to 16:59, Monday to Friday, the job appends the date and time to `/home/devops/my_date_time_cron_job`. It runs as `devops`, from the system cron file `/etc/cron.d/add-date-time`.
 
 ```yaml title="create_crontab_file.yml"
@@ -55,7 +55,7 @@ servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
     The `name` became the `#Ansible:` comment, and, because this is a system cron file, the user is written on the line itself.
   </Task>
 
-  <Task title="Remove it">
+  <Task id="task-fc6a351415e1" legacyIndex={2} title="Remove it">
     Create `remove_cron_job.yml` that removes the same job. It must name the same job, user and file, with `state: absent`.
 
 ```yaml title="remove_cron_job.yml"
@@ -86,7 +86,7 @@ total 8
     The module deleted `add-date-time` when its last job was gone.
   </Task>
 
-  <Task title="A one-off job with at">
+  <Task id="task-5cf43c7ac536" legacyIndex={3} title="A one-off job with at">
     Create `schedule_at_task.yml`. As `devops`, one minute from now, it writes the date into `~/my_at_date_time`. `unique` stops a second run from queuing the same job again.
 
 ```yaml title="schedule_at_task.yml"
@@ -132,7 +132,7 @@ Thu Oct  1 03:41:00 PM NZDT 2026
     `become_user: devops` makes the job belong to `devops`, so it runs as that user, in that user's home directory.
   </Task>
 
-  <Task title="Change the default boot target">
+  <Task id="task-a5e977e47824" legacyIndex={4} title="Change the default boot target">
     Create `set_default_boot_target_graphical.yml`. It reads the current default target and sets it to `graphical.target` only if it is not already.
 
 ```yaml title="set_default_boot_target_graphical.yml"
@@ -180,7 +180,7 @@ graphical.target
     `changed_when: false` keeps the reading task from reporting a change, and the `when` keeps the second task idempotent.
   </Task>
 
-  <Task title="Reboot from a playbook">
+  <Task id="task-4ce54a83864c" legacyIndex={5} title="Reboot from a playbook">
     Create `reboot_hosts.yml` that reboots the web servers, and check the boot time before and after:
 
 ```yaml title="reboot_hosts.yml"
@@ -210,7 +210,7 @@ graphical.target
     The task waited until servera was back and answering before it finished. The new default target survived the reboot.
   </Task>
 
-  <Task title="Put the target back">
+  <Task id="task-6a2de9585ee8" legacyIndex={6} title="Put the target back">
     Copy the boot target playbook to `set_default_boot_target_multi-user.yml`, set `default_target` to `multi-user.target`, and run it. (In the home lab, set it back to `graphical.target` instead.)
 
 ```console
@@ -221,7 +221,7 @@ servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-a24857208bf3" legacyIndex={7} title="Finish">
     <Finish name="system-process" />
   </Task>
 </Lab>

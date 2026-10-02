@@ -6,20 +6,20 @@ minutes: 20
 
 <Lead>Practise a recovery job: package a small release, extract it into a new location, and prove that its content and access survived.</Lead>
 
-<Lab id="archive-recovery" title="Recover a release" classroom="lab start bridge-archive" own hosts={['servera.lab.example.com']} outcomes={['Create an archive and restore it with explicit ownership and permissions.']}>
-<Task title="Prepare a release">
+<Lab objectives={["ch11.archives"]} id="archive-recovery" title="Recover a release" classroom="lab start bridge-archive" own hosts={['servera.lab.example.com']} outcomes={['Create an archive and restore it with explicit ownership and permissions.']}>
+<Task id="task-612e24cb8c2a" legacyIndex={1} title="Prepare a release">
 Create `release.yml` targeting servera with privilege escalation. Create `/srv/release` as root with mode `0755`, then copy a file `version.txt` containing `release-1\n`, owned by root with mode `0644`.
 </Task>
-<Task title="Archive and restore">
+<Task id="task-56ef7e8d45cf" legacyIndex={2} title="Archive and restore">
 Use `community.general.archive` to create `/tmp/release.tar.gz` from `/srv/release/`. Create `/srv/restored`, then use `ansible.builtin.unarchive` with `remote_src: true` to extract the archive there. Read the module documentation to choose the correct archive layout.
 <Reveal title="Hint: the archive layout matters">
 Use `path: /srv/release/` to archive the directory contents. After extraction, `/srv/restored/version.txt` should exist. `remote_src` means the archive is already on the managed host.
 </Reveal>
 </Task>
-<Task title="Verify recovery">
+<Task id="task-4f1408ad97e1" legacyIndex={3} title="Verify recovery">
 Run the playbook. Read `/srv/restored/version.txt`, check owner and mode with `stat`, and compare the two files with `cmp`. Read-only checks should use `changed_when: false`. Rerun: archive creation may report a deliberate change, while the desired restored content should remain the same.
 </Task>
-<Task title="Try a different release">
+<Task id="task-ed2f86815758" legacyIndex={4} title="Try a different release">
 Change the source to `release-2`, rebuild the archive, and restore it again. Confirm the destination changed. Explain why the first archive could not contain a change made after it was created.
 </Task>
 </Lab>

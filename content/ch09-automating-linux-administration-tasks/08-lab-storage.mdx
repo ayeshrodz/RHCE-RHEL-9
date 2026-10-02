@@ -10,7 +10,7 @@ The web servers need separate file systems for their content and their logs. You
 
 The project `~/system-storage` has an `ansible.cfg`, an `inventory` with servera in `webservers`, a playbook `get-storage.yml` that reports on storage, and the system roles collection archive.
 
-<Lab
+<Lab objectives={["ch09.storage"]}
   id="storage"
   title="Managing storage"
   classroom="lab start system-storage"
@@ -21,7 +21,7 @@ The project `~/system-storage` has an `ansible.cfg`, an `inventory` with servera
     The spare disk in the home lab is `/dev/sdb`, not `/dev/vdb`: use `sdb` wherever the steps say `vdb`. `lab start system-storage` packages the system roles collection installed on workstation as `redhat-rhel_system_roles-1.120.5.tar.gz` (your version may differ).
   </HomeSetup>
 
-  <Task title="The requirements">
+  <Task id="task-bd8a6fcdf7e1" legacyIndex={1} title="The requirements">
     On servera:
 
     - `/dev/vdb` is the physical volume of a volume group `apache-vg`,
@@ -30,7 +30,7 @@ The project `~/system-storage` has an `ansible.cfg`, an `inventory` with servera
     - `content-lv` mounted persistently on `/var/www`, and `logs-lv` on `/var/log/httpd`.
   </Task>
 
-  <Task title="Install the collection into the project">
+  <Task id="task-7652cdac8b30" legacyIndex={2} title="Install the collection into the project">
 
 ```console
 [student@workstation ~]$ cd ~/system-storage
@@ -41,7 +41,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
 ```
   </Task>
 
-  <Task title="Describe the storage">
+  <Task id="task-2f8f26f62b7c" legacyIndex={3} title="Describe the storage">
     Create `storage.yml`. One play for `webservers` applies the storage role, with a `storage_pools` entry for the volume group and its two volumes:
 
 ```yaml title="storage.yml"
@@ -72,7 +72,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
     The variables are passed as role parameters. On older cores, role variables can also be visible elsewhere in the play; use names prefixed for the role to avoid collisions. There is no task for the physical volume, the file systems or `/etc/fstab`: the role works those out from the description.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-732a0b8b3f0e" legacyIndex={4} title="Run it">
 
 ```console
 [student@workstation system-storage]$ ansible-navigator run -m stdout storage.yml
@@ -91,7 +91,7 @@ servera.lab.example.com    : ok=24   changed=4    unreachable=0    failed=0    s
     The role first installs `blivet`, the storage library it works with, then builds the stack. Run it again: `changed=0`.
   </Task>
 
-  <Task title="Inspect the result">
+  <Task id="task-ec6316ec4ff3" legacyIndex={5} title="Inspect the result">
 
 ```console
 [student@workstation system-storage]$ ansible-navigator run -m stdout get-storage.yml
@@ -135,7 +135,7 @@ ok: [servera.lab.example.com] => {
     The disk sizes depend on your lab. Every layer is there, and the mounts are in `/etc/fstab`, marked by the role.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-692a1b272348" legacyIndex={6} title="Finish">
     <Finish name="system-storage" />
   </Task>
 </Lab>

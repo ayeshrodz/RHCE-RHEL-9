@@ -150,29 +150,29 @@ EPEL is the usual example of an extra repository, but its metadata is large. On 
 
 A condition such as `when: "'httpd' in ansible_facts['packages']"` lets a play act only on hosts that have a package, without trying to install it.
 
-<Quiz
+<Quiz objectives={["ch09.software"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-67e2effaf1a5', legacyIndex: 0,
       q: 'Which `state` makes sure a package is installed and updated to the newest version?',
       options: ['`present`', '`latest`', '`installed`'],
       answer: 1,
       explain: 'present leaves an installed package alone; latest updates it.',
     },
-    {
+    { id: 'q-02c7a6dab640', legacyIndex: 1,
       q: 'How do you install a package group with the dnf module?',
       options: ['`name: Development Tools`', '`name: "@Development Tools"`', '`group: Development Tools`'],
       answer: 1,
       explain: 'Groups start with @, and the value must be quoted.',
     },
-    {
+    { id: 'q-24017d26dcc0', legacyIndex: 2,
       q: 'What does `gpgcheck: true` on a repository do?',
       options: ['Downloads the key', 'Makes dnf refuse packages that are not signed by a trusted key', 'Encrypts the repository'],
       answer: 1,
       explain: 'The key itself is imported with rpm_key or listed with gpgkey.',
     },
-    {
+    { id: 'q-c30585cf1a18', legacyIndex: 3,
       q: 'After `package_facts`, where is the information about httpd?',
       options: ["`ansible_facts['packages']['httpd']`", "`ansible_facts['httpd']`", '`packages.httpd.version`'],
       answer: 0,

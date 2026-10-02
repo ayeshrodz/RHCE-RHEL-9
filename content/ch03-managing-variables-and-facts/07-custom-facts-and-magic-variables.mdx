@@ -132,17 +132,17 @@ The same works for ordinary variables, not just facts. The task above runs once 
 Ansible has several more special variables. The full list is in the Ansible documentation, under *Special Variables*.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch03.variables","ch03.vault","ch03.facts"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-614fb73eb4ff', legacyIndex: 0,
       q: 'Which file does setup read as a custom fact?',
       options: ['`/etc/ansible/facts.d/web.yml`', '`/etc/ansible/facts.d/web.fact`', '`/etc/ansible/custom/web.fact`'],
       answer: 1,
       explain: 'Custom facts must be in /etc/ansible/facts.d and end in .fact. YAML files are not used.',
     },
-    {
+    { id: 'q-aadf53a03bd1', legacyIndex: 1,
       q: 'The file `/etc/ansible/facts.d/app.fact` has a `[db]` section with `port = 5432`. How do you reference it?',
       options: [
         "`ansible_facts['app']['db']['port']`",
@@ -152,7 +152,7 @@ Ansible has several more special variables. The full list is in the Ansible docu
       answer: 1,
       explain: 'Custom facts sit under ansible_local, then the file name, section and key.',
     },
-    {
+    { id: 'q-97a6b5605e26', legacyIndex: 2,
       q: 'Which magic variable lists the groups the current host belongs to?',
       options: ['`groups`', '`group_names`', '`hostvars`'],
       answer: 1,

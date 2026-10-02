@@ -228,35 +228,35 @@ Everything sits under the `stat` key of the registered variable. Browse a sample
 Nobody memorises every argument. `ansible-navigator doc ansible.builtin.copy -m stdout` (or `ansible-doc ansible.builtin.copy`) lists them, and the EXAMPLES section at the end is usually one copy and paste away from the task you need.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch05.files"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-b63a46cc4d3a', legacyIndex: 0,
       q: 'Which module copies `/var/log/secure` from each managed host to the control node?',
       options: ['`ansible.builtin.copy`', '`ansible.builtin.fetch`', '`ansible.builtin.stat`', '`ansible.posix.synchronize`'],
       answer: 1,
       explain: 'fetch is copy in reverse: managed host to control node.',
     },
-    {
+    { id: 'q-8d269d4d2ba6', legacyIndex: 1,
       q: 'A task sets `mode: 644` on a file. What goes wrong?',
       options: ['Nothing, it is the same as 0644', 'YAML reads it as the decimal number 644, giving unexpected permissions', 'Ansible refuses to run'],
       answer: 1,
       explain: "Quote the mode with its leading zero: `mode: '0644'`, or use the symbolic form.",
     },
-    {
+    { id: 'q-6b931b703ed1', legacyIndex: 2,
       q: 'You run a `blockinfile` task a second time with the same block. What happens?',
       options: ['The block is added again', 'Nothing changes: the markers identify the existing block', 'The file is emptied first'],
       answer: 1,
       explain: 'The BEGIN and END marker lines let Ansible find its own block and compare it.',
     },
-    {
+    { id: 'q-c64f5e3fa07c', legacyIndex: 3,
       q: 'A file has `setype: samba_share_t` set by `ansible.builtin.file`. Someone runs `restorecon` on it. What is its type now?',
       options: ['Still `samba_share_t`', 'The default type from the SELinux policy for that path', 'It has no type'],
       answer: 1,
       explain: 'Like chcon, the file module changes the label only. Make it permanent with a file-context rule (sefcontext).',
     },
-    {
+    { id: 'q-7730105a923f', legacyIndex: 4,
       q: 'With `force: false`, when does `copy` write the file?',
       options: ['Every run', 'Only if the destination does not exist yet', 'Only if the content differs'],
       answer: 1,

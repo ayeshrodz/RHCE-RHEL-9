@@ -10,7 +10,7 @@ Write three playbooks: one that installs and configures web servers from a templ
 
 This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansible.cfg`, an `inventory` with servera and serverb in `webservers` (and `workstation`), the template `templates/vhost.conf.j2` and the page `files/index.html`.
 
-<Lab
+<Lab objectives={["ch10.composition"]}
   id="review-playbooks"
   title="Creating playbooks"
   classroom="lab start review-playbooks"
@@ -21,7 +21,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host.
   </HomeSetup>
 
-  <Task title="Install the web server">
+  <Task id="task-822ba5c68791" legacyIndex={1} title="Install the web server">
     Create `dev_deploy.yml` with one play for `webservers`, with privilege escalation, whose first task installs `httpd`.
 
     <Reveal title="Show solution">
@@ -41,7 +41,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Start it">
+  <Task id="task-28ecde6859fc" legacyIndex={2} title="Start it">
     Add a task that starts `httpd` and enables it at boot.
 
     <Reveal title="Show solution">
@@ -56,7 +56,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Configure it from the template">
+  <Task id="task-0295ea7348e3" legacyIndex={3} title="Configure it from the template">
     Add a task that deploys `templates/vhost.conf.j2` to `/etc/httpd/conf.d/vhost.conf`, owned by root, mode `0644`, and notifies a handler called `Restart httpd`.
 
     <Reveal title="Show solution">
@@ -76,7 +76,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Publish the content">
+  <Task id="task-29c45fd951c2" legacyIndex={4} title="Publish the content">
     Add a task that copies `files/index.html` into `/var/www/vhosts/{{ ansible_facts['hostname'] }}` on the managed hosts. The directory must be created if it does not exist.
 
     <Reveal title="Show solution">
@@ -95,7 +95,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Open the firewall, and add the handler">
+  <Task id="task-fd914a350488" legacyIndex={5} title="Open the firewall, and add the handler">
     Add a task that allows `http` through the firewall, now and permanently, and the `Restart httpd` handler.
 
     <Reveal title="Show solution">
@@ -117,7 +117,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Test the content, and record a failure">
+  <Task id="task-10b1c4b6ed1f" legacyIndex={6} title="Test the content, and record a failure">
     Create `get_web_content.yml` with a play named `Test web content` for `workstation`, with privilege escalation. Its one task, `Retrieve web content and write to error log on failure`, is a block:
 
     - in the block, a task `Retrieve web content` uses `ansible.builtin.uri` to fetch `http://servera.lab.example.com`, returning the content, registered in `content`;
@@ -151,7 +151,7 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
     </Reveal>
   </Task>
 
-  <Task title="Tie them together">
+  <Task id="task-5cbdf22d22f9" legacyIndex={7} title="Tie them together">
     Create `site.yml` that imports `dev_deploy.yml` and then `get_web_content.yml`, and run it. A second run must report no changes.
 
     <Reveal title="Show solution">
@@ -200,7 +200,7 @@ This is a test page.
     </Reveal>
   </Task>
 
-  <Task title="See the rescue at work">
+  <Task id="task-b9ff39f4f54c" legacyIndex={8} title="See the rescue at work">
     Stop `httpd` on servera, run `get_web_content.yml` again, and read `error.log`.
 
 ```console
@@ -224,7 +224,7 @@ workstation                : ok=2    changed=1    unreachable=0    failed=0    s
     `failed=0` and `rescued=1`: the failure was handled. Run `site.yml` once more to start `httpd` again.
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-45b7d79a5413" legacyIndex={9} title="Grade and finish">
     <Finish name="review-playbooks" grade />
   </Task>
 </Lab>

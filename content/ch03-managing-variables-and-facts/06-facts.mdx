@@ -154,17 +154,17 @@ tasks:
 
 Add `!` in front of a subset name (`- '!hardware'`) to gather everything **except** that subset. The `setup` module documentation lists all subset names: `ansible-navigator doc ansible.builtin.setup -m stdout`.
 
-<Quiz
+<Quiz objectives={["ch03.facts"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-aaa736d87b77', legacyIndex: 0,
       q: 'Which module gathers facts?',
       options: ['`ansible.builtin.facts`', '`ansible.builtin.setup`', '`ansible.builtin.gather`'],
       answer: 1,
       explain: 'The automatic Gathering Facts task runs `ansible.builtin.setup`, and you can run it yourself as a task.',
     },
-    {
+    { id: 'q-71f6ee551a26', legacyIndex: 1,
       q: 'How do you reference the host’s main IPv4 address?',
       options: [
         "`ansible_facts['ipv4']`",
@@ -174,13 +174,13 @@ Add `!` in front of a subset name (`- '!hardware'`) to gather everything **excep
       answer: 1,
       explain: 'default_ipv4 describes the interface used for the default route; its address key holds the IP.',
     },
-    {
+    { id: 'q-d6762e07d140', legacyIndex: 2,
       q: 'A play has `gather_facts: false` and a task prints `ansible_facts[\'kernel\']`. What happens?',
       options: ['It prints the kernel version', 'The variable is undefined', 'Ansible gathers facts automatically anyway'],
       answer: 1,
       explain: 'With gathering off, facts are empty until you run `ansible.builtin.setup` yourself.',
     },
-    {
+    { id: 'q-c1c2486e6414', legacyIndex: 3,
       q: 'What is the older, injected name for `ansible_facts[\'fqdn\']`?',
       options: ['`fqdn`', '`ansible_fqdn`', '`facts_fqdn`'],
       answer: 1,

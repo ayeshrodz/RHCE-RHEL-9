@@ -193,29 +193,29 @@ A common pattern: run a check, register the result, and decide what to do next. 
 
 `systemctl is-active` exits with `0` when the service is active, so `result.rc == 0` means "Postfix is running". (If Postfix is not running, the first task fails; in the task failure section you will see how to keep the play going with `ignore_errors`.)
 
-<Quiz
+<Quiz objectives={["ch04.loops-conditions","ch04.handlers","ch04.failure"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-7c2c0abc2e41', legacyIndex: 0,
       q: 'Which `when` line is correct?',
       options: ['`when: "{{ ansible_facts[\'distribution\'] }}" == "RedHat"`', '`when: ansible_facts[\'distribution\'] == "RedHat"`', '`when: ansible_facts[\'distribution\'] = RedHat`'],
       answer: 1,
       explain: '`when` is already an expression: no `{{ }}`, use `==`, and quote the string you compare with.',
     },
-    {
+    { id: 'q-5995c59b5e84', legacyIndex: 1,
       q: 'A variable is set as `enable_web: "false"` (with quotes). With Ansible Core 2.13, does `when: enable_web` run the task?',
       options: ['No, it is false', 'Yes, because a non-empty string counts as true', 'It fails with a type error'],
       answer: 1,
       explain: 'Use `when: enable_web | bool` to treat the string as a Boolean.',
     },
-    {
+    { id: 'q-bae47708c4f1', legacyIndex: 2,
       q: 'What does a list of conditions under `when` mean?',
       options: ['Any one must be true', 'All must be true', 'Only the first is tested'],
       answer: 1,
       explain: 'A list under `when` is combined with `and`.',
     },
-    {
+    { id: 'q-5d3b0ddc320e', legacyIndex: 3,
       q: 'A task has `loop` over five items and a `when` condition. How often is the condition evaluated?',
       options: ['Once, before the loop', 'Once for each item', 'Only for the first item'],
       answer: 1,

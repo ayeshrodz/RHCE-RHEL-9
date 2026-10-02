@@ -42,7 +42,10 @@ export function Lab({
     return isValidElement(child) && child.type === Task ? cloneElement(child, { n: ++n }) : child;
   });
   const total = n;
-  const count = done.filter((i) => i <= total).length;
+  const ids = Children.toArray(children)
+    .filter((child) => isValidElement(child) && child.type === Task)
+    .map((child) => child.props.id);
+  const count = done.filter((id) => ids.includes(id)).length;
   const pct = total ? Math.round((count / total) * 100) : 0;
 
   const toggle = (i) => setDone((list) => (list.includes(i) ? list.filter((x) => x !== i) : [...list, i]));
@@ -122,7 +125,7 @@ export function Lab({
 
         {total > 0 && count === total && (
           <footer className="lab-done">
-            <PartyPopper size={16} /> All tasks complete. Run through it once more from memory for exam speed.
+            <PartyPopper size={16} /> Checklist complete. Verify the host state, then repeat independently to practise recall.
           </footer>
         )}
       </section>
@@ -130,9 +133,9 @@ export function Lab({
   );
 }
 
-export function Task({ n, title, children }) {
+export function Task({ id, n, title, children }) {
   const { done, toggle, mode } = useContext(LabContext);
-  const checked = done.includes(n);
+  const checked = done.includes(id);
   return (
     <li className={`lab-task ${checked ? 'is-done' : ''}`}>
       <div className="lab-task-head">
@@ -141,7 +144,7 @@ export function Task({ n, title, children }) {
           role="checkbox"
           aria-checked={checked}
           aria-label={`Mark task ${n} ${checked ? 'not done' : 'done'}`}
-          onClick={() => toggle(n)}
+          onClick={() => toggle(id)}
         >
           {checked ? <Check size={13} strokeWidth={3} /> : n}
         </button>

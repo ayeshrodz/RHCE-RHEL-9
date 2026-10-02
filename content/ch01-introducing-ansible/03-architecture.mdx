@@ -66,17 +66,17 @@ Modules such as `ansible.builtin.command` and `ansible.builtin.shell` run whatev
 
 When an administrator runs a playbook, the control node connects to managed hosts using SSH (or WinRM for Windows). You never need an Ansible-specific agent on the hosts, and you never need to open any extra communication channels between the control node and the hosts beyond what SSH already uses.
 
-<Quiz
+<Quiz objectives={["ch01.architecture"]}
   title="Check your understanding"
   id="check"
   questions={[
-    {
+    { id: 'q-ce081d4ff720', legacyIndex: 0,
       q: 'Which file defines the actions that Ansible performs on managed hosts?',
       options: ['The inventory', 'A manifest', 'A playbook', 'A shell script'],
       answer: 2,
       explain: 'A playbook describes the plays and tasks to run. The inventory only says which hosts exist and how they are grouped.',
     },
-    {
+    { id: 'q-bfb138b6b29d', legacyIndex: 1,
       q: 'A task fails on `serverb` but succeeds on `servera` and `serverc`. By default, what does Ansible do next?',
       options: [
         'Stops the whole playbook immediately for every host',
@@ -86,7 +86,7 @@ When an administrator runs a playbook, the control node connects to managed host
       answer: 1,
       explain: 'By default a failure removes that host from the rest of the run while the others continue.',
     },
-    {
+    { id: 'q-67165513eb48', legacyIndex: 2,
       q: 'You run a correct playbook twice in a row. What should the second run report?',
       options: ['`changed` for every task', '`changed=0`, because everything is already in the desired state', '`failed` for tasks that already ran'],
       answer: 1,

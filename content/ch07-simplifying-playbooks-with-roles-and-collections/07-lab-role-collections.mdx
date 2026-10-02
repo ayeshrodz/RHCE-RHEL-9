@@ -10,7 +10,7 @@ You will install a collection from an archive, explore what it contains, and use
 
 The project `~/role-collections` has an `ansible.cfg`, an `inventory` with `servera.lab.example.com`, two playbooks to complete or run, a `requirements.yml`, and collection archives.
 
-<Lab
+<Lab objectives={["ch07.collections"]}
   id="role-collections"
   title="Getting roles and modules from content collections"
   classroom="lab start role-collections"
@@ -25,7 +25,7 @@ The project `~/role-collections` has an `ansible.cfg`, an `inventory` with `serv
     `lab start role-collections` builds the archives in the project: `gls-utils-0.0.1.tar.gz`, a small collection written for this exercise, and copies of the `redhat.rhel_system_roles` and `community.general` collections already installed on workstation. Their versions match what section 0.6 installed, so your file names may differ slightly from the ones shown.
   </HomeSetup>
 
-  <Task title="Install the gls.utils collection">
+  <Task id="task-f8a5c12328dc" legacyIndex={1} title="Install the gls.utils collection">
 
 ```console
 [student@workstation ~]$ cd ~/role-collections
@@ -41,7 +41,7 @@ gls.utils:0.0.1 was installed successfully
     The project's `ansible.cfg` already puts `./collections` first in `collections_path`, so Ansible finds the new collection without a warning.
   </Task>
 
-  <Task title="Explore it">
+  <Task id="task-f36bccaaf993" legacyIndex={2} title="Explore it">
     Run `ansible-navigator collections`. In the interactive list, find `gls.utils` and type its number (for example `:17`). It contains two roles, `backup` and `restore`, and one module, `newping`. Select `backup` to read its documentation: it saves the files listed in `backup_files` under the name `backup_id`. Press <kbd>Esc</kbd> to go back, and <kbd>Esc</kbd> again to leave.
 
     The same documentation is available directly:
@@ -64,7 +64,7 @@ OPTIONS (= is mandatory):
 ```
   </Task>
 
-  <Task title="Use a module and a role from it">
+  <Task id="task-90deea7cf1cf" legacyIndex={3} title="Use a module and a role from it">
     Complete `bck.yml`. Its play for servera already exists; add two tasks: check the host with `gls.utils.newping`, then save `/etc/sysconfig` and `/etc/yum.repos.d` with the `gls.utils.backup` role under the name `backup_etc`.
 
 ```yaml title="bck.yml"
@@ -92,7 +92,7 @@ OPTIONS (= is mandatory):
     Modules and roles from a collection are always named by their full name: `namespace.collection.name`.
   </Task>
 
-  <Task title="Run it">
+  <Task id="task-0fe7e8e5180e" legacyIndex={4} title="Run it">
 
 ```console
 [student@workstation role-collections]$ ansible-navigator run -m stdout bck.yml --syntax-check
@@ -119,7 +119,7 @@ servera.lab.example.com    : ok=3    changed=2    unreachable=0    failed=0  ...
     The `include_role` task prints a heading but no result of its own; the role's tasks follow it.
   </Task>
 
-  <Task title="Install collections from a requirements file">
+  <Task id="task-a5096e24cfd9" legacyIndex={5} title="Install collections from a requirements file">
     The second playbook, `new_system.yml`, needs two more collections. Look at the requirements file the project provides:
 
     <Env>
@@ -163,7 +163,7 @@ community.general:9.5.13 was installed successfully
     `collection list` now shows the project's collections and, below them, the copies in `/usr/share/ansible/collections`. The project's copy is found first.
   </Task>
 
-  <Task title="Run the playbook that needs them">
+  <Task id="task-44a364abb93c" legacyIndex={6} title="Run the playbook that needs them">
     Read `new_system.yml`: it sets an option in `/etc/dnf/dnf.conf` with `community.general.ini_file`, and makes sure SELinux is enforcing with the `redhat.rhel_system_roles.selinux` role. Try it in check mode first, then for real:
 
 ```console
@@ -180,7 +180,7 @@ servera.lab.example.com    : ok=18   changed=1    unreachable=0    failed=0    s
     SELinux was already enforcing, so only the `dnf.conf` option changed. The many skipped tasks are parts of the role that do not apply to this host.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-790d5a3d7218" legacyIndex={7} title="Finish">
     <Finish name="role-collections" />
   </Task>
 </Lab>

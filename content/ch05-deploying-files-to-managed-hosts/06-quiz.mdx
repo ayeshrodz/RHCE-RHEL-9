@@ -8,80 +8,80 @@ minutes: 8
 Twelve questions on the file modules and Jinja2 templates. Aim for at least nine before moving on to chapter 6.
 </Lead>
 
-<Quiz
+<Quiz objectives={["ch05.files","ch05.templates"]}
   id="chapter"
   title="Chapter 5 knowledge check"
   questions={[
-    {
+    { id: 'q-b1b34717aa9c', legacyIndex: 0,
       q: 'Which module sets the owner, mode and SELinux type of a file that already exists, without touching its content?',
       options: ['`ansible.builtin.copy`', '`ansible.builtin.file`', '`ansible.builtin.stat`', '`ansible.builtin.lineinfile`'],
       answer: 1,
       explain: 'file manages attributes and existence. copy and template accept the same attribute arguments but also manage content.',
     },
-    {
+    { id: 'q-689d5cd8ec03', legacyIndex: 1,
       q: 'What does this task do if `/etc/app.conf` already exists with different content?',
       code: '- ansible.builtin.copy:\n    src: app.conf\n    dest: /etc/app.conf\n    force: false',
       options: ['Overwrites it', 'Leaves it alone and reports ok', 'Fails'],
       answer: 1,
       explain: 'force: false copies only when the destination is missing.',
     },
-    {
+    { id: 'q-1020080d7c66', legacyIndex: 2,
       q: 'Two hosts each have `/var/log/secure`. With `dest: backups` and the default `flat: false`, where does servera’s copy go?',
       options: ['`backups/secure`', '`backups/servera.lab.example.com/var/log/secure`', '`backups/servera/secure`'],
       answer: 1,
       explain: 'fetch appends the inventory host name and the full source path, so nothing collides.',
     },
-    {
+    { id: 'q-c7cccb062d0a', legacyIndex: 3,
       q: 'Which value gives `rw-r-----`?',
       options: ["`mode: '0640'`", "`mode: '0460'`", '`mode: 640`', "`mode: '0644'`"],
       answer: 0,
       explain: '6 = rw for the user, 4 = r for the group, 0 for others. Quoted, with the leading zero.',
     },
-    {
+    { id: 'q-d62fa1aab0de', legacyIndex: 4,
       q: 'A `lineinfile` task has `regexp: \'^PermitRootLogin\'` and `line: PermitRootLogin no`. The file has no line starting with PermitRootLogin. What happens?',
       options: ['Nothing', 'The line is appended to the end of the file', 'The task fails'],
       answer: 1,
       explain: 'When the regexp matches nothing, lineinfile falls back to adding the line.',
     },
-    {
+    { id: 'q-749ccf85f756', legacyIndex: 5,
       q: 'What makes `blockinfile` idempotent?',
       options: ['It checks the file checksum', 'The BEGIN and END marker lines around the block', 'It always rewrites the whole file'],
       answer: 1,
       explain: 'The markers identify the managed block, so later runs update it in place instead of adding another.',
     },
-    {
+    { id: 'q-07ff2c506ef1', legacyIndex: 6,
       q: 'Which expression is true when a registered `stat` result found the file?',
       options: ['`result.exists`', '`result.stat.exists`', "`result['found']`"],
       answer: 1,
       explain: 'The file information is nested under the stat key of the registered variable.',
     },
-    {
+    { id: 'q-635326074d13', legacyIndex: 7,
       q: 'How do you set a file’s SELinux context back to what the policy defines?',
       options: ['`setype: default`', '`seuser`, `serole`, `setype`, `selevel`: `_default`', '`state: restorecon`'],
       answer: 1,
       explain: 'The special value _default tells the module to use the policy default for that field.',
     },
-    {
+    { id: 'q-00c932a41048', legacyIndex: 8,
       q: 'What appears in the deployed file for this template line?',
       code: "{# managed by the ops team #}\nPort {{ ssh_port }}",
       options: ['Both lines, with the port filled in', 'Only the Port line', 'Nothing: comments stop rendering'],
       answer: 1,
       explain: '{# #} comments are removed when the template is rendered.',
     },
-    {
+    { id: 'q-f0e9464bba48', legacyIndex: 9,
       q: 'Which module deploys a Jinja2 template?',
       options: ['`ansible.builtin.copy`', '`ansible.builtin.template`', '`ansible.builtin.jinja2`'],
       answer: 1,
       explain: 'copy would send the file as it is, placeholders and all.',
     },
-    {
+    { id: 'q-a7d97b63ea9b', legacyIndex: 10,
       q: 'What does this template produce for `users: [root, jane, joe]`?',
       code: '{% for u in users if u != "root" %}\n{{ loop.index }}: {{ u }}\n{% endfor %}',
       options: ['`1: root`, `2: jane`, `3: joe`', '`2: jane`, `3: joe`', '`1: jane`, `2: joe`'],
       answer: 2,
       explain: 'The if filters the list before the loop starts, so loop.index counts the remaining items from 1.',
     },
-    {
+    { id: 'q-6ad402058450', legacyIndex: 11,
       q: 'Which filter writes a variable as indented, human-readable YAML?',
       options: ['`to_yaml`', '`to_nice_yaml`', '`from_yaml`'],
       answer: 1,

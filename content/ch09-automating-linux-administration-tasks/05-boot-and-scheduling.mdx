@@ -167,29 +167,29 @@ As a handler it reboots only when something actually changed, and only once howe
 A play reboots every host in it at the same time. For a group that serves users, add `serial: 1` to the play (or a small number, or a percentage) so hosts are rebooted a few at a time.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch09.scheduling"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-35d91b308bed', legacyIndex: 0,
       q: 'How does `ansible.builtin.cron` find its own entry on a later run?',
       options: ['By the job command', 'By the `name`, written as a comment in the crontab', 'By the schedule'],
       answer: 1,
       explain: 'Keep the name stable; changing it creates a new entry.',
     },
-    {
+    { id: 'q-9f5eb8001434', legacyIndex: 1,
       q: 'Which state should a normal service task use to make sure httpd is running?',
       options: ['`restarted`', '`started`', '`reloaded`'],
       answer: 1,
       explain: 'started is idempotent. restarted restarts on every run, so it belongs in a handler.',
     },
-    {
+    { id: 'q-88c3ef36faf2', legacyIndex: 2,
       q: 'What does `ansible.builtin.reboot` do after rebooting?',
       options: ['Ends the play', 'Waits until the host answers again, then continues', 'Nothing: it only schedules a reboot'],
       answer: 1,
       explain: 'The rest of the play runs against the freshly booted host.',
     },
-    {
+    { id: 'q-3369f89f8c94', legacyIndex: 3,
       q: 'Why use `unique: true` with ansible.posix.at?',
       options: ['To run the job as a unique user', 'So repeated runs do not queue the same job again', 'It is required'],
       answer: 1,

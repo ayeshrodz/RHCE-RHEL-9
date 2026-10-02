@@ -10,7 +10,7 @@ Turn a working playbook into a role: create the skeleton, move the variables, ta
 
 This lab covers chapters 5 and 7. The project `~/review-roles` has an `ansible.cfg`, an `inventory` with serverb and serverc in the `webdev` group, the playbook `ansible-httpd.yml`, its template `templates/httpd.conf.j2`, and `files/index.html`.
 
-<Lab
+<Lab objectives={["ch10.reusable-roles"]}
   id="review-roles"
   title="Creating roles"
   classroom="lab start review-roles"
@@ -21,7 +21,7 @@ This lab covers chapters 5 and 7. The project `~/review-roles` has an `ansible.c
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host.
   </HomeSetup>
 
-  <Task title="Read the playbook">
+  <Task id="task-9451fe9e663a" legacyIndex={1} title="Read the playbook">
 
 ```yaml title="ansible-httpd.yml"
 ---
@@ -45,7 +45,7 @@ This lab covers chapters 5 and 7. The project `~/review-roles` has an `ansible.c
     Five variables, five tasks (package, service, configuration file, page, firewall) and one handler.
   </Task>
 
-  <Task title="Create the role skeleton">
+  <Task id="task-084eed535c78" legacyIndex={2} title="Create the role skeleton">
     Create the role `ansible-httpd` in `~/review-roles/roles`.
 
     <Reveal title="Show solution">
@@ -83,7 +83,7 @@ roles
     </Reveal>
   </Task>
 
-  <Task title="Move everything into the role">
+  <Task id="task-afa91065a15b" legacyIndex={3} title="Move everything into the role">
     Move the playbook's variables, tasks, template, file and handler into the right places in the role. The variables name fixed facts about the service, so they belong with the role's internal values.
 
     <Reveal title="Show solution">
@@ -158,7 +158,7 @@ web_fw_service: http
     </Reveal>
   </Task>
 
-  <Task title="Describe the role">
+  <Task id="task-97a0d8bb7979" legacyIndex={4} title="Describe the role">
     In `meta/main.yml`, set the author, a one-line description, your organisation as the company, and the licence `BSD`. In `README.md`, describe the role's variables, its dependencies (none), an example playbook, the licence and the author.
 
     <Reveal title="Show solution">
@@ -211,7 +211,7 @@ Your Name (you@example.com)
     </Reveal>
   </Task>
 
-  <Task title="Remove what the role does not use">
+  <Task id="task-010775a0a2b4" legacyIndex={5} title="Remove what the role does not use">
     <Reveal title="Show solution">
 
 ```console
@@ -225,7 +225,7 @@ removed directory 'roles/ansible-httpd/tests/'
     </Reveal>
   </Task>
 
-  <Task title="Apply the role">
+  <Task id="task-26c4a235e70c" legacyIndex={6} title="Apply the role">
     Write `site.yml`, which applies `ansible-httpd` to the `webdev` group, and run it.
 
     <Reveal title="Show solution">
@@ -283,7 +283,7 @@ This is the web server built by the ansible-httpd role.
     </Reveal>
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-583265e67b5a" legacyIndex={7} title="Grade and finish">
     <Finish name="review-roles" grade />
   </Task>
 </Lab>

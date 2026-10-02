@@ -10,7 +10,7 @@ Use two system roles and a few modules to prepare a web server: logical volumes 
 
 This lab covers chapters 3, 6, 7 and 9. The project `~/review-admin` has an `ansible.cfg`, an `inventory` with servera in `webservers`, the system roles collection archive, and `pass-vault.yml`, a Vault-encrypted file that defines `pwhash`, a password hash. Its Vault password is `redhat`.
 
-<Lab
+<Lab objectives={["ch10.administration"]}
   id="review-admin"
   title="Managing Linux hosts and using system roles"
   classroom="lab start review-admin"
@@ -26,7 +26,7 @@ This lab covers chapters 3, 6, 7 and 9. The project `~/review-admin` has an `ans
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. As in chapter 9, the spare disk is `/dev/sdb`, and `eth1` is a dummy interface with an address from `192.0.2.0/24`.
   </HomeSetup>
 
-  <Task title="Install the collection">
+  <Task id="task-61498f8d8e99" legacyIndex={1} title="Install the collection">
     Install `redhat.rhel_system_roles` from the archive into the project's `collections` directory.
 
     <Reveal title="Show solution">
@@ -41,7 +41,7 @@ redhat.rhel_system_roles:1.120.5 was installed successfully
     </Reveal>
   </Task>
 
-  <Task title="Storage">
+  <Task id="task-03eb01ff7d3c" legacyIndex={2} title="Storage">
     Write `storage.yml`, which uses the storage role on `webservers`:
 
     - a volume group `vg_web` on `/dev/vdb`,
@@ -92,7 +92,7 @@ servera.lab.example.com    : ok=24   changed=4    unreachable=0    failed=0    s
     </Reveal>
   </Task>
 
-  <Task title="An administrator">
+  <Task id="task-a12472c928ff" legacyIndex={3} title="An administrator">
     Write `dev-users.yml`, which creates the user `webdev` on `webservers`:
 
     - its password is set from the `pwhash` variable in `pass-vault.yml`,
@@ -161,7 +161,7 @@ webdev@servera's password: redhat
     </Reveal>
   </Task>
 
-  <Task title="A second address">
+  <Task id="task-0f0ee9b36e07" legacyIndex={4} title="A second address">
     Write `network.yml`, which uses the network role to give `eth1` on `webservers` the address `172.25.250.45/24`. Put the role's variable in `group_vars`. Run it.
 
     <Reveal title="Show solution">
@@ -213,7 +213,7 @@ servera.lab.example.com    : ok=11   changed=1    unreachable=0    failed=0    s
     </Reveal>
   </Task>
 
-  <Task title="Rotate the web logs every night">
+  <Task id="task-fc621d39fad9" legacyIndex={5} title="Rotate the web logs every night">
     Write `log-rotate.yml`, which creates the system cron file `/etc/cron.d/rotate_web` on `webservers`, with a job that runs as `devops` every night at midnight: `logrotate -f /etc/logrotate.d/httpd`. Run it and check the file.
 
     <Reveal title="Show solution">
@@ -248,7 +248,7 @@ servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
     </Reveal>
   </Task>
 
-  <Task title="One playbook for everything">
+  <Task id="task-fbbefa162b96" legacyIndex={6} title="One playbook for everything">
     Write `site.yml`, which imports the four playbooks in this order: `storage.yml`, `dev-users.yml`, `network.yml`, `log-rotate.yml`. Run it; there must be no errors.
 
     <Reveal title="Show solution">
@@ -283,7 +283,7 @@ eth1             UNKNOWN        192.0.2.45/24
     </Reveal>
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-299205de0ccb" legacyIndex={7} title="Grade and finish">
     <Finish name="review-admin" grade />
   </Task>
 </Lab>

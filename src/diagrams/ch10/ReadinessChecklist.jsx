@@ -26,17 +26,19 @@ const PRACTICE = {
   7: ['lab_admin', 'lab_roles'],
   8: ['lab_deploy', 'lab_playbooks', 'lab_admin', 'lab_roles'],
   9: ['lab_admin'],
+  10: ['lab_deploy', 'lab_playbooks', 'lab_admin', 'lab_roles'],
+  11: ['lab_playbooks', 'lab_admin'],
 };
 
-const reviewed = chapters.filter((c) => c.number >= 1 && c.number <= 9 && c.objectives.length > 0);
+const reviewed = chapters.filter((c) => c.number >= 1 && c.objectives.length > 0);
 
-/** Rate every objective of chapters 1–9 and see which chapters and review labs to go back to. */
+/** Rate every objective of all course chapters and see which chapters and review labs to go back to. */
 export default function ReadinessChecklist() {
   const [ratings, setRatings] = useStored('readiness', {});
   const [open, setOpen] = useState(reviewed[0]?.id);
   const chapter = reviewed.find((c) => c.id === open) ?? reviewed[0];
 
-  const key = (c, i) => `${c.id}:${i}`;
+  const key = (c, i) => c.objectiveIds[i];
   const rate = (k, level) =>
     setRatings((old) => {
       const next = { ...old };

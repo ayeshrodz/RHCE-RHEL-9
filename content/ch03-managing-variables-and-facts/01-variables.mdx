@@ -203,17 +203,17 @@ ok: [demo.example.com] => {
 
 `register` is placed at the **task** level, at the same indentation as the module name, not inside the module's arguments. You can then read any part of it, for example `install_result['changed']`.
 
-<Quiz
+<Quiz objectives={["ch03.variables"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-f7726edba898', legacyIndex: 0,
       q: 'Which of these is a valid variable name?',
       options: ['`web-server`', '`2nd_disk`', '`db_port_2`', '`app.version`'],
       answer: 2,
       explain: 'Names must start with a letter and use only letters, numbers and underscores. Dashes and dots are not allowed, and a name cannot start with a digit.',
     },
-    {
+    { id: 'q-343b4cdbcdb0', legacyIndex: 1,
       q: 'Why does this task fail to load?',
       code: '- name: Install the web package\n  ansible.builtin.dnf:\n    name: {{ web_pkg }}',
       options: [
@@ -224,7 +224,7 @@ ok: [demo.example.com] => {
       answer: 1,
       explain: 'Write `name: "{{ web_pkg }}"`. Quotes are needed whenever a variable reference starts the value.',
     },
-    {
+    { id: 'q-9520ce229011', legacyIndex: 2,
       q: 'Where does `register: result` go?',
       options: [
         'Indented under the module, with the module arguments',

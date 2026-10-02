@@ -144,10 +144,10 @@ If you do not have the Red Hat classroom, you can recreate the essentials with v
 2. Name resolution between them, through DNS or `/etc/hosts`.
 3. A user on each managed host that the control node can SSH to with a key and that can use `sudo`. You will set this up properly in chapter 2.
 
-<Quiz
+<Quiz objectives={["ch01.runtime"]}
   id="check"
   questions={[
-    {
+    { id: 'q-b64af50d3717', legacyIndex: 0,
       q: 'Why do network modules usually run on the control node rather than on the device?',
       options: [
         'Network devices are too slow to run modules',
@@ -157,7 +157,7 @@ If you do not have the Red Hat classroom, you can recreate the essentials with v
       answer: 1,
       explain: 'Because routers and switches typically lack Python, Ansible runs their modules on the control node and uses special connection methods to reach the device.',
     },
-    {
+    { id: 'q-fc8525167abf', legacyIndex: 1,
       q: 'Which of these must be installed on a RHEL managed host for most modules to work?',
       options: ['ansible-navigator', 'Python 3.8 or later', 'podman'],
       answer: 1,

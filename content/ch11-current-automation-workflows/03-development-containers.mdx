@@ -72,9 +72,9 @@ A minimal image may omit collections needed by later labs. Inspect its contents 
 
 Core 2.19 introduced stricter templating and conditional checks. Use actual booleans for conditions, keep `{{ }}` out of `when`, and do not assume text from a command is a trusted template. Reproduce an error with the smallest playbook before changing a whole project.
 
-<Quiz id="containers-check" questions={[
-  { q: 'A collection is installed on workstation. Is it automatically present inside an execution environment?', options: ['Yes', 'No; the container has its own content and dependency paths'], answer: 1, explain: 'Inspect or rebuild the image with its required collections.' },
-  { q: 'Why record an image digest after testing?', options: ['It identifies the exact image used', 'It encrypts the inventory', 'It makes SSH unnecessary'], answer: 0, explain: 'A moving tag can refer to a different image on a later attempt.' }
+<Quiz objectives={["ch11.development"]} id="containers-check" questions={[
+  { id: 'q-ba334361f226', legacyIndex: 0, q: 'A collection is installed on workstation. Is it automatically present inside an execution environment?', options: ['Yes', 'No; the container has its own content and dependency paths'], answer: 1, explain: 'Inspect or rebuild the image with its required collections.' },
+  { id: 'q-e86ff9360799', legacyIndex: 1, q: 'Why record an image digest after testing?', options: ['It identifies the exact image used', 'It encrypts the inventory', 'It makes SSH unnecessary'], answer: 0, explain: 'A moving tag can refer to a different image on a later attempt.' }
 ]} />
 
 See the [community development-container guide](https://docs.ansible.com/projects/dev-tools/container/) for container-engine integration and supported image behavior.

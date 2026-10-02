@@ -10,14 +10,14 @@ The end-of-chapter lab combines both halves of the chapter: find the facts you n
 
 The project `~/file-review` has an `ansible.cfg`, an `inventory` with one group, `servers`, that contains `serverb.lab.example.com`, and a login banner in `files/issue`.
 
-<Lab
+<Lab objectives={["ch05.files","ch05.templates"]}
   id="review"
   title="Deploying files to managed hosts"
   classroom="lab start file-review"
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Build a template file from host facts.', 'Deploy it, and other files and links, from one playbook.']}
 >
-  <Task title="Review the inventory">
+  <Task id="task-a9597a31b2fd" legacyIndex={1} title="Review the inventory">
 
 ```console
 [student@workstation ~]$ cd ~/file-review
@@ -27,7 +27,7 @@ serverb.lab.example.com
 ```
   </Task>
 
-  <Task title="Find the facts for memory and processors">
+  <Task id="task-ce839d351809" legacyIndex={2} title="Find the facts for memory and processors">
     You need the names of the facts that hold serverb's total memory and its number of processors. Write a small playbook, `serverb_facts.yml`, that prints all of `ansible_facts`, run it, and find them.
 
     <Reveal title="Show solution">
@@ -55,7 +55,7 @@ serverb.lab.example.com
     </Reveal>
   </Task>
 
-  <Task title="Write the message-of-the-day template">
+  <Task id="task-69b6e9776e71" legacyIndex={3} title="Write the message-of-the-day template">
     Create the directory `templates` and, in it, `motd.j2`. When `devops` logs in to serverb, the message should show the system's total memory and processor count.
 
     <Reveal title="Show templates/motd.j2">
@@ -67,7 +67,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Start the playbook">
+  <Task id="task-0d77e610c323" legacyIndex={4} title="Start the playbook">
     Create `motd.yml` with one play for all hosts in the inventory. It logs in as `devops` and uses privilege escalation for the whole play.
 
     <Reveal title="Show solution">
@@ -83,7 +83,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Deploy the template">
+  <Task id="task-4a20ac0a5765" legacyIndex={5} title="Deploy the template">
     Add a task that deploys `templates/motd.j2` to `/etc/motd`, owned by `root:root`, mode `0644`.
 
     <Reveal title="Show solution">
@@ -100,7 +100,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Check the file with stat">
+  <Task id="task-37f55568f8cc" legacyIndex={6} title="Check the file with stat">
     Add a task that uses `ansible.builtin.stat` to verify that `/etc/motd` exists and registers the result, then a task that prints the registered variable.
 
     <Reveal title="Show solution">
@@ -118,7 +118,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Copy the login banner">
+  <Task id="task-e991fad92553" legacyIndex={7} title="Copy the login banner">
     Add a task that copies `files/issue` to `/etc/issue`, with the same owner, group and mode as `/etc/motd`.
 
     <Reveal title="Show solution">
@@ -135,7 +135,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Link /etc/issue.net to /etc/issue">
+  <Task id="task-6a2990ed3ea5" legacyIndex={8} title="Link /etc/issue.net to /etc/issue">
     Add a task that makes `/etc/issue.net` a symbolic link to `/etc/issue`. `/etc/issue.net` already exists as a regular file, so the link has to replace it.
 
     <Reveal title="Show solution">
@@ -155,7 +155,7 @@ System processor count: {{ ansible_facts['processor_count'] }}
     </Reveal>
   </Task>
 
-  <Task title="Check the syntax and run">
+  <Task id="task-cf55592d7c48" legacyIndex={9} title="Check the syntax and run">
 
 ```console
 [student@workstation file-review]$ ansible-navigator run \
@@ -187,7 +187,7 @@ serverb.lab.example.com    : ok=6    changed=3    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Confirm the result">
+  <Task id="task-e371cb18dcfd" legacyIndex={10} title="Confirm the result">
     Log in to serverb as `devops`. You should see the banner from `/etc/issue` before the login completes, and the message of the day after it.
 
 ```console
@@ -210,7 +210,7 @@ lrwxrwxrwx. 1 root root 10 ... /etc/issue.net -> /etc/issue
     </HomeLab>
   </Task>
 
-  <Task title="Grade and finish">
+  <Task id="task-cb5636853adc" legacyIndex={11} title="Grade and finish">
     <Finish name="file-review" grade />
   </Task>
 </Lab>

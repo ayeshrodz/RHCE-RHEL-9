@@ -206,23 +206,23 @@ A **filter** changes a value on its way into the file. Write it after a pipe:
 
 Filters work anywhere Jinja2 does, in playbooks as well as templates. There are many more: see "Using filters to manipulate data" in the Ansible documentation.
 
-<Quiz
+<Quiz objectives={["ch05.templates"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-2749ef28936e', legacyIndex: 0,
       q: 'Which delimiter holds a `for` loop?',
       options: ['`{{ }}`', '`{% %}`', '`{# #}`'],
       answer: 1,
       explain: '{% %} is for statements: for, if, and their end tags.',
     },
-    {
+    { id: 'q-68bb6cffabc1', legacyIndex: 1,
       q: 'Where is a template rendered?',
       options: ['On the managed host', 'On the control node, once for each host', 'In the execution environment image at build time'],
       answer: 1,
       explain: 'The control node renders it with that host’s variables and facts, then copies the finished file.',
     },
-    {
+    { id: 'q-1dcef18899fd', legacyIndex: 2,
       q: 'What does `validate: /usr/sbin/visudo -cf %s` do in a template task?',
       options: [
         'Checks the deployed file after every run',
@@ -232,13 +232,13 @@ Filters work anywhere Jinja2 does, in playbooks as well as templates. There are 
       answer: 1,
       explain: '%s is the temporary rendered file. A failed check leaves the existing file untouched.',
     },
-    {
+    { id: 'q-d53a95b62ecd', legacyIndex: 3,
       q: 'In `{% for u in users if u != "root" %}`, the list has four users including root. What is `loop.index` on the last pass?',
       options: ['4', '3', '2'],
       answer: 1,
       explain: 'The condition filters the list first, so the loop sees three items and counts 1, 2, 3.',
     },
-    {
+    { id: 'q-e4d6d95f5540', legacyIndex: 4,
       q: 'Can you use `{% if %}` to skip a task in a playbook?',
       options: ['Yes', 'No, use `when`'],
       answer: 1,

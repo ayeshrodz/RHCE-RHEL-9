@@ -8,14 +8,14 @@ minutes: 20
 You will give a project its own navigator settings, its own `ansible.cfg` and its own inventory, then use small ping playbooks to prove each piece works, finishing with sudo escalation that prompts for a password.
 </Lead>
 
-<Lab
+<Lab objectives={["ch02.configuration"]}
   id="config"
   title="Managing Ansible configuration files"
   classroom="lab start playbook-manage"
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Create project-level configuration files for ansible-navigator and Ansible.', 'Build an inventory with a nested group and verify it with playbooks.', 'Configure privilege escalation with a sudo password prompt.']}
 >
-  <Task title="Move into the project directory">
+  <Task id="task-913f067f7a6e" legacyIndex={1} title="Move into the project directory">
 
 ```console
 [student@workstation ~]$ cd ~/playbook-manage
@@ -27,7 +27,7 @@ You will give a project its own navigator settings, its own `ansible.cfg` and it
     The starter folder has the five `ping-*.yml` playbooks and nothing else: you write the configuration files. The plays connect as `student`, which works because of the SSH key step in [section 0.6](#/ch00/control-node).
   </HomeSetup>
 
-  <Task title="Configure automation content navigator">
+  <Task id="task-1d63da6e737e" legacyIndex={2} title="Configure automation content navigator">
     Create `ansible-navigator.yml`, a project-level settings file for navigator that does not write playbook artifacts.
 
     <Env>
@@ -82,7 +82,7 @@ ansible-navigator.playbook-artifact.enable: Settings file
     </Env>
   </Task>
 
-  <Task title="Point Ansible at a project inventory">
+  <Task id="task-565406e065d8" legacyIndex={3} title="Point Ansible at a project inventory">
     Create `ansible.cfg` with a `[defaults]` section that makes `./inventory` the default inventory.
 
 ```ini title="ansible.cfg"
@@ -91,7 +91,7 @@ inventory = ./inventory
 ```
   </Task>
 
-  <Task title="Write the inventory">
+  <Task id="task-6e4faca6afd1" legacyIndex={4} title="Write the inventory">
     Create `inventory` with four groups:
 
     - `myself` contains the `workstation` host.
@@ -118,7 +118,7 @@ internetweb
     </Reveal>
   </Task>
 
-  <Task title="Test each group with the provided playbooks">
+  <Task id="task-7fbd06b90b46" legacyIndex={5} title="Test each group with the provided playbooks">
     The project already contains playbooks that run `ansible.builtin.ping` against one group each. `ping` checks that Ansible can connect and run Python on the host; it does not use ICMP. Notice you no longer need `-i inventory`: `ansible.cfg` supplies it.
 
 ```console
@@ -143,7 +143,7 @@ workstation                : ok=1    changed=0    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Add privilege escalation that prompts for the sudo password">
+  <Task id="task-459de24c29de" legacyIndex={6} title="Add privilege escalation that prompts for the sudo password">
     Add a `[privilege_escalation]` section so Ansible uses `sudo` to become `root`, and asks for the password that `student` uses with sudo.
 
     <Reveal title="Show the finished ansible.cfg">
@@ -161,7 +161,7 @@ become_ask_pass = true
     </Reveal>
   </Task>
 
-  <Task title="Prove the prompt works">
+  <Task id="task-d3cc750236c2" legacyIndex={7} title="Prove the prompt works">
     Run a ping playbook again. You are now asked for the `BECOME password`; enter `student`.
 
 ```console
@@ -179,7 +179,7 @@ ok: [servera.lab.example.com]
     This only works because you disabled playbook artifacts in task 2 and used `-m stdout`.
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-b1ad55584150" legacyIndex={8} title="Finish">
     <Finish name="playbook-manage" />
   </Task>
 </Lab>

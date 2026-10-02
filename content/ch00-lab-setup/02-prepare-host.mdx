@@ -8,13 +8,13 @@ minutes: 20
 Phases 01 and 02: update the Ubuntu host, check it can run virtual machines, install LXD from the long-term-support track, and open the LXD web UI in your browser.
 </Lead>
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="host"
   title="Phase 01 · Prepare the Ubuntu host (~15 min)"
   hosts={['Ubuntu host']}
   outcomes={['Confirm hardware virtualisation works.', 'Install LXD 5.21 LTS and hold it at that version.', 'Initialise LXD with a ZFS storage pool.']}
 >
-  <Task title="Host: update the system and check virtualisation">
+  <Task id="task-c3f15967887d" legacyIndex={1} title="Host: update the system and check virtualisation">
 
 ```bash title="Ubuntu host"
 sudo apt update && sudo apt full-upgrade -y
@@ -32,7 +32,7 @@ kvm-ok
     </Callout>
   </Task>
 
-  <Task title="Host: install LXD 5.21 LTS and hold it">
+  <Task id="task-6ce4a47198c7" legacyIndex={2} title="Host: install LXD 5.21 LTS and hold it">
     Install from the **5.21 LTS** track (supported until June 2029), hold it so it cannot jump to a new version without you, and add yourself to the `lxd` group.
 
 ```bash title="Ubuntu host"
@@ -49,7 +49,7 @@ lxc version                                      # Client/Server version: 5.21.x
     </Callout>
   </Task>
 
-  <Task title="Host: run the first-time setup">
+  <Task id="task-143e1f080c3f" legacyIndex={3} title="Host: run the first-time setup">
 
 ```bash title="Ubuntu host"
 lxd init
@@ -85,17 +85,17 @@ lxd init
   </Task>
 </Lab>
 
-<Lab
+<Lab objectives={["ch00.lab-network","ch00.lab-machines","ch00.lab-tools","ch00.lab-reset"]}
   id="ui"
   title="Phase 02 · Open the LXD UI (~5 min)"
   hosts={['Ubuntu host', 'your browser']}
   outcomes={['Log in to the LXD web UI with a client certificate.']}
 >
-  <Task title="LXD UI: open the address">
+  <Task id="task-8e6cd2906b54" legacyIndex={1} title="LXD UI: open the address">
     From any browser on your local network, go to `https://<HOST_LAN_IP>:8443`. Accept the self-signed certificate warning (*Advanced → Proceed*).
   </Task>
 
-  <Task title="LXD UI: create a certificate">
+  <Task id="task-f7f76ea9ca36" legacyIndex={2} title="LXD UI: create a certificate">
     Choose **Create a new certificate** and follow the wizard: **Generate** → copy the command it shows → run it on the host → **Download .pfx** → import it into your browser → restart the browser.
 
 ```bash title="Ubuntu host: run the command the wizard shows, usually"
@@ -104,7 +104,7 @@ lxc config trust add --name lxd-ui
 ```
   </Task>
 
-  <Task title="LXD UI: log in">
+  <Task id="task-5b62233c33a2" legacyIndex={3} title="LXD UI: log in">
     Reload the page and pick the certificate when asked. You should land on **Instances**.
 
     <Callout type="tip" title="No UI at all?">

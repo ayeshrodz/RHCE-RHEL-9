@@ -10,14 +10,14 @@ You will unlock an encrypted variables file, use its secrets in a playbook that 
 
 The project `~/data-secret` contains `secret.yml`, a Vault-encrypted file (password `redhat`) with two commented-out variables: `username` and `pwhash`, a hashed password.
 
-<Lab
+<Lab objectives={["ch03.vault"]}
   id="vault"
   title="Managing secrets"
   classroom="lab start data-secret"
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Run a playbook that uses variables defined in an encrypted file.']}
 >
-  <Task title="Move into the project directory">
+  <Task id="task-d7abb6426853" legacyIndex={1} title="Move into the project directory">
 
 ```console
 [student@workstation ~]$ cd ~/data-secret
@@ -29,7 +29,7 @@ The project `~/data-secret` contains `secret.yml`, a Vault-encrypted file (passw
     `lab start` creates `secret.yml` on your workstation and encrypts it with the Vault password `redhat`, so the ciphertext differs from anyone else's. The home-lab navigator settings already disable playbook artifacts, so the `--playbook-artifact-enable false` options below are harmless but not needed.
   </HomeSetup>
 
-  <Task title="Edit the encrypted file">
+  <Task id="task-ecd51d2dbdcd" legacyIndex={2} title="Edit the encrypted file">
     Open `secret.yml` with `ansible-vault edit` and enter `redhat` when asked. In the editor, remove the `#` in front of the `username` and `pwhash` lines, then save and quit.
 
 ```console
@@ -40,7 +40,7 @@ Vault password: redhat
     After saving, run `cat secret.yml`: the file on disk is still ciphertext.
   </Task>
 
-  <Task title="Write the playbook">
+  <Task id="task-a28f416e9007" legacyIndex={3} title="Write the playbook">
     Create `create_users.yml` with one play, `create user accounts for all our servers`, that:
     - targets the `devservers` group, as the remote user `devops`, with privilege escalation;
     - loads `secret.yml` with `vars_files`;
@@ -69,7 +69,7 @@ Vault password: redhat
     </Callout>
   </Task>
 
-  <Task title="Check the syntax with a password prompt">
+  <Task id="task-62563bba0dcc" legacyIndex={4} title="Check the syntax with a password prompt">
     The playbook reads an encrypted file, so even a syntax check needs the Vault password. Use `--vault-id @prompt`, and disable playbook artifacts so navigator can prompt you.
 
 ```console
@@ -82,7 +82,7 @@ playbook: /home/student/data-secret/create_users.yml
 ```
   </Task>
 
-  <Task title="Create a password file">
+  <Task id="task-a643127a7426" legacyIndex={5} title="Create a password file">
     Store the Vault password in `vault-pass` and make it readable only by you:
 
 ```console
@@ -91,7 +91,7 @@ playbook: /home/student/data-secret/create_users.yml
 ```
   </Task>
 
-  <Task title="Run the playbook with the password file">
+  <Task id="task-0dcad73c2000" legacyIndex={6} title="Run the playbook with the password file">
     No prompt this time, so playbook artifacts can stay enabled.
 
 ```console
@@ -111,7 +111,7 @@ servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
 ```
   </Task>
 
-  <Task title="Log in as the new user">
+  <Task id="task-c9f0a8d7abde" legacyIndex={7} title="Log in as the new user">
     Force SSH to use a password rather than a key, and log in as `ansibleuser1` with the password `redhat`:
 
 ```console
@@ -123,7 +123,7 @@ ansibleuser1@servera.lab.example.com's password: redhat
 ```
   </Task>
 
-  <Task title="Finish">
+  <Task id="task-359bfff83017" legacyIndex={8} title="Finish">
     <Finish name="data-secret" />
   </Task>
 </Lab>

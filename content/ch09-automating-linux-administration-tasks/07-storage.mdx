@@ -188,29 +188,29 @@ Each entry of `ansible_facts['devices']` has the disk's `size`, `model`, `sector
   when: item['mount'] == '/'
 ```
 
-<Quiz
+<Quiz objectives={["ch09.storage"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-1ca6ff291e9e', legacyIndex: 0,
       q: 'Which module creates a volume group?',
       options: ['`community.general.lvol`', '`community.general.lvg`', '`community.general.parted`'],
       answer: 1,
       explain: 'lvg: volume group. lvol: logical volume.',
     },
-    {
+    { id: 'q-e96907a3d61f', legacyIndex: 1,
       q: 'What does `resizefs: true` add to an lvol task that makes a volume bigger?',
       options: ['Nothing', 'It grows the file system on the volume as well', 'It reformats the volume'],
       answer: 1,
       explain: 'Without it the volume grows but the file system keeps its old size.',
     },
-    {
+    { id: 'q-abeb1ba85727', legacyIndex: 2,
       q: 'Which mount state mounts now and adds the line to /etc/fstab?',
       options: ['`present`', '`mounted`', '`absent`'],
       answer: 1,
       explain: 'present only writes fstab; mounted does both.',
     },
-    {
+    { id: 'q-3d4dfaa7b718', legacyIndex: 3,
       q: 'The filesystem module runs against a device that already has XFS. What happens?',
       options: ['It is reformatted', 'Nothing: it reports ok', 'It fails'],
       answer: 1,

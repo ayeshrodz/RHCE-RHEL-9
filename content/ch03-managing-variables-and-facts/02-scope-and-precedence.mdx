@@ -161,29 +161,29 @@ Extra variables beat every other definition. They are handy for a one-off run wi
 
 You can pass `-e` several times, or several `key=value` pairs in one quoted string.
 
-<Quiz
+<Quiz objectives={["ch03.variables","ch03.vault","ch03.facts"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-357aa89202b2', legacyIndex: 0,
       q: '`group_vars/webservers` sets `port: 80`, `host_vars/servera` sets `port: 8080`, and the play has `vars: { port: 8443 }`. What does servera use?',
       options: ['80', '8080', '8443'],
       answer: 2,
       explain: 'Play variables beat all inventory variables, including host_vars.',
     },
-    {
+    { id: 'q-48493515c72c', legacyIndex: 1,
       q: 'Same project, but you remove the play variable. What does servera use now?',
       options: ['80', '8080', 'It is undefined'],
       answer: 1,
       explain: 'Host variables beat group variables.',
     },
-    {
+    { id: 'q-babd47db8acf', legacyIndex: 2,
       q: 'How do you override a variable for a single run without editing any file?',
       options: ['`--limit port=9000`', '`-e "port=9000"`', '`--vars port=9000`'],
       answer: 1,
       explain: '`-e` (or `--extra-vars`) sets extra variables, which have the highest precedence.',
     },
-    {
+    { id: 'q-e716465820a2', legacyIndex: 3,
       q: 'What name must the file have to hold variables for the group `db_servers`?',
       options: ['`group_vars/db_servers`', '`group_vars/db_servers.cfg`', '`vars/db_servers`'],
       answer: 0,

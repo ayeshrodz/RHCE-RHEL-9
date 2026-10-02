@@ -57,7 +57,7 @@ Add Vault password files, private keys, virtual environments, and run logs to `.
 
 </Reveal>
 
-<Quiz id="git-check" questions={[
-  { q: 'You have committed locally. What sends that commit to origin?', options: ['git add', 'git push', 'ansible-playbook'], answer: 1, explain: 'push sends commits. A playbook run changes the target systems independently of Git.' },
-  { q: 'Which command shows exactly what you are about to commit?', options: ['git diff --cached', 'git log --all', 'git clone'], answer: 0, explain: 'The cached diff compares the staging area with the current commit.' }
+<Quiz objectives={["ch11.git"]} id="git-check" questions={[
+  { id: 'q-fbeebb28acb1', legacyIndex: 0, q: 'You have committed locally. What sends that commit to origin?', options: ['git add', 'git push', 'ansible-playbook'], answer: 1, explain: 'push sends commits. A playbook run changes the target systems independently of Git.' },
+  { id: 'q-c6d6f4249f1a', legacyIndex: 1, q: 'Which command shows exactly what you are about to commit?', options: ['git diff --cached', 'git log --all', 'git clone'], answer: 0, explain: 'The cached diff compares the staging area with the current commit.' }
 ]} />

@@ -35,7 +35,7 @@ const stages = [
   { title: 'Files and structure', chapters: [5, 6], text: 'Templates and file modules; host patterns, imports and includes.' },
   { title: 'Reuse', chapters: [7], text: 'Roles, collections and the system roles.' },
   { title: 'Real work', chapters: [8, 9], text: 'Troubleshooting, then software, users, storage and networking.' },
-  { title: 'Prove it', chapters: [10], text: 'Four review labs that bring everything together.' },
+  { title: 'Prove it', chapters: [10], text: 'Four review labs and two integrated assessments.' },
 ];
 
 const labHosts = [
@@ -73,6 +73,9 @@ export default function HomePage() {
             The path follows the objectives of the Red Hat Certified Engineer ({course.exam}) exam, so it doubles as exam preparation.
           </p>
           <div className="hero-actions">
+            <Link className="btn btn-lg" to="/progress">
+              Your learning
+            </Link>
             <Link className="btn btn-primary btn-lg" to={started ? resume.path : firstLesson.path}>
               {started ? `Continue with ${resume.number}` : 'Start with chapter 1'} <ArrowRight size={16} />
             </Link>

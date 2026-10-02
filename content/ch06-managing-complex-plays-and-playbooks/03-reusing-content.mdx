@@ -213,35 +213,35 @@ The same limit applies to host and group variables from the inventory: they belo
 Task files are the simplest form of reuse. When a set of tasks also needs its own variables, templates, files and handlers, package it as a **role**: chapter 7.
 </Callout>
 
-<Quiz
+<Quiz objectives={["ch06.reuse"]}
   id="check"
   title="Check your understanding"
   questions={[
-    {
+    { id: 'q-f70bb30c717f', legacyIndex: 0,
       q: 'Where can `import_playbook` appear?',
       options: ['Inside the tasks of a play', 'At the top level of a playbook, where a play would go', 'In ansible.cfg'],
       answer: 1,
       explain: 'It imports whole plays, so it sits alongside plays, never inside one.',
     },
-    {
+    { id: 'q-cafe4c3dc3ea', legacyIndex: 1,
       q: 'What does a task file contain?',
       options: ['One or more plays', 'A YAML list of tasks, with no hosts or tasks keyword', 'Variables only'],
       answer: 1,
       explain: 'A task file is just the list that would otherwise sit under tasks:.',
     },
-    {
+    { id: 'q-455afe6df3df', legacyIndex: 2,
       q: 'You need to run a task file once for each item in a list. Which keyword?',
       options: ['`import_tasks` with `loop`', '`include_tasks` with `loop`', '`import_playbook` with `loop`'],
       answer: 1,
       explain: 'Imports are resolved before loops exist; Ansible rejects a loop on import_tasks.',
     },
-    {
+    { id: 'q-7a005083d533', legacyIndex: 3,
       q: 'A play has `import_tasks: tasks/web.yml` with `when: deploy_web`, and `deploy_web` is false. What appears in the output?',
       options: ['One skipped task: the import', 'Every task from the file, each one skipped', 'Nothing at all'],
       answer: 1,
       explain: 'The when is copied onto each imported task, so each is listed and skipped.',
     },
-    {
+    { id: 'q-aa049ecc1c41', legacyIndex: 4,
       q: 'Which keyword lets `ansible-navigator run --list-tasks` show the tasks inside the file?',
       options: ['`import_tasks`', '`include_tasks`', 'Both'],
       answer: 0,

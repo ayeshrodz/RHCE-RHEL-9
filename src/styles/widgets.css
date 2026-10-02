@@ -719,3 +719,58 @@
   cursor: pointer;
   padding-block: 0.7rem;
 }
+
+.learning-dashboard {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.learning-dashboard h1 {
+  font-family: var(--font-display);
+}
+.learning-dashboard h2 {
+  margin-top: 2rem;
+}
+.learning-dashboard li {
+  margin-block: 0.65rem;
+}
+.learning-dashboard details {
+  margin-block: 1rem;
+}
+.learning-dashboard summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.dashboard-next {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+.learning-dashboard small,
+.quiz-history {
+  color: var(--text-2);
+}
+.assessment-timer {
+  margin-block: 1.5rem;
+}
+.assessment-timer [role='timer'] {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.lab-brief {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.lab-brief summary {
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .learning-dashboard {
+    padding: 1rem;
+  }
+}
+
+.learning-dashboard a.btn-primary {
+  color: #fff;
+}
