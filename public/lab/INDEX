@@ -37,3 +37,5 @@ review-deploy         10.2  Review lab: Deploying Ansible
 review-playbooks      10.3  Review lab: Creating playbooks
 review-admin          10.4  Review lab: Managing Linux hosts and using system roles
 review-roles          10.5  Review lab: Creating roles
+bridge-archive        11.4  Archive and restore a release
+bridge-security       11.5  Validate an access policy

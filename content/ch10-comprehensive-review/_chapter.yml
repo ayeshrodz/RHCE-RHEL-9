@@ -6,3 +6,9 @@ objectives:
   - Write playbooks that use templates, handlers, blocks and imports.
   - Manage storage, users, networking and scheduled jobs with modules and system roles.
   - Create a role from an existing playbook, and apply it to managed hosts.
+objectiveIds:
+  - ch10.review
+  - ch10.deployment
+  - ch10.composition
+  - ch10.administration
+  - ch10.reusable-roles

@@ -6,3 +6,9 @@ objectives:
   - Select and retrieve roles from external sources such as Git repositories or Ansible Galaxy, and use them in playbooks.
   - Obtain a set of related roles, modules and other content from a content collection, and use them in a playbook.
   - Write playbooks that use the system roles to perform standard operations.
+objectiveIds:
+  - ch07.role-structure
+  - ch07.role-create
+  - ch07.role-install
+  - ch07.collections
+  - ch07.system-roles

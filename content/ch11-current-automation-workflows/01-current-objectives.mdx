@@ -1,0 +1,35 @@
+---
+title: Bridge to current objectives
+kind: lesson
+minutes: 5
+---
+
+<Lead>Your RHEL 9 lab teaches the foundations. This chapter adds development workflows and practical tasks you can carry into newer environments.</Lead>
+
+## Know which environment you are using
+
+The main home lab runs Rocky Linux 9 and ansible-core 2.14. Classroom examples describe a different stack. Execution environments package their own engine, Python, and collections: installing a collection on workstation does not install it inside a container.
+
+Before practising, record:
+
+```bash
+ansible --version
+ansible-navigator --version
+ansible-galaxy collection list
+ansible-navigator settings --mode stdout
+```
+
+Compare both local and container versions. A change in output is not automatically a problem; a change in supported syntax needs investigation.
+
+## What this bridge covers
+
+- Git: clone, inspect changes, commit, and push a playbook.
+- VS Code: edit and run automation inside a development container.
+- Navigator: choose an execution environment, inventory, and configuration deliberately.
+- Archives and security: practise recovery and configuration validation with real hosts.
+
+The [public EX294 objectives](https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux) were reviewed on **2 October 2026**. Match your preparation to the version you book. Git and VS Code development-container workflows are included in the current list; this course’s lab baseline does not imply an exact match to every exam version.
+
+## A habit that transfers
+
+Keep the playbook, inventory, requirements, and tool settings in one project. Record the environment that ran it. Rebuild from those files and verify the resulting system. That makes the work easier to reproduce in an exam, on a team, or months later.

@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting playbooks
 kind: lesson
-minutes: 14
+minutes: 12
 ---
 
 <Lead>
@@ -118,6 +118,8 @@ Section 0.6 switched artifacts off for the home lab, because a playbook that pro
 
 ## Write playbooks that are easy to troubleshoot
 
+<Reveal title="Read the supporting details">
+
 Most errors are easier to avoid than to find:
 
 - Give every play and task a short **name** that says what it achieves. The output then reads like a checklist.
@@ -144,6 +146,8 @@ Each finding names the rule, the file and line, and the task. A project can swit
 <HomeLab>
 `ansible-lint` was installed with `ansible-navigator`, in the same virtual environment, but section 0.6 linked only `ansible-navigator` into your path. Run it as `~/.venvs/navigator/bin/ansible-lint`, or link it too: `ln -s ~/.venvs/navigator/bin/ansible-lint ~/.local/bin/`.
 </HomeLab>
+
+</Reveal>
 
 ## Rerun only what matters
 
@@ -243,3 +247,7 @@ Syntax check. Read the whole message and note the stage. Look at the line above 
     },
   ]}
 />
+
+## Takeaway
+
+Tell from a message at which stage of a run a problem happened. Use the chapter lab to check this on a real host.

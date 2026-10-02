@@ -118,6 +118,8 @@ lxc exec --project rhce workstation -- su - student -c '
 
 Everything in this chapter as commands, once you know what each step does. It assumes the host is prepared and the seal is enabled (sections 0.2 and 0.3, plus the ufw rules if ufw is active), and that the profile YAML from [section 0.4](#/ch00/project-profile-disks) is saved as `rhce-profile.yaml` on the host. Afterwards, continue with sections 0.6 and 0.7 as normal: prepare workstation (including the collections), add utility if you want it, run the verification, then save `clean`.
 
+[Download the script](lab/setup/build-rhce-lab.sh). Read it before running it. The expandable example below matches the download.
+
 ```bash title="Ubuntu host: build-rhce-lab.sh"
 #!/usr/bin/env bash
 set -euo pipefail

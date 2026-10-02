@@ -5,3 +5,8 @@ objectives:
   - Build workstation and servera to serverd with a cloud-init profile that creates the classroom users.
   - Set up workstation as an Ansible control node with ansible-core 2.14 and ansible-navigator.
   - Reset machines between exercises with snapshots and a classroom-compatible rht-vmctl command.
+objectiveIds:
+  - ch00.lab-network
+  - ch00.lab-machines
+  - ch00.lab-tools
+  - ch00.lab-reset

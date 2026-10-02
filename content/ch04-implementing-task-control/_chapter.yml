@@ -4,3 +4,7 @@ objectives:
   - Use loops to write efficient tasks, and use conditions to control when tasks run.
   - Implement a task that runs only when another task changes the managed host.
   - Control what happens when a task fails, and what conditions cause a task to fail.
+objectiveIds:
+  - ch04.loops-conditions
+  - ch04.handlers
+  - ch04.failure

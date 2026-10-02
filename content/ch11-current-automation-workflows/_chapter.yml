@@ -1,0 +1,12 @@
+title: Current Automation Workflows
+goal: Extend the RHEL 9 foundations with current development workflows, source control, archive recovery, and security practice.
+objectives:
+  - Create, review, commit, and push automation changes with Git.
+  - Run and document a playbook from a VS Code development container and an execution environment.
+  - Archive and restore application files while preserving access and ownership.
+  - Validate configuration changes and protect secrets and SSH access.
+objectiveIds:
+  - ch11.git
+  - ch11.development
+  - ch11.archives
+  - ch11.security

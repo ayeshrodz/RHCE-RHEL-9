@@ -4,3 +4,7 @@ objectives:
   - Create and reference variables that affect particular hosts or host groups, the play, or the global environment, and describe how variable precedence works.
   - Encrypt sensitive variables with Ansible Vault, and run playbooks that reference Vault-encrypted variable files.
   - Reference data about managed hosts using Ansible facts, and configure custom facts on managed hosts.
+objectiveIds:
+  - ch03.variables
+  - ch03.vault
+  - ch03.facts
