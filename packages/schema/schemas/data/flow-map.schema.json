@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/flow-map.schema.json",
+  "title": "Flow map",
+  "description": "A responsive left-to-right sequence of steps with an explanation panel.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["steps"],
+  "properties": {
+    "connections": {
+      "description": "Labels for the arrows between consecutive steps.",
+      "type": "array",
+      "maxItems": 7,
+      "items": { "$ref": "../common.schema.json#/$defs/shortText" }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "text"],
+        "properties": {
+          "id": { "$ref": "../common.schema.json#/$defs/id" },
+          "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+          "sub": { "$ref": "../common.schema.json#/$defs/shortText" },
+          "text": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" },
+          "tone": { "$ref": "../common.schema.json#/$defs/tone" }
+        }
+      }
+    }
+  }
+}

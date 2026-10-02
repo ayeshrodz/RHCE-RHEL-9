@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/theme.schema.json",
+  "title": "Theme tokens",
+  "description": "Optional overrides of the platform's design tokens. Only these named tokens can be set, and only with validated colour values; content can never supply CSS.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "accent": { "$ref": "../common.schema.json#/$defs/color" },
+    "accentHover": { "$ref": "../common.schema.json#/$defs/color" },
+    "accentSoft": { "$ref": "../common.schema.json#/$defs/color" },
+    "accentText": { "$ref": "../common.schema.json#/$defs/color" },
+    "dark": {
+      "description": "Overrides that apply in the dark theme.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "accent": { "$ref": "../common.schema.json#/$defs/color" },
+        "accentHover": { "$ref": "../common.schema.json#/$defs/color" },
+        "accentSoft": { "$ref": "../common.schema.json#/$defs/color" },
+        "accentText": { "$ref": "../common.schema.json#/$defs/color" }
+      }
+    }
+  }
+}

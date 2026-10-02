@@ -1,0 +1,14 @@
+{
+  "name": "@kernel-path/schema",
+  "version": "1.0.0",
+  "description": "The Kernel Path content contract: source and bundle schemas, component catalog, lab actions and checks.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.js",
+    "./schemas/*": "./schemas/*",
+    "./catalog/*": "./catalog/*"
+  },
+  "files": ["src", "schemas", "catalog"]
+}

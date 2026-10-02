@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/bundle/page.schema.json",
+  "title": "Compiled page",
+  "description": "One page as the engine receives it: metadata, table of contents, typed page data and a render tree. The tree has exactly four node types; there is no way to express raw HTML, script, style or event handlers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "key", "title", "kind", "toc", "data", "tree"],
+  "properties": {
+    "apiVersion": { "$ref": "../common.schema.json#/$defs/apiVersion" },
+    "key": { "type": "string", "pattern": "^(?:ch[0-9]{2}/[a-z0-9]+(?:-[a-z0-9]+)*|home|details|site-home)$" },
+    "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+    "kind": { "enum": ["lesson", "lab", "quiz", "summary", "reference", "landing"] },
+    "minutes": { "$ref": "../common.schema.json#/$defs/minutes" },
+    "description": { "$ref": "../common.schema.json#/$defs/text" },
+    "toc": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "depth"],
+        "properties": {
+          "id": { "$ref": "#/$defs/anchorId" },
+          "text": { "$ref": "../common.schema.json#/$defs/text" },
+          "depth": { "enum": [2, 3] }
+        }
+      }
+    },
+    "data": {
+      "description": "Page data entries, keyed by the ref used in tags. Each entry was validated by the compiler against its tag's data schema; the engine validates again.",
+      "type": "object",
+      "propertyNames": { "$ref": "../common.schema.json#/$defs/dataRef" }
+    },
+    "tree": { "$ref": "#/$defs/children" }
+  },
+  "$defs": {
+    "anchorId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,99}$" },
+    "children": { "type": "array", "maxItems": 5000, "items": { "$ref": "#/$defs/node" } },
+    "node": {
+      "oneOf": [
+        { "$ref": "#/$defs/text" },
+        { "$ref": "#/$defs/element" },
+        { "$ref": "#/$defs/code" },
+        { "$ref": "#/$defs/tag" }
+      ]
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["t", "v"],
+      "properties": { "t": { "const": "text" }, "v": { "type": "string", "maxLength": 20000 } }
+    },
+    "element": {
+      "description": "A Markdown element from a fixed allowlist, with a fixed set of safe attributes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["t", "tag"],
+      "properties": {
+        "t": { "const": "el" },
+        "tag": {
+          "enum": ["p", "h2", "h3", "h4", "ul", "ol", "li", "blockquote", "strong", "em", "del", "code", "a", "br", "hr", "table", "thead", "tbody", "tr", "th", "td", "img"]
+        },
+        "attrs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/anchorId" },
+            "href": { "$ref": "../common.schema.json#/$defs/url" },
+            "src": { "type": "string", "pattern": "^assets/[a-f0-9]{8,64}\\.(?:png|jpe?g|webp|avif|gif|svg)$" },
+            "alt": { "type": "string", "maxLength": 300 },
+            "align": { "enum": ["left", "center", "right"] },
+            "start": { "type": "integer", "minimum": 0 },
+            "checked": { "type": "boolean" }
+          }
+        },
+        "c": { "$ref": "#/$defs/children" }
+      }
+    },
+    "code": {
+      "description": "A highlighted code block as data: lines of tokens with light and dark colours.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["t", "lang", "lines"],
+      "properties": {
+        "t": { "const": "code" },
+        "lang": { "type": "string", "pattern": "^[a-z0-9+#-]{1,24}$" },
+        "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+        "highlight": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "lines": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "array",
+            "maxItems": 2000,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["v"],
+              "properties": {
+                "v": { "type": "string", "maxLength": 20000 },
+                "l": { "$ref": "#/$defs/tokenColor" },
+                "d": { "$ref": "#/$defs/tokenColor" },
+                "i": { "description": "Italic.", "const": true }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tokenColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "tag": {
+      "description": "A catalog component. 'name' must exist in the engine's catalog and 'attrs' must match its attribute schema; the engine re-checks both before rendering.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["t", "name"],
+      "properties": {
+        "t": { "const": "tag" },
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+        "attrs": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[a-z][a-zA-Z0-9]*$" },
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string", "maxLength": 4000 },
+              { "type": "number" },
+              { "type": "boolean" },
+              { "type": "array", "maxItems": 50, "items": { "type": "string", "maxLength": 400 } }
+            ]
+          }
+        },
+        "c": { "$ref": "#/$defs/children" }
+      }
+    }
+  }
+}

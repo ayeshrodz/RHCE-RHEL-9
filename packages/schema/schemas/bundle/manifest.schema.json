@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/bundle/manifest.schema.json",
+  "title": "Compiled program manifest",
+  "description": "Everything the engine needs to navigate one program: its metadata, navigation tree, activity index, objectives and the hashed URL of every page and its search index.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "program", "chapters", "objectives", "pages", "search"],
+  "properties": {
+    "apiVersion": { "$ref": "../common.schema.json#/$defs/apiVersion" },
+    "program": { "$ref": "../source/program.schema.json" },
+    "chapters": {
+      "type": "array",
+      "maxItems": 99,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "number", "title", "status", "sections"],
+        "properties": {
+          "id": { "$ref": "../common.schema.json#/$defs/chapterId" },
+          "number": { "type": "integer", "minimum": 1, "maximum": 99 },
+          "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+          "goal": { "$ref": "../common.schema.json#/$defs/text" },
+          "objectives": { "type": "array", "items": { "$ref": "../common.schema.json#/$defs/text" } },
+          "objectiveIds": { "type": "array", "items": { "$ref": "../common.schema.json#/$defs/objectiveId" } },
+          "topics": { "type": "array", "items": { "$ref": "../common.schema.json#/$defs/shortText" } },
+          "setup": { "type": "boolean" },
+          "status": { "enum": ["active", "planned"] },
+          "sections": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["slug", "title", "kind", "minutes"],
+              "properties": {
+                "slug": { "$ref": "../common.schema.json#/$defs/id" },
+                "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+                "kind": { "enum": ["lesson", "lab", "quiz", "summary", "reference"] },
+                "minutes": { "$ref": "../common.schema.json#/$defs/minutes" },
+                "activities": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "quizzes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["id", "quizId", "prompt", "revision"],
+                        "properties": {
+                          "id": { "type": "string", "pattern": "^q-[a-z0-9]{6,32}$" },
+                          "quizId": { "$ref": "../common.schema.json#/$defs/id" },
+                          "prompt": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" },
+                          "revision": { "type": "string", "pattern": "^[a-f0-9]{1,16}$" }
+                        }
+                      }
+                    },
+                    "tasks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["id", "labId", "title"],
+                        "properties": {
+                          "id": { "$ref": "../common.schema.json#/$defs/id" },
+                          "labId": { "$ref": "../common.schema.json#/$defs/id" },
+                          "title": { "$ref": "../common.schema.json#/$defs/shortText" }
+                        }
+                      }
+                    },
+                    "practice": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["id", "objective", "title"],
+                        "properties": {
+                          "id": { "$ref": "../common.schema.json#/$defs/id" },
+                          "objective": { "$ref": "../common.schema.json#/$defs/objectiveId" },
+                          "title": { "$ref": "../common.schema.json#/$defs/shortText" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "objectives": { "$ref": "../source/objectives.schema.json" },
+    "pages": {
+      "description": "Page key (chNN/slug, home, details) to its hashed file.",
+      "type": "object",
+      "propertyNames": { "pattern": "^(?:ch[0-9]{2}/[a-z0-9]+(?:-[a-z0-9]+)*|home|details)$" },
+      "additionalProperties": { "$ref": "site.schema.json#/$defs/hashedUrl" }
+    },
+    "search": { "$ref": "site.schema.json#/$defs/hashedUrl" }
+  }
+}

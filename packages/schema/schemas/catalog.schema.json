@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/catalog.schema.json",
+  "title": "Component catalog",
+  "description": "The list of tags content may use. Each entry is a framework-neutral description of a platform component: its typed attributes, what it may contain, where it may appear, and the shape of any data it reads from the page's data file. Engines implement entries; content refers to them only by tag name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "components"
+  ],
+  "properties": {
+    "apiVersion": {
+      "$ref": "common.schema.json#/$defs/apiVersion"
+    },
+    "components": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/component"
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "status",
+        "since",
+        "placement",
+        "children",
+        "attributes"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 300
+        },
+        "status": {
+          "description": "stable: available to content. planned: reserved, rejected until implemented. legacy: available during migration only, scheduled for removal.",
+          "enum": [
+            "stable",
+            "planned",
+            "legacy"
+          ]
+        },
+        "since": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "placement": {
+          "enum": [
+            "block",
+            "inline"
+          ]
+        },
+        "children": {
+          "description": "none: self-closing. markdown: any block Markdown and block tags. inline: inline Markdown only. tags: only the tags in allowedChildren (whitespace between them is ignored).",
+          "enum": [
+            "none",
+            "markdown",
+            "inline",
+            "tags"
+          ]
+        },
+        "allowedChildren": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        },
+        "parents": {
+          "description": "If set, the tag may appear only directly inside one of these tags.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^(?:[a-z][a-z0-9-]*|page)$"
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-zA-Z0-9]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/attribute"
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data": {
+          "description": "The schema of the page data entry this tag's `ref` attribute points to.",
+          "type": "string",
+          "pattern": "^data/[a-z-]+\\.schema\\.json$"
+        },
+        "copy": {
+          "description": "UI strings this component reads from the engine defaults or content overrides.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]*$"
+          }
+        },
+        "replacedBy": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      },
+      "if": {
+        "properties": {
+          "children": {
+            "const": "tags"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "allowedChildren"
+        ]
+      }
+    },
+    "attribute": {
+      "description": "A primitive attribute: string, integer, number, boolean, or an array of strings. Objects are never attributes; structured data goes in the page data file.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "description"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "string[]"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 5
+        },
+        "enum": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "format": {
+          "description": "A shared string format from common.schema.json.",
+          "enum": [
+            "id",
+            "chapterId",
+            "text",
+            "shortText",
+            "inlineMarkdown",
+            "url",
+            "assetPath",
+            "objectiveId",
+            "exerciseName",
+            "hostName",
+            "dataRef"
+          ]
+        },
+        "default": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/section.schema.json",
+  "title": "Section frontmatter",
+  "description": "The YAML frontmatter at the top of every section file. The file name's leading number orders the section; the rest is its URL slug.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "kind"
+  ],
+  "properties": {
+    "title": {
+      "$ref": "../common.schema.json#/$defs/shortText"
+    },
+    "kind": {
+      "enum": [
+        "lesson",
+        "lab",
+        "quiz",
+        "summary",
+        "reference"
+      ]
+    },
+    "minutes": {
+      "$ref": "../common.schema.json#/$defs/minutes"
+    },
+    "layout": {
+      "enum": [
+        "lesson",
+        "landing",
+        "reference"
+      ]
+    },
+    "slug": {
+      "$ref": "../common.schema.json#/$defs/id"
+    },
+    "description": {
+      "$ref": "../common.schema.json#/$defs/text",
+      "maxLength": 300,
+      "type": "string"
+    },
+    "draft": {
+      "type": "boolean"
+    }
+  }
+}
