@@ -564,11 +564,21 @@
 .cvm-head {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cvm-intro {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.cvm-head .widget-sub {
+  margin-bottom: 0 !important;
 }
 .cvm-actions {
   display: flex;
+  flex: 0 0 auto;
   gap: 6px;
   align-items: flex-start;
 }

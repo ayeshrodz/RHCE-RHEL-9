@@ -40,7 +40,7 @@ export default function CommandVsModule() {
   return (
     <div className="widget cvm">
       <div className="cvm-head">
-        <div>
+        <div className="cvm-intro">
           <p className="widget-title">Run it again… and again</p>
           <p className="widget-sub">Three ways to get the same end state. Only one of them is honest about whether it changed anything.</p>
         </div>
