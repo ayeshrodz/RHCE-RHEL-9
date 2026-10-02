@@ -8,13 +8,14 @@ minutes: 8
 The chapter on one page: one module per job in each of the five areas, and flashcards for quick revision.
 </Lead>
 
-## The chapter in six sentences
+## The chapter in seven sentences
 
 - **`dnf`** installs, updates and removes packages; **`yum_repository`** and **`rpm_key`** configure where they come from; **`package_facts`** reports what is installed.
 - **`group`**, **`user`** and **`authorized_key`** manage accounts and logins; sudo rules go in validated files in `/etc/sudoers.d/`.
 - **`cron`** and **`at`** schedule work; **`service`** controls daemons; the default target is a link, and **`reboot`** waits for the host to come back.
 - Storage is a stack: the **storage system role** builds it from `storage_pools` (volume groups and volumes, file systems, mounts, swap); the modules **`parted`**, **`lvg`**, **`lvol`**, **`filesystem`** and **`mount`** do it layer by layer.
 - Network facts describe the configuration; the **network system role** (`network_connections`) or **`nmcli`** change it, preferably not on the interface Ansible is using.
+- **`archive`** packs files on a managed host and **`unarchive`** restores them, from the control node or, with `remote_src: true`, from the host itself; check a restore by comparing content, owner and mode.
 - Keep people, sizes and names in variables, so the tasks never change when the data does.
 
 ## Cheat sheet
@@ -138,6 +139,25 @@ The chapter on one page: one module per job in each of the five areas, and flash
 ```
 
   </Tab>
+  <Tab label="Archives">
+
+```yaml
+- name: Contents of /srv/release are packaged
+  community.general.archive:
+    path: /srv/release/          # trailing slash: contents only
+    dest: /tmp/release.tar.gz
+    format: gz
+
+- name: Release is restored            # dest must already exist
+  ansible.builtin.unarchive:
+    src: /tmp/release.tar.gz
+    dest: /srv/restored
+    remote_src: true                   # archive is on the managed host
+    owner: root
+    group: root
+```
+
+  </Tab>
 </Tabs>
 
 <Flashcards
@@ -155,6 +175,8 @@ The chapter on one page: one module per job in each of the five areas, and flash
     { front: 'Grow a logical volume and its file system?', back: '`community.general.lvol` with a bigger `size` and `resizefs: true`.' },
     { front: 'mount `state: mounted` vs `present`?', back: 'mounted: now and in fstab. present: only in fstab.' },
     { front: 'Where to practise network changes?', back: 'On an extra (for example dummy) interface, not the one Ansible uses.' },
+    { front: 'unarchive an archive that is already on the managed host?', back: 'Add `remote_src: true`; otherwise `src` is read from the control node.' },
+    { front: 'What does a trailing slash on archive `path` change?', back: 'Only the directory\'s contents are packed, so they extract straight into `dest`.' },
   ]}
 />
 

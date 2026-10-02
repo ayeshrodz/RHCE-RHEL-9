@@ -1381,80 +1381,6 @@
         }
       }
     },
-    "bridge-archive": {
-      "version": 1,
-      "lesson": "#/ch11/lab-archive-recovery",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "release.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "restored",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "archive",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "permissions",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "bridge-security": {
-      "version": 1,
-      "lesson": "#/ch11/lab-security-validation",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "access.yml",
-            "inventory"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "auditor",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "policy",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "allowed",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "limited",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "assessment-release": {
       "version": 1,
       "lesson": "#/ch10/assessment-release",
@@ -1595,6 +1521,203 @@
               "id": "report",
               "targets": [
                 "serverc.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "workflow-git": {
+      "version": 1,
+      "lesson": "#/ch11/lab-git",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "motd.yml",
+            "templates/motd.j2",
+            ".gitignore"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "template-change"
+            },
+            {
+              "id": "ignore-rule"
+            },
+            {
+              "id": "teammate-change"
+            }
+          ],
+          "probes": [
+            {
+              "id": "clone",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "history",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "committed",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "pushed",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "ignored",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "motd",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "workflow-container": {
+      "version": 1,
+      "lesson": "#/ch11/lab-development-containers",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "site.yml",
+            "inventory",
+            ".devcontainer/devcontainer.json",
+            "ansible-navigator.yml"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "devcontainer-image"
+            },
+            {
+              "id": "ee-image"
+            }
+          ],
+          "probes": [
+            {
+              "id": "lint",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "kernel-record",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "workflow-review": {
+      "version": 1,
+      "lesson": "#/ch11/chapter-lab",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "site.yml",
+            "templates/index.html.j2",
+            ".devcontainer/devcontainer.json",
+            "ansible-navigator.yml",
+            ".gitignore"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "devcontainer-image"
+            },
+            {
+              "id": "ee-image"
+            }
+          ],
+          "probes": [
+            {
+              "id": "clone",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "lint",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "committed",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "pushed",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "shared-config",
+              "targets": [
+                "localhost"
+              ]
+            },
+            {
+              "id": "status-page",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "system-archive": {
+      "version": 1,
+      "lesson": "#/ch09/lab-archives",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "release.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "restored",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "archive",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "permissions",
+              "targets": [
+                "servera.lab.example.com"
               ]
             }
           ]

@@ -417,6 +417,18 @@
     "challenges": []
   },
   {
+    "id": "ch09.archives",
+    "chapter": "ch09",
+    "lessons": [
+      "ch09/archives"
+    ],
+    "labs": [
+      "ch09/lab-archives",
+      "ch10/assessment-release"
+    ],
+    "challenges": []
+  },
+  {
     "id": "ch10.review",
     "chapter": "ch10",
     "lessons": [
@@ -484,8 +496,13 @@
     "lessons": [
       "ch11/git-for-automation"
     ],
-    "labs": [],
-    "challenges": []
+    "labs": [
+      "ch11/lab-git",
+      "ch11/chapter-lab"
+    ],
+    "challenges": [
+      "git-review-stage"
+    ]
   },
   {
     "id": "ch11.development",
@@ -493,29 +510,12 @@
     "lessons": [
       "ch11/development-containers"
     ],
-    "labs": [],
-    "challenges": []
-  },
-  {
-    "id": "ch11.archives",
-    "chapter": "ch11",
-    "lessons": [
-      "ch11/current-objectives"
-    ],
     "labs": [
-      "ch11/lab-archive-recovery"
+      "ch11/lab-development-containers",
+      "ch11/chapter-lab"
     ],
-    "challenges": []
-  },
-  {
-    "id": "ch11.security",
-    "chapter": "ch11",
-    "lessons": [
-      "ch11/current-objectives"
-    ],
-    "labs": [
-      "ch11/lab-security-validation"
-    ],
-    "challenges": []
+    "challenges": [
+      "runtime-versions"
+    ]
   }
 ]

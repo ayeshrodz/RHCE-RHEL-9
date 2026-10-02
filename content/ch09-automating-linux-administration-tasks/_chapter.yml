@@ -6,9 +6,11 @@ objectives:
   - Manage service startup, schedule processes with at, cron and systemd, reboot managed hosts, and control the default boot target.
   - Partition storage devices, configure LVM, format partitions or logical volumes, mount file systems, and add swap spaces.
   - Configure network settings and name resolution on managed hosts, and collect network-related facts.
+  - Archive files on managed hosts and restore them with the right content, ownership and permissions.
 objectiveIds:
   - ch09.software
   - ch09.users
   - ch09.scheduling
   - ch09.storage
   - ch09.network
+  - ch09.archives

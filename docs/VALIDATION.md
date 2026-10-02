@@ -90,7 +90,7 @@ Contributor documentation records the shared rendering components and title conv
 - Production Chromium checks cover all 126 routes, header navigation, title/reload persistence, native tab keyboard behavior, selecting both execution paths, and light/dark phone/desktop heading links without page overflow. Reference visits leave lesson completion unchanged. All previous 42 exercise mode checks remain covered.
 - Desktop and phone reference screenshots were visually reviewed in light and dark themes. Build, formatting, content validation, and browser checks pass. The earlier pending VM exercise matrix remains unchanged; no lab execution or grading behavior changed here.
 
-Public AAP 2.2 execution-environment documentation and navigator settings documentation were checked for the reference explanation and inspection commands. The current EX294 page was checked for its latest-product objective scope, Git/editor/container objectives, and version-selection guidance; the platform page links those sources.
+Public AAP 2.2 execution-environment documentation and navigator settings documentation were checked for the reference explanation and inspection commands. The published RHCE exam objectives were checked for their latest-product scope, including Git, editor and development-container objectives, and for version-selection guidance.
 
 ## Shared table design
 
@@ -123,3 +123,18 @@ Public AAP 2.2 execution-environment documentation and navigator settings docume
 - Inline diagrams scale to their containers at all widths. Enlarged diagrams also start fitted, with optional relative zoom and a return-to-fit control. The obsolete swipe instruction is removed from the content catalog.
 - Mobile route checks now verify that every inline diagram fits, instead of requiring horizontal scrolling or uniform button dimensions. Additional checks resize mounted pages through eleven widths between 320 and 1440 pixels, check compact badge proportions, and exercise explicit zoom. This supersedes the sizing and natural-width behavior described in the previous mobile entry.
 - Reviewed localhost:3000 at 320, 390, and 700 pixels. Production checks pass across all 126 routes at three mobile/tablet widths, plus the eleven-width resize checks, light/dark overlays, default diagram fitting, explicit zoom, editors, and progress flows. All 53 JavaScript tests and seven lab-tool tests pass. Physical-device validation remains pending.
+
+## Chapter 11 rebuild and archiving move
+
+Chapter 11 now teaches Git and development containers with two lessons, two exercises, a chapter lab, a quiz with practice questions and a summary. The archive exercise moved to chapter 9 (`system-archive`) behind a new archiving lesson. The access-policy exercise was removed because chapter 9 already teaches validated sudoers files. Reports saved for the retired `bridge-archive` and `bridge-security` exercises still import.
+
+Each exercise was followed step by step on the home lab on 2 October 2026, as student on workstation. The servers were first reverted to their pre-test state:
+
+| Exercise | Solution run | Second run | Grader |
+| --- | --- | --- | --- |
+| `workflow-git` | Clone, change, ignore rules, rejected push, merge pull, push | `changed=0` not applicable | All 13 checks passed |
+| `workflow-container` | Three `ansible-lint` findings fixed; run from the development container (core 2.21.4) and the execution environment (core 2.21.3) | `changed=0` | All 8 checks passed |
+| `workflow-review` | Lint fixed, settings committed, status page served on serverb | `changed=0` | All 13 checks passed |
+| `system-archive` | Archive and restore matched content, owner and mode; `release-2` rebuilt and re-extracted | `changed=0` | All 5 checks passed |
+
+`ansible-navigator` writes `ansible-navigator.log` into the project, so the exercises add it to `.gitignore`. The development-container image was run with Podman on workstation; the `devcontainer.json` file in VS Code itself was not exercised on a desktop.

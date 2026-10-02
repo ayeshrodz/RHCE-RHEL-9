@@ -5,10 +5,10 @@ minutes: 10
 ---
 
 <Lead>
-Fifteen questions across the five administration areas. Aim for at least eleven before moving on to the review chapter.
+Seventeen questions across the six administration areas. Aim for at least thirteen before moving on to the review chapter.
 </Lead>
 
-<Quiz objectives={["ch09.software","ch09.users","ch09.scheduling","ch09.storage","ch09.network"]}
+<Quiz objectives={["ch09.software","ch09.users","ch09.scheduling","ch09.storage","ch09.network","ch09.archives"]}
   id="chapter"
   title="Chapter 9 knowledge check"
   questions={[
@@ -132,6 +132,18 @@ Fifteen questions across the five administration areas. Aim for at least eleven 
       options: ['Dummy interfaces are faster', 'Changing the interface Ansible uses can cut off the connection mid-play', 'nmcli cannot change the main interface'],
       answer: 1,
       explain: 'A lost connection can leave the host half-configured and unreachable.',
+    },
+    { id: 'q-4b9e1c7a0d58',
+      q: 'Which task packs only the **contents** of `/srv/app` into an archive on the managed host?',
+      options: ['`community.general.archive` with `path: /srv/app/`', '`community.general.archive` with `path: /srv/app`', '`ansible.builtin.unarchive` with `src: /srv/app`'],
+      answer: 0,
+      explain: 'The trailing slash leaves the directory itself out, so extracting puts the files directly into `dest`.',
+    },
+    { id: 'q-c3a7f0e5b291',
+      q: 'An `unarchive` task has `src: /tmp/app.tar.gz` and no other source option. Where does Ansible look for the archive?',
+      options: ['On the control node', 'On the managed host', 'On both, control node first'],
+      answer: 0,
+      explain: 'The default source is the control node. Add `remote_src: true` when the archive is already on the managed host.',
     },
   ]}
 />

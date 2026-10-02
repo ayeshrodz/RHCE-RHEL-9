@@ -1616,97 +1616,6 @@
         }
       }
     },
-    "bridge-archive": {
-      "version": 1,
-      "lesson": "#/ch11/lab-archive-recovery",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "release.yml"
-          ],
-          "probes": [
-            {
-              "id": "restored",
-              "hosts": "servera.lab.example.com",
-              "message": "Restored release matches the source",
-              "command": "cmp /srv/release/version.txt /srv/restored/version.txt",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "archive",
-              "hosts": "servera.lab.example.com",
-              "message": "Release archive is readable",
-              "command": "tar -tzf /tmp/release.tar.gz >/dev/null",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "permissions",
-              "hosts": "servera.lab.example.com",
-              "targets": [
-                "servera.lab.example.com"
-              ],
-              "message": "Restored release is root-owned with mode 0644",
-              "command": "test \"$(stat -c '%a:%U:%G' /srv/restored/version.txt)\" = 644:root:root"
-            }
-          ]
-        }
-      }
-    },
-    "bridge-security": {
-      "version": 1,
-      "lesson": "#/ch11/lab-security-validation",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "access.yml",
-            "inventory"
-          ],
-          "probes": [
-            {
-              "id": "auditor",
-              "hosts": "servera.lab.example.com",
-              "message": "Audit account exists",
-              "command": "getent passwd auditor >/dev/null",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "policy",
-              "hosts": "servera.lab.example.com",
-              "message": "Sudo policy is root-owned, protected, and valid",
-              "command": "test \"$(stat -c '%a:%U:%G' /etc/sudoers.d/auditor)\" = 440:root:root && visudo -cf /etc/sudoers.d/auditor",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "allowed",
-              "hosts": "servera.lab.example.com",
-              "message": "Audit user can run the requested identity command",
-              "command": "sudo -u auditor sudo -n /usr/bin/id -u | grep -qx 0",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "limited",
-              "hosts": "servera.lab.example.com",
-              "message": "Audit policy grants only the requested command",
-              "command": "test \"$(grep -vE '^ *#|^ *$' /etc/sudoers.d/auditor)\" = 'auditor ALL=(root) NOPASSWD: /usr/bin/id'",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "assessment-release": {
       "version": 1,
       "lesson": "#/ch10/assessment-release",
@@ -1901,6 +1810,263 @@
               ],
               "message": "A usage report was verified by the learner",
               "command": "test -s /srv/reports/usage.txt"
+            }
+          ]
+        }
+      }
+    },
+    "workflow-git": {
+      "version": 1,
+      "lesson": "#/ch11/lab-git",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "motd.yml",
+            "templates/motd.j2",
+            ".gitignore"
+          ],
+          "local": [
+            {
+              "id": "template-change",
+              "file": "templates/motd.j2",
+              "contains": "ops@lab.example.com"
+            },
+            {
+              "id": "ignore-rule",
+              "file": ".gitignore",
+              "contains": "vault-pass"
+            },
+            {
+              "id": "teammate-change",
+              "file": "README.md",
+              "contains": "changed=0"
+            }
+          ],
+          "probes": [
+            {
+              "id": "clone",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Project is a clone of the shared web-motd remote",
+              "command": "git rev-parse --is-inside-work-tree >/dev/null && git remote get-url origin | grep -q 'git-repos/ops/web-motd.git'"
+            },
+            {
+              "id": "history",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "History keeps the original commits plus yours and the teammate's",
+              "command": "test \"$(git rev-list --count HEAD)\" -ge 5"
+            },
+            {
+              "id": "committed",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Every change is committed; nothing is left unstaged or untracked",
+              "command": "test -z \"$(git status --porcelain)\""
+            },
+            {
+              "id": "pushed",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Your branch matches the shared remote",
+              "command": "test \"$(git rev-parse HEAD)\" = \"$(git ls-remote origin refs/heads/main | cut -f1)\""
+            },
+            {
+              "id": "ignored",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "vault-pass exists locally but is ignored and was never committed",
+              "command": "test -f vault-pass && git check-ignore -q vault-pass && ! git ls-files --error-unmatch vault-pass 2>/dev/null"
+            },
+            {
+              "id": "motd",
+              "hosts": "web",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ],
+              "message": "/etc/motd shows the contact line",
+              "command": "grep -q 'ops@lab.example.com' /etc/motd"
+            }
+          ]
+        }
+      }
+    },
+    "workflow-container": {
+      "version": 1,
+      "lesson": "#/ch11/lab-development-containers",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "site.yml",
+            "inventory",
+            ".devcontainer/devcontainer.json",
+            "ansible-navigator.yml"
+          ],
+          "local": [
+            {
+              "id": "devcontainer-image",
+              "file": ".devcontainer/devcontainer.json",
+              "contains": "community-ansible-dev-tools"
+            },
+            {
+              "id": "ee-image",
+              "file": "ansible-navigator.yml",
+              "contains": "community-ee-minimal"
+            }
+          ],
+          "probes": [
+            {
+              "id": "lint",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "site.yml passes ansible-lint in the development container",
+              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
+            },
+            {
+              "id": "kernel-record",
+              "hosts": "web",
+              "targets": [
+                "servera.lab.example.com"
+              ],
+              "message": "/opt/tools/kernel.txt records the running kernel",
+              "command": "test \"$(cat /opt/tools/kernel.txt)\" = \"$(uname -r)\""
+            }
+          ]
+        }
+      }
+    },
+    "workflow-review": {
+      "version": 1,
+      "lesson": "#/ch11/chapter-lab",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "site.yml",
+            "templates/index.html.j2",
+            ".devcontainer/devcontainer.json",
+            "ansible-navigator.yml",
+            ".gitignore"
+          ],
+          "local": [
+            {
+              "id": "devcontainer-image",
+              "file": ".devcontainer/devcontainer.json",
+              "contains": "community-ansible-dev-tools"
+            },
+            {
+              "id": "ee-image",
+              "file": "ansible-navigator.yml",
+              "contains": "community-ee-minimal"
+            }
+          ],
+          "probes": [
+            {
+              "id": "clone",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Project is a clone of the shared web-status remote",
+              "command": "git remote get-url origin | grep -q 'git-repos/ops/web-status.git'"
+            },
+            {
+              "id": "lint",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "site.yml passes ansible-lint in the development container",
+              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
+            },
+            {
+              "id": "committed",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Every change is committed",
+              "command": "test -z \"$(git status --porcelain)\""
+            },
+            {
+              "id": "pushed",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "Your branch matches the shared remote",
+              "command": "test \"$(git rev-parse HEAD)\" = \"$(git ls-remote origin refs/heads/main | cut -f1)\""
+            },
+            {
+              "id": "shared-config",
+              "hosts": "localhost",
+              "targets": [
+                "localhost"
+              ],
+              "message": "The remote includes the development container and navigator settings",
+              "command": "git cat-file -e origin/main:.devcontainer/devcontainer.json && git cat-file -e origin/main:ansible-navigator.yml"
+            },
+            {
+              "id": "status-page",
+              "hosts": "web",
+              "targets": [
+                "serverb.lab.example.com"
+              ],
+              "message": "httpd is running, enabled and serves the status page",
+              "command": "systemctl is-active --quiet httpd && systemctl is-enabled --quiet httpd && curl -fs http://localhost/ | grep -q 'Status: serverb.lab.example.com'"
+            }
+          ]
+        }
+      }
+    },
+    "system-archive": {
+      "version": 1,
+      "lesson": "#/ch09/lab-archives",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "release.yml"
+          ],
+          "probes": [
+            {
+              "id": "restored",
+              "hosts": "servera.lab.example.com",
+              "message": "Restored release matches the source",
+              "command": "cmp /srv/release/version.txt /srv/restored/version.txt",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "archive",
+              "hosts": "servera.lab.example.com",
+              "message": "Release archive is readable",
+              "command": "tar -tzf /tmp/release.tar.gz >/dev/null",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "permissions",
+              "hosts": "servera.lab.example.com",
+              "targets": [
+                "servera.lab.example.com"
+              ],
+              "message": "Restored release is root-owned with mode 0644",
+              "command": "test \"$(stat -c '%a:%U:%G' /srv/restored/version.txt)\" = 644:root:root"
             }
           ]
         }

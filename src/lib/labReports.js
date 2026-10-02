@@ -2,6 +2,9 @@ import reportSchema from '../data/labReportSchema.json' with { type: 'json' };
 
 const record = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const id = (value) => typeof value === 'string' && /^[a-z0-9][a-z0-9:._/-]{0,199}$/.test(value);
+// Exercises that no longer exist. Reports saved for them remain the learner's evidence,
+// so backups that contain them still import; they are checked for shape only.
+const RETIRED = new Set(['bridge-archive', 'bridge-security']);
 
 /** Validate before saving. Imported reports are the learner's own practice evidence. */
 export function validateLabReport(report, catalog = reportSchema) {
@@ -37,7 +40,7 @@ export function validateLabReport(report, catalog = reportSchema) {
       throw new Error('The lab report contains an invalid check.');
     seen.add(check.id);
   }
-  if (catalog) {
+  if (catalog && !RETIRED.has(report.exerciseId)) {
     const exercise = catalog.exercises[report.exerciseId];
     const checkpoint = exercise?.checkpoints[report.checkpointId];
     if (!exercise || exercise.version !== report.exerciseVersion || !checkpoint)
