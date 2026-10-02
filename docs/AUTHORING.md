@@ -8,22 +8,26 @@ The `content/` folder is the single source of truth. It holds only data: Markdoc
 
 ```
 content/
-  _course.yml                      site title, repository, selected track ID
-  tracks/rhel9/
-    _track.yml                     track identity, versions, reference filename
-    platform.md                    platform page: explanations, diagrams
-    platform.data.yml              data for that page's tags
-  ch03-implementing-playbooks/
-    _chapter.yml                   title, goal, objectives
-    01-inventory.md                section 3.1
-    01-inventory.data.yml          quiz questions, widget copy and other data for 3.1
-    02-lab-inventory.md            section 3.2
-  ch04-managing-variables-and-facts/
-    _chapter.yml                   status: planned + topics → shown as "coming soon"
+  site.yml                         site name, tagline, repository, program order
+  programs/rhel9-ansible/
+    program.yml                    id, title, platform, stages, variants, reader variables
+    objectives.yml                 skills mapped to lessons, practice and labs
+    details.md                     platform page: explanations, diagrams
+    details.data.yml               data for that page's tags
+    legacy.yml, interface.json, home.json, progress.json
+                                   interface text (until the platform home replaces it)
+    chapters/
+      ch03-implementing-playbooks/
+        _chapter.yml               title, goal, objectives
+        01-inventory.md            section 3.1
+        01-inventory.data.yml      quiz questions, widget copy and other data for 3.1
+        02-lab-inventory.md        section 3.2
+      ch04-managing-variables-and-facts/
+        _chapter.yml               status: planned + topics → shown as "coming soon"
 ```
 
 - **Order** comes from the numeric filename prefix (`01-`, `02-`…).
-- **URL slug** is the filename without its prefix: `03-configuration.md` → `#/ch03/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
+- **URL slug** is the filename without its prefix: `03-configuration.md` → `#/rhel9-ansible/ch03/configuration` (links inside content leave out the program: write `#/ch03/configuration`, and the site adds the current program). Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
 - **Section links** add the heading's id after a second `#`: `#/ch08/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading with `[text](#/ch01/page#heading-id)`.
 - **Frontmatter** at the top of each page:
 
@@ -37,7 +41,7 @@ content/
   ```
 
 - **Page data** lives beside the page in `NN-slug.data.yml`. Each top-level key is a `ref` that one tag on the page uses; the compiler rejects a missing or unused ref.
-- **A new chapter**: create `content/chNN-name/` with a `_chapter.yml`. Once it contains `.md` pages and has no `status: planned`, it becomes a normal chapter.
+- **A new chapter**: create `content/programs/<program>/chapters/chNN-name/` with a `_chapter.yml`. Once it contains `.md` pages and has no `status: planned`, it becomes a normal chapter.
 
 While `npm run dev` is running, saving any content file recompiles it and reloads the page.
 
@@ -45,7 +49,7 @@ The page title, number, breadcrumb, reading time, table of contents, "mark compl
 
 ## Track reference pages
 
-`_course.yml` selects the current `track` ID. Its reference material lives in `content/tracks/<id>/`: `_track.yml` supplies the label, version metadata, and `platform` filename. The page frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/platform`; `ReferencePage` renders the selected track's page with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
+A program's reference page is `details.md` in its folder; the interface metadata in `legacy.yml` supplies its label, version metadata and header-badge text. The page frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/<program>/platform`; `ReferencePage` renders the page with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
 
 `flow-map` renders a two-to-four-step sequence using the existing pale diagram tones. Its steps live in the page data; each step needs a unique `id`, `title`, and explanatory `text`, with optional `sub` and `tone`. `connections` labels the arrows. For example:
 
@@ -64,7 +68,7 @@ journey:
 
 Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in content or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
 
-Only RHEL 9 is selectable today. Adding another track's metadata is a content boundary, not a complete course switch: chapters, objectives, downloads, graders, and browser progress must also be scoped together before another track is published.
+To add a program, create `content/programs/<id>/` with a `program.yml` and `chapters/`, then list the id in `site.yml`. Each program has its own navigation, search index and progress.
 
 ## 2. Page shape
 
@@ -235,7 +239,7 @@ check:
       explain: A parent includes the hosts of its children.
 ```
 
-Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
+Add or update the objective in the program's `objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
 
 Practice questions are authored in their chapter's quiz page as `{% practice ref="practice" /%}`, with the questions under `practice.questions` in its data file. Each one is multiple choice, exactly like a quiz question: supply a stable `id`, objective, `title`, `prompt`, at least three `options`, the `expected` option (copied exactly), an explanation, and an optional `code` snippet shown above the options. Do not add typed-answer, hint or solution variants; consistency across pages matters more than a one-off format. The dashboard reads the same data; editing wording needs no code change. Check every distractor against real Ansible behavior so exactly one option is right.
 
@@ -315,7 +319,7 @@ inventory-explorer:
 
 This is a shortened illustration. Copy the complete entry from an existing page using the same widget, then edit its data and wording. A widget that renders another widget inside itself lists that widget's copy under `dependencies`. `npm run validate:content` checks every required key and composed widget dependency. Keep field names stable; update the component contract when a new field is needed. Widget data is not indexed as lesson prose.
 
-`PageTree` supplies each widget's copy through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in `content/_interface.json`; the landing page owns `content/home.json`, and the dashboard owns `content/progress.json`.
+`PageTree` supplies each widget's copy through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in the program's `interface.json`; the landing page owns `home.json`, and the dashboard owns `progress.json`.
 
 Use `{value0}`, `{value1}`, and so on for wording that contains calculated values. The component calls `formatCopy` with the corresponding values. Keep algorithms, state keys, semantic enum values, selectors, and styling in code; keep teaching sentences and example datasets in content. A future content track can supply its own catalogs to the same components.
 

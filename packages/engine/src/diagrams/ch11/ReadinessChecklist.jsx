@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { chapters } from '@/lib/course';
 import { useStored } from '@/lib/storage';
 import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';

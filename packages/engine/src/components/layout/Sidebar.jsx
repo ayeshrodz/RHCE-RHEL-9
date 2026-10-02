@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { Link, NavLink, useProgramLocation } from '@/lib/router';
 import {
   ArrowRight,
   BookOpen,
@@ -465,7 +466,7 @@ export default defineWidget('Sidebar', (copy) => {
 
   function Sidebar({ open, onClose, collapsed, onToggleCollapsed }) {
     const { chapterId } = useParams();
-    const { pathname } = useLocation();
+    const { pathname } = useProgramLocation();
     const isMobile = useMediaQuery('(max-width: 960px)');
     const rail = collapsed && !isMobile;
     const navRef = useRef(null);

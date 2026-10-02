@@ -75,11 +75,16 @@ test('content holds no code, markup or style files', () => {
   })(CONTENT);
 });
 
-test('every chapter definition and the objectives map fit their schemas', () => {
-  const chapters = fs.readdirSync(CONTENT).filter((d) => /^ch\d{2}-/.test(d));
+const PROGRAM = path.join(CONTENT, 'programs', 'rhel9-ansible');
+
+test('the site, program, chapter and objective files fit their schemas', () => {
+  valid(schemaIds.site, YAML.parse(fs.readFileSync(path.join(CONTENT, 'site.yml'), 'utf8')), 'site.yml');
+  valid(schemaIds.program, YAML.parse(fs.readFileSync(path.join(PROGRAM, 'program.yml'), 'utf8')), 'program.yml');
+  const chapters = fs.readdirSync(path.join(PROGRAM, 'chapters')).filter((d) => /^ch\d{2}-/.test(d));
   assert.ok(chapters.length >= 12);
-  for (const dir of chapters) valid(schemaIds.chapter, YAML.parse(fs.readFileSync(path.join(CONTENT, dir, '_chapter.yml'), 'utf8')), dir);
-  valid(schemaIds.objectives, YAML.parse(fs.readFileSync(path.join(CONTENT, '_objectives.yml'), 'utf8')), '_objectives.yml');
+  for (const dir of chapters)
+    valid(schemaIds.chapter, YAML.parse(fs.readFileSync(path.join(PROGRAM, 'chapters', dir, '_chapter.yml'), 'utf8')), dir);
+  valid(schemaIds.objectives, YAML.parse(fs.readFileSync(path.join(PROGRAM, 'objectives.yml'), 'utf8')), 'objectives.yml');
 });
 
 test('every section frontmatter fits the section schema', () => {

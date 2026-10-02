@@ -1,0 +1,17 @@
+# Transitional interface metadata (retired by the platform home and component work).
+course:
+  title: Kernel Path
+  tagline: Learn Ansible automation by doing
+  repo: https://github.com/ayeshrodz/playbook-path
+track:
+  id: rhel9
+  label: RHEL 9
+  exam: RHCE
+  rhel: "9"
+  aap: 2.2 (classroom reference)
+  ansibleCore: 2.14 (home lab)
+  platform:
+    title: "RHEL 9: Platform and versions"
+    eyebrow: Your learning environment
+    description: Understand where your automation runs, choose a practice environment, and check the versions behind each result.
+    path: /platform

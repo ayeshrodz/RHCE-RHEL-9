@@ -10,9 +10,12 @@ const PREFIX = 'rhce:';
 const APP_ID = 'kernel-path';
 // Exports made before the site was renamed are still accepted.
 const OLD_APP_IDS = ['playbook-path', 'rhce-field-guide'];
-const EXPORT_VERSION = 2;
+const EXPORT_VERSION = 3;
 // Display preferences: kept on reset and left out of progress exports.
 const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv', 'labMode']);
+// Progress belongs to one program: its keys are stored as "<program>@<key>". Display
+// preferences stay shared by every program.
+let scope = null;
 const listeners = new Map();
 const cache = new Map();
 const savedKeys = new Set();
@@ -20,12 +23,21 @@ const invalidKeys = new Set();
 let revision = 0;
 let storageAvailable = true;
 
+/** Choose the program that progress is read from and written to. */
+export function setProgramScope(id) {
+  scope = id;
+}
+
+const scoped = (key) => (scope === null || PREFERENCES.has(key) ? key : `${scope}@${key}`);
+const inScope = (full) => scope !== null && full.startsWith(`${scope}@`);
+
 export function readStored(key, fallback) {
-  if (cache.has(key)) return cache.get(key);
+  const full = scoped(key);
+  if (cache.has(full)) return cache.get(full);
   let value = fallback;
   let raw = null;
   try {
-    raw = localStorage.getItem(PREFIX + key);
+    raw = localStorage.getItem(PREFIX + full);
   } catch {
     storageAvailable = false;
   }
@@ -33,13 +45,13 @@ export function readStored(key, fallback) {
     try {
       const parsed = JSON.parse(raw);
       value = PREFERENCES.has(key) ? parsed : validateProgress({ app: APP_ID, version: EXPORT_VERSION, data: { [key]: parsed } })[key];
-      invalidKeys.delete(key);
-      savedKeys.add(key);
+      invalidKeys.delete(full);
+      savedKeys.add(full);
     } catch {
-      invalidKeys.add(key);
+      invalidKeys.add(full);
     }
   }
-  cache.set(key, value);
+  cache.set(full, value);
   return value;
 }
 
@@ -50,15 +62,16 @@ function notify(key) {
 }
 
 export function writeStored(key, value) {
-  cache.set(key, value);
-  savedKeys.add(key);
-  invalidKeys.delete(key);
+  const full = scoped(key);
+  cache.set(full, value);
+  savedKeys.add(full);
+  invalidKeys.delete(full);
   try {
-    localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    localStorage.setItem(PREFIX + full, JSON.stringify(value));
   } catch {
     storageAvailable = false;
   }
-  notify(key);
+  notify(full);
 }
 
 function subscribe(key, fn) {
@@ -88,7 +101,7 @@ if (typeof window !== 'undefined') {
 
 export function useStored(key, fallback) {
   const value = useSyncExternalStore(
-    (fn) => subscribe(key, fn),
+    (fn) => subscribe(scoped(key), fn),
     () => readStored(key, fallback),
     () => fallback,
   );
@@ -96,47 +109,47 @@ export function useStored(key, fallback) {
   return [value, set];
 }
 
+/** The current program's saved keys, without the program prefix. */
 function progressKeys() {
-  const keys = [...savedKeys].filter((k) => !PREFERENCES.has(k));
+  const full = [...savedKeys];
   try {
-    return [
-      ...new Set([
-        ...keys,
-        ...Object.keys(localStorage)
-          .filter((k) => k.startsWith(PREFIX))
-          .map((k) => k.slice(PREFIX.length))
-          .filter((k) => !PREFERENCES.has(k)),
-      ]),
-    ];
+    full.push(
+      ...Object.keys(localStorage)
+        .filter((k) => k.startsWith(PREFIX))
+        .map((k) => k.slice(PREFIX.length)),
+    );
   } catch {
-    return keys;
+    /* storage unavailable: use what this page saved */
   }
+  return [...new Set(full.filter(inScope).map((k) => k.slice(scope.length + 1)))];
 }
 
+/** Forget the current program's progress. Preferences and other programs are untouched. */
 export function resetAllProgress() {
   for (const key of progressKeys()) {
     try {
-      localStorage.removeItem(PREFIX + key);
+      localStorage.removeItem(PREFIX + scoped(key));
     } catch {
       /* ignore */
     }
   }
-  for (const key of [...cache.keys()]) {
-    if (PREFERENCES.has(key)) continue;
-    savedKeys.delete(key);
-    cache.delete(key);
-    notify(key);
+  for (const full of [...cache.keys()]) {
+    if (!inScope(full)) continue;
+    savedKeys.delete(full);
+    invalidKeys.delete(full);
+    cache.delete(full);
+    notify(full);
   }
 }
 
-/** Everything the reader has done (not the theme), as a JSON-safe object. */
+/** Everything the reader has done in the current program (not preferences), as a JSON-safe object. */
 export function exportProgress() {
   const data = {};
   for (const key of progressKeys()) {
     const value = readStored(key, null);
-    if (!invalidKeys.has(key)) data[key] = value;
+    if (!invalidKeys.has(scoped(key))) data[key] = value;
   }
-  return { app: APP_ID, version: EXPORT_VERSION, exportedAt: new Date().toISOString(), data };
+  return { app: APP_ID, version: EXPORT_VERSION, program: scope, exportedAt: new Date().toISOString(), data };
 }
 
 const record = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -149,6 +162,12 @@ export function validateProgress(payload) {
   if (!Number.isInteger(payload.version) || payload.version < 1 || payload.version > EXPORT_VERSION) {
     throw new Error('This progress export version is not supported.');
   }
+  if (
+    payload.program !== undefined &&
+    payload.program !== null &&
+    (typeof payload.program !== 'string' || !/^[a-z][a-z0-9-]*$/.test(payload.program))
+  )
+    throw new Error('This progress file does not name a valid program.');
   if (JSON.stringify(payload).length > 2_000_000) throw new Error('This progress file is too large.');
   const data = {};
   for (const [key, value] of Object.entries(payload.data)) {
@@ -193,6 +212,8 @@ export function validateProgress(payload) {
 /** Validate everything before replacing current progress. */
 export function importProgress(payload) {
   const data = validateProgress(payload);
+  if (payload.program && scope !== null && payload.program !== scope)
+    throw new Error(`This progress file is for the program "${payload.program}", not "${scope}".`);
   resetAllProgress();
   for (const [key, value] of Object.entries(data)) writeStored(key, value);
   return Object.keys(data).length;

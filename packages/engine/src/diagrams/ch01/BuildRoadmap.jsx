@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { Globe, Monitor, Server, SquareTerminal } from 'lucide-react';
 import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';
 

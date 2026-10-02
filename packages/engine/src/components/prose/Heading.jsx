@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from '@/lib/router';
 import { Check, Link as LinkIcon } from 'lucide-react';
 
 // The router owns the URL hash ("#/ch08/collections"), so a section's address

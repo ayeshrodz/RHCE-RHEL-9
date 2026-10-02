@@ -12,7 +12,7 @@ import { CompileError, Diagnostics } from './diagnostics.js';
 import { createValidator } from './validator.js';
 import { initHighlighter } from './highlight.js';
 import { readPage, convertPage } from './tree.js';
-import { readLegacyContent } from './legacy-source.js';
+import { readContent } from './source.js';
 
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
 
@@ -87,7 +87,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   const validator = createValidator();
   checkFileTypes(root, diagnostics);
   await initHighlighter();
-  const source = readLegacyContent(root);
+  const source = readContent(root, diagnostics);
   const files = new Map();
   const emit = (dir, name, value) => {
     const json = JSON.stringify(value);
@@ -100,10 +100,12 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   };
 
   const programs = [];
-  for (const { program, chapters, objectives, details, legacy } of source.programs) {
+  expect(validator.ids.site, source.site, source.siteFile, 'site');
+  for (const { id, dir, program, chapters, objectives, details, legacy } of source.programs) {
     const base = `p/${program.id}`;
-    expect(validator.ids.program, program, null, 'program');
-    expect(validator.ids.objectives, objectives, null, 'objectives');
+    expect(validator.ids.program, program, path.join(dir, 'program.yml'), 'program');
+    if (program.id !== id) diagnostics.error(path.join(dir, 'program.yml'), null, `id '${program.id}' must match the folder name '${id}'`);
+    expect(validator.ids.objectives, objectives, path.join(dir, 'objectives.yml'), 'objectives');
     const pages = {};
     const search = [];
 
@@ -164,7 +166,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     expect(validator.ids.bundle.search, JSON.parse(files.get(searchFile)), null, 'search index');
     let legacyFile;
     if (legacy) {
-      expect(validator.ids.bundle.legacy, legacy, null, 'interface bundle');
+      expect(validator.ids.bundle.legacy, legacy, path.join(dir, 'legacy.yml'), 'interface bundle');
       legacyFile = emit(base, 'legacy', legacy);
     }
     const manifest = {

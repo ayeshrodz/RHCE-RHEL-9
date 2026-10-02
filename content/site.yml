@@ -1,4 +1,6 @@
-title: Kernel Path
-track: rhel9
+apiVersion: 1
+name: Kernel Path
 tagline: Learn Ansible automation by doing
 repo: https://github.com/ayeshrodz/playbook-path
+programs:
+  - rhel9-ansible

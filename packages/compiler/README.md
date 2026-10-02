@@ -23,4 +23,4 @@ The bundle contains:
 - Validates every tag, attribute, data entry, link and output file before writing.
 - Produces output that is deterministic for the same content.
 
-**Input format.** Pages are Markdoc (`.md`) with an optional `.data.yml` beside them. Markdoc runs as a parser only: variables, functions and annotations are rejected, code blocks are never scanned for tags, and raw HTML stays text. `legacy-source.js` reads today's single-course layout; it goes away when content moves to `programs/` folders (phase 5 in [docs/architecture.md](../../docs/architecture.md)).
+**Input format.** Pages are Markdoc (`.md`) with an optional `.data.yml` beside them. Markdoc runs as a parser only: variables, functions and annotations are rejected, code blocks are never scanned for tags, and raw HTML stays text. `site.yml` lists the programs; each `programs/<id>/` folder holds a `program.yml`, `objectives.yml`, optional `details.md` and `chapters/`. `source.js` reads that tree, and the compiler checks every file against the contract.

@@ -2,9 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { migrateEntry, latestAnswer, recordAnswer, resetQuiz } from '../src/lib/progressModel.js';
 import { validateLabReport } from '../src/lib/labReports.js';
-import { validateProgress, exportProgress, importProgress, writeStored } from '../src/lib/storage.js';
+import {
+  validateProgress,
+  exportProgress,
+  importProgress,
+  writeStored,
+  readStored,
+  resetAllProgress,
+  setProgramScope,
+} from '../src/lib/storage.js';
 import legacy from '../src/data/legacyActivityMap.json' with { type: 'json' };
 import catalog from '../public/lab/graders.json' with { type: 'json' };
+
+setProgramScope('rhel9-ansible');
 
 const question = { id: 'q-stable', q: 'Choose the current value', options: ['a', 'b'], answer: 1 };
 test('legacy quiz answers become retained history requiring a fresh attempt', () => {
@@ -37,7 +47,8 @@ test('version two exports round-trip histories and reject malformed data atomica
   const value = recordAnswer({ version: 2, items: {} }, question, 1);
   writeStored('quiz:ch02/quiz:chapter', value);
   const backup = exportProgress();
-  assert.equal(backup.version, 2);
+  assert.equal(backup.version, 3);
+  assert.equal(backup.program, 'rhel9-ansible');
   assert.equal(backup.app, 'kernel-path');
   importProgress(backup);
   assert.deepEqual(exportProgress().data, backup.data);
@@ -138,9 +149,10 @@ test('cross-tab writes and clears invalidate cached values', async () => {
   };
   try {
     const store = await import('../src/lib/storage.js?cross-tab-regression');
+    store.setProgramScope('rhel9-ansible');
     store.writeStored('completed', ['ch02/why-automate']);
-    values.set('rhce:completed', JSON.stringify(['ch03/inventory']));
-    receive({ key: 'rhce:completed', newValue: values.get('rhce:completed') });
+    values.set('rhce:rhel9-ansible@completed', JSON.stringify(['ch03/inventory']));
+    receive({ key: 'rhce:rhel9-ansible@completed', newValue: values.get('rhce:rhel9-ansible@completed') });
     assert.deepEqual(store.readStored('completed', []), ['ch03/inventory']);
     values.clear();
     receive({ key: null });
@@ -155,8 +167,8 @@ test('cross-tab writes and clears invalidate cached values', async () => {
 test('corrupt stored data cannot crash the dashboard or replace the raw backup', async () => {
   const previous = globalThis.localStorage;
   const values = new Map([
-    ['rhce:completed', 'false'],
-    ['rhce:readiness', '{broken'],
+    ['rhce:rhel9-ansible@completed', 'false'],
+    ['rhce:rhel9-ansible@readiness', '{broken'],
   ]);
   const storage = {
     getItem: (key) => values.get(key) ?? null,
@@ -167,13 +179,43 @@ test('corrupt stored data cannot crash the dashboard or replace the raw backup',
   globalThis.localStorage = storage;
   try {
     const store = await import('../src/lib/storage.js?corrupt-data-regression');
+    store.setProgramScope('rhel9-ansible');
     assert.deepEqual(store.readStored('completed', []), []);
     assert.deepEqual(store.readStored('readiness', {}), {});
     assert.deepEqual(store.exportProgress().data, {});
-    assert.equal(values.get('rhce:completed'), 'false');
+    assert.equal(values.get('rhce:rhel9-ansible@completed'), 'false');
     store.writeStored('completed', ['ch02/why-automate']);
     assert.deepEqual(store.exportProgress().data.completed, ['ch02/why-automate']);
   } finally {
     globalThis.localStorage = previous;
   }
+});
+
+test('progress is kept separately for each program', () => {
+  setProgramScope('rhel9-ansible');
+  resetAllProgress();
+  writeStored('completed', ['ch02/why-automate']);
+  const ansible = exportProgress();
+  assert.deepEqual(ansible.data.completed, ['ch02/why-automate']);
+
+  setProgramScope('second-program');
+  assert.deepEqual(readStored('completed', []), [], 'the other program starts empty');
+  assert.deepEqual(exportProgress().data, {});
+  writeStored('completed', ['ch01/hello']);
+  assert.deepEqual(exportProgress().data.completed, ['ch01/hello']);
+  assert.throws(() => importProgress(ansible), /for the program "rhel9-ansible", not "second-program"/);
+
+  resetAllProgress();
+  assert.deepEqual(readStored('completed', []), []);
+  setProgramScope('rhel9-ansible');
+  assert.deepEqual(readStored('completed', []), ['ch02/why-automate'], 'resetting one program leaves the other alone');
+});
+
+test('exports from before programs existed import into the current program', () => {
+  setProgramScope('second-program');
+  resetAllProgress();
+  importProgress({ app: 'kernel-path', version: 2, data: { completed: ['ch01/hello'] } });
+  assert.deepEqual(readStored('completed', []), ['ch01/hello']);
+  assert.throws(() => validateProgress({ app: 'kernel-path', version: 3, program: 'Bad Id', data: {} }), /valid program/);
+  setProgramScope('rhel9-ansible');
 });

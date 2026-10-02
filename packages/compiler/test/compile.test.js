@@ -11,6 +11,7 @@ import { CompileError } from '../src/diagnostics.js';
 
 const ROOT = path.resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const CONTENT = path.join(ROOT, 'content');
+const CHAPTERS = path.join(CONTENT, 'programs', 'rhel9-ansible', 'chapters');
 const NOW = new Date('2026-01-01T00:00:00Z');
 
 const result = await compile(CONTENT, { now: NOW });
@@ -20,7 +21,7 @@ const manifest = json(site.programs[0].manifest);
 
 test('the manifest lists every chapter folder and section file in order', () => {
   const dirs = fs
-    .readdirSync(CONTENT)
+    .readdirSync(CHAPTERS)
     .filter((d) => /^ch\d{2}-/.test(d))
     .sort();
   assert.deepEqual(
@@ -29,7 +30,7 @@ test('the manifest lists every chapter folder and section file in order', () => 
   );
   for (const [i, dir] of dirs.entries()) {
     const files = fs
-      .readdirSync(path.join(CONTENT, dir))
+      .readdirSync(path.join(CHAPTERS, dir))
       .filter((f) => f.endsWith('.md'))
       .sort();
     assert.deepEqual(
@@ -84,15 +85,19 @@ test('output is deterministic: rebuilding gives identical files', async () => {
 async function compileFixture(body, { front = 'title: Test\nkind: lesson\nminutes: 5', data, extra = {} } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-compile-'));
   try {
-    fs.cpSync(path.join(CONTENT, '_course.yml'), path.join(dir, '_course.yml'));
-    for (const file of ['home.json', 'progress.json', '_interface.json']) fs.cpSync(path.join(CONTENT, file), path.join(dir, file));
-    fs.cpSync(path.join(CONTENT, 'tracks'), path.join(dir, 'tracks'), { recursive: true });
-    fs.writeFileSync(path.join(dir, '_objectives.yml'), '[]\n');
-    fs.mkdirSync(path.join(dir, 'ch01-test'));
-    fs.writeFileSync(path.join(dir, 'ch01-test', '_chapter.yml'), 'title: Test chapter\n');
-    fs.writeFileSync(path.join(dir, 'ch01-test', '01-page.md'), `---\n${front}\n---\n\n${body}\n`);
-    if (data) fs.writeFileSync(path.join(dir, 'ch01-test', '01-page.data.yml'), data);
-    for (const [name, text] of Object.entries(extra)) fs.writeFileSync(path.join(dir, 'ch01-test', name), text);
+    const program = path.join(dir, 'programs', 'test-program');
+    const chapter = path.join(program, 'chapters', 'ch01-test');
+    fs.mkdirSync(chapter, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: Test\ntagline: Test site\nprograms: [test-program]\n');
+    fs.writeFileSync(
+      path.join(program, 'program.yml'),
+      'apiVersion: 1\nid: test-program\ntitle: Test program\nlabel: Test\nsummary: A program for tests.\nplatform: { family: linux, version: "1", label: Linux }\nstatus: active\n',
+    );
+    fs.writeFileSync(path.join(program, 'objectives.yml'), '[]\n');
+    fs.writeFileSync(path.join(chapter, '_chapter.yml'), 'title: Test chapter\n');
+    fs.writeFileSync(path.join(chapter, '01-page.md'), `---\n${front}\n---\n\n${body}\n`);
+    if (data) fs.writeFileSync(path.join(chapter, '01-page.data.yml'), data);
+    for (const [name, text] of Object.entries(extra)) fs.writeFileSync(path.join(chapter, name), text);
     try {
       const out = await compile(dir, { now: NOW });
       const site = JSON.parse(out.files.get('site.json'));
@@ -177,4 +182,60 @@ test('malformed frontmatter is rejected', async () => {
 test('code, markup and style files in content are rejected', async () => {
   for (const name of ['widget.jsx', 'old.mdx', 'theme.css', 'page.html', 'hook.js'])
     await rejects('text', new RegExp(`${name.replace('.', '\\.')}.*only Markdoc, YAML, JSON`), { extra: { [name]: 'x' } });
+});
+
+// ---------- Programs ----------
+
+test('a program folder must match the program id and be listed in the site', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-programs-'));
+  try {
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms: [one, missing]\n');
+    const program = (id) =>
+      `apiVersion: 1\nid: ${id}\ntitle: T\nlabel: T\nsummary: S\nplatform: { family: linux, version: "1", label: L }\nstatus: planned\n`;
+    fs.mkdirSync(path.join(dir, 'programs', 'one'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'programs', 'one', 'program.yml'), program('other'));
+    fs.mkdirSync(path.join(dir, 'programs', 'unlisted'), { recursive: true });
+    const errors = await compile(dir).then(
+      () => [],
+      (e) => e.diagnostics.errors.map((x) => x.message),
+    );
+    assert.ok(
+      errors.some((e) => /id 'other' must match the folder name 'one'/.test(e)),
+      errors.join('\n'),
+    );
+    assert.ok(
+      errors.some((e) => /program 'missing' has no programs\/missing\/program.yml/.test(e)),
+      errors.join('\n'),
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('two programs compile into separate manifests, pages and search indexes', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-two-'));
+  try {
+    fs.cpSync(path.join(CONTENT, 'programs', 'rhel9-ansible'), path.join(dir, 'programs', 'rhel9-ansible'), { recursive: true });
+    fs.cpSync(path.join(import.meta.dirname, 'fixtures', 'second-program'), path.join(dir, 'programs', 'second-program'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      path.join(dir, 'site.yml'),
+      'apiVersion: 1\nname: Kernel Path\ntagline: T\nprograms: [rhel9-ansible, second-program]\n',
+    );
+    const out = await compile(dir, { now: NOW });
+    const site = JSON.parse(out.files.get('site.json'));
+    assert.deepEqual(
+      site.programs.map((p) => p.id),
+      ['rhel9-ansible', 'second-program'],
+    );
+    const [first, second] = site.programs.map((p) => JSON.parse(out.files.get(p.manifest)));
+    assert.ok(Object.values(second.pages).every((f) => f.startsWith('p/second-program/')));
+    assert.ok(Object.values(first.pages).every((f) => f.startsWith('p/rhel9-ansible/')));
+    assert.notEqual(first.search, second.search);
+    const search = JSON.parse(out.files.get(second.search));
+    assert.ok(search.entries.length > 0 && search.entries.every((e) => e.page.startsWith('ch01/')));
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { course } from '@/lib/course';
 import Logo from './Logo';
 import { defineWidget } from '@/components/interactive/TeachingContent';

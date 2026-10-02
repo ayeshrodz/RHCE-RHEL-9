@@ -10,10 +10,11 @@ from playwright.sync_api import sync_playwright
 from browser_server import preview_server
 
 ROOT = Path(__file__).resolve().parents[1]
+PROGRAM = 'rhel9-ansible'
 BASE = os.environ.get('PLAYBOOK_TEST_URL', 'http://127.0.0.1:4173/')
 
 def go(page, route):
-    page.goto(BASE + '#' + route)
+    page.goto(BASE + '#/' + PROGRAM + route)
     page.locator('h1').first.wait_for()
     page.wait_for_function("!document.querySelector('.skeleton')")
 
@@ -57,6 +58,69 @@ def content_from_another_origin(browser):
         server.shutdown()
 
 
+def serve_bundle(directory):
+    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(CorsHandler, directory=str(directory)))
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, f'http://127.0.0.1:{server.server_address[1]}/'
+
+
+def programs_stay_separate(browser):
+    """A second program has its own pages, search and progress; old addresses still open the first."""
+    import shutil, subprocess, tempfile
+    with tempfile.TemporaryDirectory() as temp:
+        content = Path(temp) / 'content'
+        shutil.copytree(ROOT / 'content', content)
+        second = content / 'programs' / 'second-program'
+        shutil.copytree(ROOT / 'packages/compiler/test/fixtures/second-program', second)
+        for name in ['legacy.yml', 'interface.json', 'home.json', 'progress.json']:
+            shutil.copy(ROOT / 'content/programs/rhel9-ansible' / name, second / name)
+        (content / 'site.yml').write_text((content / 'site.yml').read_text() + '  - second-program\n')
+        out = Path(temp) / 'bundle'
+        subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'build', str(content), '--out', str(out)], check=True, capture_output=True)
+        server, origin = serve_bundle(out)
+        try:
+            context = browser.new_context()
+            page = context.new_page()
+            page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
+            # The first program keeps its own progress.
+            go(page, '/ch02/why-automate')
+            page.evaluate("localStorage.setItem('rhce:rhel9-ansible@completed', JSON.stringify(['ch02/why-automate']))")
+            # The second program opens beside it, with its own navigation and empty progress.
+            page.goto(BASE + '#/second-program/ch01/hello'); page.reload()
+            page.locator('h1').first.wait_for()
+            assert page.locator('h1').first.inner_text().endswith('Saying hello')
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:second-program@completed') || '[]').length") == 0
+            page.get_by_role('button', name='Mark this section complete').click()
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:second-program@completed'))") == ['ch01/hello']
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed'))") == ['ch02/why-automate']
+            page.get_by_role('link', name='Looking around').first.click()
+            page.wait_for_url('**/#/second-program/ch01/next')
+            assert not page.get_by_role('link', name='Building an Ansible inventory').count(), 'only this program is listed'
+            # Search covers this program only.
+            page.get_by_role('button', name='Search the course').click()
+            dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
+            box = dialog.get_by_role('combobox'); box.fill('zebrafish')
+            dialog.get_by_role('option').first.wait_for()
+            box.fill('inventory'); page.wait_for_timeout(300)
+            assert dialog.get_by_role('option').count() == 0, 'the other program is not searched'
+            page.keyboard.press('Escape')
+            # The first program does not find the second one's words.
+            go(page, '/ch02/why-automate')
+            page.get_by_role('button', name='Search the course').click()
+            dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
+            dialog.get_by_role('combobox').fill('zebrafish'); page.wait_for_timeout(300)
+            assert dialog.get_by_role('option').count() == 0
+            page.keyboard.press('Escape')
+            # Addresses from before programs existed still work; unknown programs are a 404.
+            page.goto(BASE + '#/ch03/inventory')
+            page.wait_for_url('**/#/rhel9-ansible/ch03/inventory')
+            page.goto(BASE + '#/no-such-program/ch01/x')
+            page.get_by_role('heading', name="That page isn't here").wait_for()
+            context.close()
+        finally:
+            server.shutdown()
+
+
 def tampered_content_is_refused(browser):
     """A page whose JSON was altered to carry markup or a script link is refused, not rendered."""
     for tamper in [
@@ -75,7 +139,7 @@ def tampered_content_is_refused(browser):
             return fulfill
 
         page.route('**/p/*/pages/ch03-inventory.*.json', handler(tamper))
-        page.goto(BASE + '#/ch03/inventory')
+        page.goto(BASE + '#/' + PROGRAM + '/ch03/inventory')
         page.locator('.load-error').wait_for()
         assert 'not valid content' in page.locator('.load-error').inner_text()
         assert page.evaluate('window.pwned') is None
@@ -89,6 +153,7 @@ with preview_server(BASE, ROOT):
         browser = p.chromium.launch(headless=True)
         content_from_another_origin(browser)
         tampered_content_is_refused(browser)
+        programs_stay_separate(browser)
         context = browser.new_context(reduced_motion='reduce')
         page = context.new_page(); errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
@@ -153,10 +218,10 @@ with preview_server(BASE, ROOT):
         link.click(); page.wait_for_function("document.getElementById('repair-an-existing-lab').getBoundingClientRect().top < 150")
         # The platform badge navigates to a track-owned reference page.
         go(page, '/')
-        lesson_before_reference = page.evaluate("localStorage.getItem('rhce:lastVisited')")
+        lesson_before_reference = page.evaluate("localStorage.getItem('rhce:rhel9-ansible@lastVisited')")
         page.get_by_role('link', name='RHEL 9: platform and versions', exact=True).click()
         page.get_by_role('heading', name='RHEL 9: Platform and versions', exact=True).wait_for()
-        assert page.url.endswith('#/platform')
+        assert page.url.endswith('#/rhel9-ansible/platform')
         assert not page.get_by_role('dialog').count()
         assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
         page.get_by_role('tab', name='Home lab', exact=True).click()
@@ -173,9 +238,9 @@ with preview_server(BASE, ROOT):
         assert diagram.get_by_role('button', name='Project', exact=True).get_attribute('aria-pressed') == 'true'
         page.get_by_role('tab', name='Classroom reference', exact=True).focus(); page.keyboard.press('Home')
         assert page.get_by_role('tab', name='Home lab', exact=True).get_attribute('aria-selected') == 'true'
-        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed') || '[]').length") == 0
         assert not page.locator('.complete-btn').count()
-        assert page.evaluate("localStorage.getItem('rhce:lastVisited')") == lesson_before_reference
+        assert page.evaluate("localStorage.getItem('rhce:rhel9-ansible@lastVisited')") == lesson_before_reference
         for theme in ['light', 'dark']:
             for width in [390, 1440]:
                 page.set_viewport_size({'width': width, 'height': 1000})
@@ -293,9 +358,9 @@ with preview_server(BASE, ROOT):
             assert activity.evaluate('(e, prop) => getComputedStyle(e)[prop]', property) == quiz.evaluate('(e, prop) => getComputedStyle(e)[prop]', property)
         activity.locator('#challenge-desired-state').get_by_role('button', name='ok', exact=True).click()
         assert activity.locator('.quiz-explain.is-correct').count() == 1
-        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:challenge:desired-state')).at(-1).passed")
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@challenge:desired-state')).at(-1).passed")
         page.reload(); activity.wait_for(); assert activity.locator('.quiz-explain.is-correct').count() == 1
-        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
+        assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed') || '[]').length") == 0
         # Optional timer survives reload.
         go(page, '/ch11/assessment-release'); page.get_by_role('button', name='Start 90-minute timer').click()
         page.reload(); page.locator('[role=timer]').wait_for(); assert 'remaining' in page.locator('[role=timer]').inner_text()
@@ -305,12 +370,12 @@ with preview_server(BASE, ROOT):
         assert downloaded.value.suggested_filename.startswith('kernel-path-progress-')
         with tempfile.TemporaryDirectory() as temp:
             file = Path(temp) / 'progress.json'; downloaded.value.save_as(file)
-            backup = json.loads(file.read_text()); assert backup['version'] == 2
+            backup = json.loads(file.read_text()); assert backup['version'] == 3 and backup['program'] == PROGRAM
             assert backup['app'] == 'kernel-path'
             malformed = Path(temp) / 'invalid.json'; malformed.write_text(json.dumps({**backup, 'data': {'completed': False}}))
             page.locator('.progress-panel input[type=file]').set_input_files(malformed)
             page.get_by_text('Invalid progress entry: completed', exact=True).wait_for()
-            assert json.loads(page.evaluate("localStorage.getItem('rhce:challenge:desired-state')"))[0]['passed']
+            assert json.loads(page.evaluate("localStorage.getItem('rhce:rhel9-ansible@challenge:desired-state')"))[0]['passed']
             page.locator('.progress-panel input[type=file]').set_input_files(file)
             page.locator('.progress-message').filter(has_text='Restored').wait_for()
         page.keyboard.press('Escape')
@@ -324,15 +389,15 @@ with preview_server(BASE, ROOT):
             file = Path(temp) / 'lab-report.json'; file.write_text(json.dumps(report))
             page.locator('article input[type=file]').set_input_files(file)
             page.get_by_text('Saved system-archive / final.', exact=False).wait_for()
-            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:labReports')).length") == 1
-            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@labReports')).length") == 1
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed') || '[]').length") == 0
             file.write_text(json.dumps({**report, 'checks': report['checks'][1:]}))
             page.locator('article input[type=file]').set_input_files(file)
             page.get_by_text('The lab report is incomplete:', exact=False).wait_for()
-            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:labReports')).length") == 1
+            assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@labReports')).length") == 1
         # Cross-tab updates.
         go(page, '/progress'); other = context.new_page(); go(other, '/')
-        other.evaluate("localStorage.setItem('rhce:completed', JSON.stringify(['ch02/why-automate']))")
+        other.evaluate("localStorage.setItem('rhce:rhel9-ansible@completed', JSON.stringify(['ch02/why-automate']))")
         page.wait_for_function("document.querySelector('.dashboard-stats dd').innerText.trim().split(/\\s+/)[0] === '1'")
         # Readiness migration and preference updates should stay independent.
         other.close()
@@ -341,10 +406,10 @@ with preview_server(BASE, ROOT):
         blocked_page = blocked.new_page(); go(blocked_page, '/progress')
         assert 'storage is unavailable' in blocked_page.inner_text('body')
         corrupt = browser.new_context()
-        corrupt.add_init_script("localStorage.setItem('rhce:completed', 'false'); localStorage.setItem('rhce:readiness', '{broken')")
+        corrupt.add_init_script("localStorage.setItem('rhce:rhel9-ansible@completed', 'false'); localStorage.setItem('rhce:rhel9-ansible@readiness', '{broken')")
         corrupt_page = corrupt.new_page(); go(corrupt_page, '/progress')
         assert corrupt_page.locator('h1').inner_text() == 'Your learning'
-        assert corrupt_page.evaluate("localStorage.getItem('rhce:completed')") == 'false'
+        assert corrupt_page.evaluate("localStorage.getItem('rhce:rhel9-ansible@completed')") == 'false'
         assert not errors, errors
         print(f'PASS: {len(routes)} routes, {len(lab_routes)} authored lab modes, light/dark dashboard spacing, mobile layouts, keyboard dialogs, responsive table layouts, unchanged command selection, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
         browser.close()

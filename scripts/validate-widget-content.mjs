@@ -34,9 +34,9 @@ function validate(catalog, file) {
     for (const child of contract.dependencies.filter((name) => contracts.has(name))) assert(catalog[child], `${file}: ${name} needs ${child} content`);
   }
 }
-const shared = { ...JSON.parse(fs.readFileSync('content/_interface.json')), HomePage: JSON.parse(fs.readFileSync('content/home.json')), ProgressPage: JSON.parse(fs.readFileSync('content/progress.json')) };
-validate(shared, 'content/_interface.json + home.json');
-const { pages } = await readBundle();
+const { pages, legacy } = await readBundle();
+const shared = legacy.interface;
+validate(shared, 'interface copy');
 let count = 0;
 for (const [key, page] of Object.entries(pages)) {
   // Each legacy widget's copy lives in the page data under its ref, plus copy for widgets it renders inside itself.

@@ -1,7 +1,7 @@
 // Classroom vs home-lab instructions. The reader's choice is one site-wide
 // preference, so switching it on any page switches every <Env> block.
 import { Children, isValidElement, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { FileText, House, School, WandSparkles } from 'lucide-react';
 import { ENVS, useLabEnv } from '@/lib/labEnv';
 import OptionSwitch from './OptionSwitch';

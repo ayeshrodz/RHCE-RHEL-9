@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { ArrowRight, BookOpen, Check, CircleHelp, FlaskConical, ListChecks } from 'lucide-react';
 import { chapters, course, track, pages } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';

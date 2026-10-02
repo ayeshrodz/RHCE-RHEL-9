@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { Menu, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { course, track } from '@/lib/course';

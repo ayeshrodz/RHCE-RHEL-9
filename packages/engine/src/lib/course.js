@@ -1,7 +1,9 @@
-// The current program, loaded from the compiled content bundle at startup (see
-// bootContent). Components import these bindings as before; they are set once, before
-// the first render, and never change afterwards.
+// The site index and the active program, loaded from the compiled content bundle.
+// bootContent loads the site index once; activateProgram installs one program's data.
+// Components import the bindings below. They change only when the reader moves to another
+// program, and the program route remounts everything beneath it when that happens.
 import { loadLegacy, loadManifest, loadPage, loadSearch, loadSite } from './content';
+import { setProgramScope } from './storage';
 
 export let site = null;
 export let program = null;
@@ -22,13 +24,27 @@ export const kindLabel = {
   summary: 'Summary',
 };
 
-/** Load the site index, the program manifest and its interface copy, then install them. */
+/** Load the site index. Programs load one at a time, when the reader opens them. */
 export async function bootContent() {
   site = await loadSite();
-  const entry = site.programs.find((p) => p.status === 'active') ?? site.programs[0];
-  manifest = await loadManifest(entry.manifest);
-  const legacy = manifest.legacy ? await loadLegacy(manifest.legacy) : null;
+}
+
+/** The program a bare address opens: the first active one. */
+export function defaultProgramId() {
+  return (site.programs.find((p) => p.status === 'active') ?? site.programs[0]).id;
+}
+
+export const hasProgram = (id) => site.programs.some((p) => p.id === id);
+
+/** Load a program's manifest and interface copy, then make it the active program. */
+export async function activateProgram(id) {
+  if (program?.id === id) return program;
+  const entry = site.programs.find((p) => p.id === id);
+  const loaded = await loadManifest(entry.manifest);
+  const legacy = loaded.legacy ? await loadLegacy(loaded.legacy) : null;
+  manifest = loaded;
   program = manifest.program;
+  setProgramScope(program.id);
   course = legacy?.course ?? { title: site.site.name, tagline: program.tagline ?? site.site.tagline, repo: site.site.repo };
   track = legacy?.track ?? { id: program.platform.family, label: program.platform.label, platform: { path: '/platform' } };
   interfaceContent = legacy?.interface ?? {};
@@ -50,6 +66,7 @@ export async function bootContent() {
   challenges = chapters.flatMap((chapter) =>
     chapter.sections.flatMap((section) => (section.activities?.practice ?? []).map((c) => ({ ...c, chapter: chapter.id }))),
   );
+  return program;
 }
 
 export function findPage(chapterId, slug) {
