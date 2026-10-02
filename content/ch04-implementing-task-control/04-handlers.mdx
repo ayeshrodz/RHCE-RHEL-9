@@ -4,6 +4,59 @@ kind: lesson
 minutes: 10
 ---
 
+export const widgetContent = {
+  "HandlerTimeline": {
+    "data": {
+      "tasks": [
+        {
+          "name": "nginx and php-fpm are installed",
+          "notify": []
+        },
+        {
+          "name": "/etc/nginx/nginx.conf is deployed",
+          "notify": [
+            "restart web service"
+          ]
+        },
+        {
+          "name": "/etc/php-fpm.conf is deployed",
+          "notify": [
+            "restart app service"
+          ]
+        },
+        {
+          "name": "nginx.conf copied again (second notify)",
+          "notify": [
+            "restart web service"
+          ]
+        }
+      ],
+      "handlers": [
+        "restart app service",
+        "restart web service",
+        "restart database"
+      ]
+    },
+    "text": {
+      "name": "Task that fails",
+      "label": "not notified",
+      "label2": "runs once",
+      "label3": "never runs",
+      "vsubToggle": " a later task fails",
+      "label4": " force_handlers: true",
+      "widgetLabel": "tasks: click to flip ok / changed",
+      "htStatus": "failed",
+      "template": "Toggle {value0}",
+      "label5": "would notify",
+      "widgetLabel2": "handlers: run after all tasks",
+      "label6": "The play failed on this host, so notified handlers are dropped. Set force_handlers: true to run them anyway.",
+      "label7": "force_handlers makes already-notified handlers run even though the play failed.",
+      "label8": "Each notified handler runs exactly once, in the order of the handlers section, even if several tasks notified it.",
+      "label9": "Nothing changed, so no handler was notified and none run."
+    }
+  }
+};
+
 <Lead>
 When a configuration file changes, the service that reads it must be restarted, but only then. Restarting on every run would interrupt users for no reason. Handlers are tasks that run only when another task reports that it changed something.
 </Lead>

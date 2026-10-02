@@ -1,3 +1,4 @@
+import { lessonProse } from '@/lib/contentSource';
 import GithubSlugger from 'github-slugger';
 import { loadRawSources, pages } from '@/lib/course';
 
@@ -17,9 +18,7 @@ export function getIndex() {
         if (text || heading) entries.push({ page, heading, anchor, text });
         buf = [];
       };
-      const source = (sources[page.key] ?? '')
-        .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '')
-        .replace(/^export const practice = \[[\s\S]*?^\];\s*$/gm, '');
+      const source = lessonProse(sources[page.key] ?? '');
       for (const line of source.split('\n')) {
         const h = line.match(/^(##{1,2})\s+(.+)$/);
         if (h) {

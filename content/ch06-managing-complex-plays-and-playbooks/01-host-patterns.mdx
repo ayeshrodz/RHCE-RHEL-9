@@ -4,6 +4,50 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "HostPatternTester": {
+    "data": {
+      "inventory": "[web]\nservera.lab.example.com\nserverb.lab.example.com\n\n[db]\nserverc.lab.example.com\nserverd.lab.example.com\n\n[staging]\nservera.lab.example.com\nserverc.lab.example.com\n\n[production]\nserverb.lab.example.com\nserverd.lab.example.com\n\n[site:children]\nweb\ndb",
+      "presets": [
+        "all",
+        "web",
+        "web,db",
+        "web,!staging",
+        "web,&production",
+        "prod*",
+        "*.lab.example.com",
+        "~server[ab]",
+        "db[0]",
+        "site[1:2]",
+        "!staging"
+      ],
+      "ops": {
+        "": "add",
+        "&": "keep only hosts also in",
+        "!": "remove"
+      },
+      "initialSelection1": "web,!staging"
+    },
+    "text": {
+      "widgetLabel": "Host pattern tester",
+      "span": "hosts:",
+      "label": "Host pattern",
+      "template": "{value0} of {value1} hosts selected",
+      "label2": "No hosts matched: the play would be skipped.",
+      "em": "nothing: no host or group has this name",
+      "span2": " (",
+      "span3": ")",
+      "hpWarn": "[WARNING]: ",
+      "hpQuote": "In a playbook, quote it: ",
+      "template2": "hosts: '{value0}'",
+      "hpQuote2": ".",
+      "hpQuote3": "On the command line, quote it for the shell: ",
+      "template3": "--limit '{value0}'",
+      "hpQuote4": "."
+    }
+  }
+};
+
 <Lead>
 Every play starts by answering one question: which machines? So far the answer has been a single group name. A host pattern can say much more: these two groups, this group except the staging machines, only the hosts that are in both. Getting the pattern right is what makes it safe to run a play against a large inventory.
 </Lead>

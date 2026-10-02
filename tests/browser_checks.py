@@ -2,31 +2,19 @@
 import json
 import os
 from pathlib import Path
-import subprocess
 import tempfile
-import time
-import urllib.request
 from playwright.sync_api import sync_playwright
+from browser_server import preview_server
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('PLAYBOOK_TEST_URL', 'http://127.0.0.1:4173/')
-server = None
-try:
-    urllib.request.urlopen(BASE, timeout=2)
-except Exception:
-    server = subprocess.Popen(['npm', 'run', 'preview', '--', '--host', '127.0.0.1'], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    for _ in range(40):
-        try:
-            urllib.request.urlopen(BASE, timeout=1); break
-        except Exception: time.sleep(.25)
-    else: raise RuntimeError('Preview server did not start')
 
 def go(page, route):
     page.goto(BASE + '#' + route)
     page.locator('h1').first.wait_for()
     page.wait_for_function("!document.querySelector('.skeleton')")
 
-try:
+with preview_server(BASE, ROOT):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(reduced_motion='reduce')
@@ -168,7 +156,7 @@ try:
                 assert page.locator('h1').evaluate('(e) => getComputedStyle(e).fontWeight') == '500'
                 assert page.locator('.dashboard-card h2').first.evaluate('(e) => getComputedStyle(e).marginTop') == '0px'
                 assert not page.locator('.learning-dashboard .btn-primary').count()
-                assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == 34
+                assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == (44 if width == 390 else 34)
                 assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         for route in ['/platform', '/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:
@@ -272,6 +260,3 @@ try:
         assert not errors, errors
         print(f'PASS: {len(routes)} routes, {len(lab_routes)} authored lab modes, light/dark dashboard spacing, mobile layouts, keyboard dialogs, responsive table layouts, unchanged command selection, activity feedback, timer persistence, progress round trips, cross-tab updates and unavailable storage')
         browser.close()
-finally:
-    if server:
-        server.terminate(); server.wait(timeout=10)

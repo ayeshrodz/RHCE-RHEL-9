@@ -4,6 +4,111 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "VaultFlow": {
+    "data": {},
+    "text": {
+      "title": "How Ansible Vault protects a secret",
+      "caption": "The secret is only ever stored encrypted. ansible-navigator decrypts it in memory while the playbook runs, using a password you supply.",
+      "title2": "secret.yml",
+      "sub": "plain text",
+      "sub2": "web_pass: redhat",
+      "label": "encrypt",
+      "title3": "secret.yml",
+      "sub3": "$ANSIBLE_VAULT;1.1;AES256",
+      "sub4": "6231386563383461653…",
+      "sub5": "safe to commit to Git",
+      "title4": "Vault password",
+      "sub6": "prompt or password file",
+      "label2": "unlocks",
+      "label3": "read at run time",
+      "label4": "ansible-navigator run",
+      "title5": "web_pass = redhat",
+      "sub7": "decrypted in memory only",
+      "label5": "Never on disk in plain text,",
+      "label6": "never in Git history."
+    }
+  },
+  "VaultCommands": {
+    "data": {
+      "commands": [
+        {
+          "cmd": "create",
+          "run": "ansible-vault create secret.yml",
+          "before": null,
+          "after": "locked",
+          "prompts": [
+            "New Vault password",
+            "Confirm New Vault password"
+          ],
+          "text": "Makes a new encrypted file. It asks for a new password, then opens your editor (vi by default; set EDITOR=nano to change it). When you save and quit, the content is encrypted."
+        },
+        {
+          "cmd": "view",
+          "run": "ansible-vault view secret.yml",
+          "before": "locked",
+          "after": "locked",
+          "prompts": [
+            "Vault password"
+          ],
+          "text": "Prints the decrypted content to the terminal without changing the file. Use it whenever you only need to read."
+        },
+        {
+          "cmd": "edit",
+          "run": "ansible-vault edit secret.yml",
+          "before": "locked",
+          "after": "locked",
+          "prompts": [
+            "Vault password"
+          ],
+          "text": "Decrypts to a temporary file, opens your editor, then re-encrypts and removes the temporary copy. It always rewrites the file, which shows up as a change in Git even if you edited nothing, so prefer view for reading."
+        },
+        {
+          "cmd": "encrypt",
+          "run": "ansible-vault encrypt secret1.yml secret2.yml",
+          "before": "open",
+          "after": "locked",
+          "prompts": [
+            "New Vault password",
+            "Confirm New Vault password"
+          ],
+          "text": "Encrypts files that already exist, in place. Accepts several files at once. Add --output=NEW_FILE to write the result to a new name (one input file only)."
+        },
+        {
+          "cmd": "decrypt",
+          "run": "ansible-vault decrypt secret1.yml --output=secret1-decrypted.yml",
+          "before": "locked",
+          "after": "open",
+          "prompts": [
+            "Vault password"
+          ],
+          "text": "Removes the encryption permanently. With a single file, --output writes the plain text to a different name and leaves the original encrypted."
+        },
+        {
+          "cmd": "rekey",
+          "run": "ansible-vault rekey secret.yml",
+          "before": "locked",
+          "after": "locked",
+          "prompts": [
+            "Vault password",
+            "New Vault password",
+            "Confirm New Vault password"
+          ],
+          "text": "Changes the password. It works on several files at once. With password files, use --new-vault-password-file for the new one."
+        }
+      ]
+    },
+    "text": {
+      "vcState": "no file",
+      "vcState2": " encrypted",
+      "vcState3": " plain text",
+      "label": "ansible-vault subcommands",
+      "termMuted": "[student@workstation ~]$ ",
+      "template": "\n{value0}: ********"
+    }
+  }
+};
+
 <Lead>
 Playbooks often need passwords, API keys or private keys. Kept as plain text in a variables file, those secrets are readable by anyone who can see the project, including everyone with access to its Git repository. Ansible Vault encrypts them so the project can be shared safely.
 </Lead>

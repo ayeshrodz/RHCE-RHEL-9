@@ -4,6 +4,177 @@ kind: lesson
 minutes: 10
 ---
 
+export const widgetContent = {
+  "ArchitectureMap": {
+    "data": {
+      "info": {
+        "inventory": {
+          "tone": "amber",
+          "title": "Inventory",
+          "text": "The list of managed hosts, organised into groups such as webservers or production. It can be a static text file or generated on the fly by a dynamic inventory plug-in."
+        },
+        "config": {
+          "tone": "gray",
+          "title": "ansible.cfg and ansible-navigator.yml",
+          "text": "Project settings: where the inventory lives, which user to connect as, whether to escalate with sudo, and which execution environment image ansible-navigator should use."
+        },
+        "play1": {
+          "tone": "purple",
+          "title": "Play",
+          "text": "A play maps a set of hosts from the inventory to an ordered list of tasks. A playbook is a YAML file containing one or more plays, and Ansible runs them top to bottom."
+        },
+        "play2": {
+          "tone": "purple",
+          "title": "Playbook with several plays",
+          "text": "Each play can target different hosts and use different settings. Here the second play targets the database servers after the first finishes with the web servers."
+        },
+        "modules": {
+          "tone": "teal",
+          "title": "Modules",
+          "text": "Each task calls one module, a small program (usually Python) that knows how to reach one kind of desired state: a package installed, a file present, a service running. Ansible copies it to the host, runs it, reads the JSON result, then removes it."
+        },
+        "linux": {
+          "tone": "green",
+          "title": "Linux managed host",
+          "text": "Needs no agent. It must accept SSH from the control node, have Python 3.8 or later for most modules, and give the remote user a way (usually sudo) to become root."
+        },
+        "windows": {
+          "tone": "blue",
+          "title": "Windows managed host",
+          "text": "Managed over WinRM with modules from the ansible.windows collection. Needs PowerShell 3.0+, .NET Framework 4.0+, and PowerShell remoting configured. Not covered in depth on the exam."
+        },
+        "network": {
+          "tone": "gray",
+          "title": "Network device",
+          "text": "Routers and switches usually cannot run Python, so their modules run on the control node and talk to the device using CLI over SSH, XML over SSH, or an HTTP(S) API."
+        }
+      }
+    },
+    "text": {
+      "title": "Ansible architecture",
+      "caption": "Ansible runs from one control node and reaches out to managed hosts over standard protocols.",
+      "label": "Control node",
+      "sub": "Ansible lives here",
+      "title2": "Inventory",
+      "sub2": "which hosts",
+      "title3": "ansible.cfg",
+      "sub3": "how to connect",
+      "label2": "Playbook (YAML)",
+      "sub4": "runs top to bottom",
+      "title4": "Play 1  ·  hosts: webservers",
+      "sub5": "task → task → task",
+      "title5": "Play 2  ·  hosts: dbservers",
+      "sub6": "task → task",
+      "title6": "Modules",
+      "sub7": "ansible.builtin.dnf, .copy, .service …",
+      "label3": "Managed hosts",
+      "sub8": "no agent",
+      "title7": "servera",
+      "sub9": "RHEL 9 · Python 3",
+      "title8": "serverb",
+      "sub10": "RHEL 9 · Python 3",
+      "title9": "win1",
+      "sub11": "Windows · PowerShell",
+      "title10": "core-switch",
+      "sub12": "network device",
+      "label4": "SSH / API"
+    }
+  },
+  "TaskLifecycle": {
+    "data": {
+      "steps": [
+        {
+          "title": "Read the plan",
+          "text": "Ansible parses the playbook and looks up the target hosts in the inventory."
+        },
+        {
+          "title": "Connect",
+          "text": "It opens an SSH connection to servera as the configured remote user. No agent is waiting there, just sshd."
+        },
+        {
+          "title": "Ship the module",
+          "text": "The code for the task’s module (here, dnf) is copied into a temporary directory on the managed host."
+        },
+        {
+          "title": "Execute and compare",
+          "text": "The module checks the current state (is httpd installed?) and changes the system only if it does not match the desired state."
+        },
+        {
+          "title": "Report back",
+          "text": "The module returns JSON: ok if nothing needed changing, changed if it fixed something, failed if it could not."
+        },
+        {
+          "title": "Clean up",
+          "text": "The temporary files are removed and Ansible moves on to the next task. The host is left with no Ansible software on it."
+        }
+      ]
+    },
+    "text": {
+      "title": "The life of a single task",
+      "label": "Control node",
+      "title2": "site.yml",
+      "title3": "inventory",
+      "title4": "dnf module",
+      "sub": "Python code",
+      "label2": "servera",
+      "sub2": "managed host",
+      "title5": "~/.ansible/tmp/",
+      "sub3": "emptied",
+      "sub4": "module lands here",
+      "title6": "httpd package",
+      "sub5": "installed ✓",
+      "sub6": "not installed",
+      "label3": "1 · SSH as remote_user",
+      "label4": "2 · copy module",
+      "label5": "3 · JSON: changed",
+      "label6": "4 · remove temp files"
+    }
+  },
+  "IdempotencyDemo": {
+    "data": {
+      "tasks": [
+        {
+          "key": "pkg",
+          "name": "Ensure httpd package is present",
+          "drift": "Someone removed httpd"
+        },
+        {
+          "key": "page",
+          "name": "Ensure index.html is present",
+          "drift": "Someone edited index.html"
+        },
+        {
+          "key": "svc",
+          "name": "Ensure httpd is started",
+          "drift": "Someone stopped httpd"
+        }
+      ]
+    },
+    "text": {
+      "widgetLabel": "servera right now",
+      "li": "httpd installed",
+      "li2": "index.html correct",
+      "li3": "httpd running",
+      "label": "Matches the playbook",
+      "label2": "Differs from the playbook",
+      "btn": " Run the playbook",
+      "widgetLabel2": " Cause drift",
+      "btn2": " Fresh host",
+      "termMuted": "$ ansible-navigator run -m stdout site.yml # press “Run the playbook”",
+      "termDrift": "⚡ ",
+      "termDrift2": " on servera",
+      "termMuted2": "$ ansible-navigator run -m stdout site.yml # run ",
+      "p": "PLAY [Web server is configured] ****",
+      "termOk": "ok: [servera] Gathering Facts",
+      "p2": ": [servera] ",
+      "p3": "PLAY RECAP servera : ",
+      "termOk2": "ok=",
+      "span": "changed=",
+      "p4": "failed=0"
+    }
+  }
+};
+
 <Lead>
 Every Ansible setup has the same shape: one machine that runs Ansible, many machines that it manages, and a handful of text files that connect the two. Learn these few terms well; the rest of the course builds on them.
 </Lead>

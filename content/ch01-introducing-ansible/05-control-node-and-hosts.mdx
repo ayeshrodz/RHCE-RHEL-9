@@ -4,6 +4,36 @@ kind: lesson
 minutes: 8
 ---
 
+export const widgetContent = {
+  "NavigatorRuntime": {
+    "data": {},
+    "text": {
+      "title": "How ansible-navigator runs a playbook",
+      "caption": "ansible-navigator starts the execution environment with Podman, mounts your project into it, and the container connects to the managed hosts.",
+      "title2": "Container registry",
+      "sub": "EE images",
+      "label": "podman pull (once)",
+      "label2": "Control node (workstation)",
+      "title3": "ansible-navigator",
+      "sub2": "you run: run site.yml",
+      "title4": "Project directory",
+      "sub3": "site.yml, inventory, cfg",
+      "label3": "starts container",
+      "label4": "mounted inside",
+      "title5": "EE container",
+      "sub4": "ansible-core",
+      "sub5": "collections",
+      "sub6": "Python libraries",
+      "sub7": "runs as root",
+      "label5": "Hosts",
+      "title6": "servera",
+      "title7": "serverb",
+      "label6": "SSH",
+      "label7": "SSH"
+    }
+  }
+};
+
 <Lead>
 Only the control node needs Ansible software. Managed hosts just need to be reachable and to meet a few small requirements, which differ for Linux, Windows and network devices.
 </Lead>

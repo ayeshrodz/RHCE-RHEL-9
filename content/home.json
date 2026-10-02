@@ -1,0 +1,123 @@
+{
+  "data": {
+    "stages": [
+      {
+        "title": "Foundations",
+        "chapters": [
+          1,
+          2
+        ],
+        "text": "What Ansible is, inventories, configuration, and your first playbooks."
+      },
+      {
+        "title": "Data and control",
+        "chapters": [
+          3,
+          4
+        ],
+        "text": "Variables, facts and secrets; loops, conditions, handlers and errors."
+      },
+      {
+        "title": "Files and structure",
+        "chapters": [
+          5,
+          6
+        ],
+        "text": "Templates and file modules; host patterns, imports and includes."
+      },
+      {
+        "title": "Reuse",
+        "chapters": [
+          7
+        ],
+        "text": "Roles, collections and the system roles."
+      },
+      {
+        "title": "Real work",
+        "chapters": [
+          8,
+          9
+        ],
+        "text": "Troubleshooting, then software, users, storage and networking."
+      },
+      {
+        "title": "Prove it",
+        "chapters": [
+          10
+        ],
+        "text": "Four review exercises and two integrated assessments."
+      },
+      {
+        "title": "Project workflow",
+        "chapters": [
+          11
+        ],
+        "text": "Git, editor containers, explicit runtimes, recovery and validated access."
+      }
+    ],
+    "labhosts": [
+      [
+        "workstation \u00b7 172.25.250.9",
+        "Control node. You write and run playbooks here."
+      ],
+      [
+        "servera \u2026 serverd \u00b7 .10\u2013.13",
+        "Managed hosts that your playbooks configure, each with a spare disk."
+      ],
+      [
+        "utility \u00b7 .8",
+        "Optional web server for practice files."
+      ]
+    ]
+  },
+  "text": {
+    "title": "Lessons you can see",
+    "text": "Every idea gets a clean diagram. Many are clickable or step through one stage at a time.",
+    "title2": "Hands-on exercises",
+    "text2": "Hands-on exercises as checklists that remember where you stopped.",
+    "title3": "Knowledge checks",
+    "text3": "Quick questions inside lessons and a full quiz at the end of each chapter.",
+    "title4": "Cheat sheets",
+    "text4": "Each chapter ends with the commands, files and flashcards worth memorising.",
+    "template": "{value0} \u00b7 {value1}",
+    "pageEyebrow": "Free and open source \u00b7 Ansible on RHEL ",
+    "pageEyebrow2": " \u00b7 ",
+    "pageEyebrow3": "-focused",
+    "h1": ".",
+    "heroSub": "A hands-on path from your first playbook to automating real Linux administration. Every idea is drawn as a diagram, every exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.",
+    "heroFocus": "The path follows the objectives of the Red Hat Certified Engineer (",
+    "heroFocus2": ") exam, so it doubles as exam preparation.",
+    "btn": "Your learning",
+    "template2": "Continue with {value0}",
+    "label": "Start with chapter 1",
+    "btn2": " Build the practice lab",
+    "heroProgress": "% complete",
+    "h2": "The path",
+    "homeSectionSub": "Each stage builds on the last. Your progress is saved in this browser.",
+    "pathChapters": "Chapter",
+    "h22": "Chapters",
+    "pill": "Coming soon",
+    "pill2": " sections",
+    "template3": "{value0} of {value1} complete",
+    "h23": "Build the practice lab",
+    "p": "The exercises use the machines from the official classroom. Chapter 0 builds a faithful copy on one Ubuntu machine: Rocky Linux 9 VMs on LXD, with the usual classroom names, addresses and users, sealed off from your home network, plus a classroom-style",
+    "code": "rht-vmctl",
+    "p2": " to reset machines between exercises.",
+    "btn3": " Open the lab guide ",
+    "title5": "servera",
+    "sub": "ok",
+    "title6": "serverb",
+    "sub2": "changed",
+    "title7": "serverc",
+    "sub3": "ok",
+    "title8": "A control node applying a playbook to three hosts over SSH",
+    "label2": "Your automation",
+    "title9": "site.yml",
+    "sub4": "desired state",
+    "title10": "inventory",
+    "sub5": "which hosts",
+    "title11": "ansible-navigator",
+    "sub6": "control node, no agents needed",
+    "label3": "SSH"
+  }
+}

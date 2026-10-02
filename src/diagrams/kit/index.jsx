@@ -1,56 +1,102 @@
 // Diagram kit: small SVG primitives that share one visual language.
 // Flat pastel fills, hairline strokes, 14px titles / 12px subtitles, and
 // colour "tones" that re-map automatically in dark mode (see diagrams.css).
-import { createContext, useContext, useId, useState } from 'react';
+import { createContext, useContext, useId, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, RotateCcw, X } from 'lucide-react';
+
+import { useOverlay } from '@/hooks/useOverlay';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { formatCopy } from '@/components/interactive/TeachingContent';
+import { interfaceContent } from '@/lib/course';
 
 const MarkerContext = createContext('dg');
 
 export function Diagram({ width = 680, height, title, caption, children, below, className = '', expandable = true }) {
   const uid = useId().replace(/:/g, '');
   const [zoom, setZoom] = useState(false);
+  const [fit, setFit] = useState(false);
+  const dialogRef = useRef(null);
+  const mobile = useMediaQuery('(max-width: 640px)');
+  const copy = interfaceContent.Diagram.text;
+  useOverlay(dialogRef, zoom, () => setZoom(false));
 
-  const svg = (
-    <MarkerContext.Provider value={uid}>
-      <svg viewBox={`0 0 ${width} ${height}`} className="dg" role="img" aria-label={title}>
-        <defs>
-          <marker id={`${uid}-a`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M1 1.5 L9 5 L1 8.5" className="dg-head" />
-          </marker>
-          <marker id={`${uid}-h`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M1 1.5 L9 5 L1 8.5" className="dg-head is-hot" />
-          </marker>
-          <marker id={`${uid}-ok`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M1 1.5 L9 5 L1 8.5" className="dg-head is-ok" />
-          </marker>
-          <marker id={`${uid}-bad`} viewBox="0 0 10 10" refX="5" refY="5" markerWidth="9" markerHeight="9" orient="auto">
-            <path d="M2 2 L8 8 M8 2 L2 8" className="dg-head is-bad" />
-          </marker>
-        </defs>
-        {children}
-      </svg>
-    </MarkerContext.Provider>
-  );
+  const svg = (suffix) => {
+    const markerId = `${uid}-${suffix}`;
+    return (
+      <MarkerContext.Provider value={markerId}>
+        <svg viewBox={`0 0 ${width} ${height}`} className="dg" role="img" aria-label={title}>
+          <defs>
+            <marker id={`${markerId}-a`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M1 1.5 L9 5 L1 8.5" className="dg-head" />
+            </marker>
+            <marker id={`${markerId}-h`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M1 1.5 L9 5 L1 8.5" className="dg-head is-hot" />
+            </marker>
+            <marker
+              id={`${markerId}-ok`}
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M1 1.5 L9 5 L1 8.5" className="dg-head is-ok" />
+            </marker>
+            <marker id={`${markerId}-bad`} viewBox="0 0 10 10" refX="5" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+              <path d="M2 2 L8 8 M8 2 L2 8" className="dg-head is-bad" />
+            </marker>
+          </defs>
+          {children}
+        </svg>
+      </MarkerContext.Provider>
+    );
+  };
 
   return (
     <figure className={`diagram ${className}`}>
-      <div className="diagram-canvas">
-        {svg}
+      <div className="diagram-canvas" style={{ '--diagram-width': `${width}px` }}>
+        <div className="diagram-tools">
+          {mobile && <span className="diagram-mobile-title">{title}</span>}
+          {expandable && (
+            <button className="diagram-zoom" onClick={() => setZoom(true)} aria-label={copy.enlarge}>
+              <Maximize2 size={14} />
+            </button>
+          )}
+        </div>
+        <div
+          className="diagram-viewport"
+          tabIndex={mobile ? 0 : undefined}
+          role={mobile ? 'region' : undefined}
+          aria-label={mobile ? title : undefined}
+        >
+          {svg('inline')}
+        </div>
+        {mobile && width > 320 && <p className="diagram-explore">{copy.explore}</p>}
         {below}
-        {expandable && (
-          <button className="diagram-zoom" onClick={() => setZoom(true)} aria-label="Enlarge diagram">
-            <Maximize2 size={14} />
-          </button>
-        )}
       </div>
       {caption && <figcaption>{caption}</figcaption>}
       {zoom && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label={title} onClick={() => setZoom(false)}>
-          <div className="lightbox-body" onClick={(e) => e.stopPropagation()}>
-            <button className="icon-btn lightbox-close" onClick={() => setZoom(false)} aria-label="Close">
+          <div
+            ref={dialogRef}
+            tabIndex={-1}
+            className="lightbox-body"
+            style={{ '--diagram-width': `${width}px` }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="lightbox-toolbar">
+              <span>{title}</span>
+              <button className="btn btn-sm" aria-pressed={fit} onClick={() => setFit((v) => !v)}>
+                {fit ? copy.actual : copy.fit}
+              </button>
+            </div>
+            <button className="icon-btn lightbox-close" onClick={() => setZoom(false)} aria-label={copy.close}>
               <X size={18} />
             </button>
-            {svg}
+            <div className={`lightbox-viewport ${fit ? 'is-fit' : ''}`} tabIndex={0} role="region" aria-label={title}>
+              {svg('expanded')}
+            </div>
             {caption && <p className="lightbox-caption">{caption}</p>}
           </div>
         </div>
@@ -188,41 +234,46 @@ export function useStepper(count, initial = 0) {
   };
 }
 
+export function StepDots({ steps, active, onSelect, className = '' }) {
+  const text = interfaceContent.Diagram.text;
+  return (
+    <div className={`step-dots ${className}`} role="group" aria-label={text.steps}>
+      {steps.map((item, index) => (
+        <button
+          key={index}
+          aria-pressed={index === active}
+          aria-label={formatCopy(text.stepLabel, [index + 1, item.title])}
+          className={index === active ? 'is-active' : index < active ? 'is-past' : ''}
+          onClick={() => onSelect(index)}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function StepControls({ stepper, steps }) {
   const { step, next, prev, reset, count, setStep } = stepper;
   const current = steps[step];
+  const text = interfaceContent.Diagram.text;
   return (
     <div className="step-controls">
       <div className="step-text" aria-live="polite">
-        <span className="step-index">
-          Step {step + 1} of {count}
-        </span>
+        <span className="step-index">{formatCopy(text.position, [step + 1, count])}</span>
         <strong>{current.title}</strong>
         {current.text && <span>{current.text}</span>}
       </div>
       <div className="step-buttons">
-        <div className="step-dots" role="tablist" aria-label="Steps">
-          {steps.map((s, i) => (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === step}
-              aria-label={`Step ${i + 1}: ${s.title}`}
-              className={i === step ? 'is-active' : i < step ? 'is-past' : ''}
-              onClick={() => setStep(i)}
-            />
-          ))}
-        </div>
-        <button className="btn btn-sm" onClick={prev} disabled={step === 0} aria-label="Previous step">
+        <StepDots steps={steps} active={step} onSelect={setStep} />
+        <button className="btn btn-sm" onClick={prev} disabled={step === 0} aria-label={text.previous}>
           <ChevronLeft size={14} />
         </button>
         {step < count - 1 ? (
           <button className="btn btn-sm btn-primary" onClick={next}>
-            Next <ChevronRight size={14} />
+            {text.next} <ChevronRight size={14} />
           </button>
         ) : (
           <button className="btn btn-sm" onClick={reset}>
-            <RotateCcw size={13} /> Replay
+            <RotateCcw size={13} /> {text.replay}
           </button>
         )}
       </div>

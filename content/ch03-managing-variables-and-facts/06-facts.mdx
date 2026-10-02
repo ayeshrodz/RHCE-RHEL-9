@@ -4,6 +4,165 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "FactsExplorer": {
+    "data": {
+      "sampleFacts": {
+        "hostname": "servera",
+        "fqdn": "servera.lab.example.com",
+        "domain": "lab.example.com",
+        "distribution": "RedHat",
+        "distribution_version": "9.0",
+        "distribution_major_version": "9",
+        "os_family": "RedHat",
+        "kernel": "5.14.0-70.13.1.el9_0.x86_64",
+        "architecture": "x86_64",
+        "python_version": "3.9.10",
+        "processor_count": 1,
+        "processor_vcpus": 2,
+        "memtotal_mb": 960,
+        "memfree_mb": 412,
+        "default_ipv4": {
+          "address": "172.25.250.10",
+          "interface": "eth0",
+          "gateway": "172.25.250.254",
+          "netmask": "255.255.255.0"
+        },
+        "all_ipv4_addresses": [
+          "172.25.250.10"
+        ],
+        "interfaces": [
+          "eth0",
+          "lo"
+        ],
+        "dns": {
+          "nameservers": [
+            "172.25.250.254"
+          ],
+          "search": [
+            "lab.example.com"
+          ]
+        },
+        "devices": {
+          "vda": {
+            "size": "10.00 GB",
+            "partitions": {
+              "vda1": {
+                "size": "1.00 MB"
+              },
+              "vda4": {
+                "size": "9.89 GB"
+              }
+            }
+          }
+        },
+        "selinux": {
+          "status": "enabled",
+          "mode": "enforcing"
+        },
+        "virtualization_role": "guest",
+        "ansible_local": {}
+      }
+    },
+    "text": {}
+  },
+  "FactGathering": {
+    "data": {
+      "modes": [
+        {
+          "label": "default",
+          "yaml": "- name: Default behaviour\n  hosts: webservers\n  tasks:\n    - name: Show the kernel\n      ansible.builtin.debug:\n        var: ansible_facts['kernel']",
+          "steps": [
+            {
+              "name": "Gathering Facts",
+              "note": "setup runs automatically",
+              "kind": "setup"
+            },
+            {
+              "name": "Show the kernel",
+              "note": "\"5.14.0-70.13.1.el9_0.x86_64\"",
+              "kind": "ok"
+            }
+          ],
+          "facts": "all",
+          "text": "Every play starts with an automatic Gathering Facts task that runs ansible.builtin.setup on each host. All facts are available to every task."
+        },
+        {
+          "label": "gather_facts: false",
+          "yaml": "- name: Faster play without facts\n  hosts: webservers\n  gather_facts: false\n  tasks:\n    - name: Show the kernel\n      ansible.builtin.debug:\n        var: ansible_facts['kernel']",
+          "steps": [
+            {
+              "name": "Show the kernel",
+              "note": "VARIABLE IS NOT DEFINED!",
+              "kind": "fail"
+            }
+          ],
+          "facts": "none",
+          "text": "No setup step, so the play starts faster and puts less load on hosts. Useful when you do not need facts, or when hosts cannot run setup yet. Any task that reads a fact finds it undefined."
+        },
+        {
+          "label": "false + setup task",
+          "yaml": "- name: Gather facts later\n  hosts: webservers\n  gather_facts: false\n  tasks:\n    - name: Install Python bindings first\n      ansible.builtin.dnf:\n        name: python3-libselinux\n    - name: Manually gather facts\n      ansible.builtin.setup:\n    - name: Show the kernel\n      ansible.builtin.debug:\n        var: ansible_facts['kernel']",
+          "steps": [
+            {
+              "name": "Install Python bindings first",
+              "note": "no facts yet",
+              "kind": "ok"
+            },
+            {
+              "name": "Manually gather facts",
+              "note": "setup runs now",
+              "kind": "setup"
+            },
+            {
+              "name": "Show the kernel",
+              "note": "\"5.14.0-70.13.1.el9_0.x86_64\"",
+              "kind": "ok"
+            }
+          ],
+          "facts": "all",
+          "text": "Turn off automatic gathering, prepare the host, then run ansible.builtin.setup as a normal task whenever you are ready. You can also re-run setup later to refresh facts."
+        },
+        {
+          "label": "gather_subset",
+          "yaml": "- name: Only hardware facts\n  hosts: webservers\n  gather_facts: false\n  tasks:\n    - name: Collect only hardware facts\n      ansible.builtin.setup:\n        gather_subset:\n          - hardware\n    # '!hardware' would mean: everything except hardware",
+          "steps": [
+            {
+              "name": "Collect only hardware facts",
+              "note": "setup: gather_subset=hardware",
+              "kind": "setup"
+            }
+          ],
+          "facts": "subset",
+          "text": "setup can collect a subset instead of everything. List subsets such as hardware or network, or prefix one with ! to gather everything except that subset. A minimal core set of facts is always collected either way."
+        }
+      ]
+    },
+    "text": {
+      "label": "Fact gathering mode",
+      "widgetLabel": "What runs",
+      "fgName": "TASK [",
+      "fgName2": "]",
+      "p": "ansible_facts:",
+      "label2": "fully populated",
+      "label3": "hardware facts, plus a small core set that is always gathered"
+    }
+  },
+  "DataExplorer": {
+    "data": {},
+    "text": {
+      "widgetLabel": ": click to explore",
+      "widgetLabel2": "Reference it as",
+      "template": "{{ {value0} }}",
+      "template2": "{{ {value0} }}",
+      "dxWarn": " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here.",
+      "widgetLabel3": "Old injected name",
+      "template3": "{{ {value0} }}",
+      "widgetLabel4": "Value"
+    }
+  }
+};
+
 <Lead>
 Before a play runs its first task, Ansible quietly asks every host about itself: its name, IP addresses, operating system, memory, disks and much more. Those answers are facts, and they let one playbook adapt to each host it touches.
 </Lead>

@@ -4,6 +4,48 @@ kind: lesson
 minutes: 7
 ---
 
+export const widgetContent = {
+  "DevOpsLifecycle": {
+    "data": {
+      "teams": [
+        {
+          "title": "Dev / Test",
+          "sub": "writes it",
+          "tone": "blue"
+        },
+        {
+          "title": "QA",
+          "sub": "verifies it",
+          "tone": "teal"
+        },
+        {
+          "title": "Operations",
+          "sub": "runs it",
+          "tone": "green"
+        },
+        {
+          "title": "Management",
+          "sub": "audits it",
+          "tone": "amber"
+        },
+        {
+          "title": "Outsourcers",
+          "sub": "reuse it",
+          "tone": "pink"
+        }
+      ]
+    },
+    "text": {
+      "title": "Ansible across the application lifecycle",
+      "caption": "Every team reads the same human-readable playbook, from development through to production.",
+      "label": "from development…",
+      "label2": "…to production",
+      "title2": "Ansible Playbook",
+      "sub": "one shared language"
+    }
+  }
+};
+
 <Lead>
 Ansible is an open source automation platform. It is two things at once: a simple **automation language** for describing infrastructure in files called playbooks, and an **automation engine** that runs those playbooks.
 </Lead>

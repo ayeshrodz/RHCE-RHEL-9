@@ -4,6 +4,140 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "TemplateFlow": {
+    "data": {
+      "steps": [
+        {
+          "title": "One template",
+          "text": "templates/motd.j2 lives in the project on the control node. It is plain text with {{ }} placeholders."
+        },
+        {
+          "title": "Per-host data",
+          "text": "For each host in the play, Ansible has that host’s own variables and gathered facts."
+        },
+        {
+          "title": "Render on the control node",
+          "text": "The template module fills in the placeholders once per host. The managed hosts never see Jinja2 syntax, and do not need Jinja2 installed."
+        },
+        {
+          "title": "Copy the result",
+          "text": "Each host receives its own finished file, with the owner, group and mode the task asked for."
+        },
+        {
+          "title": "Run again: nothing to do",
+          "text": "The rendered text is compared with the file already on the host. Identical content means ok, not changed, so handlers are not notified."
+        }
+      ]
+    },
+    "text": {
+      "title": "One template, a different file on every host",
+      "label": "Control node",
+      "title2": "templates/motd.j2",
+      "sub": "{{ ansible_facts['fqdn'] }}",
+      "title3": "servera",
+      "sub2": "facts + variables",
+      "title4": "serverb",
+      "sub3": "facts + variables",
+      "title5": "template",
+      "sub4": "render per host",
+      "label2": "servera",
+      "title6": "/etc/motd",
+      "sub5": "same content → ok",
+      "sub6": "This is the system servera…",
+      "label3": "serverb",
+      "title7": "/etc/motd",
+      "sub7": "same content → ok",
+      "sub8": "This is the system serverb…",
+      "label4": "copy",
+      "label5": "copy"
+    }
+  },
+  "TemplatePlayground": {
+    "data": {
+      "hosts": {
+        "servera.lab.example.com": {
+          "hostname": "servera",
+          "ip": "172.25.250.10",
+          "mem": 960,
+          "cpus": 1
+        },
+        "serverb.lab.example.com": {
+          "hostname": "serverb",
+          "ip": "172.25.250.11",
+          "mem": 1960,
+          "cpus": 2
+        },
+        "workstation.lab.example.com": {
+          "hostname": "workstation",
+          "ip": "172.25.250.9",
+          "mem": 3900,
+          "cpus": 2
+        }
+      },
+      "presets": [
+        {
+          "id": "motd",
+          "label": "Variables and facts",
+          "template": "{# /etc/motd: this comment never reaches the file #}\nThis is the system {{ ansible_facts['fqdn'] }}.\nThis is a {{ ansible_facts['distribution'] }} version {{ ansible_facts['distribution_version'] }} system.\nOnly use this system with permission.\nPlease report issues to: {{ system_owner }}.\n"
+        },
+        {
+          "id": "for",
+          "label": "for loop",
+          "template": "# {{ ansible_managed }}\n{% for host in groups['all'] %}\n{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }} {{ hostvars[host]['ansible_facts']['hostname'] }}\n{% endfor %}\n"
+        },
+        {
+          "id": "forif",
+          "label": "for with a condition",
+          "template": "{# every user except root #}\n{% for myuser in users if not myuser == \"root\" %}\nUser number {{ loop.index }} - {{ myuser }}\n{% endfor %}\n"
+        },
+        {
+          "id": "if",
+          "label": "if / else",
+          "template": "{% if ansible_facts['memtotal_mb'] >= 1024 %}\nMaxClients 200\n{% else %}\nMaxClients 50   # small host: {{ ansible_facts['memtotal_mb'] }} MiB\n{% endif %}\n{% if inventory_hostname in groups['webservers'] %}\nRole: web server\n{% endif %}\n"
+        },
+        {
+          "id": "filters",
+          "label": "Filters",
+          "template": "Owner: {{ system_owner | upper }}\nUsers: {{ users | join(', ') }} ({{ users | length }} in total)\nBackup host: {{ backup_host | default('none configured') }}\n\nas JSON: {{ users | to_json }}\nas YAML:\n{{ users | to_nice_yaml }}\n"
+        }
+      ],
+      "initialSelection1": "motd",
+      "initialSelection2": "servera.lab.example.com"
+    },
+    "text": {
+      "ansiblemanaged": "Ansible managed",
+      "widgetLabel": "Template playground",
+      "label": "Example template",
+      "widgetSub": "Edit the template on the left. The right side is the file the ",
+      "code": "template",
+      "widgetSub2": " module would write on the chosen host. Available here: ",
+      "code2": "ansible_facts",
+      "widgetSub3": ", ",
+      "code3": "hostvars",
+      "widgetSub4": ", ",
+      "code4": "groups",
+      "widgetSub5": ", ",
+      "code5": "inventory_hostname",
+      "widgetSub6": ",",
+      "code6": "system_owner",
+      "widgetSub7": " and ",
+      "code7": "users",
+      "widgetSub8": ".",
+      "tplFile": "templates/example.j2",
+      "btn": " Reset",
+      "label2": "Jinja2 template",
+      "tplFile2": "rendered on",
+      "label3": "Managed host",
+      "template": "fatal: [{value0}]: FAILED!\nAnsibleError: {value1}",
+      "tplFoot": "Facts shown are for ",
+      "label4": "the home lab (Rocky Linux)",
+      "label5": "a RHEL classroom",
+      "tplFoot2": ". A variable that is not defined stops the task, as it does in Ansible."
+    }
+  }
+};
+
 <Lead>
 `lineinfile` and `blockinfile` patch a file that something else owns. A template goes further: you write the whole file once, with placeholders, and Ansible fills them in for each host from its variables and facts. One template, a correct file everywhere.
 </Lead>

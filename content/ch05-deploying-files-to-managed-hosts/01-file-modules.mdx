@@ -4,6 +4,289 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "FileModuleChooser": {
+    "data": {
+      "goals": [
+        {
+          "id": "copy",
+          "goal": "Copy a file from the control node",
+          "module": "ansible.builtin.copy",
+          "dir": "push",
+          "yaml": "- name: Copy a file to managed hosts\n  ansible.builtin.copy:\n    src: files/users.txt\n    dest: /home/devops/users.txt\n    owner: devops\n    group: devops\n    mode: '0640'",
+          "note": "Overwrites the remote file when its content differs (force: true is the default). With force: false it only copies when the file is missing."
+        },
+        {
+          "id": "content",
+          "goal": "Create a small file from text in the playbook",
+          "module": "ansible.builtin.copy",
+          "dir": "push",
+          "yaml": "- name: Banner text is in place\n  ansible.builtin.copy:\n    content: \"Authorised users only.\\n\"\n    dest: /etc/issue",
+          "note": "content replaces src. Good for one or two lines; use a template for anything longer or host-specific."
+        },
+        {
+          "id": "template",
+          "goal": "Deploy a file customised for each host",
+          "module": "ansible.builtin.template",
+          "dir": "push",
+          "yaml": "- name: Deploy a custom message of the day\n  ansible.builtin.template:\n    src: templates/motd.j2\n    dest: /etc/motd\n    owner: root\n    group: root\n    mode: '0644'",
+          "note": "The Jinja2 template is rendered on the control node with that host’s variables and facts, then copied. Covered in the next lesson."
+        },
+        {
+          "id": "attrs",
+          "goal": "Set owner, permissions or SELinux type",
+          "module": "ansible.builtin.file",
+          "dir": "edit",
+          "yaml": "- name: SELinux type is set to samba_share_t\n  ansible.builtin.file:\n    path: /srv/share/report.txt\n    owner: devops\n    mode: '0644'\n    setype: samba_share_t",
+          "note": "Works like chown, chmod and chcon on a file that already exists. copy and template accept the same attribute arguments."
+        },
+        {
+          "id": "touch",
+          "goal": "Create an empty file or a directory",
+          "module": "ansible.builtin.file",
+          "dir": "edit",
+          "yaml": "- name: The secrets directory exists\n  ansible.builtin.file:\n    path: /etc/httpd/secrets\n    state: directory      # or: touch, for an empty file\n    owner: apache\n    mode: '0500'",
+          "note": "state: directory creates missing parent directories too. state: touch behaves like the touch command and updates the timestamp."
+        },
+        {
+          "id": "link",
+          "goal": "Create a symbolic link",
+          "module": "ansible.builtin.file",
+          "dir": "edit",
+          "yaml": "- name: /etc/issue.net points at /etc/issue\n  ansible.builtin.file:\n    src: /etc/issue\n    dest: /etc/issue.net\n    state: link\n    force: true",
+          "note": "src is what the link points to, dest is the link itself. force: true replaces a regular file that is already at dest."
+        },
+        {
+          "id": "absent",
+          "goal": "Remove a file or directory",
+          "module": "ansible.builtin.file",
+          "dir": "edit",
+          "yaml": "- name: The file does not exist\n  ansible.builtin.file:\n    path: /home/devops/users.txt\n    state: absent",
+          "note": "Always write state explicitly, present or absent, so the intent is obvious to the next reader. On a directory, absent removes it and everything inside."
+        },
+        {
+          "id": "line",
+          "goal": "Make sure one line is in a file",
+          "module": "ansible.builtin.lineinfile",
+          "dir": "edit",
+          "yaml": "- name: Root login over SSH is disabled\n  ansible.builtin.lineinfile:\n    path: /etc/ssh/sshd_config\n    regexp: '^#?PermitRootLogin'\n    line: PermitRootLogin no\n    state: present",
+          "note": "With regexp, the last matching line is replaced; without it, the line is appended if it is not already there."
+        },
+        {
+          "id": "block",
+          "goal": "Insert several lines as one block",
+          "module": "ansible.builtin.blockinfile",
+          "dir": "edit",
+          "yaml": "- name: Lab hosts are listed\n  ansible.builtin.blockinfile:\n    path: /etc/hosts\n    block: |\n      172.25.250.10 servera.lab.example.com\n      172.25.250.11 serverb.lab.example.com\n    state: present",
+          "note": "The block is wrapped in marker comments so Ansible can find and update it on later runs."
+        },
+        {
+          "id": "fetch",
+          "goal": "Pull a file back to the control node",
+          "module": "ansible.builtin.fetch",
+          "dir": "pull",
+          "yaml": "- name: Collect the secure log\n  ansible.builtin.fetch:\n    src: /var/log/secure\n    dest: secure-backups\n    flat: false",
+          "note": "copy in reverse. By default each host’s file is stored under dest/HOSTNAME/full/path, so files from different hosts never collide."
+        },
+        {
+          "id": "stat",
+          "goal": "Check whether a file exists, or its checksum",
+          "module": "ansible.builtin.stat",
+          "dir": "read",
+          "yaml": "- name: Look at /etc/motd\n  ansible.builtin.stat:\n    path: /etc/motd\n  register: motd\n\n- ansible.builtin.debug:\n    msg: \"exists: {{ motd.stat.exists }}\"",
+          "note": "Changes nothing. Register the result and read values such as stat.exists, stat.mode, stat.pw_name and stat.checksum."
+        },
+        {
+          "id": "sync",
+          "goal": "Synchronise a whole directory tree",
+          "module": "ansible.posix.synchronize",
+          "dir": "push",
+          "yaml": "- name: Web content is synchronised\n  ansible.posix.synchronize:\n    src: web/\n    dest: /var/www/html",
+          "note": "A wrapper around rsync, which must be installed on both ends. From the ansible.posix collection, not ansible.builtin."
+        }
+      ],
+      "initialSelection1": "copy"
+    },
+    "text": {
+      "text": "control node → managed host",
+      "text2": "managed host → control node",
+      "text3": "changes a file in place on the managed host",
+      "text4": "reads only; nothing changes",
+      "widgetLabel": "Which module do I need?",
+      "label": "What do you want to do?",
+      "span": " control node",
+      "span2": " managed host"
+    }
+  },
+  "ModeCalculator": {
+    "data": {
+      "who": [
+        [
+          "u",
+          "user (owner)"
+        ],
+        [
+          "g",
+          "group"
+        ],
+        [
+          "o",
+          "others"
+        ]
+      ],
+      "presets": [
+        "0644",
+        "0600",
+        "0640",
+        "0755",
+        "0750",
+        "0440"
+      ]
+    },
+    "text": {
+      "widgetLabel": "Permission calculator",
+      "label": "Common modes",
+      "th": "read",
+      "th2": "write",
+      "th3": "execute",
+      "th4": "digit",
+      "template": "{value0} {value1}",
+      "template2": "mode: '{value0}'        # octal, quoted\nmode: {value1}   # symbolic",
+      "modeHint": "Both lines mean the same. Symbolic modes can also be relative, for example ",
+      "code": "u+rw,g-wx,o-rwx",
+      "modeHint2": ".",
+      "p": "Write ",
+      "code2": "mode: ",
+      "p2": " without the leading zero and quotes, and YAML reads the ",
+      "strong": "decimal",
+      "p3": " number",
+      "p4": ", which is octal ",
+      "p5": ": the file ends up as ",
+      "p6": ". Always quote the mode:",
+      "code3": "'",
+      "code4": "'",
+      "p7": "."
+    }
+  },
+  "FetchLayout": {
+    "data": {
+      "hosts": [
+        "servera.lab.example.com",
+        "serverb.lab.example.com"
+      ]
+    },
+    "text": {
+      "template": "secure-backups/\n└── secure          ← {value0} hosts wrote this one file",
+      "template2": "secure-backups/\n{value0}",
+      "widgetLabel": "Where fetched files land",
+      "label": "flat option",
+      "button": "flat: false",
+      "button2": "flat: true",
+      "template3": "- name: Fetch the secure log\n  ansible.builtin.fetch:\n    src: /var/log/secure\n    dest: secure-backups{value0}\n    flat: {value1}",
+      "span": "With ",
+      "code": "flat: true",
+      "span2": " every host's file is saved under the same name, so each one overwrites the last. Put the host name in ",
+      "code2": "dest",
+      "span3": " yourself, for example ",
+      "label2": "dest: \"secure-backups/{{ inventory_hostname }}-secure\"",
+      "span4": ".",
+      "span5": "The default adds the host name and the file's full path under ",
+      "code3": "dest",
+      "span6": ", so files from different hosts never collide."
+    }
+  },
+  "FileEditSimulator": {
+    "data": {
+      "start": [
+        "# Example service settings",
+        "PermitRootLogin yes",
+        "MaxAuthTries 6",
+        "Banner none"
+      ],
+      "begin": "# BEGIN ANSIBLE MANAGED BLOCK",
+      "end": "# END ANSIBLE MANAGED BLOCK",
+      "modes": {
+        "append": {
+          "label": "lineinfile",
+          "hint": "No regexp: the line is appended unless that exact line is already in the file.",
+          "line": "AllowGroups wheel",
+          "regexp": null
+        },
+        "replace": {
+          "label": "lineinfile + regexp",
+          "hint": "With regexp: the last line that matches is replaced by line. If nothing matches, the line is appended.",
+          "line": "PermitRootLogin no",
+          "regexp": "^PermitRootLogin"
+        },
+        "block": {
+          "label": "blockinfile",
+          "hint": "The block is wrapped in marker comments. On later runs Ansible finds the markers and updates what is between them.",
+          "line": "Match Group admins\n  X11Forwarding no",
+          "regexp": null
+        }
+      },
+      "initialSelection1": "replace"
+    },
+    "text": {
+      "error": "That regular expression is not valid.",
+      "template": "ansible.builtin.blockinfile:\n  path: /etc/example.conf\n  block: |\n{value0}\n  state: present",
+      "template2": "ansible.builtin.lineinfile:\n  path: /etc/example.conf{value0}\n  line: {value1}\n  state: present",
+      "widgetLabel": "Edit a file in place",
+      "label": "Module",
+      "span": "regexp",
+      "btn": " Run the task",
+      "btn2": " Reset the file",
+      "fesPath": "/etc/example.conf on the managed host",
+      "termMuted": "Run the task, then run it again.",
+      "template3": "failed: {value0}",
+      "template4": "{value0}: [servera]  {value1}{value2}"
+    }
+  },
+  "StatExplorer": {
+    "data": {
+      "statSample": {
+        "changed": false,
+        "failed": false,
+        "stat": {
+          "exists": true,
+          "path": "/etc/motd",
+          "isreg": true,
+          "isdir": false,
+          "islnk": false,
+          "mode": "0644",
+          "uid": 0,
+          "gid": 0,
+          "pw_name": "root",
+          "gr_name": "root",
+          "size": 94,
+          "mtime": 1664498160.12,
+          "checksum": "5f76590425303022e933c43a7f2092a3d4b5c8f1",
+          "mimetype": "text/plain",
+          "readable": true,
+          "writeable": true,
+          "executable": false
+        }
+      }
+    },
+    "text": {
+      "template": "register: {value0}"
+    }
+  },
+  "DataExplorer": {
+    "data": {},
+    "text": {
+      "widgetLabel": ": click to explore",
+      "widgetLabel2": "Reference it as",
+      "template": "{{ {value0} }}",
+      "template2": "{{ {value0} }}",
+      "dxWarn": " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here.",
+      "widgetLabel3": "Old injected name",
+      "template3": "{{ {value0} }}",
+      "widgetLabel4": "Value"
+    }
+  }
+};
+
 <Lead>
 Most configuration work comes down to files: put one in place, fix its owner and permissions, change a line, or remove it. Ansible has a small set of modules for exactly these jobs. Each one describes the state a file should be in, so running it twice is safe.
 </Lead>

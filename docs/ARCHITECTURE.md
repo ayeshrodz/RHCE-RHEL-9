@@ -59,3 +59,17 @@ React 19, React Router 7, Vite 8, MDX, Shiki, and CSS build into `dist/`. `base:
 PR CI runs formatting, content validation, JavaScript regressions, Python lab-tool tests, a production build, and Chromium learning-flow checks. Content validation covers routes and heading links, activity/objective IDs, quiz answers, starter manifests, setup syntax, and grader coverage. Browser checks cover every route plus mobile layouts, focus, persistence, and imports.
 
 `.github/workflows/deploy.yml` publishes pushes to `main`. Maintainers control PR readiness and merging. Outstanding VM and desktop workflow checks remain recorded in [validation evidence](VALIDATION.md), including when the maintainer requests ready status before those checks are complete.
+
+## Mobile rendering and authored widget catalogs
+
+`LearningPageLayout` is the shared lesson/reference boundary. Its single outline appears as a disclosure in the article on compact screens and as the existing aside on wide screens. Heading navigation preserves hash links and moves focus to the selected heading.
+
+`mobile.css` centralizes touch sizes, safe-area spacing, editor text size, wrapping, and overlay bounds using the existing palette. `useOverlay` combines the shared focus trap with scroll locking and visual-viewport measurements; navigation, search, mobile progress, and diagram views use it. Mobile progress uses a portal so its bounds are independent of the header. The shell owns one active header overlay, preventing navigation, search, and progress from stacking focus traps. The diagram kit keeps SVG text at natural size in a scrollable viewport on phones; the enlarged view also offers fit-to-screen. Its marker IDs are distinct between inline and enlarged instances.
+
+`StepDots` supplies the same step selector to diagram walkthroughs and annotated YAML. On touch screens its compact dots sit inside 44-pixel targets that wrap within the available space.
+
+`CodeEditor` retains controlled input and adds shared indentation tools without capturing Tab. `editor.js` changes selected lines and maps selection positions. Code blocks wrap by default on phones and let readers switch to horizontal scrolling; clipboard extraction uses the original DOM text, independent of visual wrapping.
+
+`MdxContent` provides each page's `widgetContent` export. `defineWidget` binds page-authored text/data to a reusable renderer with stable identity, preserving local activity state across ordinary rerenders. Shared interface and landing-page catalogs are loaded by the content manifest. Search and reading-time helpers exclude these invisible metadata exports. The widget contract validator checks required fields and child dependencies. This boundary supports future track catalogs; track switching and progress scoping remain future work.
+
+`tests/mobile_checks.py` covers all published routes at phone and tablet widths plus overlay, outline, editor, diagram and rerender behavior. It supplements the existing production-route and learning-flow suite; physical iOS and Android validation is separate.

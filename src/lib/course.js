@@ -4,6 +4,7 @@
 import manifest from 'virtual:course';
 
 export const course = manifest.course;
+export const interfaceContent = manifest.interfaceContent;
 export const track = manifest.track;
 export const chapters = manifest.chapters;
 export const objectives = manifest.objectives;

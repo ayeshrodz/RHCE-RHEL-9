@@ -1,3 +1,4 @@
+import CodeEditor from '@/components/interactive/CodeEditor';
 import { useId, useState } from 'react';
 import { useStored } from '@/lib/storage';
 import { evaluateChallenge, solutionFor } from '@/lib/challengeEngine';
@@ -59,7 +60,7 @@ export function Challenge({ challenge }) {
           <label className="widget-label" htmlFor={`${uid}-input`}>
             Your {challenge.type === 'yaml' ? 'YAML' : 'answer'}
           </label>
-          <textarea
+          <CodeEditor
             id={`${uid}-input`}
             value={input}
             maxLength={20000}

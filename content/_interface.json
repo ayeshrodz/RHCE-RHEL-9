@@ -1,0 +1,138 @@
+{
+  "Footer": {
+    "data": {},
+    "text": {
+      "p": ": a free, community-made course written by learners for learners, focused on the RHCE exam objectives. Free to read, free to reuse, open to contributions.",
+      "label": "Project",
+      "siteFooterHead": "Project",
+      "link": "Course overview",
+      "link2": "Build the practice lab",
+      "a": "Source on GitHub",
+      "a2": "Contribute",
+      "a3": "Report a mistake",
+      "label2": "Official sources",
+      "siteFooterHead2": "Official sources",
+      "href": "https://www.redhat.com/en/services/certification",
+      "a4": "Red Hat certification",
+      "href2": "https://docs.ansible.com/",
+      "a5": "Ansible documentation",
+      "href3": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9",
+      "a6": "RHEL 9 documentation",
+      "strong": "An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.",
+      "siteFooterDisclaimer": "This is not official training material and is no substitute for Red Hat's courses, documentation or exam objectives, which remain the authoritative sources.",
+      "p2": "Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks or registered trademarks of Red Hat, Inc. or its subsidiaries in the United States and other countries. Linux is a registered trademark of Linus Torvalds. All other trademarks belong to their respective owners. These names are used only to describe what the guide is about.",
+      "p3": "\u00a9 ",
+      "p4": " contributors. Text and diagrams are licensed under",
+      "href4": "https://creativecommons.org/licenses/by/4.0/",
+      "a7": "CC BY 4.0",
+      "p5": "; source code under the",
+      "a8": "MIT licence",
+      "label3": "MIT licence",
+      "p6": ". Provided as is, with no warranty: test everything on a lab before you rely on it."
+    }
+  },
+  "SearchDialog": {
+    "data": {
+      "suggestions": [
+        "inventory ranges",
+        "ansible.cfg precedence",
+        "become",
+        "syntax-check",
+        "execution environment",
+        "FQCN"
+      ]
+    },
+    "text": {
+      "label": "Search",
+      "placeholder": "Search lessons, commands, directives\u2026",
+      "label2": "Search",
+      "kbd": "Esc",
+      "searchNone": "Search could not load. Check your connection and open search again.",
+      "p": "Try searching for",
+      "searchNone2": "No matches for \u201c",
+      "searchNone3": "\u201d.",
+      "searchHitHeading": " \u203a ",
+      "close": "Close search"
+    }
+  },
+  "CodeEditor": {
+    "text": {
+      "tools": "Editor tools",
+      "indent": "Indent",
+      "outdent": "Outdent",
+      "wrap": "Wrap lines"
+    }
+  },
+  "Diagram": {
+    "text": {
+      "explore": "Swipe to explore the diagram",
+      "fit": "Fit to screen",
+      "actual": "Actual size",
+      "enlarge": "Enlarge diagram",
+      "close": "Close diagram",
+      "steps": "Steps",
+      "stepLabel": "Step {value0}: {value1}",
+      "position": "Step {value0} of {value1}",
+      "previous": "Previous step",
+      "next": "Next",
+      "replay": "Replay"
+    }
+  },
+  "Outline": {
+    "text": {
+      "title": "On this page"
+    }
+  },
+  "CodeBlock": {
+    "text": {
+      "wrap": "Wrap lines",
+      "copy": "Copy",
+      "commands": "Copy commands",
+      "code": "Copy code",
+      "copied": "Copied",
+      "fallback": "Code"
+    }
+  },
+  "ProgressMenu": {
+    "data": {},
+    "text": {
+      "close": "Close progress",
+      "text": "Progress file downloaded.",
+      "label2": "This progress file is too large.",
+      "text2": "Restored {value0} saved item{value1}.",
+      "label3": "That file is not valid JSON.",
+      "label4": "Reset all progress, lab checklists and quiz answers in this browser?",
+      "text3": "Progress reset.",
+      "label5": "Your progress",
+      "progressPanelTitle": "Your progress",
+      "link": "Open your learning dashboard",
+      "progressPanelSub": " of ",
+      "progressPanelSub2": " sections complete. Saved in this browser only.",
+      "progressChapterName": ". ",
+      "progressChapterCount": "/",
+      "progressPanelNote": "Clearing site data or switching browsers loses progress. Download a copy to keep it safe or move it to another device.",
+      "btn": " Export",
+      "btn2": " Import",
+      "btn3": " Reset",
+      "label6": "Your progress",
+      "title": "Your progress",
+      "span": "%"
+    }
+  },
+  "Header": {
+    "data": {},
+    "text": {
+      "label": "Open navigation",
+      "template": "{value0}: course overview",
+      "template2": "{value0}: platform and versions",
+      "title": "Platform and versions",
+      "span": "Search the course",
+      "kbd": " K",
+      "label2": "Search",
+      "template3": "Theme: {value0}. Click to change",
+      "template4": "Theme: {value0}",
+      "label3": "View the source on GitHub",
+      "title2": "View the source on GitHub"
+    }
+  }
+}

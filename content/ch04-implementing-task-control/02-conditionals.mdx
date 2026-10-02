@@ -4,6 +4,73 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "ConditionPlayground": {
+    "data": {
+      "hosts": [
+        {
+          "name": "servera",
+          "distribution": "RedHat",
+          "major": "9",
+          "version": "9.0",
+          "mem": 960,
+          "vars": {
+            "my_service": "httpd"
+          }
+        },
+        {
+          "name": "serverb",
+          "distribution": "RedHat",
+          "major": "9",
+          "version": "9.0",
+          "mem": 3800,
+          "vars": {}
+        },
+        {
+          "name": "fedora1",
+          "distribution": "Fedora",
+          "major": "34",
+          "version": "34",
+          "mem": 1900,
+          "vars": {
+            "my_service": "nginx"
+          }
+        }
+      ]
+    },
+    "text": {
+      "expr": "ansible_facts['distribution'] == \"RedHat\"",
+      "note": "String comparison with a fact.",
+      "expr2": "ansible_facts['memtotal_mb'] >= 2048",
+      "note2": "Numeric comparison: no quotes around the number.",
+      "expr3": "my_service is defined",
+      "note3": "Runs only where the variable exists. Use “is not defined” for the opposite.",
+      "expr4": "ansible_facts['distribution'] in supported_distros",
+      "vars": "supported_distros: [RedHat, Fedora]",
+      "note4": "True when the value appears in the list.",
+      "expr5": "ansible_facts['distribution'] == \"RedHat\" and ansible_facts['memtotal_mb'] > 1024",
+      "note5": "and: both parts must be true.",
+      "expr6": "(RedHat and major == \"9\") or (Fedora and major == \"34\")",
+      "full": ">\n  ( ansible_facts['distribution'] == \"RedHat\" and\n    ansible_facts['distribution_major_version'] == \"9\" )\n  or\n  ( ansible_facts['distribution'] == \"Fedora\" and\n    ansible_facts['distribution_major_version'] == \"34\" )",
+      "note6": "Parentheses group conditions; > lets a long condition span several lines.",
+      "vars2": "run_my_task: \"false\"   # a string!",
+      "note7": "Trap: the value is the string \"false\", and any non-empty string counts as true on this course’s core 2.14 home lab, so the task RUNS. Core 2.19 requires a boolean condition instead.",
+      "expr7": "run_my_task | bool",
+      "vars3": "run_my_task: \"false\"",
+      "note8": "The bool filter converts the string to a real Boolean, so \"false\" now means false.",
+      "widgetLabel": "Pick a condition",
+      "template": "vars:\n  {value0}\n\n",
+      "template2": "- name: Web server is installed\n  ansible.builtin.dnf:\n    name: httpd\n  when: {value0}",
+      "dt": "distribution",
+      "dt2": "memtotal_mb",
+      "dt3": "my_service",
+      "em": "undefined",
+      "template3": "changed: [{value0}]",
+      "template4": "skipping: [{value0}]"
+    }
+  }
+};
+
 <Lead>
 Not every task belongs on every host. Conditionals let a task decide, host by host, whether to run: only on RHEL, only with enough memory, only if a variable is set, only if an earlier command succeeded.
 </Lead>

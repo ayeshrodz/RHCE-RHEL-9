@@ -4,6 +4,52 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "InventoryExplorer": {
+    "data": {
+      "sample": "[webservers]\nserver[a:d].lab.example.com\n\n[raleigh]\nservera.lab.example.com\nserverb.lab.example.com\n\n[mountainview]\nserverc.lab.example.com\n\n[london]\nserverd.lab.example.com\n\n[development]\nservera.lab.example.com\n\n[testing]\nserverb.lab.example.com\n\n[production]\nserverc.lab.example.com\nserverd.lab.example.com\n\n[us:children]\nraleigh\nmountainview\n",
+      "initialSelection1": "us"
+    },
+    "text": {
+      "widgetLabel": "inventory (editable)",
+      "btn": " Reset",
+      "label": "Inventory file",
+      "widgetLabel2": "Groups: pick one",
+      "widgetLabel3": "Hosts: pick one to see its groups",
+      "termMuted": "No hosts yet.",
+      "label2": "Member of",
+      "termMuted2": " is in:",
+      "label3": "all  (every host is)",
+      "template": "{value0}  (via a child group)",
+      "termMuted3": "$ ansible-navigator inventory -i inventory -m stdout --graph "
+    }
+  },
+  "RangeExpander": {
+    "data": {
+      "presets": [
+        "server[01:20].example.com",
+        "server[1:20].example.com",
+        "[a:c].dns.example.com",
+        "washington[1:2].example.com",
+        "192.168.[4:7].[0:255]",
+        "node[0:30:10].example.com"
+      ]
+    },
+    "text": {
+      "widgetTitle": "Try a host range",
+      "widgetSub": "Ranges are written ",
+      "code": "[START:END]",
+      "widgetSub2": " and are inclusive. Numbers or single letters work, and you can use more than one range in a pattern.",
+      "label": "Host pattern",
+      "rangesCount": "Matches ",
+      "label2": " (stopped counting at 5,000)",
+      "template": ", first {value0} shown",
+      "termMuted": "…and ",
+      "termMuted2": " more, ending with "
+    }
+  }
+};
+
 <Lead>
 Before Ansible can do anything, it needs to know which machines it manages. That list is the **inventory**. Good inventories are organised into groups, so one playbook can target "the web servers in production" without naming a single host.
 </Lead>

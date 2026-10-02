@@ -4,6 +4,107 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "ProjectMap": {
+    "data": {
+      "files": {
+        "site": {
+          "tone": "purple",
+          "name": "site.yml",
+          "text": "The entry point. It contains no tasks of its own: each line brings in a complete playbook, in order.",
+          "code": "- name: Web tier\n  ansible.builtin.import_playbook: web.yml\n\n- name: Database tier\n  ansible.builtin.import_playbook: db.yml"
+        },
+        "web": {
+          "tone": "blue",
+          "name": "web.yml",
+          "text": "An ordinary playbook you can also run by itself. Its play reuses two task files: one imported, one included in a loop.",
+          "code": "- name: Web servers are configured\n  hosts: web\n  tasks:\n    - name: Packages\n      ansible.builtin.import_tasks: tasks/install.yml\n      vars:\n        packages: [httpd, firewalld]\n\n    - name: Firewall\n      ansible.builtin.include_tasks: tasks/firewall.yml\n      loop: [http, https]"
+        },
+        "db": {
+          "tone": "blue",
+          "name": "db.yml",
+          "text": "A second playbook for another group of hosts. It reuses the same install.yml with a different package list.",
+          "code": "- name: Database servers are configured\n  hosts: db\n  tasks:\n    - name: Packages\n      ansible.builtin.import_tasks: tasks/install.yml\n      vars:\n        packages: [mariadb-server]"
+        },
+        "install": {
+          "tone": "teal",
+          "name": "tasks/install.yml",
+          "text": "A task file: a plain list of tasks, with no hosts line and no tasks keyword. It says nothing about which packages; the caller passes them in.",
+          "code": "- name: Packages are installed\n  ansible.builtin.dnf:\n    name: \"{{ packages }}\"\n    state: present"
+        },
+        "firewall": {
+          "tone": "teal",
+          "name": "tasks/firewall.yml",
+          "text": "Another task file, written for one firewalld service at a time. Included in a loop, it runs once for each service, which it receives as item.",
+          "code": "- name: \"{{ item }} is allowed\"\n  ansible.posix.firewalld:\n    service: \"{{ item }}\"\n    permanent: true\n    immediate: true\n    state: enabled"
+        }
+      },
+      "initialSelection1": "site"
+    },
+    "text": {
+      "title": "One project, five small files",
+      "title2": "site.yml",
+      "sub": "playbook of playbooks",
+      "title3": "web.yml",
+      "sub2": "play: hosts web",
+      "title4": "db.yml",
+      "sub3": "play: hosts db",
+      "title5": "tasks/install.yml",
+      "sub4": "task file",
+      "title6": "tasks/firewall.yml",
+      "sub5": "task file",
+      "label": "import_playbook",
+      "label2": "include_tasks",
+      "label3": "import_tasks",
+      "label4": "solid line: read when the playbook is parsed · dashed: read when the task runs"
+    }
+  },
+  "ReuseSimulator": {
+    "data": {
+      "tasks": [
+        "Web package is present",
+        "Web service is started"
+      ],
+      "initialSelection1": "import_tasks",
+      "initialSelection2": "none"
+    },
+    "text": {
+      "template": "TASK [{value0}] {value1}",
+      "t": "ERROR! You cannot use loops on 'import_tasks' statements. You should use 'include_tasks' instead.",
+      "label": "An import is resolved while the playbook is being read, before any loop could run. The playbook is rejected without running anything.",
+      "t2": "skipping: [servera]",
+      "t3": "ok: [servera]",
+      "label2": "The two tasks were copied into the play when the playbook was parsed. The import line itself never appears in the output.",
+      "label3": "ansible-navigator run --list-tasks can show them, and --start-at-task can start at one of them.",
+      "label4": "The when was copied onto each imported task, so each task tests the condition for itself.",
+      "label5": "Web tasks",
+      "t4": "skipping: [servera]",
+      "t5": "included: /home/student/project/tasks/web.yml for servera{value0}",
+      "t6": "ok: [servera]",
+      "label6": "Web tasks",
+      "label7": "The include is a real task. The file is only read when the play reaches that task, host by host.",
+      "label8": "The condition is tested once, on the include itself. It was false, so the file was never even opened.",
+      "label9": "The file ran once per item. Each pass sees the current item, passed here as the variable pkg.",
+      "label10": "--list-tasks shows only the include, because the tasks inside are not known until it runs.",
+      "template2": "- name: Web tasks\n  ansible.builtin.{value0}: tasks/web.yml{value1}{value2}",
+      "widgetLabel": "import_tasks or include_tasks?",
+      "label11": "Keyword",
+      "label12": "Condition",
+      "label13": "no when",
+      "label14": "when: true",
+      "label15": "when: false",
+      "label16": "Loop",
+      "button": "no loop",
+      "button2": "loop",
+      "reuseCap": "The task in your play",
+      "reuseCap2": "--list-tasks shows",
+      "template3": "  {value0}",
+      "label17": "  (nothing: the playbook does not load)",
+      "reuseCap3": "When the play runs"
+    }
+  }
+};
+
 <Lead>
 A playbook that does everything in one file is easy to start and hard to live with. Past a few dozen tasks it is slow to read, risky to change, and impossible to reuse. Ansible lets you split work across files at two levels: whole playbooks, and lists of tasks.
 </Lead>

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { interfaceContent } from '@/lib/course';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -6,10 +7,11 @@ import { useNavigate } from 'react-router-dom';
  * and highlights the one currently in view. A click puts the section in the
  * URL ("#/page#heading"), which SectionPage scrolls to.
  */
-export default function TableOfContents({ articleRef, contentKey }) {
+export default function TableOfContents({ articleRef, contentKey, compact = false }) {
   const [items, setItems] = useState([]);
   const [active, setActive] = useState(null);
   const navigate = useNavigate();
+  const disclosure = useRef(null);
 
   useEffect(() => {
     const root = articleRef.current;
@@ -46,15 +48,19 @@ export default function TableOfContents({ articleRef, contentKey }) {
 
   if (items.length < 2) return null;
 
-  return (
-    <nav className="toc" aria-label="On this page">
-      <p className="toc-title">On this page</p>
+  const list = (
+    <nav className="toc" aria-label={interfaceContent.Outline.text.title}>
+      {!compact && <p className="toc-title">{interfaceContent.Outline.text.title}</p>}
       <ul>
         {items.map((item) => (
           <li key={item.id} className={`toc-l${item.level}`}>
             <button
               className={active === item.id ? 'is-active' : ''}
-              onClick={() => navigate({ hash: `#${item.id}` }, { replace: true, state: { scrollSmooth: true } })}
+              onClick={() => {
+                if (disclosure.current) disclosure.current.open = false;
+                navigate({ hash: `#${item.id}` }, { replace: true, state: { scrollSmooth: true } });
+                document.getElementById(item.id)?.focus({ preventScroll: true });
+              }}
             >
               {item.text}
             </button>
@@ -62,5 +68,13 @@ export default function TableOfContents({ articleRef, contentKey }) {
         ))}
       </ul>
     </nav>
+  );
+  return compact ? (
+    <details className="page-outline" ref={disclosure}>
+      <summary>{interfaceContent.Outline.text.title}</summary>
+      {list}
+    </details>
+  ) : (
+    list
   );
 }

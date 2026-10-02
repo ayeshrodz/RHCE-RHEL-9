@@ -1,7 +1,11 @@
 import DataExplorer from '../ch03/DataExplorer';
-import { statSample } from './statSample';
+import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';
 
-/** Browse the structure ansible.builtin.stat returns once it is registered. */
-export default function StatExplorer({ name = 'motd' }) {
-  return <DataExplorer name={name} data={statSample} initial={['stat', 'exists']} title={`register: ${name}`} />;
-}
+export default defineWidget('StatExplorer', (copy) => {
+  function StatExplorer({ name = 'motd' }) {
+    return (
+      <DataExplorer name={name} data={copy.data.statSample} initial={['stat', 'exists']} title={formatCopy(copy.text.template, [name])} />
+    );
+  }
+  return StatExplorer;
+});
