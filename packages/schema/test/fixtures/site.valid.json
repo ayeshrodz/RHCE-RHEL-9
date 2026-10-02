@@ -1,0 +1,9 @@
+{
+  "apiVersion": 1,
+  "name": "Kernel Path",
+  "tagline": "Learn Linux by doing",
+  "repo": "https://github.com/ayeshrodz/kernel-path",
+  "programs": ["rhel9-ansible", "rhel9-rhcsa"],
+  "links": [{ "title": "Project", "items": [{ "label": "Source on GitHub", "url": "https://github.com/ayeshrodz/kernel-path" }, { "label": "Ansible", "url": "#/rhel9-ansible" }] }],
+  "legal": "Independent and community-made; not affiliated with **Red Hat, Inc.**"
+}

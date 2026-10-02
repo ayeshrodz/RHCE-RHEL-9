@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/practice.schema.json",
+  "title": "Practice set",
+  "description": "A chapter's practice questions for a {% practice %} tag. Same multiple-choice format as quizzes, with attempts logged for the learning dashboard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["questions"],
+  "properties": {
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "objective", "title", "prompt", "options", "expected", "explain"],
+        "properties": {
+          "id": { "$ref": "../common.schema.json#/$defs/id" },
+          "objective": { "$ref": "../common.schema.json#/$defs/objectiveId" },
+          "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+          "prompt": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" },
+          "code": { "type": "string", "maxLength": 4000 },
+          "options": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" }
+          },
+          "expected": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" },
+          "explain": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" }
+        }
+      }
+    }
+  }
+}

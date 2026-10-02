@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/chapter.schema.json",
+  "title": "Chapter",
+  "description": "chapters/chNN-<name>/chapter.yml. The folder's chNN prefix is the chapter id and number; the sections are the folder's .md files in order.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title"
+  ],
+  "properties": {
+    "title": {
+      "$ref": "../common.schema.json#/$defs/shortText"
+    },
+    "goal": {
+      "$ref": "../common.schema.json#/$defs/text",
+      "maxLength": 400,
+      "type": "string"
+    },
+    "objectives": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "$ref": "../common.schema.json#/$defs/text",
+        "maxLength": 300,
+        "type": "string"
+      }
+    },
+    "objectiveIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^ch[0-9]{2}\\.[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    },
+    "setup": {
+      "description": "A setup chapter (for example building the practice lab): listed first, outside the stages, reviews and readiness checks.",
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "planned"
+      ]
+    },
+    "topics": {
+      "description": "For planned chapters: the topics the chapter will cover.",
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../common.schema.json#/$defs/shortText"
+      }
+    }
+  }
+}

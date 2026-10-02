@@ -1,0 +1,23 @@
+{
+  "apiVersion": 1,
+  "id": "rhel9-ansible",
+  "title": "Ansible automation on RHEL 9",
+  "label": "Ansible",
+  "tagline": "Learn Ansible automation by doing",
+  "summary": "A hands-on path from your first playbook to automating real Linux administration, with a practice lab you build yourself.",
+  "platform": { "family": "rhel", "version": "9", "label": "RHEL 9" },
+  "status": "active",
+  "stages": [
+    { "title": "Foundations", "chapters": [2, 3], "text": "What Ansible is, inventories, configuration, and your first playbooks." },
+    { "title": "Project workflow", "chapters": [12] }
+  ],
+  "variants": [
+    { "id": "classroom", "label": "Classroom", "icon": "school" },
+    { "id": "homelab", "label": "Home lab", "icon": "house", "default": true }
+  ],
+  "readerVariables": [
+    { "key": "HOST_LAN_IP", "label": "Host's LAN IP", "hint": "hostname -I on the host", "example": "192.168.1.50", "pattern": "ipv4" }
+  ],
+  "lab": true,
+  "theme": { "accent": "#ee0000", "dark": { "accentText": "#f56e6e" } }
+}

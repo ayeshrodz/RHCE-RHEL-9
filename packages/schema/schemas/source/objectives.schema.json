@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/objectives.schema.json",
+  "title": "Objectives",
+  "description": "programs/<id>/objectives.yml: links each skill to the lessons, labs and practice questions that teach and check it.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "chapter", "lessons", "labs", "challenges"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^ch[0-9]{2}\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "chapter": { "$ref": "../common.schema.json#/$defs/chapterId" },
+      "lessons": { "type": "array", "items": { "$ref": "#/$defs/pageRef" } },
+      "labs": { "type": "array", "items": { "$ref": "#/$defs/pageRef" } },
+      "challenges": { "type": "array", "items": { "$ref": "../common.schema.json#/$defs/id" } }
+    }
+  },
+  "$defs": {
+    "pageRef": { "type": "string", "pattern": "^ch[0-9]{2}/[a-z0-9]+(?:-[a-z0-9]+)*$" }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "apiVersion": 1,
+  "key": "ch02/inventory",
+  "title": "Building an Ansible inventory",
+  "kind": "lesson",
+  "minutes": 12,
+  "toc": [{ "id": "what-an-inventory-is", "text": "What an inventory is", "depth": 2 }],
+  "data": { "check": { "questions": [{ "id": "q-0123456789ab", "q": "Which group always exists?", "options": ["`all`", "`web`"], "answer": 0, "explain": "`all` contains every host." }] } },
+  "tree": [
+    { "t": "el", "tag": "h2", "attrs": { "id": "what-an-inventory-is" }, "c": [{ "t": "text", "v": "What an inventory is" }] },
+    { "t": "el", "tag": "p", "c": [{ "t": "text", "v": "See " }, { "t": "el", "tag": "a", "attrs": { "href": "#/rhel9-ansible/ch03/configuration" }, "c": [{ "t": "text", "v": "configuration" }] }] },
+    { "t": "tag", "name": "callout", "attrs": { "type": "tip", "title": "Run it twice" }, "c": [{ "t": "el", "tag": "p", "c": [{ "t": "text", "v": "Expect changed=0." }] }] },
+    { "t": "code", "lang": "ini", "title": "inventory", "lines": [[{ "v": "[web]", "l": "#6f42c1", "d": "#b392f0" }], [{ "v": "servera.lab.example.com" }]] },
+    { "t": "tag", "name": "quiz", "attrs": { "ref": "check", "objectives": ["ch02.inventory"] } }
+  ]
+}

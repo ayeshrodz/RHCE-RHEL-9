@@ -1,0 +1,37 @@
+{
+  "name": "workflow-git",
+  "title": "Managing a project with Git",
+  "page": "ch12/lab-git",
+  "version": 1,
+  "setup": [
+    {
+      "action": "git-seed-remote",
+      "remote": "ops/web-motd.git",
+      "author": { "name": "Operations team", "email": "ops@lab.example.com" },
+      "branches": [
+        {
+          "name": "main",
+          "commits": [
+            { "message": "Add the MOTD project", "tree": "remote/v1" },
+            { "message": "Warn that the MOTD is managed", "tree": "remote/v2" }
+          ]
+        }
+      ]
+    }
+  ],
+  "checkpoints": {
+    "final": {
+      "files": ["motd.yml", "templates/motd.j2", ".gitignore"],
+      "checks": [
+        { "id": "template-change", "kind": "file", "on": "control", "message": "The template has the contact line", "paths": ["templates/motd.j2"], "contains": ["ops@lab.example.com"] },
+        { "id": "history", "kind": "git", "on": "control", "message": "History has your and your teammate's commits", "remoteEndsWith": "git-repos/ops/web-motd.git", "minCommits": 5, "clean": true, "pushedBranch": "main", "ignored": ["vault-pass"] },
+        { "id": "motd", "kind": "file", "on": "web", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "message": "/etc/motd shows the contact line", "paths": ["/etc/motd"], "contains": ["ops@lab.example.com"] },
+        { "id": "httpd", "kind": "service", "on": "web", "message": "Apache is running and enabled", "names": ["httpd"], "active": true, "enabled": true },
+        { "id": "firewall", "kind": "firewall", "on": "web", "message": "HTTP is allowed now and persistently", "service": "http" },
+        { "id": "vhost", "kind": "file", "on": "web", "message": "The host's own page exists", "paths": ["/var/www/vhosts/{hostShort}/index.html"], "nonEmpty": true },
+        { "id": "storage", "kind": "logical-volume", "on": "web", "message": "The content volume is large enough", "vg": "apache-vg", "lv": "content-lv", "minSizeMiB": 512 },
+        { "id": "lint", "kind": "lint", "on": "control", "message": "site.yml passes ansible-lint", "tool": "ansible-lint", "image": "ghcr.io/ansible/community-ansible-dev-tools:latest", "files": ["site.yml"] }
+      ]
+    }
+  }
+}

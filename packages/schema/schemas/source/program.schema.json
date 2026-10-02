@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/program.schema.json",
+  "title": "Program",
+  "description": "programs/<id>/program.yml: one learning program (course). Its folder name must equal its id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "id",
+    "title",
+    "label",
+    "platform",
+    "status",
+    "summary"
+  ],
+  "properties": {
+    "apiVersion": {
+      "$ref": "../common.schema.json#/$defs/apiVersion"
+    },
+    "id": {
+      "$ref": "../common.schema.json#/$defs/id"
+    },
+    "title": {
+      "$ref": "../common.schema.json#/$defs/shortText"
+    },
+    "label": {
+      "description": "Short name for the program selector, for example 'Ansible'.",
+      "$ref": "../common.schema.json#/$defs/shortText",
+      "maxLength": 32,
+      "type": "string"
+    },
+    "tagline": {
+      "$ref": "../common.schema.json#/$defs/shortText"
+    },
+    "summary": {
+      "$ref": "../common.schema.json#/$defs/text",
+      "maxLength": 400,
+      "type": "string"
+    },
+    "platform": {
+      "description": "The system the program teaches; the selector groups programs by it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "version",
+        "label"
+      ],
+      "properties": {
+        "family": {
+          "$ref": "../common.schema.json#/$defs/id"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "label": {
+          "$ref": "../common.schema.json#/$defs/shortText",
+          "maxLength": 24,
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "active",
+        "planned"
+      ]
+    },
+    "stages": {
+      "description": "Groups of chapters shown on the program's path and in the sidebar. Chapters not in a stage (such as a setup chapter) are listed first.",
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "chapters"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "../common.schema.json#/$defs/shortText"
+          },
+          "chapters": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "text": {
+            "$ref": "../common.schema.json#/$defs/text",
+            "maxLength": 300,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "variants": {
+      "description": "Alternative environments the content can show different instructions for (for example classroom and home lab). The reader picks one; the choice is remembered.",
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "../common.schema.json#/$defs/id"
+          },
+          "label": {
+            "$ref": "../common.schema.json#/$defs/shortText"
+          },
+          "icon": {
+            "enum": [
+              "school",
+              "house",
+              "server",
+              "laptop",
+              "cloud"
+            ]
+          },
+          "default": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "readerVariables": {
+      "description": "Values each reader enters once (for example their host's IP address). Written as <KEY> in code; the engine substitutes the reader's value as text.",
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "label"
+        ],
+        "properties": {
+          "key": {
+            "$ref": "../common.schema.json#/$defs/variableKey"
+          },
+          "label": {
+            "$ref": "../common.schema.json#/$defs/shortText"
+          },
+          "hint": {
+            "$ref": "../common.schema.json#/$defs/shortText"
+          },
+          "example": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "pattern": {
+            "description": "Optional input pattern from a fixed set.",
+            "enum": [
+              "ipv4",
+              "hostname",
+              "username",
+              "text"
+            ]
+          }
+        }
+      }
+    },
+    "lab": {
+      "description": "Lab exercises are enabled for this program.",
+      "type": "boolean"
+    },
+    "theme": {
+      "$ref": "theme.schema.json"
+    }
+  }
+}

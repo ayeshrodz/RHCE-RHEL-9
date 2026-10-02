@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/source/site.schema.json",
+  "title": "Site",
+  "description": "content/site.yml: the platform's name, links, program order and theme.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "name", "tagline", "programs"],
+  "properties": {
+    "apiVersion": { "$ref": "../common.schema.json#/$defs/apiVersion" },
+    "name": { "$ref": "../common.schema.json#/$defs/shortText" },
+    "tagline": { "$ref": "../common.schema.json#/$defs/shortText" },
+    "description": { "$ref": "../common.schema.json#/$defs/text" },
+    "repo": { "$ref": "../common.schema.json#/$defs/url" },
+    "programs": {
+      "description": "Program ids in the order the selector and the home page list them.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "../common.schema.json#/$defs/id" }
+    },
+    "links": {
+      "description": "Footer link groups.",
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "items"],
+        "properties": {
+          "title": { "$ref": "../common.schema.json#/$defs/shortText" },
+          "items": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["label", "url"],
+              "properties": {
+                "label": { "$ref": "../common.schema.json#/$defs/shortText" },
+                "url": { "$ref": "../common.schema.json#/$defs/url" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "legal": { "$ref": "../common.schema.json#/$defs/inlineMarkdown" },
+    "theme": { "$ref": "theme.schema.json" }
+  }
+}

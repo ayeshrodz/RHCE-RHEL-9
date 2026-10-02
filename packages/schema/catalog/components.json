@@ -1,0 +1,980 @@
+{
+  "apiVersion": 1,
+  "components": {
+    "assessment-timer": {
+      "summary": "An optional countdown for a timed practice assessment; survives reloads.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Stable id; the end time is stored under it.",
+          "format": "id"
+        },
+        "minutes": {
+          "type": "integer",
+          "description": "Length of the session.",
+          "minimum": 5,
+          "maximum": 480,
+          "default": 90
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "callout": {
+      "summary": "A highlighted note beside the main text.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "type": {
+          "type": "string",
+          "description": "What kind of note it is; sets the icon and colour.",
+          "enum": [
+            "note",
+            "tip",
+            "important",
+            "warning",
+            "exam"
+          ],
+          "default": "note"
+        },
+        "title": {
+          "type": "string",
+          "description": "Heading; defaults to the type name.",
+          "format": "shortText"
+        }
+      }
+    },
+    "card": {
+      "summary": "One card in a card grid, with a heading, an optional kicker and a tone.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "title": {
+          "type": "string",
+          "description": "Card heading.",
+          "format": "shortText"
+        },
+        "kicker": {
+          "type": "string",
+          "description": "Small label above the heading.",
+          "format": "shortText"
+        },
+        "tone": {
+          "type": "string",
+          "description": "Colour ramp.",
+          "enum": [
+            "gray",
+            "purple",
+            "teal",
+            "coral",
+            "pink",
+            "blue",
+            "green",
+            "amber",
+            "red"
+          ],
+          "default": "gray"
+        }
+      },
+      "parents": [
+        "cards"
+      ],
+      "required": [
+        "title"
+      ]
+    },
+    "cards": {
+      "summary": "A responsive grid of cards that stacks on small screens.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {
+        "cols": {
+          "type": "integer",
+          "description": "Columns on wide screens.",
+          "enum": [
+            2,
+            3
+          ],
+          "default": 2
+        }
+      },
+      "allowedChildren": [
+        "card"
+      ]
+    },
+    "chapter-grid": {
+      "summary": "The program's chapters as cards, generated from its navigation.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {},
+      "parents": [
+        "page"
+      ]
+    },
+    "checklist": {
+      "summary": "A self-assessment checklist stored per program.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "column": {
+      "summary": "One column in a two-column layout.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "title": {
+          "type": "string",
+          "description": "Column heading.",
+          "format": "shortText"
+        },
+        "tone": {
+          "type": "string",
+          "description": "Colour ramp.",
+          "enum": [
+            "gray",
+            "purple",
+            "teal",
+            "coral",
+            "pink",
+            "blue",
+            "green",
+            "amber",
+            "red"
+          ],
+          "default": "gray"
+        }
+      },
+      "parents": [
+        "columns"
+      ]
+    },
+    "columns": {
+      "summary": "Two side-by-side columns that stack on small screens.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {},
+      "allowedChildren": [
+        "column"
+      ]
+    },
+    "compare": {
+      "summary": "Side-by-side comparison of approaches.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "data-explorer": {
+      "summary": "A browsable tree of structured data with the expression that reaches each value.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "diagram": {
+      "summary": "A data-defined diagram of nodes, groups and arrows, optionally stepped or clickable.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "feature-grid": {
+      "summary": "A grid of short feature descriptions.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the items in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "parents": [
+        "page"
+      ]
+    },
+    "file-tree": {
+      "summary": "A project tree with notes per file.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "flashcards": {
+      "summary": "A deck of flip cards for recall.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the deck in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Deck title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/flashcards.schema.json"
+    },
+    "flow-map": {
+      "summary": "A responsive sequence of steps with an explanation panel.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the flow in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Diagram title.",
+          "format": "shortText"
+        },
+        "caption": {
+          "type": "string",
+          "description": "Caption below.",
+          "format": "text"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/flow-map.schema.json"
+    },
+    "glossary": {
+      "summary": "A list of terms and definitions.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {},
+      "allowedChildren": [
+        "term"
+      ]
+    },
+    "hero": {
+      "summary": "The opening block of a landing page.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "eyebrow": {
+          "type": "string",
+          "description": "Small line above the heading.",
+          "format": "shortText"
+        },
+        "title": {
+          "type": "string",
+          "description": "Main heading.",
+          "format": "shortText"
+        }
+      },
+      "parents": [
+        "page"
+      ]
+    },
+    "kbd": {
+      "summary": "A keyboard key, such as Esc or Ctrl+C.",
+      "status": "stable",
+      "since": 1,
+      "placement": "inline",
+      "children": "inline",
+      "attributes": {}
+    },
+    "lab": {
+      "summary": "A hands-on exercise with tracked tasks, notes and an optional challenge brief.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Stable id; task progress is stored under it.",
+          "format": "id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Exercise title.",
+          "format": "shortText"
+        },
+        "exercise": {
+          "type": "string",
+          "description": "The lab tools exercise name (`lab start NAME`).",
+          "format": "exerciseName"
+        },
+        "ownExercise": {
+          "type": "boolean",
+          "description": "The exercise exists only on this platform; there is no classroom equivalent.",
+          "default": false
+        },
+        "starter": {
+          "type": "boolean",
+          "description": "`lab start` creates a starter project.",
+          "default": true
+        },
+        "hosts": {
+          "type": "string[]",
+          "description": "Machines the exercise uses.",
+          "format": "hostName",
+          "maxItems": 12
+        },
+        "outcomes": {
+          "type": "string[]",
+          "description": "What the learner will have done.",
+          "format": "text",
+          "maxItems": 12
+        },
+        "objectives": {
+          "type": "string[]",
+          "description": "Objectives the exercise practises.",
+          "format": "objectiveId",
+          "maxItems": 12
+        }
+      },
+      "allowedChildren": [
+        "task",
+        "lab-notes",
+        "lab-challenge",
+        "lab-setup"
+      ],
+      "required": [
+        "id",
+        "title"
+      ]
+    },
+    "lab-challenge": {
+      "summary": "The requirements brief shown in Challenge mode.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {},
+      "parents": [
+        "lab"
+      ]
+    },
+    "lab-finish": {
+      "summary": "How to grade and finish an exercise with the lab tools.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "exercise": {
+          "type": "string",
+          "description": "Exercise name.",
+          "format": "exerciseName"
+        },
+        "grade": {
+          "type": "boolean",
+          "description": "Also show the grading command.",
+          "default": false
+        }
+      },
+      "required": [
+        "exercise"
+      ]
+    },
+    "lab-hosts": {
+      "summary": "The lab machines and their roles.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the items in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "parents": [
+        "page"
+      ]
+    },
+    "lab-notes": {
+      "summary": "Prerequisites, verification and variations for an exercise.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {},
+      "parents": [
+        "lab"
+      ]
+    },
+    "lab-setup": {
+      "summary": "Extra setup notes shown for one variant, such as the home lab.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "variant": {
+          "type": "string",
+          "description": "The variant these notes are for.",
+          "format": "id"
+        }
+      },
+      "parents": [
+        "lab"
+      ],
+      "required": [
+        "variant"
+      ]
+    },
+    "layer-resolver": {
+      "summary": "Ordered layers that can be switched on and off; the highest enabled layer wins.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "lead": {
+      "summary": "The opening paragraph of a page, shown larger than body text.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {}
+    },
+    "legacy-widget": {
+      "summary": "A widget that predates the generic catalog. Available during the migration only.",
+      "status": "legacy",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "name": {
+          "type": "string",
+          "description": "The widget.",
+          "enum": [
+            "LabNetworkMap",
+            "TwoAddresses",
+            "AccessPaths",
+            "BaselineTimeline",
+            "SnapshotChain",
+            "BuildRoadmap",
+            "ManualVsCode",
+            "DevOpsLifecycle",
+            "ArchitectureMap",
+            "TaskLifecycle",
+            "IdempotencyDemo",
+            "PlatformComponents",
+            "NavigatorRuntime",
+            "InventoryExplorer",
+            "RangeExpander",
+            "PrecedenceResolver",
+            "PrivilegeEscalation",
+            "PlaybookNesting",
+            "AnnotatedYaml",
+            "PlayRecap",
+            "Verbosity",
+            "SafeWorkflow",
+            "MultiPlayFlow",
+            "ModuleExplorer",
+            "CommandVsModule",
+            "YamlMultiline",
+            "VariableNameChecker",
+            "VariableSubstitution",
+            "VariablePrecedence",
+            "ProjectTree",
+            "GroupVarsResolver",
+            "DataExplorer",
+            "RegisterFlow",
+            "VaultFlow",
+            "VaultCommands",
+            "FactsExplorer",
+            "FactGathering",
+            "CustomFactBuilder",
+            "MagicVariables",
+            "LoopUnroller",
+            "ConditionPlayground",
+            "HandlerTimeline",
+            "BlockFlow",
+            "TaskOutcome",
+            "FileModuleChooser",
+            "ModeCalculator",
+            "FileEditSimulator",
+            "FetchLayout",
+            "TemplateFlow",
+            "TemplatePlayground",
+            "StatExplorer",
+            "HostPatternTester",
+            "ReuseSimulator",
+            "ProjectMap",
+            "RoleAnatomy",
+            "PlayOrder",
+            "RoleVarResolver",
+            "FqcnExplorer",
+            "RunStages",
+            "ErrorDecoder",
+            "CheckModeSim",
+            "AdminModuleFinder",
+            "CronBuilder",
+            "StorageStack",
+            "ReadinessChecklist",
+            "GitFlow",
+            "ToolRuntimes"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "description": "Key of its data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "replacedBy": "diagram",
+      "required": [
+        "name"
+      ],
+      "data": "data/legacy-widget.schema.json"
+    },
+    "objectives": {
+      "summary": "A boxed list of what the reader will be able to do after the page.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {}
+    },
+    "practice": {
+      "summary": "A chapter's practice questions, in the quiz format; attempts feed the learning dashboard.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the practice set in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/practice.schema.json"
+    },
+    "program-cards": {
+      "summary": "All programs as cards, generated from the site catalog.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {},
+      "parents": [
+        "page"
+      ]
+    },
+    "program-path": {
+      "summary": "The program's stages as a path, generated from program.yml.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {},
+      "parents": [
+        "page"
+      ]
+    },
+    "quiz": {
+      "summary": "A multiple-choice knowledge check with instant feedback.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Stable id within the page; answers are stored under it.",
+          "format": "id",
+          "default": "quiz"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Key of the question bank in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Panel title.",
+          "format": "shortText"
+        },
+        "objectives": {
+          "type": "string[]",
+          "description": "Objectives the questions check.",
+          "format": "objectiveId",
+          "maxItems": 12
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/quiz.schema.json"
+    },
+    "reader-variables": {
+      "summary": "A form for the reader's own values (declared in program.yml), substituted into code.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {}
+    },
+    "reveal": {
+      "summary": "A collapsed section the reader opens on demand, such as a solution or hint.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "title": {
+          "type": "string",
+          "description": "The toggle label.",
+          "format": "shortText",
+          "default": "Show answer"
+        }
+      }
+    },
+    "scenario": {
+      "summary": "Controls whose combinations select authored outputs (text, code, terminal, highlights).",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "starter-files": {
+      "summary": "Lists an exercise's starter files and lets the reader preview them.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "exercise": {
+          "type": "string",
+          "description": "Exercise name.",
+          "format": "exerciseName"
+        }
+      },
+      "required": [
+        "exercise"
+      ]
+    },
+    "step": {
+      "summary": "One numbered step of a procedure.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "title": {
+          "type": "string",
+          "description": "Step heading.",
+          "format": "shortText"
+        }
+      },
+      "parents": [
+        "steps"
+      ]
+    },
+    "steps": {
+      "summary": "A numbered procedure made of step tags.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {},
+      "allowedChildren": [
+        "step"
+      ]
+    },
+    "tab": {
+      "summary": "One view inside a tabs group, with its own label.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "label": {
+          "type": "string",
+          "description": "Tab label.",
+          "format": "shortText"
+        }
+      },
+      "parents": [
+        "tabs"
+      ],
+      "required": [
+        "label"
+      ]
+    },
+    "tabs": {
+      "summary": "Alternative views of the same idea; the reader picks one.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {},
+      "allowedChildren": [
+        "tab"
+      ]
+    },
+    "task": {
+      "summary": "One tracked task in a hands-on exercise.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "id": {
+          "type": "string",
+          "description": "Stable task id; completion is stored under it.",
+          "format": "id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Task title.",
+          "format": "shortText"
+        },
+        "legacyIndex": {
+          "type": "integer",
+          "description": "Position in the exercise before ids existed; used to keep old progress.",
+          "minimum": 1
+        }
+      },
+      "parents": [
+        "lab"
+      ],
+      "required": [
+        "id",
+        "title"
+      ]
+    },
+    "term": {
+      "summary": "One glossary entry: a term and its definition.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "name": {
+          "type": "string",
+          "description": "The term.",
+          "format": "shortText"
+        }
+      },
+      "parents": [
+        "glossary"
+      ],
+      "required": [
+        "name"
+      ]
+    },
+    "terminal": {
+      "summary": "A replay of commands and their output.",
+      "status": "planned",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the definition in the page data.",
+          "format": "dataRef"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "variant": {
+      "summary": "Instructions for one variant (declared in program.yml).",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "markdown",
+      "attributes": {
+        "name": {
+          "type": "string",
+          "description": "Variant id from program.yml.",
+          "format": "id"
+        },
+        "title": {
+          "type": "string",
+          "description": "Heading when shown inline.",
+          "format": "shortText"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "variant-group": {
+      "summary": "Alternative instructions for each variant; the reader sees the one they chose.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "tags",
+      "attributes": {},
+      "allowedChildren": [
+        "variant"
+      ]
+    },
+    "variant-switch": {
+      "summary": "The control that switches between variants.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "label": {
+          "type": "string",
+          "description": "Label before the switch.",
+          "format": "shortText"
+        }
+      }
+    }
+  }
+}
