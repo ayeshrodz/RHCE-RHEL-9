@@ -34,7 +34,7 @@ export default function Flashcards({ cards, title = 'Flashcards' }) {
       </header>
       <button className={`flashcard ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped((f) => !f)} aria-live="polite">
         <span className="flashcard-side">{flipped ? 'Answer' : 'Prompt'}</span>
-        <span className="flashcard-text">
+        <span key={`${order[pos]}-${flipped}`} className="flashcard-text">
           <Inline text={flipped ? card.back : card.front} />
         </span>
         {!flipped && <span className="flashcard-hint">Click to reveal</span>}

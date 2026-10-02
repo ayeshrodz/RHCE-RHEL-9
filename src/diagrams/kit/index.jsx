@@ -249,8 +249,14 @@ export function StepControls({ stepper, steps }) {
     <div className="step-controls">
       <div className="step-text" aria-live="polite">
         <span className="step-index">{formatCopy(text.position, [step + 1, count])}</span>
-        <strong>{current.title}</strong>
-        {current.text && <span>{current.text}</span>}
+        <strong key={`t-${step}`} className="step-swap">
+          {current.title}
+        </strong>
+        {current.text && (
+          <span key={`x-${step}`} className="step-swap">
+            {current.text}
+          </span>
+        )}
       </div>
       <div className="step-buttons">
         <StepDots steps={steps} active={step} onSelect={setStep} />
@@ -320,8 +326,12 @@ export function InfoPanel({ item, hint = 'Select any box in the diagram to learn
     <div className={`dg-info ${item ? `t-${item.tone ?? 'gray'}` : ''}`} aria-live="polite">
       {item ? (
         <>
-          <p className="dg-info-title">{item.title}</p>
-          <p className="dg-info-text">{item.text}</p>
+          <p key={`t-${item.title}`} className="dg-info-title">
+            {item.title}
+          </p>
+          <p key={`x-${item.title}`} className="dg-info-text">
+            {item.text}
+          </p>
         </>
       ) : (
         <p className="dg-info-hint">{hint}</p>

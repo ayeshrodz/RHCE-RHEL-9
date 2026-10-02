@@ -155,12 +155,13 @@ a.page-eyebrow:hover {
 .prose strong {
   font-weight: 600;
 }
-.prose ul,
-.prose ol {
+/* :where() keeps these at class weight, so component lists (.ed-list, .rvr-list…)
+   can drop the reading indent without !important. */
+.prose :where(ul, ol) {
   margin: 0 0 1.2em;
   padding-left: 1.4em;
 }
-.prose li {
+.prose :where(li) {
   margin: 0.35em 0;
   padding-left: 0.2em;
 }

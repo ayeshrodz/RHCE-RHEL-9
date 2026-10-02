@@ -44,7 +44,9 @@ export function Env({ children }) {
   return (
     <div className={`env env-${env}`}>
       <EnvSwitch />
-      <div className="env-panel">{panel ? panel.props.children : <p className="env-same">Same as the other environment.</p>}</div>
+      <div key={env} className="env-panel">
+        {panel ? panel.props.children : <p className="env-same">Same as the other environment.</p>}
+      </div>
     </div>
   );
 }

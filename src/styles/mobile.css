@@ -139,20 +139,10 @@
   .widget select {
     min-height: 2rem;
   }
-  .code-copy,
-  .code-label {
-    flex-shrink: 0;
-  }
-  .code-label {
-    flex-shrink: 1;
-    min-width: 0;
-  }
-  .code-label .is-file {
-    overflow-wrap: anywhere;
-  }
-  .code-head {
-    align-items: center;
-    gap: 8px;
+  .code-copy {
+    min-width: 2rem;
+    height: 2rem;
+    justify-content: center;
   }
   .lab-check {
     flex-shrink: 0;
@@ -203,7 +193,6 @@
   .widget {
     padding: 14px;
   }
-  .quiz-head,
   .activity-panel-body,
   .lab-notes,
   .lab-challenge {
@@ -308,9 +297,7 @@
 .code-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  margin-inline-start: auto;
+  gap: 2px;
 }
 .code-block.is-wrapped pre,
 .code-block.is-wrapped code {
@@ -372,17 +359,28 @@
 }
 
 @media (max-width: 760px), (pointer: coarse) {
-  .step-dots {
+  .step-buttons {
+    flex: 1 1 100%;
     min-width: 0;
-    flex-wrap: wrap;
+  }
+  .step-dots {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
     gap: 0;
+  }
+  .step-dots::-webkit-scrollbar {
+    display: none;
   }
   .step-dots button,
   .step-dots button.is-active,
   .step-dots button.is-past {
     display: grid;
+    flex: 0 0 auto;
     place-items: center;
-    width: 2rem;
+    width: 1.625rem;
     height: 2rem;
     background: transparent;
     border-radius: 8px;
@@ -391,15 +389,20 @@
     content: '';
     width: 7px;
     height: 7px;
-    border-radius: 50%;
+    border-radius: 999px;
     background: var(--border-strong);
+    transition:
+      width 0.25s var(--ease-out),
+      background 0.2s;
   }
   .step-dots button.is-past::after {
     background: var(--text-3);
   }
+  .step-dots button.is-active {
+    width: 2rem;
+  }
   .step-dots button.is-active::after {
     width: 18px;
-    border-radius: 4px;
     background: var(--accent);
   }
 }
@@ -409,4 +412,185 @@
 .lightbox-body {
   min-width: 0;
   max-width: 100%;
+}
+
+/* ---------- Phone alignment pass ----------
+   Shared components keep their desktop look; these rules only tighten
+   alignment, nesting and tap sizes where the column gets narrow. */
+
+.quiz-score,
+.lab-count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.quiz-title {
+  min-width: 0;
+}
+/* A lone "Quick check" puts its label above the question instead of squeezing it. */
+.quiz.is-single .quiz-q {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.quiz.is-single .quiz-q-kicker {
+  align-self: flex-start;
+}
+
+@media (max-width: 640px) {
+  /* Callouts: the icon sits on the title line and the body uses the full width. */
+  .callout {
+    position: relative;
+    display: block;
+    padding: 12px 14px;
+  }
+  .callout-icon {
+    position: absolute;
+    top: 13px;
+    left: 14px;
+    margin: 0;
+  }
+  .callout-title {
+    min-height: 18px;
+    padding-left: 24px;
+    line-height: 18px;
+  }
+  .callout-body :where(ul, ol) {
+    padding-left: 1.2em;
+  }
+
+  /* Nested containers lose a level of inset so code and text keep their width. */
+  .lab-head {
+    padding: 16px 14px 14px;
+  }
+  .lab-tasks {
+    padding: 4px 14px 8px !important;
+  }
+  .lab-walkthrough > summary {
+    padding: 14px;
+  }
+  .lab-done {
+    padding: 12px 14px;
+  }
+  .lab-task-head {
+    gap: 10px;
+  }
+  .objectives,
+  .chapter-objectives {
+    padding: 14px 16px;
+  }
+  .flashcard {
+    min-height: 150px;
+    padding: 20px 16px;
+  }
+  .flashcard-text {
+    font-size: 17px;
+  }
+  .step {
+    padding-left: 36px !important;
+  }
+  .env-panel {
+    padding: 12px;
+  }
+  .tabs-panel > .code-block:first-child {
+    margin-top: 0;
+  }
+
+  /* Segmented controls: wrapped rows stretch to the full width instead of leaving an orphan. */
+  .segmented {
+    display: flex;
+    width: 100%;
+  }
+  .segmented button {
+    flex: 1 1 auto;
+    min-height: 2rem;
+  }
+  .option-switch {
+    flex-wrap: wrap;
+  }
+  .option-switch button {
+    min-height: 2rem;
+  }
+  .mods-search {
+    flex-basis: 100%;
+    max-width: none;
+    height: 2.25rem;
+  }
+
+  /* Home hero: buttons fill each row; the primary action leads. */
+  .hero-actions {
+    gap: 10px;
+  }
+  .hero-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .hero-actions .btn-primary {
+    order: -1;
+    flex-basis: 100%;
+  }
+  .home-section {
+    margin-top: 48px;
+  }
+  .features {
+    margin-top: 40px;
+  }
+  .feature {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: start;
+  }
+  .feature-icon {
+    grid-row: span 2;
+    margin: 0;
+  }
+  .feature-title {
+    align-self: center;
+    margin-top: 6px;
+  }
+
+  /* Progress page: same gutter as every other page. */
+  .learning-dashboard {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stats > div {
+    display: block;
+    padding: 12px 14px;
+  }
+  .dashboard-stats dt {
+    margin: 0 0 2px;
+  }
+  .dashboard-stats dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    font-size: 22px;
+    text-align: left;
+  }
+  .dashboard-stats small {
+    margin: 0;
+  }
+  /* Terminal blocks keep a compact icon-only copy button; the label stays for screen readers. */
+  .code-copy span {
+    display: none;
+  }
+  .hero-actions .btn {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .ranges-presets .pill,
+  .search-suggestions .pill {
+    height: auto;
+    min-height: 2rem;
+    padding-inline: 10px;
+  }
+  .chip {
+    min-height: 2rem;
+  }
 }

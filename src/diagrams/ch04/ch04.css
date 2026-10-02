@@ -392,3 +392,26 @@ button.ht-status:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+@media (max-width: 760px), (pointer: coarse) {
+  .lu-chip {
+    height: 2rem;
+  }
+  .lu-chip button {
+    width: 26px;
+    height: 26px;
+  }
+  .lu-add {
+    flex: 1 1 100%;
+  }
+  .lu-add input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 2rem;
+  }
+  .lu-add .btn {
+    min-width: 2rem;
+    justify-content: center;
+  }
+}
