@@ -66,8 +66,10 @@ export default function CodeBlock({ children, className = '', style, 'data-title
       <div className="code-head">
         <span className="code-label">
           <Icon size={13} />
-          <span className={title ? 'is-file' : ''}>{label}</span>
-          {title && lang && langLabel[lang] && <span className="code-lang">{langLabel[lang]}</span>}
+          <span className="code-label-text">
+            <span className={title ? 'is-file' : ''}>{label}</span>
+            {title && lang && langLabel[lang] && <span className="code-lang">{langLabel[lang]}</span>}
+          </span>
         </span>
         <div className="code-actions">
           {mobile && (

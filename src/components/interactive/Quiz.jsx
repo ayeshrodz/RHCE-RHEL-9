@@ -63,7 +63,7 @@ export default function Quiz({ id = 'quiz', title, questions }) {
         })}
       </ol>
 
-      {(finished || (single && answered)) && (
+      {(finished || (single && answered > 0)) && (
         <footer className="quiz-foot">
           {!single && (
             <p>

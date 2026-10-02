@@ -809,3 +809,33 @@
   width: auto;
   min-width: 40px;
 }
+
+/* Phones: the value field drops under its label so neither is cut off. */
+@media (max-width: 760px) {
+  .vprec-result {
+    flex: 1 1 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 10px;
+    min-width: 0;
+  }
+  .vprec-result .vprec-from {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 520px) {
+  .vprec-row {
+    grid-template-columns: 38px minmax(0, 1fr);
+    row-gap: 6px;
+  }
+  .vprec-value {
+    grid-column: 2;
+    height: 2rem;
+  }
+  .vprec-where code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

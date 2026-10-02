@@ -1,0 +1,299 @@
+/* ------------------------------------------------------------------
+   Micro-interactions for things people press, toggle, open or check.
+   Short and quiet: a press, a check that settles, a panel that rises.
+   base.css turns all of it off under prefers-reduced-motion.
+   ------------------------------------------------------------------ */
+
+@keyframes km-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes km-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes km-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes km-settle {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes km-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+@keyframes km-flip {
+  from {
+    opacity: 0;
+    transform: perspective(600px) rotateX(-60deg);
+  }
+}
+@keyframes km-panel {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+/* ---------- Press feedback ---------- */
+
+:is(
+  .btn,
+  .icon-btn,
+  .chip,
+  button.pill,
+  .segmented button,
+  .option-switch button,
+  .tabs-list button,
+  .quiz-option,
+  .code-copy,
+  .lab-check,
+  .complete-btn,
+  .flashcard,
+  .mods-item,
+  .recap-counter,
+  .starter-files button,
+  .search-hit,
+  .step-dots button,
+  .brand-pill,
+  .header-progress,
+  .reveal-toggle,
+  .nav-expand,
+  .lu-chip button
+) {
+  transition:
+    background-color var(--dur-fast),
+    border-color var(--dur-fast),
+    color var(--dur-fast),
+    box-shadow var(--dur-fast),
+    opacity var(--dur-fast),
+    transform var(--dur-fast) var(--ease-out);
+}
+:where(
+    .btn,
+    .icon-btn,
+    .chip,
+    button.pill,
+    .segmented button,
+    .option-switch button,
+    .code-copy,
+    .lab-check,
+    .recap-counter,
+    .starter-files button,
+    .header-progress,
+    .lu-chip button
+  ):not(:disabled):active {
+  transform: scale(0.95);
+}
+:where(.quiz-option, .complete-btn, .flashcard, .mods-item, .search-hit):not(:disabled):active {
+  transform: scale(0.985);
+}
+
+/* Arrows lean the way they point. */
+.btn svg,
+.pager-dir svg,
+.reveal-toggle svg {
+  transition: transform var(--dur) var(--ease-out);
+}
+@media (hover: hover) {
+  .btn:not(:disabled):hover :is(.lucide-arrow-right, .lucide-chevron-right) {
+    transform: translateX(2px);
+  }
+  .btn:not(:disabled):hover .lucide-chevron-left {
+    transform: translateX(-2px);
+  }
+  .pager-link:hover .lucide-arrow-right {
+    transform: translateX(3px);
+  }
+  .pager-link:hover .lucide-arrow-left {
+    transform: translateX(-3px);
+  }
+  .btn:not(:disabled):hover .lucide-rotate-ccw {
+    transform: rotate(-40deg);
+  }
+  .btn:not(:disabled):hover .lucide-shuffle {
+    transform: scale(1.12);
+  }
+}
+
+/* ---------- Cards that lead somewhere ---------- */
+
+.chapter-card,
+.section-card,
+.pager-link,
+.roadmap-item,
+.path-link {
+  transition:
+    border-color var(--dur-fast),
+    background-color var(--dur-fast),
+    box-shadow var(--dur),
+    transform var(--dur) var(--ease-out);
+}
+@media (hover: hover) {
+  .chapter-card:hover {
+    transform: translateY(-2px);
+  }
+  .section-card:hover,
+  .pager-link:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+  }
+  .section-card:hover .section-card-icon {
+    transform: scale(1.06);
+  }
+  .path-link:hover .path-dot {
+    border-color: var(--accent);
+  }
+}
+.section-card-icon,
+.path-dot {
+  transition:
+    transform var(--dur) var(--ease-spring),
+    border-color var(--dur-fast);
+}
+.chapter-card:active,
+.section-card:active,
+.pager-link:active,
+.roadmap-item:active {
+  transform: scale(0.99);
+}
+
+/* ---------- Answers and checks ---------- */
+
+.quiz-option.is-correct .quiz-letter,
+.quiz-option.is-selected .quiz-letter {
+  animation: km-settle 0.35s var(--ease-spring);
+}
+.quiz-option.is-wrong {
+  animation: km-nudge 0.32s ease-in-out;
+}
+.quiz-explain,
+.challenge [role='status']:not(:empty),
+.quiz-foot {
+  animation: km-rise 0.28s var(--ease-out);
+}
+.quiz-option .quiz-letter {
+  transition:
+    background-color var(--dur-fast),
+    border-color var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.lab-task.is-done .lab-check {
+  animation: km-settle 0.35s var(--ease-spring);
+}
+.lab-task.is-done .lab-check svg,
+.code-copy .lucide-check,
+.pill-done svg {
+  animation: km-pop 0.35s var(--ease-spring);
+}
+.lab-task-title {
+  transition: color var(--dur);
+}
+.lab-done {
+  animation: km-rise 0.3s var(--ease-out);
+}
+.lab-progress span,
+.progress-chapter-bar span,
+.chapter-card-bar span {
+  transition: width 0.5s var(--ease-out);
+}
+
+.complete-btn {
+  transition:
+    background-color var(--dur),
+    border-color var(--dur),
+    color var(--dur),
+    transform var(--dur-fast) var(--ease-out);
+}
+.complete-check {
+  transition:
+    background-color var(--dur),
+    border-color var(--dur),
+    color var(--dur);
+}
+.complete-btn.is-done .complete-check {
+  animation: km-pop 0.4s var(--ease-spring);
+}
+
+/* Switches slide with a little give. */
+.prec-toggle span {
+  transition: transform 0.25s var(--ease-spring);
+}
+
+/* ---------- Content that changes in place ---------- */
+
+.flashcard-text {
+  animation: km-flip 0.32s var(--ease-out);
+  transform-origin: 50% 50%;
+}
+.step-swap,
+.dg-info-title,
+.dg-info-text {
+  animation: km-rise 0.25s var(--ease-out);
+}
+.tabs-panel:not([hidden]),
+.env-panel,
+.ayaml-note {
+  animation: km-rise 0.22s var(--ease-out);
+}
+.tabs-list button {
+  transition:
+    color var(--dur-fast),
+    border-color var(--dur) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+/* Disclosures open downwards. */
+.reveal[open] > .reveal-body,
+.lab-notes details[open] > :not(summary),
+.lab-walkthrough[open] > :not(summary),
+.dashboard-card details[open] > :not(summary),
+.page-outline[open] > .toc,
+.nav-sections {
+  animation: km-drop 0.22s var(--ease-out);
+}
+
+/* ---------- Overlays ---------- */
+
+.search-dialog,
+.lightbox-body {
+  animation: km-panel 0.2s var(--ease-out);
+}
+.progress-panel {
+  transform-origin: top right;
+  animation: km-panel 0.18s var(--ease-out);
+}
+.search-hit {
+  transition: background-color 0.1s;
+}
