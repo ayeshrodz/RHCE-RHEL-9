@@ -4,6 +4,7 @@ import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
 import { exerciseName } from '@/lib/labEnv';
 import { HomeSetup, LabPrep } from './Env';
+import LabBrief from './LabBrief';
 
 const LabContext = createContext(null);
 const EMPTY = [];
@@ -116,6 +117,7 @@ export function Lab({
           )}
         </header>
 
+        {classroom && <LabBrief name={exerciseName(classroom)} />}
         <ol className="lab-tasks">{numbered}</ol>
 
         {total > 0 && count === total && (
@@ -147,10 +149,13 @@ export function Task({ n, title, children }) {
       </div>
       <div className="lab-task-body">
         {mode === 'challenge' ? (
-          <details>
-            <summary>Open task requirements, hints, and steps</summary>
-            {children}
-          </details>
+          <>
+            {Children.toArray(children)[0]}
+            <details>
+              <summary>Open hints and steps</summary>
+              {Children.toArray(children).slice(1)}
+            </details>
+          </>
         ) : (
           children
         )}

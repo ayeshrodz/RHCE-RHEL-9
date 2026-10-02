@@ -26,3 +26,7 @@ scratch/
 # Large binary files (GitHub has 100MB per-file hard limit)
 docs/*.pdf
 *.pdf
+
+# Python test caches
+__pycache__/
+*.pyc

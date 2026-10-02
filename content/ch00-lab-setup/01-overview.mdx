@@ -166,7 +166,7 @@ Newer patch releases should behave the same. If something differs, compare again
 - **Rocky Linux 9 instead of RHEL 9.** Rocky is a free rebuild of RHEL, so packages, paths and services match. The fact `ansible_facts['distribution']` reports `Rocky`, not `RedHat`, so adjust conditions like `== "RedHat"` from chapter 4 when you practise them here, or test `ansible_facts['os_family'] == "RedHat"`, which is true on both.
 - **ansible-core 2.14 without an execution environment.** A Red Hat classroom runs playbooks inside Red Hat's supported EE, which needs a Red Hat registry login. Here navigator runs Rocky's own `ansible-core` 2.14, the same generation RHEL 9 uses, and the `ansible.posix` and `community.general` collections the EE would provide are installed on workstation. Section 0.6 explains how to try the container workflow anyway.
 - **The extra disk is `/dev/sdb`**, not `/dev/vdb`: adjust storage exercises accordingly.
-- **`lab start` is a stand-in.** A classroom's `lab` command exists only there. Section 0.6 installs this guide's own script with the same syntax that downloads each exercise's starter files; `lab grade` has no equivalent.
+- **`lab start` is a stand-in.** A classroom's `lab` command exists only there. Section 0.6 installs this guide's own script with the same syntax that downloads each exercise's starter files; `lab grade` checks your project and host state without changing them.
 - **Classroom or home lab: pick once.** Wherever the two differ, exercises and lessons show both, behind a switch the site remembers.
 </Callout>
 
