@@ -16,20 +16,28 @@ const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv',
 const listeners = new Map();
 const cache = new Map();
 const savedKeys = new Set();
+const invalidKeys = new Set();
 let revision = 0;
 let storageAvailable = true;
 
 export function readStored(key, fallback) {
   if (cache.has(key)) return cache.get(key);
   let value = fallback;
+  let raw = null;
   try {
-    const raw = localStorage.getItem(PREFIX + key);
-    if (raw !== null) {
-      value = migrateEntry(key, JSON.parse(raw));
-      savedKeys.add(key);
-    }
+    raw = localStorage.getItem(PREFIX + key);
   } catch {
     storageAvailable = false;
+  }
+  if (raw !== null) {
+    try {
+      const parsed = JSON.parse(raw);
+      value = PREFERENCES.has(key) ? parsed : validateProgress({ app: APP_ID, version: EXPORT_VERSION, data: { [key]: parsed } })[key];
+      invalidKeys.delete(key);
+      savedKeys.add(key);
+    } catch {
+      invalidKeys.add(key);
+    }
   }
   cache.set(key, value);
   return value;
@@ -44,6 +52,7 @@ function notify(key) {
 export function writeStored(key, value) {
   cache.set(key, value);
   savedKeys.add(key);
+  invalidKeys.delete(key);
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value));
   } catch {
@@ -123,7 +132,10 @@ export function resetAllProgress() {
 /** Everything the reader has done (not the theme), as a JSON-safe object. */
 export function exportProgress() {
   const data = {};
-  for (const key of progressKeys()) data[key] = readStored(key, null);
+  for (const key of progressKeys()) {
+    const value = readStored(key, null);
+    if (!invalidKeys.has(key)) data[key] = value;
+  }
   return { app: APP_ID, version: EXPORT_VERSION, exportedAt: new Date().toISOString(), data };
 }
 

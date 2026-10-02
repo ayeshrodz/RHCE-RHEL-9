@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Clock } from 'lucide-react';
 import { course, findPage, kindLabel, loaderFor, neighbours } from '@/lib/course';
 import { useProgress } from '@/hooks/useProgress';
+import { useHeadingNavigation } from '@/hooks/useHeadingNavigation';
 import { useStored } from '@/lib/storage';
 import { PageContext } from '@/lib/pageContext';
 import { kindIcon } from '@/components/layout/Sidebar';
@@ -25,10 +26,7 @@ function Section({ page }) {
   const { prev, next } = neighbours(page);
   const done = isDone(page.key);
   const Icon = kindIcon[page.section.kind];
-  const location = useLocation();
-  // A section link ("#/ch07/collections#the-role-layout") arrives as location.hash.
-  const target = decodeURIComponent(location.hash.slice(1));
-  const smooth = location.state?.scrollSmooth;
+  useHeadingNavigation(!!Content);
 
   useEffect(() => {
     let alive = true;
@@ -44,26 +42,6 @@ function Section({ page }) {
       alive = false;
     };
   }, [page]);
-
-  // Jump to the linked heading once the content has rendered, and again
-  // whenever the link changes (location.key is new on every navigation).
-  // Diagrams and fonts that finish loading can push the heading down, so the
-  // jump is repeated while the page settles, unless the reader scrolls first.
-  useEffect(() => {
-    if (!Content || !target) return;
-    const jump = (behavior) => document.getElementById(target)?.scrollIntoView({ behavior });
-    let userScrolled = false;
-    const stop = () => (userScrolled = true);
-    const events = ['wheel', 'touchmove', 'keydown', 'mousedown'];
-    events.forEach((e) => window.addEventListener(e, stop, { passive: true }));
-    const frame = requestAnimationFrame(() => jump(smooth ? 'smooth' : 'auto'));
-    const timers = smooth ? [] : [150, 500, 1200].map((ms) => setTimeout(() => !userScrolled && jump('auto'), ms));
-    return () => {
-      cancelAnimationFrame(frame);
-      timers.forEach(clearTimeout);
-      events.forEach((e) => window.removeEventListener(e, stop));
-    };
-  }, [Content, target, smooth, location.key]);
 
   useEffect(() => {
     document.title = `${page.number} ${page.section.title} · ${course.title}`;

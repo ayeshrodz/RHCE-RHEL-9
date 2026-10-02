@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
-import SearchDialog from '@/components/search/SearchDialog';
+const SearchDialog = lazy(() => import('@/components/search/SearchDialog'));
 import { useStored } from '@/lib/storage';
 
 export default function AppShell() {
@@ -11,8 +11,11 @@ export default function AppShell() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [collapsed, setCollapsed] = useStored('sidebarCollapsed', false);
   const { pathname } = useLocation();
+  const previousPath = useRef(pathname);
 
   useEffect(() => {
+    if (previousPath.current !== pathname) document.getElementById('main')?.focus({ preventScroll: true });
+    previousPath.current = pathname;
     setNavOpen(false);
     window.scrollTo({ top: 0 });
   }, [pathname]);
@@ -47,7 +50,7 @@ export default function AppShell() {
       >
         Skip to content
       </a>
-      <Header onMenu={() => setNavOpen((o) => !o)} onSearch={() => setSearchOpen(true)} />
+      <Header navigationOpen={navOpen} onMenu={() => setNavOpen((o) => !o)} onSearch={() => setSearchOpen(true)} />
       <div className="shell-body">
         <Sidebar open={navOpen} onClose={() => setNavOpen(false)} collapsed={collapsed} onToggleCollapsed={() => setCollapsed((c) => !c)} />
         <main id="main" className="shell-main" tabIndex={-1}>
@@ -55,7 +58,11 @@ export default function AppShell() {
           <Footer />
         </main>
       </div>
-      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
+      {searchOpen && (
+        <Suspense fallback={<p role="status">Loading search…</p>}>
+          <SearchDialog onClose={() => setSearchOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

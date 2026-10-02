@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Managing network configuration"
+title: "Exercise: Managing network configuration"
 kind: lab
 minutes: 20
 ---
@@ -17,6 +17,43 @@ The project `~/system-network` has an `ansible.cfg`, an `inventory` with servera
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Configure a network interface with the network system role.', 'Read network facts.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-network
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the dummy interface address to another documentation address, then verify the old address is gone.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Add a persistent secondary connection on servera with `playbook.yml`, without interrupting its management connection.
+
+- Use the network system role, with the connection values stored in `group_vars/webservers/network.yml`.
+- In the classroom, use `eth1` at `172.25.250.30/24`. At home, use the dummy connection named `eth1` at `192.0.2.30/24`.
+- `get-eth1.yml` must report the resulting interface facts.
+- Verify the address, active connection, and continued SSH access, including after an explicit reboot.
+
+</LabChallenge>
+
   <HomeSetup>
     The home-lab VMs have one network card, which Ansible uses. Instead of a second card, `eth1` is a **dummy** interface, created by the same role from `type: dummy`, with an address from `192.0.2.0/24`, a range reserved for documentation. Everything else is the same.
   </HomeSetup>

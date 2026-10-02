@@ -20,14 +20,14 @@ lxc exec workstation -- su - student
   hosts={['workstation']}
   outcomes={[
     'Install ansible-core 2.14 and its companions from Rocky’s repositories.',
-    'Install ansible-navigator without shadowing the exam-aligned ansible-core.',
+    'Install ansible-navigator without shadowing the home-lab ansible-core.',
     'Add the ansible.posix and community.general collections, pinned to versions that support ansible-core 2.14.',
     'Configure navigator and SSH keys to every managed host.',
     'Install the home-lab lab command, so lab start works here as it does in a classroom.',
   ]}
 >
   <Task id="task-36204c1d80c4" legacyIndex={1} title="VM: install Ansible from Rocky's repositories">
-    This `ansible-core` (2.14) is the same generation the RHEL 9 exam uses, so it is the one you practise with.
+    This home-lab baseline uses `ansible-core` 2.14 from Rocky Linux 9. It supports this course's labs; check the objectives for your booked exam version separately.
 
 ```bash title="student@workstation"
 sudo dnf install -y ansible-core rhel-system-roles podman git python3.11 tree

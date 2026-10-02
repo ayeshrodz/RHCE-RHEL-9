@@ -1,11 +1,12 @@
-import { Check, RotateCcw, X } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useStored } from '@/lib/storage';
 import { usePageKey } from '@/lib/pageContext';
 import { Inline } from './inline';
+import { ActivityPanel, ActivityFeedback } from './ActivityPanel';
+import AnswerOptions from './AnswerOptions';
 import { latestAnswer, recordAnswer, resetQuiz } from '@/lib/progressModel';
 
 const EMPTY = { version: 2, items: {} };
-const LETTERS = 'ABCDEFG';
 
 /**
  * Multiple-choice quiz with instant feedback and a running score.
@@ -21,14 +22,12 @@ export default function Quiz({ id = 'quiz', title, questions }) {
   const single = questions.length === 1;
 
   return (
-    <section className={`quiz ${single ? 'is-single' : ''}`} aria-label={title ?? 'Quiz'}>
-      {!single && (
-        <header className="quiz-head">
-          <p className="quiz-title">{title ?? 'Check your understanding'}</p>
-          <span className="quiz-score">{answered ? `${correct} / ${questions.length} correct` : `${questions.length} questions`}</span>
-        </header>
-      )}
-
+    <ActivityPanel
+      className={single ? 'is-single' : ''}
+      aria-label={title ?? 'Quiz'}
+      title={single ? null : (title ?? 'Check your understanding')}
+      meta={answered ? `${correct} / ${questions.length} correct` : `${questions.length} questions`}
+    >
       <ol className="quiz-list">
         {questions.map((item, qi) => {
           const history = answers.items[item.id];
@@ -46,39 +45,18 @@ export default function Quiz({ id = 'quiz', title, questions }) {
               {history?.attempts.length > 0 && !done && (
                 <p className="quiz-history">{history.attempts.length} earlier attempt(s) kept. Answer this version again.</p>
               )}
-              <div className="quiz-options" role="group" aria-label={`Answers to question ${qi + 1}`}>
-                {item.options.map((opt, oi) => {
-                  const isAnswer = oi === item.answer;
-                  const state = !done ? '' : isAnswer ? 'is-correct' : oi === chosen ? 'is-wrong' : 'is-muted';
-                  return (
-                    <button
-                      key={oi}
-                      aria-pressed={chosen === oi}
-                      className={`quiz-option ${state}`}
-                      disabled={done}
-                      onClick={() => setAnswers((a) => recordAnswer(a, item, oi))}
-                    >
-                      <span className="quiz-letter">
-                        {done && isAnswer ? (
-                          <Check size={13} strokeWidth={3} />
-                        ) : done && oi === chosen ? (
-                          <X size={13} strokeWidth={3} />
-                        ) : (
-                          LETTERS[oi]
-                        )}
-                      </span>
-                      <span>
-                        <Inline text={opt} />
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+              <AnswerOptions
+                options={item.options}
+                value={chosen}
+                answer={item.answer}
+                disabled={done}
+                label={`Answers to question ${qi + 1}`}
+                onChange={(index) => setAnswers((a) => recordAnswer(a, item, index))}
+              />
               {done && item.explain && (
-                <p role="status" className={`quiz-explain ${chosen === item.answer ? 'is-correct' : 'is-wrong'}`}>
-                  <strong>{chosen === item.answer ? 'Correct. ' : 'Not quite. '}</strong>
+                <ActivityFeedback correct={chosen === item.answer} label={chosen === item.answer ? 'Correct.' : 'Not quite.'}>
                   <Inline text={item.explain} />
-                </p>
+                </ActivityFeedback>
               )}
             </li>
           );
@@ -101,6 +79,6 @@ export default function Quiz({ id = 'quiz', title, questions }) {
           </button>
         </footer>
       )}
-    </section>
+    </ActivityPanel>
   );
 }

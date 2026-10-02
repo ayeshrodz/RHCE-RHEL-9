@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Implementing multiple plays"
+title: "Exercise: Implementing multiple plays"
 kind: lab
 minutes: 20
 ---
@@ -19,6 +19,43 @@ The project `~/playbook-multi` already has an `ansible.cfg` and an `inventory` t
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Build and run a playbook with two plays.', 'Enable privilege escalation for one play and disable it for another.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade playbook-multi
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Make the verification require a specific phrase in the returned page as well as HTTP 200.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Deliver an intranet site on servera and verify it in the same run. Save your work in `intranet.yml`.
+
+- The host must have current `httpd` and `firewalld` packages, with both services running and enabled.
+- `/var/www/html/index.html` must contain `Welcome to the example.com intranet!` and HTTP must be allowed now and after reboot.
+- A separate, unprivileged play on localhost must confirm an HTTP 200 response and retrieve the content.
+- Show that the verification runs after deployment and that a repeat run has no unexpected changes.
+
+</LabChallenge>
+
   <Task id="task-1e7df0708233" legacyIndex={1} title="Start the first play">
     In `~/playbook-multi`, create `intranet.yml` with the document marker and a play named `Enable intranet services` for `servera.lab.example.com`, with privilege escalation on and an empty task list to fill in.
 

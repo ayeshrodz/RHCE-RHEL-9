@@ -1,5 +1,5 @@
 ---
-title: "Review lab: Deploying Ansible"
+title: "Exercise: Deploying Ansible"
 kind: lab
 minutes: 40
 ---
@@ -17,6 +17,43 @@ This lab covers chapters 1 to 4 and 8. Your project directory is `~/review-deplo
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Install and configure Ansible.', 'Create, modify and troubleshoot playbooks.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade review-deploy
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a third disposable user through the existing list, then verify all accounts without duplicating the task.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Prepare and use a reproducible control-node project for servera and serverb.
+
+- The project must have a discoverable inventory and configuration, with the privileged connections appropriate to the environment (root in the home walkthrough). Use the runtime appropriate to your environment.
+- `users.yml` must provision `joe` and `sam` through one list-driven task.
+- `packages.yml` must install the packages described in the exercise, `httpd` and `mariadb-server`, plus `redis` only on hosts with more than 10 MiB of swap.
+- Repair `verify_user.yml` so it checks for `sam` without creating that account and records the result in `/home/student/verify.txt`. Confirm both hosts and repeat the playbooks.
+
+</LabChallenge>
+
   <HomeSetup>
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host. `ansible-navigator` is already installed on workstation (section 0.6), and the home lab runs without an execution environment, so the first task's EE steps do not apply.
   </HomeSetup>

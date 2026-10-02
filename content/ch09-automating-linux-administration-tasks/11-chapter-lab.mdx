@@ -1,5 +1,5 @@
 ---
-title: "Chapter lab: Automating Linux administration tasks"
+title: "Exercise: Automating Linux administration tasks"
 kind: lab
 minutes: 40
 ---
@@ -22,8 +22,46 @@ The project `~/system-review` has an `ansible.cfg`, an `inventory` with servera 
     'Schedule a system cron job.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the reporting schedule while leaving users, storage, and networking intact. Verify the isolated change.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Prepare the webservers with five focused playbooks and verify the combined result.
+
+- `repo_playbook.yml`: configure the signed repository and install the environment's practice package (classroom `rhelver`; home `libyaml-devel` from Rocky CRB).
+- `users.yml`: create `ops1` and `ops2` with supplementary group `webadmin`.
+- `storage.yml`: provide `apache-vg` with XFS volumes `content-lv` (512 MiB, `/var/www`) and `logs-lv` (768 MiB, `/var/log/httpd`) on the empty extra disk.
+- `create_crontab_file.yml`: a devops job in `/etc/cron.d/disk_usage` must append `df` output to `/home/devops/disk_usage` every two minutes, hours 09–16, weekdays.
+- `network_playbook.yml`: configure the secondary address (`172.25.250.40/24` on classroom eth1; `192.0.2.40/24` on a home dummy eth1). Preserve management access and verify repeatability and reboot persistence.
+
+</LabChallenge>
+
   <HomeSetup>
-    As in the guided exercises: the repository is Rocky Linux's CRB repository with the key already on the servers, the package is `libyaml-devel` (only in CRB), the spare disk is `/dev/sdb`, and `eth1` is a dummy interface with the address `192.0.2.40/24`.
+    As in the earlier exercises: the repository is Rocky Linux's CRB repository with the key already on the servers, the package is `libyaml-devel` (only in CRB), the spare disk is `/dev/sdb`, and `eth1` is a dummy interface with the address `192.0.2.40/24`.
   </HomeSetup>
 
   <Task id="task-ecaab709dcab" legacyIndex={1} title="A package from a signed repository">

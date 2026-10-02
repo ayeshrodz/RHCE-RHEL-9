@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Configuration files"
+title: "Exercise: Configuration files"
 kind: lab
 minutes: 20
 ---
@@ -15,6 +15,42 @@ You will give a project its own navigator settings, its own `ansible.cfg` and it
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Create project-level configuration files for ansible-navigator and Ansible.', 'Build an inventory with a nested group and verify it with playbooks.', 'Configure privilege escalation with a sudo password prompt.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade playbook-manage
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a separate database group, then prove its ping playbook uses the project inventory without a command-line inventory option.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Make the supplied ping playbooks work from this project without specifying an inventory on each run.
+
+- Navigator must use project settings and avoid saving playbook artifacts. At home, execution environments must remain disabled; in a classroom, use the assigned image.
+- The default inventory must be `./inventory`. `myself` contains workstation, `intranetweb` contains servera, and `internetweb` contains serverb; `web` contains the two web groups.
+- Runs must escalate to root through sudo and request the become password. All three hosts must answer the supplied checks.
+
+</LabChallenge>
+
   <Task id="task-913f067f7a6e" legacyIndex={1} title="Move into the project directory">
 
 ```console

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 import { BookOpen, Check, ChevronRight, CircleHelp, FlaskConical, House, ListChecks, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useDialogFocus } from '@/hooks/useDialogFocus';
 import ProgressRing from './ProgressRing';
 
 export const kindIcon = { lesson: BookOpen, lab: FlaskConical, quiz: CircleHelp, summary: ListChecks };
@@ -17,22 +18,32 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapsed })
   const { done } = useProgress();
   const isMobile = useMediaQuery('(max-width: 960px)');
   const rail = collapsed && !isMobile;
+  const navRef = useRef(null);
+  useDialogFocus(navRef, isMobile && open, onClose);
 
   return (
     <>
       <div className={`scrim ${open ? 'is-open' : ''}`} onClick={onClose} aria-hidden="true" />
-      <nav className={`sidebar ${open ? 'is-open' : ''} ${rail ? 'is-rail' : ''}`} aria-label="Course navigation">
+      <nav
+        ref={navRef}
+        id="course-navigation"
+        tabIndex={-1}
+        inert={isMobile && !open ? true : undefined}
+        aria-hidden={isMobile && !open ? true : undefined}
+        className={`sidebar ${open ? 'is-open' : ''} ${rail ? 'is-rail' : ''}`}
+        aria-label="Course navigation"
+      >
         {rail ? (
           <Rail chapterId={chapterId} done={done} onExpand={onToggleCollapsed} />
         ) : (
-          <Full chapterId={chapterId} onCollapse={isMobile ? null : onToggleCollapsed} />
+          <Full chapterId={chapterId} onClose={isMobile ? onClose : null} onCollapse={isMobile ? null : onToggleCollapsed} />
         )}
       </nav>
     </>
   );
 }
 
-function Full({ chapterId, onCollapse }) {
+function Full({ chapterId, onCollapse, onClose }) {
   const { done, isDone } = useProgress();
   // Accordion: only one chapter is open at a time.
   const [openId, setOpenId] = useState(chapterId ?? 'ch01');
@@ -47,6 +58,11 @@ function Full({ chapterId, onCollapse }) {
         <NavLink to="/" end className="sidebar-home">
           Course overview
         </NavLink>
+        {onClose && (
+          <button className="icon-btn" onClick={onClose} aria-label="Close navigation">
+            ×
+          </button>
+        )}
         {onCollapse && (
           <button className="icon-btn sidebar-collapse" onClick={onCollapse} aria-label="Collapse sidebar" title="Collapse sidebar">
             <PanelLeftClose size={17} />

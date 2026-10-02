@@ -8,7 +8,11 @@ minutes: 8
 
 ## Practise with a local remote
 
-This exercise needs no online account. On workstation, create a bare repository to represent your remote, then clone it:
+**Goal:** save a working playbook, make a reviewable change, and recover the project in a second directory. You need workstation and Git; no online account is required. Check `git --version` first. If Git is missing, install it with `sudo dnf install git`.
+
+A **repository** stores files and their history. A **remote** is another repository you send that history to. A **clone** is your editable copy. Here, the remote is a local directory so you can practise the same workflow offline.
+
+On workstation as student, create the remote, clone it, and set an author identity for this practice copy:
 
 ```bash
 mkdir -p ~/git-practice
@@ -22,7 +26,7 @@ git config user.email 'learner@example.com'
 
 An empty-repository warning is expected. These identity settings apply to this practice repository only.
 
-Create `hello.yml`:
+In `~/git-practice/workspace`, create `hello.yml`. Its only task prints a message on the control node; it changes no system configuration:
 
 ```yaml title="hello.yml"
 - name: Explain where automation runs
@@ -34,7 +38,14 @@ Create `hello.yml`:
         msg: My playbook is version controlled.
 ```
 
-Run `ansible-playbook hello.yml`. Then review and save the change:
+Run `ansible-playbook hello.yml`. Expect your message under the debug task and `failed=0` in the recap. An empty-inventory warning is expected for this small example: Ansible supplies an implicit localhost. The initial Git branch may be called `main` or `master`; `git push -u origin HEAD` works with either. Save a commit only after checking the file works:
+
+- `status` shows the new file as untracked.
+- `add` stages the version you want to save.
+- `diff --cached` lets you review that staged version.
+- `commit` records a local snapshot; `push` copies its history to the remote.
+
+Run these commands in the workspace:
 
 ```bash
 git status
@@ -49,13 +60,31 @@ git log --oneline
 
 ## Try a small change
 
-Change the message. Run `git diff` before staging it. Commit and push it, then clone `../remote.git` into another directory and run the playbook there. You have proved that your work can be recovered from source control.
+Change the message to `Recovered from Git.` and run `git diff`. The output should show the old and new lines. Stage, review, commit, and push the change using the same workflow.
+
+Now recover it in a separate directory:
+
+```bash
+cd ~/git-practice
+git clone remote.git recovered
+cd recovered
+git log --oneline
+ansible-playbook hello.yml
+```
+
+**Success looks like:** two commits in the history, the updated message in the second clone, and a successful playbook recap. If the recovered file is old, check whether you committed **and** pushed the latest change.
+
+**Try independently:** change the message again in the original workspace. Predict what the recovered clone will show before and after running `git pull` there.
 
 <Reveal title="Keep credentials out of the repository">
 
 Add Vault password files, private keys, virtual environments, and run logs to `.gitignore`. An encrypted variables file can be committed; its decryption password must be stored separately. Check `git diff --cached` before every commit.
 
 </Reveal>
+
+## Recap
+
+A commit saves a reviewed version locally. A push shares its history. A clone recovers the project; running the playbook proves the recovered files still work.
 
 <Quiz objectives={["ch11.git"]} id="git-check" questions={[
   { id: 'q-fbeebb28acb1', legacyIndex: 0, q: 'You have committed locally. What sends that commit to origin?', options: ['git add', 'git push', 'ansible-playbook'], answer: 1, explain: 'push sends commits. A playbook run changes the target systems independently of Git.' },

@@ -18,3 +18,5 @@ Keep an existing question's `id` when correcting its wording or answer. The revi
 Import validation finishes before any existing progress is replaced. Unsupported versions, malformed entries, and incomplete lab reports are rejected. Lab reports are learner-provided evidence, not signed certificates. Their schema is generated from the maintained grading catalog with `node scripts/generate-report-schema.mjs`.
 
 When storage is unavailable, progress remains in memory for the current session and the dashboard shows an export reminder. Cross-tab storage events invalidate cached values and update subscribed views. Clearing site data, changing browsers, or using a different site origin does not transfer local progress; use export/import.
+
+Malformed saved entries are ignored by the UI and omitted from exports, while their raw stored values are preserved. A new valid attempt replaces the affected entry. Keep a browser backup before clearing site data.

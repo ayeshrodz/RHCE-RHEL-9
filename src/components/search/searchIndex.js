@@ -17,7 +17,9 @@ export function getIndex() {
         if (text || heading) entries.push({ page, heading, anchor, text });
         buf = [];
       };
-      const source = (sources[page.key] ?? '').replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+      const source = (sources[page.key] ?? '')
+        .replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '')
+        .replace(/^export const practice = \[[\s\S]*?^\];\s*$/gm, '');
       for (const line of source.split('\n')) {
         const h = line.match(/^(##{1,2})\s+(.+)$/);
         if (h) {

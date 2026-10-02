@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Managing the boot process and scheduled processes"
+title: "Exercise: Managing the boot process and scheduled processes"
 kind: lab
 minutes: 25
 ---
@@ -17,6 +17,44 @@ The project `~/system-process` has an `ansible.cfg` and an `inventory` with serv
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Schedule cron and at jobs.', 'Set the default boot target, and reboot hosts from a playbook.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade system-process
+lab grade system-process --checkpoint scheduled
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the cron interval to five minutes. Inspect the resulting schedule without waiting for it.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Demonstrate recurring work, one-off work, and a persistent boot-target change on the lab hosts.
+
+- A devops cron job must append the time to `/home/devops/my_date_time_cron_job` every two minutes during hours 09–16 on weekdays, from `/etc/cron.d/add-date-time`; later remove it.
+- Queue a single devops job that writes the time to `~/my_at_date_time` one minute later, without duplicate queued jobs.
+- Change the default boot target only when necessary, reboot, and prove the target persisted. Restore the original target at the end.
+- Retain the named scheduling and target playbooks and capture each intermediate state before cleanup.
+
+</LabChallenge>
+
   <Task id="task-04bbcd8bfdf4" legacyIndex={1} title="A recurring cron job">
     Create `create_crontab_file.yml`. Every two minutes from 09:00 to 16:59, Monday to Friday, the job appends the date and time to `/home/devops/my_date_time_cron_job`. It runs as `devops`, from the system cron file `/etc/cron.d/add-date-time`.
 

@@ -1,5 +1,5 @@
 ---
-title: "Integrated practice: Prepare an operations host"
+title: "Assessment: Prepare an operations host"
 kind: lab
 minutes: 90
 ---
@@ -13,6 +13,46 @@ minutes: 90
 Use a clean **serverc**, including its spare data disk, and complete chapter 9 first. Work in `~/assessment-operations`. Confirm the empty extra disk with `lsblk`: use `/dev/sdb` in the home lab or `/dev/vdb` in the classroom examples. Keep the primary network connection working.
 
 <Lab objectives={["ch09.users","ch09.scheduling","ch09.storage","ch09.network","ch10.administration"]} id="operations" title="Prepare an operations host" classroom="lab start assessment-operations" own hosts={['serverc.lab.example.com']} outcomes={['Build persistent storage and a limited reporting account.', 'Verify scheduled reporting, network state, and reboot persistence.']}>
+<LabNotes>
+
+**Prerequisites:** Complete the prerequisite chapters named above. Use the specified clean host and work as student on workstation.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade assessment-operations
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the summary template and verify that storage and network tasks remain unchanged.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Prepare serverc from `site.yml` in `~/assessment-operations`, retaining management access and SELinux enforcement.
+
+- On the empty extra disk, `vg_practice` must hold XFS volume `reports` (768 MiB), persistently mounted at `/srv/reports`. Use the storage system role and host-specific variables.
+- Account `reporter` must belong to `reporting` and accept the public key saved in `files/reporter.pub`. The report directory must belong to reporter:reporting, mode `0750`.
+- Root-owned `/etc/sudoers.d/reporter` (mode `0440`) must allow only `/usr/bin/du -sh /srv/reports` without a password and reject invalid replacements before installation.
+- `/etc/cron.d/report-usage` must run `/usr/bin/df -h /srv/reports > /srv/reports/usage.txt` as reporter at minute 15 every six hours. Prove the command can write the report.
+- The network system role must provide persistent dummy connection/interface `practice0` at `198.51.100.20/24`.
+- `/srv/reports/host.txt` must identify the inventory host and report path, owned by reporter:reporting, mode `0640`.
+- Verify the combined state, repeat the playbook, and verify again after reboot.
+
+</LabChallenge>
+
 <Task id="operations-storage" title="Provide persistent report storage">
 Create volume group `vg_practice` on the empty extra disk, a 768 MiB logical volume named `reports`, and an XFS filesystem mounted persistently at `/srv/reports`. Use the storage system role and put host-specific values in variables.
 <Reveal title="Hint: verify the disk before changing it">Compare `lsblk -f`, `pvs`, `vgs`, and `lvs`. The root disk already has mounted filesystems. Use the extra disk only, and reset both the VM and its data volume before repeating from scratch.</Reveal>

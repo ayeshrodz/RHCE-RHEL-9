@@ -4,12 +4,13 @@
 import manifest from 'virtual:course';
 
 export const course = manifest.course;
+export const track = manifest.track;
 export const chapters = manifest.chapters;
 export const objectives = manifest.objectives;
 
 export const kindLabel = {
   lesson: 'Lesson',
-  lab: 'Lab',
+  lab: 'Exercise',
   quiz: 'Quiz',
   summary: 'Summary',
 };
@@ -44,6 +45,10 @@ const loaders = import.meta.glob('/content/**/*.mdx');
 
 export function loaderFor(page) {
   return loaders[`/content/${page.chapter.dir}/${page.section.file}.mdx`];
+}
+
+export function referenceLoaderFor(page) {
+  return loaders[`/content/${page.contentFile}`];
 }
 
 // Raw sources, loaded only when search is first opened.

@@ -94,4 +94,45 @@ Twelve questions on finding and fixing problems. Aim for at least nine before mo
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch08" />
+export const practice = [
+  {
+    "id": "diagnose-unreachable",
+    "chapter": "ch08",
+    "objective": "ch08.host-errors",
+    "title": "Place the failure",
+    "prompt": "The recap reports unreachable=1 and no task ran. Which check comes first?",
+    "type": "choice",
+    "starter": "",
+    "expected": "Inventory address and SSH connection",
+    "hints": [
+      "Connection happens before module execution."
+    ],
+    "explain": "Resolve the host and test SSH with the configured user before changing task logic.",
+    "options": [
+      "Jinja template syntax",
+      "Inventory address and SSH connection",
+      "Handler declaration order"
+    ]
+  },
+  {
+    "id": "verify-success",
+    "chapter": "ch08",
+    "objective": "ch08.playbook-errors",
+    "title": "Verify the outcome",
+    "prompt": "A web deployment has failed=0. What gives independent evidence that the required service works?",
+    "type": "choice",
+    "starter": "",
+    "expected": "Request the expected page and check its content",
+    "hints": [
+      "The recap records execution, not every application requirement."
+    ],
+    "explain": "Verify the service as a client and inspect the requested state.",
+    "options": [
+      "Only count ok tasks",
+      "Request the expected page and check its content",
+      "Disable check mode"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch08" challenges={practice} />

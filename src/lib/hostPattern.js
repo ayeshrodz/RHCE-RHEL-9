@@ -10,29 +10,50 @@ function orderedHosts(inv, name, seen = new Set()) {
     inv.groups.forEach((g) => g.hosts.forEach((h) => out.includes(h) || out.push(h)));
     return out;
   }
-  const g = inv.groups.get(name);
-  if (!g || seen.has(name)) return [];
-  seen.add(name);
-  const out = [...g.hosts];
-  g.children.forEach((c) => orderedHosts(inv, c, seen).forEach((h) => out.includes(h) || out.push(h)));
-  return out;
+  const pending = [name];
+  const out = new Set();
+  while (pending.length) {
+    const current = pending.pop();
+    if (seen.has(current)) continue;
+    seen.add(current);
+    const group = inv.groups.get(current);
+    if (!group) continue;
+    group.hosts.forEach((host) => out.add(host));
+    pending.push(...[...group.children].reverse());
+  }
+  return [...out];
 }
 
-const globToRegExp = (glob) =>
-  new RegExp(
-    `^${glob
-      .replace(/[.+^${}()|\\]/g, '\\$&')
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.')}$`,
-  );
+// Match * and ? without compiling learner input into a backtracking regex.
+function wildcardMatch(value, pattern, budget) {
+  let i = 0,
+    j = 0,
+    star = -1,
+    retry = 0;
+  while (i < value.length) {
+    if (--budget.steps < 0) throw new Error('Wildcard matching exceeded the playground work limit. Use a simpler pattern.');
+    if (pattern[j] === '?' || pattern[j] === value[i]) {
+      i++;
+      j++;
+    } else if (pattern[j] === '*') {
+      star = j++;
+      retry = i;
+    } else if (star >= 0) {
+      j = star + 1;
+      i = ++retry;
+    } else return false;
+  }
+  while (pattern[j] === '*') j++;
+  return j === pattern.length;
+}
 
 function resolveName(inv, name) {
   const all = orderedHosts(inv, 'all');
   const groupNames = ['all', ...inv.groups.keys()];
 
   if (name.startsWith('~')) {
-    if (name.length > 100 || /[()\\]|[+*?]{2}/.test(name))
-      return { error: 'This playground supports simple regular expressions without groups or backreferences.' };
+    if (name.length > 100 || /[()\\]/.test(name) || (name.match(/[+*?{]/g) ?? []).length > 1)
+      return { error: 'This playground supports simple regular expressions without groups, backreferences, or repeated quantifiers.' };
     let re;
     try {
       re = new RegExp(name.slice(1));
@@ -46,10 +67,16 @@ function resolveName(inv, name) {
   }
 
   if (/[*?]/.test(name)) {
-    const re = globToRegExp(name);
+    const budget = { steps: 500000 };
     const out = [];
-    groupNames.filter((g) => re.test(g)).forEach((g) => orderedHosts(inv, g).forEach((h) => out.includes(h) || out.push(h)));
-    all.filter((h) => re.test(h)).forEach((h) => out.includes(h) || out.push(h));
+    try {
+      groupNames
+        .filter((g) => wildcardMatch(g, name, budget))
+        .forEach((g) => orderedHosts(inv, g).forEach((h) => out.includes(h) || out.push(h)));
+      all.filter((h) => wildcardMatch(h, name, budget)).forEach((h) => out.includes(h) || out.push(h));
+    } catch (error) {
+      return { error: error.message };
+    }
     return { hosts: out, how: 'wildcard, matched against group names and host names' };
   }
 

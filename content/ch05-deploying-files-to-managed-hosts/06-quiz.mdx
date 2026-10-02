@@ -92,4 +92,48 @@ Twelve questions on the file modules and Jinja2 templates. Aim for at least nine
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch05" />
+export const practice = [
+  {
+    "id": "file-permissions",
+    "chapter": "ch05",
+    "objective": "ch05.files",
+    "title": "Deploy a private file",
+    "prompt": "Write a copy task creating /etc/private-note from content lab with mode 0600. Quote the mode.",
+    "type": "yaml",
+    "starter": "- ansible.builtin.copy:\n    content: lab\n    dest: /etc/private-note\n    mode: 644\n",
+    "expected": [
+      {
+        "ansible.builtin.copy": {
+          "content": "lab",
+          "dest": "/etc/private-note",
+          "mode": "0600"
+        }
+      }
+    ],
+    "hints": [
+      "Only the owner should read and write.",
+      "Use mode: \"0600\"."
+    ],
+    "explain": "Quoted modes avoid YAML number interpretation and express the intended permissions."
+  },
+  {
+    "id": "render-banner",
+    "chapter": "ch05",
+    "objective": "ch05.templates",
+    "title": "Render a banner",
+    "prompt": "Edit the template to produce exactly: Welcome SERVERA. Context: host is servera.",
+    "type": "template",
+    "starter": "Welcome {{ host }}",
+    "expected": "Welcome SERVERA",
+    "hints": [
+      "The upper filter changes a string to uppercase."
+    ],
+    "explain": "Welcome {{ host | upper }} renders the requested banner.",
+    "context": {
+      "host": "servera"
+    },
+    "solution": "Welcome {{ host | upper }}"
+  }
+];
+
+<ChapterPractice chapter="ch05" challenges={practice} />

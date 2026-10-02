@@ -48,6 +48,14 @@ export function validateLabReport(report, catalog = reportSchema) {
       ...(checkpoint.local ?? []).map((check) => check.id),
       ...checkpoint.probes.flatMap((probe) => probe.targets.map((host) => `${probe.id}:${host}`)),
     ];
+    for (const check of report.checks) {
+      const diagnostic = check.id === 'inventory' && check.status !== 'pass';
+      const probe = checkpoint.probes.some(
+        (probe) => check.id.startsWith(`${probe.id}:`) || (check.id === probe.id && check.status !== 'pass'),
+      );
+      if (!required.includes(check.id) && !diagnostic && !probe)
+        throw new Error(`The lab report contains an unsupported check: ${check.id}`);
+    }
     // A failed probe may produce a single SKIP when it could not reach any hosts.
     for (const expected of required) {
       const probeId = checkpoint.probes.find((probe) => expected.startsWith(`${probe.id}:`))?.id;

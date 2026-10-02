@@ -138,4 +138,49 @@ Fifteen questions across the five administration areas. Aim for at least eleven 
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch09" />
+export const practice = [
+  {
+    "id": "persistent-mount",
+    "chapter": "ch09",
+    "objective": "ch09.storage",
+    "title": "Mount now and at boot",
+    "prompt": "Write an ansible.posix.mount task for /srv/data from /dev/apps/data, XFS, mounted now and recorded in fstab.",
+    "type": "yaml",
+    "starter": "- ansible.posix.mount:\n    path: /srv/data\n    src: /dev/apps/data\n    fstype: xfs\n    state: present\n",
+    "expected": [
+      {
+        "ansible.posix.mount": {
+          "path": "/srv/data",
+          "src": "/dev/apps/data",
+          "fstype": "xfs",
+          "state": "mounted"
+        }
+      }
+    ],
+    "hints": [
+      "present edits fstab without ensuring a live mount."
+    ],
+    "explain": "mounted ensures both the active mount and its persistent configuration."
+  },
+  {
+    "id": "validate-sudo",
+    "chapter": "ch09",
+    "objective": "ch09.users",
+    "title": "Validate before replacing",
+    "prompt": "Which copy parameter validates a sudoers file before installing it?",
+    "type": "choice",
+    "starter": "",
+    "expected": "validate: /usr/sbin/visudo -cf %s",
+    "hints": [
+      "%s is replaced with the temporary file path."
+    ],
+    "explain": "Validation checks the proposed content before replacing the destination.",
+    "options": [
+      "validate: /usr/sbin/visudo -cf %s",
+      "force: true",
+      "changed_when: false"
+    ]
+  }
+];
+
+<ChapterPractice chapter="ch09" challenges={practice} />

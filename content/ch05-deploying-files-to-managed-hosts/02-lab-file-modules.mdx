@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Modifying and copying files to hosts"
+title: "Exercise: Modifying and copying files to hosts"
 kind: lab
 minutes: 25
 ---
@@ -20,6 +20,45 @@ The project `~/file-manage` has an `ansible.cfg`, an `inventory` that lists `ser
     'Use copy, file, lineinfile and blockinfile to create, change and remove files.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade file-manage
+lab grade file-manage --checkpoint copied
+lab grade file-manage --checkpoint edited
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Repeat the line and block edits before deletion. Prove neither operation duplicates the managed content.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Manage a file through several deliberate states, keeping evidence before each later change.
+
+- Fetch `/var/log/secure` from each inventory host into a host-separated `secure-backups` tree.
+- Deploy `files/users.txt` to `/home/devops/users.txt` as devops, with user read/write access, no group write/execute or other access, and SELinux type `samba_share_t`.
+- Restore the policy-default SELinux context. Then add one line and one managed block without duplicates on repeat runs.
+- Remove the managed file at the end. Preserve the seven named playbooks used for fetching, copying, relabeling, editing, and removal so each state can be inspected.
+
+</LabChallenge>
+
   <HomeSetup>
     The first three playbooks connect as `root`. That uses the SSH key for `root` from [section 0.6](#/ch00/control-node). The `tree` command is installed there too.
   </HomeSetup>

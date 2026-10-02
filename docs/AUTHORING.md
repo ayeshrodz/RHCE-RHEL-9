@@ -8,8 +8,10 @@ The `content/` folder is the single source of truth. A Vite plugin (`plugins/con
 
 ```
 content/
-  _course.yml                      site title, exam, RHEL / AAP / Ansible Core versions
-  _platform.mdx                    text of the "RHEL 9.0" dialog in the header
+  _course.yml                      site title, repository, selected track ID
+  tracks/rhel9/
+    _track.yml                     track identity, versions, reference filename
+    platform.mdx                   platform page metadata, explanations, diagrams
   ch02-implementing-playbooks/
     _chapter.yml                   title, goal, objectives
     01-inventory.mdx               section 2.1
@@ -27,7 +29,7 @@ content/
   ---
   title: Managing Ansible configuration files
   kind: lesson        # lesson | lab | quiz | summary (inferred from the filename if omitted)
-  minutes: 14         # estimated from word count if omitted
+  minutes: 8         # estimated from word count if omitted
   draft: true         # optional: hide the section from the site
   ---
   ```
@@ -38,9 +40,27 @@ While `npm run dev` is running, everything updates live. Body edits hot-reload i
 
 The page title, number, breadcrumb, reading time, table of contents, "mark complete" button and previous/next links are generated. **Do not** put an `# H1` in the MDX file.
 
+## Track reference pages
+
+`_course.yml` selects the current `track` ID. Its reference material lives in `content/tracks/<id>/`: `_track.yml` supplies the label, version metadata, and `platform` filename. The MDX frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/platform`; `ReferencePage` renders the selected track's MDX with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
+
+`FlowMap` renders a two-to-four-step sequence using the existing pale diagram tones. Author its wording in MDX; each step needs a unique `id`, `title`, and explanatory `text`, with optional `sub` and `tone`. `connections` labels the arrows. For example:
+
+```mdx
+<FlowMap title="A playbook's journey" caption="Choose a step for its explanation."
+  connections={["SSH"]} steps={[
+    { id: "control", title: "Control node", sub: "starts tasks", tone: "purple", text: "Read the project and run its tasks." },
+    { id: "managed", title: "Managed host", sub: "stores the result", tone: "green", text: "Verify the requested state here." }
+  ]} />
+```
+
+Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in MDX or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
+
+Only RHEL 9 is selectable today. Adding another track's metadata is a content boundary, not a complete course switch: chapters, objectives, downloads, graders, and browser progress must also be scoped together before another track is published.
+
 ## 2. Page shape
 
-Every lesson follows the same rhythm:
+Aim for 5–12 minutes: purpose, a small example, an activity, an explanation, and a short recap. Put deeper details in optional reveals. A lesson can start like this:
 
 ```mdx
 <Lead>One or two sentences on why this matters.</Lead>
@@ -52,7 +72,7 @@ Every lesson follows the same rhythm:
 ## First topic
 ...prose, a diagram, a code block...
 
-<Quiz id="check" questions={[ ... ]} />
+<Quiz id="check" objectives={["ch02.playbooks"]} questions={[ ... ]} />
 ```
 
 Use `##` for topics and `###` for sub-topics; both appear in the table of contents.
@@ -80,8 +100,8 @@ No imports needed. They are registered in `src/components/mdx/index.jsx`.
 | `<Steps>` + `<Step title>` | Numbered procedures inside a lesson. |
 | `<Glossary>` + `<Term name>` | Definition lists. |
 | `<Reveal title="Show solution">` | Hidden answers. |
-| `<Quiz id questions={[{ q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
-| `<Lab id title outcomes hosts classroom>` + `<Task title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
+| `<Quiz id objectives questions={[{ id, q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
+| `<Lab id objectives title outcomes hosts classroom>` + `<Task id title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
 | `<Flashcards cards={[{ front, back }]}>` | Revision cards. |
 
 Strings passed as props (quiz text, card text) support `` `code` ``, `**bold**` and `*italic*`.
@@ -133,7 +153,7 @@ export default function Example() {
 
 Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
 
-Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the registry globs every chapter folder). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
 Reusable pieces from chapter 3 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
 
@@ -173,11 +193,93 @@ Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/
 
 All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turned off so `!=` and `->` show as typed). Sizes come from `--code-size` (blocks and terminals), `--code-size-sm` (compact widgets) and `--code-inline` (inline code in text). Use these tokens rather than hard-coded values.
 
-## 7. Before you commit
+## Content tables
+
+Write ordinary Markdown tables in MDX. Every table uses `Table.jsx`; no per-page classes or width settings are needed. Desktop tables stay inside the reading area with content-based column widths, a muted header, lightly shaded alternate rows, and headers that remain visible while scrolling. Commands and long paths wrap visually; their original text remains available for selection and copying.
+
+The established labelled row cards appear when a table's container is 640 pixels wide or narrower. This uses the available content space, so tables inside a narrow lab task also adapt on a desktop. Keep headers short and descriptive: they become each value's label in the card layout. Empty headers remain supported, and Markdown column alignment is preserved. Add a code block below a table when a whole procedure needs a copy button.
+
+Keep explanations in the content and shared presentation in the renderer/styles. Do not add horizontal scrolling, fixed pixel widths, clipped descriptions, or per-lesson table designs to work around long content.
+
+## Visual consistency and exercise titles
+
+Reuse the existing component treatments and theme tokens. Browser practice and quizzes share `ActivityPanel`, `AnswerOptions`, and `ActivityFeedback`. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
+
+Use `Exercise: Topic` for practical exercise titles, whether they offer Guided or Challenge mode. Use `Assessment: Topic` for integrated assessments. Keep sentence case and a colon separator. Setup pages describe their setup step directly. Display titles can change without renaming published filenames, activity IDs, or objective IDs.
+
+## 7. Stable activities and skills
+
+Give each question and task a unique, descriptive ID, such as `ch02-inventory-child-groups` or `ch02-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.
+
+```mdx
+<Quiz id="check" objectives={["ch02.inventory"]} questions={[{
+  id: "ch02-example-group-membership",
+  q: "Which group contains the child group's hosts?",
+  options: ["The parent", "Only the child"],
+  answer: 0,
+  explain: "A parent includes the hosts of its children.",
+}]} />
+```
+
+Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
+
+Browser challenges are authored in their chapter's quiz MDX, as a JSON-compatible `export const practice = [...]` followed by `<ChapterPractice chapter="chNN" challenges={practice} />`. Supply a stable `id`, chapter, objective, type, `prompt`, starter input or choices, `expected` result, nonempty progressive hints, explanation, and optional explicit solution. The build reads the same export for the dashboard; editing wording needs no React change. Keep simulations within the supported parser behavior. Test correct, incorrect, incomplete, and equivalent answers in `tests/challenges.test.js`; compare relevant cases with actual Ansible.
+
+Lab wording belongs in MDX. A graded `<Lab>` contains exactly one `<LabNotes>` and one `<LabChallenge>`, alongside its existing `<Task>` children. `LabNotes` holds prerequisites and optional verification/variation reveals. `LabChallenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
+
+```mdx
+<Lab id="site" classroom="lab start example-site" objectives={["ch02.playbooks"]}>
+  <LabNotes>
+    **Prerequisites:** working SSH and sudo access to the target.
+
+    <Reveal title="Verify your work">
+      Fetch the page from workstation, repeat the deployment, and inspect unexpected changes.
+    </Reveal>
+  </LabNotes>
+  <LabChallenge>
+    Publish the supplied page on the inventory's web hosts.
+
+    - Apache must run now and start at boot.
+    - Workstation must receive the supplied content over HTTP.
+  </LabChallenge>
+  <Task id="example-site-service" title="Prepare the web service">
+    Explain the purpose, show the small step, and say how to verify it.
+  </Task>
+</Lab>
+```
+
+Guided mode renders tasks normally. Challenge mode renders the authored requirement brief and keeps the entire task walkthrough/checklist closed until requested. Components never guess which child is a question or manufacture a hint from the remaining children. Setup labs without an authored challenge show the walkthrough only. Keep solutions inside nonempty `<Reveal>` elements; never publish an empty disclosure.
+
+The grading catalog contains only machine-check contracts and intentionally broken fixture declarations. Teaching text is not fetched from it.
+
+For a new exercise, add a starter manifest and index entry plus a `graders.json` entry. Each probe needs stable IDs, required target hosts, read-only commands, and a useful failure explanation. Use named checkpoints where later tasks intentionally remove earlier results. Increment the exercise version when the grading contract changes and regenerate the browser report schema:
 
 ```bash
-npm run build    # must pass: catches MDX syntax errors
+node scripts/generate-report-schema.mjs
+```
+
+Never treat a mocked passing probe as real host validation. Test the published solution, a deliberate broken state, repeat execution, reset behavior, and reboot persistence where relevant. Record the tested stack and limitations in `docs/VALIDATION.md`.
+
+## 8. Before you commit
+
+```bash
 npm run format
+npm run format:check
+npm run validate:content
+npm test
+npm run test:labs
+npm run build
+python3 -m pip install -r tests/browser-requirements.txt
+python3 -m playwright install chromium
+npm run test:browser
 ```
 
 Then open the page in both light and dark mode, and at phone width.
+
+For the behavior-comparison script, use a disposable control-node environment with Ansible installed:
+
+```bash
+python3 scripts/validate-ansible-simulations.py
+```
+
+It creates a temporary local project, uses the local connection, and prints the runtime and passed comparisons. It does not validate remote system-administration labs.

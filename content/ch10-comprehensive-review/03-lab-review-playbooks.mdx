@@ -1,5 +1,5 @@
 ---
-title: "Review lab: Creating playbooks"
+title: "Exercise: Creating playbooks"
 kind: lab
 minutes: 40
 ---
@@ -17,6 +17,45 @@ This lab covers chapters 2 to 6. The project `~/review-playbooks` has an `ansibl
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Create and run playbooks that perform tasks on managed hosts.', 'Use Jinja2 templates, blocks and handlers in playbooks.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade review-playbooks
+lab grade review-playbooks --checkpoint deployed
+lab grade review-playbooks --checkpoint rescued
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Point the verification at serverb and deliberately stop that service. Prove the same recovery path records the failure.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Deliver and test the supplied virtual-host site on `webservers` through `site.yml`.
+
+- `dev_deploy.yml` must leave Apache running and enabled, HTTP allowed persistently, and `files/index.html` under `/var/www/vhosts/HOSTNAME/`.
+- `/etc/httpd/conf.d/vhost.conf` must come from the supplied host-specific template, root-owned with mode `0644`. Configuration changes must restart Apache.
+- `get_web_content.yml` must retrieve servera's page from workstation and write the failed result to the project's `error.log` if retrieval fails.
+- `site.yml` must deploy before testing. Prove the successful path, a failed request with recovery, and the restored final deployment. Grade the recovered checkpoint before restoring the service.
+
+</LabChallenge>
+
   <HomeSetup>
     Reset the servers first: `rht-vmctl reset servers` on the Ubuntu host.
   </HomeSetup>
@@ -221,7 +260,7 @@ workstation                : ok=2    changed=1    unreachable=0    failed=0    s
 {'content': '', 'redirected': False, 'url': 'http://servera.lab.example.com', 'status': -1, 'elapsed': 0, 'changed': False, 'failed': True, 'msg': 'Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>'}
 ```
 
-    `failed=0` and `rescued=1`: the failure was handled. Run `site.yml` once more to start `httpd` again.
+    `failed=0` and `rescued=1`: the failure was handled. At home, run `lab grade review-playbooks --checkpoint rescued` while the service is stopped. Run `site.yml` once more to start `httpd` again, then grade the final state.
   </Task>
 
   <Task id="task-45b7d79a5413" legacyIndex={9} title="Grade and finish">

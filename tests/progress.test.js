@@ -78,6 +78,7 @@ test('lab reports require supported versions, valid checks and complete coverage
     { ...report, checks: report.checks.slice(1) },
     { ...report, checks: [...report.checks, report.checks[0]] },
     { ...report, checkedAt: 'invalid' },
+    { ...report, checks: [...report.checks, { ...report.checks[0], id: 'unknown-check' }] },
     { ...report, exerciseVersion: 99 },
   ])
     assert.throws(() => validateLabReport(invalid, catalog));
@@ -120,5 +121,31 @@ test('cross-tab writes and clears invalidate cached values', async () => {
   } finally {
     globalThis.window = oldWindow;
     globalThis.localStorage = oldStorage;
+  }
+});
+
+test('corrupt stored data cannot crash the dashboard or replace the raw backup', async () => {
+  const previous = globalThis.localStorage;
+  const values = new Map([
+    ['rhce:completed', 'false'],
+    ['rhce:readiness', '{broken'],
+  ]);
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: (key) => values.delete(key),
+  };
+  for (const key of values.keys()) storage[key] = values.get(key);
+  globalThis.localStorage = storage;
+  try {
+    const store = await import('../src/lib/storage.js?corrupt-data-regression');
+    assert.deepEqual(store.readStored('completed', []), []);
+    assert.deepEqual(store.readStored('readiness', {}), {});
+    assert.deepEqual(store.exportProgress().data, {});
+    assert.equal(values.get('rhce:completed'), 'false');
+    store.writeStored('completed', ['ch01/why-automate']);
+    assert.deepEqual(store.exportProgress().data.completed, ['ch01/why-automate']);
+  } finally {
+    globalThis.localStorage = previous;
   }
 });

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Check, CircleHelp, FlaskConical, ListChecks } from 'lucide-react';
-import { chapters, course, pages } from '@/lib/course';
+import { chapters, course, track, pages } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { useStored } from '@/lib/storage';
 import { Arrow, Diagram, Group, Node } from '@/diagrams/kit';
@@ -13,7 +13,12 @@ const features = [
     text: 'Every idea gets a clean diagram. Many are clickable or step through one stage at a time.',
     tone: 'purple',
   },
-  { icon: FlaskConical, title: 'Guided labs', text: 'Hands-on exercises as checklists that remember where you stopped.', tone: 'teal' },
+  {
+    icon: FlaskConical,
+    title: 'Hands-on exercises',
+    text: 'Hands-on exercises as checklists that remember where you stopped.',
+    tone: 'teal',
+  },
   {
     icon: CircleHelp,
     title: 'Knowledge checks',
@@ -35,7 +40,8 @@ const stages = [
   { title: 'Files and structure', chapters: [5, 6], text: 'Templates and file modules; host patterns, imports and includes.' },
   { title: 'Reuse', chapters: [7], text: 'Roles, collections and the system roles.' },
   { title: 'Real work', chapters: [8, 9], text: 'Troubleshooting, then software, users, storage and networking.' },
-  { title: 'Prove it', chapters: [10], text: 'Four review labs and two integrated assessments.' },
+  { title: 'Prove it', chapters: [10], text: 'Four review exercises and two integrated assessments.' },
+  { title: 'Project workflow', chapters: [11], text: 'Git, editor containers, explicit runtimes, recovery and validated access.' },
 ];
 
 const labHosts = [
@@ -62,7 +68,7 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-text">
           <p className="page-eyebrow">
-            Free and open source · Ansible on RHEL {course.rhel} · {course.exam}-focused
+            Free and open source · Ansible on RHEL {track.rhel} · {track.exam}-focused
           </p>
           <h1>{course.tagline}.</h1>
           <p className="hero-sub">
@@ -70,7 +76,7 @@ export default function HomePage() {
             exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.
           </p>
           <p className="hero-focus">
-            The path follows the objectives of the Red Hat Certified Engineer ({course.exam}) exam, so it doubles as exam preparation.
+            The path follows the objectives of the Red Hat Certified Engineer ({track.exam}) exam, so it doubles as exam preparation.
           </p>
           <div className="hero-actions">
             <Link className="btn btn-lg" to="/progress">
@@ -106,8 +112,8 @@ export default function HomePage() {
 
       <section className="home-section">
         <h2>The path</h2>
-        <p className="home-section-sub">Six stages, each building on the last. Your progress is saved in this browser.</p>
-        <ol className="path">
+        <p className="home-section-sub">Each stage builds on the last. Your progress is saved in this browser.</p>
+        <ol className="path" style={{ '--path-stages': stages.length }}>
           {stages.map((stage, i) => {
             const inStage = chapters.filter((c) => stage.chapters.includes(c.number));
             const total = inStage.reduce((n, c) => n + chapterProgress(c, done).total, 0);

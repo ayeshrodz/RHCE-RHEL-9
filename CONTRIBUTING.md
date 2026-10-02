@@ -6,7 +6,7 @@ Thanks for helping make this guide better. Anyone can propose changes; only the 
 
 - **Fix a mistake:** a wrong command, an unclear explanation, a broken diagram. Open a *content correction* issue, or send a pull request straight away for small fixes.
 - **Test the lab:** follow [Chapter 0](https://ayeshrodz.github.io/playbook-path/#/ch00) on your hardware and report anything that doesn't match.
-- **Write a chapter:** chapters 5–10 are planned. Please open an issue first so two people don't write the same one.
+- **Write a chapter:** propose a focused addition or improvement. Open an issue first to agree on its scope.
 - **Improve a diagram or widget**, or the site itself.
 
 ## Set up
@@ -28,12 +28,19 @@ npm run dev                                          # http://localhost:3000, ed
 2. Make your change and look at it in the browser, at desktop and phone width.
 3. Run the checks the CI will run:
    ```bash
-   npm run format      # fixes formatting
-   npm run build       # must succeed
+   npm run format
+   npm run format:check
+   npm run validate:content
+   npm test
+   npm run test:labs
+   npm run build
+   python3 -m pip install -r tests/browser-requirements.txt
+   python3 -m playwright install chromium
+   npm run test:browser
    ```
 4. Open a pull request against `main` and fill in the template. Keep it focused: one topic per pull request is much easier to review.
 
-The CI builds your branch and checks formatting. When the maintainer merges, the site redeploys automatically.
+CI checks content, formatting, JavaScript behavior, lab-tool contracts, and browser learning flows. Record actual VM validation for system changes; leave the PR in draft while required host checks remain. When the maintainer merges, the site redeploys automatically.
 
 ## Content rules
 
@@ -42,7 +49,7 @@ The CI builds your branch and checks formatting. When the maintainer merges, the
 - **Keep commands tested.** Run them on the lab from Chapter 0 (Rocky Linux 9, ansible-core 2.14) and say so if you didn't. Chapter 0's commands come from a lab that was built and verified, so change them only after re-testing.
 - **No personal data.** No real IP addresses, hostnames, usernames, emails, tokens or passwords. The classroom defaults (`student`, `devops`, `redhat`, `172.25.250.0/24`) are public and fine. For values that differ per reader, use the lab placeholders described in `docs/AUTHORING.md`.
 - **Exercises work in both environments.** Keep the classroom commands as the default, add the home-lab difference with the `Env` / `HomeLab` components, and give each exercise its starter files under `public/lab/` (see `docs/AUTHORING.md`).
-- **Follow the look of the site:** existing components, the diagram kit and the RHEL colours, rather than new libraries or styles.
+- **Follow the look of the site:** existing components, the diagram kit and the existing colour tokens, rather than new libraries or styles.
 
 ## Licensing of contributions
 

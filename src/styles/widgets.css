@@ -663,114 +663,117 @@
   }
 }
 
-.challenge {
-  margin-block: 1.5rem;
-}
-.challenge h3 {
-  margin-top: 0.5rem;
-}
-.challenge-scope,
-.challenge-history {
-  font-size: 0.8rem;
+/* Practice controls use the same scale as other widgets. */
+/* Practice inherits the quiz card, choices, feedback and reveal treatments. */
+.challenge-history,
+.quiz-history {
+  font-size: 13px;
   color: var(--text-3);
-}
-.challenge fieldset {
-  border: 0;
-  padding: 0;
-  margin: 1rem 0;
-}
-.challenge-option {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem;
-  cursor: pointer;
 }
 .challenge textarea {
   display: block;
   width: 100%;
   resize: vertical;
-  min-height: 6rem;
-  padding: 0.8rem;
+  min-height: 96px;
+  padding: 12px;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  background: var(--bg-elev);
+  border-radius: 8px;
+  background: var(--code-bg);
   color: var(--text);
-  font: 0.85rem/1.5 var(--font-mono);
-  margin-block: 0.5rem 1rem;
+  font: var(--code-size-sm)/1.6 var(--font-mono);
+  margin: 8px 0 16px;
 }
-.challenge-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+.challenge [role='status']:empty {
+  display: none;
 }
-.practice-pass {
-  border-left: 3px solid #18875b;
-  padding-left: 0.8rem;
+.challenge-hints {
+  margin: 16px 0 !important;
 }
-.practice-retry {
-  border-left: 3px solid #c87e12;
-  padding-left: 0.8rem;
+.challenge-history {
+  margin: 16px 0 0 !important;
+}
+.challenge .reveal {
+  margin: 16px 0;
+}
+.challenge .reveal-body {
+  font-size: 14px;
+}
+.challenge .reveal-body > :last-child {
+  margin-bottom: 0;
 }
 .lab-mode {
-  margin-block: 0.8rem;
-}
-.lab-task details > summary {
-  cursor: pointer;
-  padding-block: 0.7rem;
-}
-
-.learning-dashboard {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-.learning-dashboard h1 {
-  font-family: var(--font-display);
-}
-.learning-dashboard h2 {
-  margin-top: 2rem;
-}
-.learning-dashboard li {
-  margin-block: 0.65rem;
-}
-.learning-dashboard details {
-  margin-block: 1rem;
-}
-.learning-dashboard summary {
-  cursor: pointer;
-  font-weight: 600;
-}
-.dashboard-next {
-  padding: 1.25rem;
+  width: fit-content;
+  margin: 16px 0;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg-elev);
+  border-radius: var(--radius);
 }
-.learning-dashboard small,
-.quiz-history {
+.lab-head > p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--text-2);
 }
-.assessment-timer {
-  margin-block: 1.5rem;
+.lab-notes,
+.lab-challenge {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  line-height: 1.6;
 }
-.assessment-timer [role='timer'] {
-  font-size: 1.6rem;
-  font-variant-numeric: tabular-nums;
+.lab-challenge {
+  background: var(--bg-sunken);
 }
-.lab-brief {
-  padding: 1rem 1.25rem;
+.lab-notes p:last-child,
+.lab-challenge > :last-child {
+  margin-bottom: 0;
+}
+.lab-notes details + details {
+  margin-top: 12px;
+}
+.lab-notes summary,
+.lab-walkthrough > summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.lab-notes details > :not(summary) {
+  margin-top: 12px;
+}
+.lab-walkthrough > summary {
+  padding: 16px 20px;
+  font-size: 14px;
+}
+.lab-walkthrough[open] > summary {
   border-bottom: 1px solid var(--border);
 }
-.lab-brief summary {
-  cursor: pointer;
+.assessment-timer [role='timer'] {
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+  margin: 12px 0;
+}
+.assessment-timer > :last-child {
+  margin-bottom: 0;
 }
 @media (max-width: 600px) {
-  .learning-dashboard {
-    padding: 1rem;
+  .challenge textarea {
+    font-size: 16px;
+  }
+  .lab-meta {
+    grid-template-columns: 1fr;
+  }
+  .lab-task-body {
+    padding-left: 0;
   }
 }
 
-.learning-dashboard a.btn-primary {
-  color: #fff;
+.lab-notes .reveal {
+  margin: 12px 0 0;
+}
+
+/* Content-authored sequence diagrams share the standard muted controls. */
+.flow-map-options {
+  flex-wrap: wrap;
+  margin-top: 12px;
+  border-bottom: 0;
+  border-radius: var(--radius);
+  background: var(--bg);
 }

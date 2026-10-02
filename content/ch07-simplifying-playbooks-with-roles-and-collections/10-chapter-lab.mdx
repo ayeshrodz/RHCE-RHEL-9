@@ -1,5 +1,5 @@
 ---
-title: "Chapter lab: Simplifying playbooks with roles and content collections"
+title: "Exercise: Simplifying playbooks with roles and content collections"
 kind: lab
 minutes: 40
 ---
@@ -21,6 +21,43 @@ The project `~/role-review` has an `ansible.cfg`, an `inventory` with servera in
     'Recover from a failure that a role reports on purpose.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade role-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a third developer on a new port. Update its data and SELinux access, then verify all three sites.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Give each developer the web endpoint described in the supplied data, while preserving SELinux enforcement.
+
+- `web_dev_server.yml` must configure `dev_webserver`, ensuring notified handlers still run after later ordinary task failures.
+- The project must install `infra.apache` version `v1.4` from its supplied Git repository. The new `apache.developer_configs` role must declare that dependency and use `developer_tasks.yml` and `developer.conf.j2`.
+- Developer data must apply to the target group. Ports 9081 and 9082 must have the correct web-service SELinux type.
+- Recover from a required SELinux reboot, and prove both endpoints return their intended content. Repeat without unnecessary changes.
+
+</LabChallenge>
+
   <HomeSetup>
     `lab start role-review` publishes the infrastructure team's role on workstation, in the Git repository `~/git-repos/infra/apache.git`, with the tags `v1.3` and `v1.4`. Where the steps below use the repository, use its `file://` path.
   </HomeSetup>

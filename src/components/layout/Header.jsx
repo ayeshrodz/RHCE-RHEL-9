@@ -1,11 +1,9 @@
-import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { course } from '@/lib/course';
+import { course, track } from '@/lib/course';
 import ProgressMenu from './ProgressMenu';
 import Logo from './Logo';
-import PlatformDialog from './PlatformDialog';
 
 // lucide-react has no brand icons, so the GitHub mark is inline.
 function GithubIcon({ size = 17 }) {
@@ -18,16 +16,20 @@ function GithubIcon({ size = 17 }) {
 
 const themeIcon = { light: Sun, dark: Moon, system: Monitor };
 
-export default function Header({ onMenu, onSearch }) {
+export default function Header({ onMenu, onSearch, navigationOpen }) {
   const { pref, cycle } = useTheme();
   const ThemeIcon = themeIcon[pref] ?? Monitor;
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
-  const [platformOpen, setPlatformOpen] = useState(false);
-  const closePlatform = useCallback(() => setPlatformOpen(false), []);
 
   return (
     <header className="header">
-      <button className="icon-btn header-menu" onClick={onMenu} aria-label="Open navigation">
+      <button
+        className="icon-btn header-menu"
+        onClick={onMenu}
+        aria-expanded={navigationOpen}
+        aria-controls="course-navigation"
+        aria-label="Open navigation"
+      >
         <Menu size={18} />
       </button>
 
@@ -35,15 +37,15 @@ export default function Header({ onMenu, onSearch }) {
         <Logo />
         <span className="brand-name">{course.title}</span>
       </Link>
-      <button
+      <Link
         className="brand-pill"
-        onClick={() => setPlatformOpen(true)}
-        aria-haspopup="dialog"
-        title={`About Red Hat Enterprise Linux ${course.rhel} and the Ansible versions used`}
+        to={track.platform.path}
+        aria-label={`${track.label}: platform and versions`}
+        title="Platform and versions"
       >
-        <span>RHEL {course.rhel}</span>
-        <span>{course.exam}</span>
-      </button>
+        <span>{track.label}</span>
+        <span>{track.exam}</span>
+      </Link>
 
       <button className="search-trigger" onClick={onSearch}>
         <Search size={15} />
@@ -72,7 +74,6 @@ export default function Header({ onMenu, onSearch }) {
           </a>
         )}
       </div>
-      {platformOpen && <PlatformDialog onClose={closePlatform} />}
     </header>
   );
 }

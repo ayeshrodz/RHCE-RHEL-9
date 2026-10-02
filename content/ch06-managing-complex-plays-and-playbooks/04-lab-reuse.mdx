@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Including and importing files"
+title: "Exercise: Including and importing files"
 kind: lab
 minutes: 20
 ---
@@ -17,6 +17,43 @@ The project `~/projects-file` has an `ansible.cfg`, an `inventory` with `servera
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Include and import task files, and import a playbook, passing variables to each.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade projects-file
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Reuse the environment task file for a different service in a separate disposable play without editing that file.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Compose a web deployment from the supplied reusable files in `playbook.yml`.
+
+- Servera must run Apache with the supplied placeholder page and persistent HTTP/HTTPS firewall access.
+- Reuse `tasks/environment.yml` dynamically, and the firewall and placeholder task files statically, with parameters for their package, service, rule, and path values.
+- Reuse `plays/test.yml` as a separate play to verify the deployed URL.
+- Compare the task listing before a run with the tasks executed during the run. Explain which reused content can be expanded before execution.
+
+</LabChallenge>
+
   <HomeSetup>
     The last play runs on `workstation` itself, as the user `devops`, using the key set up in [section 0.6](#/ch00/control-node).
   </HomeSetup>

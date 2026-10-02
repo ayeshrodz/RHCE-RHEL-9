@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Loops and conditional tasks"
+title: "Exercise: Loops and conditional tasks"
 kind: lab
 minutes: 15
 ---
@@ -25,6 +25,42 @@ serverb.lab.example.com
   hosts={['workstation', 'servera.lab.example.com', 'serverb.lab.example.com']}
   outcomes={['Implement conditionals with the when keyword.', 'Iterate a task with loop, together with conditionals.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade control-flow
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Add a host whose OS does not match the condition. Ensure later service tasks do not assume a skipped package was installed.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Configure MariaDB from the `mariadb_packages` list in `playbook.yml`.
+
+- On `database_dev`, install `mariadb-server` and `python3-PyMySQL` through individual loop items, then start and enable MariaDB.
+- Extend the exercise to `database_prod`: installation must happen only on the intended distribution. In the classroom that is Red Hat Enterprise Linux; at home use the RedHat OS family so Rocky hosts are included.
+- Prove which hosts ran or skipped the installation and check service state. A skipped installation does not install dependencies for a later service task.
+
+</LabChallenge>
+
   <Task id="task-d5f9a74e1402" legacyIndex={1} title="Move into the project directory">
 
 ```console
@@ -136,7 +172,7 @@ PLAY RECAP *********************************************************************
 serverb.lab.example.com    : ok=3    changed=0    unreachable=0    failed=0  ...
 ```
 
-    In the classroom serverb runs RHEL, so the condition is true and the task runs. On a host where the condition is false, each item shows `skipping:` instead:
+    The shown recap is a repeat run after production is configured. Its first run can report changes. In the classroom serverb runs RHEL, so the condition is true and the task runs. On a host where the condition is false, each item shows `skipping:` instead:
 
 ```text
 TASK [MariaDB packages are installed] ******************************************

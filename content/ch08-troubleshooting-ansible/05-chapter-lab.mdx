@@ -1,5 +1,5 @@
 ---
-title: "Chapter lab: Troubleshooting Ansible"
+title: "Exercise: Troubleshooting Ansible"
 kind: lab
 minutes: 30
 ---
@@ -17,6 +17,45 @@ The project `~/troubleshoot-review` has an `ansible.cfg`, an `inventory`, the pl
   hosts={['workstation', 'serverb.lab.example.com']}
   outcomes={['Troubleshoot playbooks.', 'Troubleshoot managed hosts.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade troubleshoot-review
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+Starter files contain deliberate YAML, inventory, or task errors. Repair them before the final checkpoint.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Use the wrong inventory group in a copy of the playbook. Explain why zero hosts processed is not a successful deployment.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Repair `secure-web.yml` so serverb runs the intended TLS web service.
+
+- Correct the playbook's syntax, its target inventory, and the connection/escalation settings as needed.
+- All intended deployment tasks must remain and complete. The configured Apache service must be running and the supplied TLS content reachable.
+- Record one diagnostic observation for each correction. A syntax check alone is insufficient evidence of a working service.
+- Repeat the deployment and verify both host state and HTTPS behavior.
+
+</LabChallenge>
+
   <Task id="task-3e92568ef802" legacyIndex={1} title="Check the syntax">
     From `~/troubleshoot-review`, check the syntax of `secure-web.yml` and fix the problem it reports.
 

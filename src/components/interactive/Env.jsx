@@ -1,25 +1,33 @@
 // Classroom vs home-lab instructions. The reader's choice is one site-wide
 // preference, so switching it on any page switches every <Env> block.
-import { Children, isValidElement, useEffect, useState } from 'react';
+import { Children, isValidElement, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, House, School, WandSparkles } from 'lucide-react';
 import { ENVS, useLabEnv } from '@/lib/labEnv';
+import OptionSwitch from './OptionSwitch';
 
 const icons = { classroom: School, home: House };
 
 export function EnvSwitch({ label = 'Show commands for' }) {
   const [env, setEnv] = useLabEnv();
   return (
-    <div className="env-switch" role="tablist" aria-label={label}>
-      {ENVS.map(({ id, label: text }) => {
+    <OptionSwitch
+      className="env-switch"
+      label={label}
+      value={env}
+      onChange={setEnv}
+      options={ENVS.map(({ id, label: text }) => {
         const Icon = icons[id];
-        return (
-          <button key={id} role="tab" aria-selected={env === id} className={env === id ? 'is-active' : ''} onClick={() => setEnv(id)}>
-            <Icon size={13} /> {text}
-          </button>
-        );
+        return {
+          value: id,
+          label: (
+            <>
+              <Icon size={13} /> {text}
+            </>
+          ),
+        };
       })}
-    </div>
+    />
   );
 }
 
@@ -82,32 +90,42 @@ export function StarterFiles({ name }) {
   const [open, setOpen] = useState(null);
   const [body, setBody] = useState('');
   const base = `${import.meta.env.BASE_URL}lab/${name}/`;
+  const request = useRef(null);
+  useEffect(() => () => request.current?.abort(), [base]);
 
   useEffect(() => {
     let alive = true;
     setManifest(null);
     setOpen(null);
-    fetch(`${base}MANIFEST`)
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
+    const controller = new AbortController();
+    fetch(`${base}MANIFEST`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error('Download failed'))))
       .then((t) => alive && setManifest(t.trimStart().startsWith('<') ? false : parseManifest(t)))
       .catch(() => alive && setManifest(false));
     return () => {
       alive = false;
+      controller.abort();
     };
   }, [base]);
 
   const show = (file) => {
+    request.current?.abort();
     if (open === file.dest) return setOpen(null);
+    const controller = new AbortController();
+    request.current = controller;
     setOpen(file.dest);
     setBody('Loading…');
-    fetch(base + file.src)
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
+    fetch(base + file.src, { signal: controller.signal })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error('Download failed'))))
       .then(setBody)
-      .catch(() => setBody('Could not load this file.'));
+      .catch((error) => {
+        if (error.name !== 'AbortError') setBody('Could not load this file. Check your connection and try again.');
+      });
   };
 
   if (manifest === null) return null;
-  if (manifest === false) return <p className="starter-none">The starter files for this exercise are not published yet.</p>;
+  if (manifest === false)
+    return <p className="starter-none">The starter files could not be loaded. Check your connection and reload this page.</p>;
   if (!manifest.files.length && !manifest.hook)
     return <p className="starter-none">An empty project folder: you write every file yourself.</p>;
 

@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Managing facts"
+title: "Exercise: Managing facts"
 kind: lab
 minutes: 20
 ---
@@ -15,6 +15,43 @@ You will print a host's facts, pick out specific ones, then create a custom fact
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Gather facts from a host.', 'Create tasks that use the gathered facts, including custom facts.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade data-facts
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change a custom fact to request a stopped service. Gather facts again and predict the resulting service state.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Make servera's web configuration depend on gathered facts rather than package and service names hardcoded in tasks.
+
+- `display_facts.yml` must report all facts; `display_specific_facts.yml` must report FQDN, Python version, processor count, memory, and local custom facts.
+- `/etc/ansible/facts.d/custom.fact` must describe the web package and service, requested service state, and enabled setting.
+- `playbook.yml` must apply those custom values. `check_httpd.yml` must demonstrate the service state before and after configuration.
+- Explain why editing a fact file requires gathering facts again before using the new values.
+
+</LabChallenge>
+
   <Task id="task-9a77e738e146" legacyIndex={1} title="Move into the project directory">
 
 ```console

@@ -13,6 +13,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import { createProcessor } from '@mdx-js/mdx';
 import { questionRevision } from '../src/lib/progressModel.js';
+import { readTrack } from '../scripts/read-track.mjs';
 
 const activityParser = createProcessor();
 const literal = (node) =>
@@ -114,7 +115,7 @@ export default function contentManifest({ dir = 'content' } = {}) {
           comingSoon: meta.status === 'planned' || sections.length === 0,
         };
       });
-    return { course, chapters, objectives: readYaml(path.join(contentDir, '_objectives.yml')) };
+    return { course, chapters, track: readTrack(contentDir, course.track), objectives: readYaml(path.join(contentDir, '_objectives.yml')) };
   }
 
   return {

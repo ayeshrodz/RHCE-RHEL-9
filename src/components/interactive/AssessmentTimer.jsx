@@ -23,13 +23,13 @@ export default function AssessmentTimer({ id, minutes = 90 }) {
               ? 'Time is up. Review your results and continue learning at your own pace.'
               : 'The timer continues through reloads and while the tab is closed.'}
           </p>
-          <button className="btn btn-sm" onClick={() => setTimer(null)}>
+          <button className="btn" onClick={() => setTimer(null)}>
             End timed session
           </button>
         </>
       ) : (
         <button
-          className="btn btn-sm"
+          className="btn"
           onClick={() => {
             const started = Date.now();
             setNow(started);

@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Deploying roles from external content sources"
+title: "Exercise: Deploying roles from external content sources"
 kind: lab
 minutes: 20
 ---
@@ -21,6 +21,44 @@ The project `~/role-galaxy` has an `ansible.cfg` and an `inventory` with `server
     'Switch an installed role to another branch.',
   ]}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade role-galaxy
+lab grade role-galaxy --checkpoint applied
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Choose a different prompt color supported by the role and verify which files change.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Manage a role dependency through `roles/requirements.yml` and prove its behavior through a fresh user login.
+
+- Install the supplied Git role as `student.bash_env`, initially from `main`, into the project's role directory.
+- `use-bash_env-role.yml` must apply its default prompt and recreate `student2` so the account receives the updated skeleton files. The disposable login password is `redhat`.
+- Change the dependency to `dev`, make the project role path discoverable, and configure a blue prompt.
+- Prove the installed version and login result. Explain why changing `/etc/skel` alone does not rewrite an existing user's home files.
+
+</LabChallenge>
+
   <HomeSetup>
     `lab start role-galaxy` creates the Git repository on workstation, in `~/git-repos/student/bash_env.git`, with two branches: `main` and `dev`. Wherever the steps below use the repository, use its `file://` path.
   </HomeSetup>

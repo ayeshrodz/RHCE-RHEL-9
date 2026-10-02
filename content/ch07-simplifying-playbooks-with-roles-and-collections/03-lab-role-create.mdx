@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Creating roles"
+title: "Exercise: Creating roles"
 kind: lab
 minutes: 25
 ---
@@ -17,6 +17,43 @@ The project `~/role-create` has an `ansible.cfg`, an `inventory` with `servera.l
   hosts={['workstation', 'servera.lab.example.com']}
   outcomes={['Create a role that uses variables and a handler, and use it in a play together with pre_tasks and post_tasks.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade role-create
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Apply the role to one additional lab host with a different host name and verify its document root.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Build `myvhost` as a reusable role and apply it through `use-vhost-role.yml` to `webservers`.
+
+- The role must install Apache, start and enable it, and deploy the supplied virtual-host template with a restart on configuration change.
+- Keep the template and handler within the role; web-page content belongs to this project outside the role.
+- The play must announce before/after stages and publish the page to the host-specific document root.
+- Verify configuration, content, handler timing, and a repeat run. At home, HTTP must also be allowed through the firewall.
+
+</LabChallenge>
+
   <Task id="task-e4c4bd1f3087" legacyIndex={1} title="Create the role skeleton">
 
 ```console

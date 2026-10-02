@@ -98,4 +98,53 @@ Twelve questions covering inventories, configuration, playbook structure and run
 
 ## Apply what you learned
 
-<ChapterPractice chapter="ch02" />
+export const practice = [
+  {
+    "id": "inventory-selection",
+    "chapter": "ch02",
+    "objective": "ch02.inventory",
+    "title": "Select the web hosts",
+    "prompt": "Write a host pattern selecting exactly web1 and web2 from this inventory.",
+    "type": "inventory",
+    "starter": "all",
+    "expected": [
+      "web1",
+      "web2"
+    ],
+    "hints": [
+      "Use the group name.",
+      "web selects both web hosts."
+    ],
+    "explain": "A group is a host pattern. Its hosts are selected without repeating each name.",
+    "inventory": "[web]\nweb1\nweb2\n[db]\ndb1"
+  },
+  {
+    "id": "repair-play",
+    "chapter": "ch02",
+    "objective": "ch02.playbooks",
+    "title": "Repair a playbook",
+    "prompt": "Make this a play for web with one task installing httpd using ansible.builtin.dnf and state present.",
+    "type": "yaml",
+    "starter": "- hosts: web\n  ansible.builtin.dnf:\n    name: httpd\n    state: present\n",
+    "expected": [
+      {
+        "hosts": "web",
+        "tasks": [
+          {
+            "ansible.builtin.dnf": {
+              "name": "httpd",
+              "state": "present"
+            }
+          }
+        ]
+      }
+    ],
+    "hints": [
+      "A play contains tasks.",
+      "Put the module inside a list item under tasks."
+    ],
+    "explain": "hosts belongs to the play. The module invocation belongs to a task."
+  }
+];
+
+<ChapterPractice chapter="ch02" challenges={practice} />

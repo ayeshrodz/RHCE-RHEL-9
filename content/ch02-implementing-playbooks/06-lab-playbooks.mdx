@@ -1,5 +1,5 @@
 ---
-title: "Guided exercise: Writing and running playbooks"
+title: "Exercise: Writing and running playbooks"
 kind: lab
 minutes: 20
 ---
@@ -27,6 +27,43 @@ Not sure what arguments a module takes? `ansible-navigator doc ansible.builtin.c
   hosts={['workstation', 'serverc.lab.example.com', 'serverd.lab.example.com']}
   outcomes={['Write a playbook using correct YAML and playbook structure.', 'Validate and run it with ansible-navigator run.']}
 >
+<LabNotes>
+
+**Prerequisites:** Complete [control-node setup](#/ch00/control-node) and the preceding lessons in this chapter. Run commands as student on workstation unless a step names another machine.
+
+<Reveal title="Verify your work">
+
+From the project directory, run the relevant home-lab check. For an exercise with several checkpoints, grade each state before changing or removing it:
+
+```bash
+lab grade playbook-basic
+```
+
+The grader reads project files and host state. A passing report covers the listed checks; also perform the task’s independent connection, repeat-run, and reboot checks where requested.
+
+</Reveal>
+
+<Reveal title="Try an independent variation">
+
+Change the page content and predict which task changes on each host before rerunning.
+
+Record the published result first. The grader checks the original requirements, so a changed name or value may intentionally fail those checks.
+
+</Reveal>
+
+</LabNotes>
+
+<LabChallenge>
+
+Publish the provided page on both hosts in `web` using `site.yml`.
+
+- Apache must be installed, running, and enabled at boot.
+- The provided `files/index.html` must be available as `/var/www/html/index.html`.
+- HTTP requests from workstation must return the page; account for the home-lab firewall.
+- A repeat playbook run must leave the desired state unchanged. Explain the difference between a successful playbook run and a reachable web service.
+
+</LabChallenge>
+
   <Task id="task-f8615ccc9dff" legacyIndex={1} title="Move into the project directory">
 
 ```console

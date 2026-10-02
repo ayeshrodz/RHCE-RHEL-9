@@ -87,6 +87,7 @@ export function parseInventory(text) {
       const [k, ...v] = line.split('=');
       ensure(section.name).vars[k.trim()] = v.join('=').trim();
     } else {
+      if (expandedCount > 5000) return;
       const { hosts, error } = expandRange(first);
       if (error) warnings.push(`Line ${i + 1}: ${error}`);
       expandedCount += hosts.length;
@@ -149,11 +150,17 @@ export function parseInventory(text) {
 /** Every host in a group, including hosts inherited from child groups. */
 export function hostsOf(inv, name, seen = new Set()) {
   if (name === 'all') return inv.allHosts;
-  const g = inv.groups.get(name);
-  if (!g || seen.has(name)) return [];
-  seen.add(name);
-  const out = new Set(g.hosts);
-  g.children.forEach((c) => hostsOf(inv, c, seen).forEach((h) => out.add(h)));
+  const pending = [name];
+  const out = new Set();
+  while (pending.length) {
+    const current = pending.pop();
+    if (seen.has(current)) continue;
+    seen.add(current);
+    const group = inv.groups.get(current);
+    if (!group) continue;
+    group.hosts.forEach((host) => out.add(host));
+    pending.push(...group.children);
+  }
   return [...out].sort();
 }
 
@@ -169,37 +176,42 @@ export function groupsOf(inv, host) {
 /** Text in the same shape as `ansible-navigator inventory --graph <group>`. */
 export function graph(inv, name) {
   const out = [];
+  const append = (line) => {
+    if (out.length < 5000) out.push(line);
+  };
   const walk = (group, prefix, ancestors = new Set()) => {
+    if (out.length >= 5000) return;
     if (ancestors.has(group)) {
-      out.push(`${prefix}[cycle: ${group}]`);
+      append(`${prefix}[cycle: ${group}]`);
       return;
     }
     if (ancestors.size > 100) {
-      out.push(`${prefix}[nesting limit]`);
+      append(`${prefix}[nesting limit]`);
       return;
     }
     ancestors = new Set([...ancestors, group]);
     const g = inv.groups.get(group);
     if (!g) return;
     [...g.children].sort().forEach((c) => {
-      out.push(`${prefix}|--@${c}:`);
+      append(`${prefix}|--@${c}:`);
       walk(c, `${prefix}|  `, ancestors);
     });
-    [...g.hosts].sort().forEach((h) => out.push(`${prefix}|--${h}`));
+    [...g.hosts].sort().forEach((h) => append(`${prefix}|--${h}`));
   };
 
-  out.push(`@${name}:`);
+  append(`@${name}:`);
   if (name === 'all') {
     inv.topLevel
       .filter((n) => n !== 'ungrouped')
       .concat('ungrouped')
       .sort()
       .forEach((n) => {
-        out.push(`  |--@${n}:`);
+        append(`  |--@${n}:`);
         walk(n, '  |  ');
       });
   } else {
     walk(name, '  ');
   }
+  if (out.length >= 5000) out.push('[Graph output limited to 5,000 lines.]');
   return out.join('\n');
 }

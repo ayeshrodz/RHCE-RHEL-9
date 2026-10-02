@@ -57,6 +57,24 @@ export function Tabs({ children }) {
             role="tab"
             id={`${id}-t${i}`}
             aria-selected={i === active}
+            tabIndex={i === active ? 0 : -1}
+            onKeyDown={(event) => {
+              const target =
+                event.key === 'Home'
+                  ? 0
+                  : event.key === 'End'
+                    ? tabs.length - 1
+                    : event.key === 'ArrowRight'
+                      ? (i + 1) % tabs.length
+                      : event.key === 'ArrowLeft'
+                        ? (i - 1 + tabs.length) % tabs.length
+                        : null;
+              if (target !== null) {
+                event.preventDefault();
+                setActive(target);
+                document.getElementById(`${id}-t${target}`)?.focus();
+              }
+            }}
             aria-controls={`${id}-p${i}`}
             className={i === active ? 'is-active' : ''}
             onClick={() => setActive(i)}
@@ -78,16 +96,25 @@ export function Tab({ children }) {
   return children;
 }
 
-export function Reveal({ title = 'Show answer', children }) {
-  const [open, setOpen] = useState(false);
+export function Reveal({ title = 'Show answer', children, open: controlledOpen, onOpenChange }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
   return (
-    <div className={`reveal ${open ? 'is-open' : ''}`}>
-      <button className="reveal-toggle" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+    <details
+      className={`reveal ${open ? 'is-open' : ''}`}
+      open={open}
+      onToggle={(event) => {
+        const next = event.currentTarget.open;
+        setInternalOpen(next);
+        onOpenChange?.(next);
+      }}
+    >
+      <summary className="reveal-toggle">
         <ChevronDown size={16} />
         {open ? title.replace(/^Show/, 'Hide') : title}
-      </button>
-      {open && <div className="reveal-body">{children}</div>}
-    </div>
+      </summary>
+      <div className="reveal-body">{children}</div>
+    </details>
   );
 }
 
