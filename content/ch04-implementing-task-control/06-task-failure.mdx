@@ -4,6 +4,83 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "TaskOutcome": {
+    "data": {
+      "outputs": [
+        "Users created",
+        "Password missing for user joe",
+        "Success: schema upgraded"
+      ]
+    },
+    "text": {
+      "label": "not set",
+      "label2": "'Password missing' in result.stdout",
+      "expr": "\"'Password missing' in result.stdout\"",
+      "label3": "not set",
+      "label4": "'Success' in result.stdout",
+      "expr2": "\"'Success' in result.stdout\"",
+      "label5": "failed, ignored",
+      "label6": "- name: Run user creation script",
+      "label7": "  ansible.builtin.command: /usr/local/bin/create_users.sh",
+      "label8": "  register: result",
+      "template": "  failed_when: {value0}",
+      "template2": "  changed_when: {value0}",
+      "label9": "  ignore_errors: true",
+      "label10": "  notify: restart app",
+      "widgetLabel": "The script returns",
+      "span": "exit code",
+      "button": "rc=",
+      "span2": "stdout",
+      "label11": "Script output",
+      "widgetLabel2": "Task keywords",
+      "span3": "failed_when",
+      "label12": "failed_when",
+      "span4": "changed_when",
+      "label13": "changed_when",
+      "vsubToggle": " ignore_errors: true",
+      "label14": "The rest of the play is skipped for this host.",
+      "label15": "The play continues with the next task.",
+      "label16": "The restart app handler is notified.",
+      "label17": "No handler is notified (only changed tasks notify).",
+      "toRecap": "ok=",
+      "toRecap2": " changed=",
+      "toRecap3": " failed=",
+      "toRecap4": " ignored=",
+      "widgetCaption": "failed_when and changed_when replace Ansible’s own judgement of the result. They change how the task is reported, not what the command did."
+    }
+  },
+  "BlockFlow": {
+    "data": {},
+    "text": {
+      "title": "Play continues",
+      "sub": "rescue was skipped",
+      "title2": "Play continues",
+      "sub2": "recovered · rescued=1",
+      "title3": "Host fails",
+      "sub3": "after always has run",
+      "vsubToggle": " a task in block fails",
+      "label": " rescue also fails",
+      "title4": "block, rescue and always",
+      "caption": "rescue runs only if something in block failed. always follows ordinary task outcomes. Unreachable hosts and invalid tasks are exceptions.",
+      "label2": "block:",
+      "title5": "upgrade the database",
+      "title6": "✗ task failed",
+      "title7": "✓ all tasks ok",
+      "label3": "rescue:",
+      "title8": "revert the upgrade",
+      "title9": "skipped",
+      "title10": "✗ rescue failed",
+      "title11": "✓ recovered",
+      "label4": "always:",
+      "title12": "restart the database",
+      "title13": "✓ cleanup runs",
+      "label5": "on failure",
+      "label6": "no failure: skip rescue"
+    }
+  }
+};
+
 <Lead>
 By default, the first failed task ends the play for that host. Sometimes that is exactly right; sometimes you expect a failure, want to recover from it, or need to redefine what "failed" and "changed" mean for a command. Ansible gives you a keyword for each case.
 </Lead>

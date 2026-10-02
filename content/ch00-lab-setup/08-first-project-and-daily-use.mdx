@@ -4,6 +4,29 @@ kind: lab
 minutes: 15
 ---
 
+export const widgetContent = {
+  "AccessPaths": {
+    "data": {},
+    "text": {
+      "title": "Getting into the lab",
+      "caption": "SSH to the host as usual, step into workstation with lxc exec, then work exactly as in the classroom. The ssh rhce shortcut does the first two hops in one command.",
+      "title2": "Your computer",
+      "sub": "laptop / desktop",
+      "label": "ssh",
+      "title3": "Ubuntu host",
+      "sub2": "rht-vmctl, lxc",
+      "label2": "lxc exec",
+      "label3": "Sealed lab",
+      "title4": "workstation",
+      "sub3": "student",
+      "label4": "ssh · ansible",
+      "title5": "servera",
+      "title6": "serverb…d",
+      "label5": "ssh rhce  (RemoteCommand)"
+    }
+  }
+};
+
 <Lead>
 Phases 13 and 14. With the baseline saved, everything from here on is your own work. Create the base Ansible project the exercises copy from, prove it reaches every server, and set up a one-command way into the lab from your own computer.
 </Lead>

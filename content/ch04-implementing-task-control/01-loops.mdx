@@ -4,6 +4,48 @@ kind: lesson
 minutes: 10
 ---
 
+export const widgetContent = {
+  "LoopUnroller": {
+    "data": {
+      "initialSelection1": "list"
+    },
+    "text": {
+      "label": "list of strings",
+      "template": "- name: Postfix and Dovecot are running\n  ansible.builtin.service:\n    name: \"{{ item }}\"\n    state: started\n  loop:\n{value0}",
+      "detail": "service name={value0} state=started",
+      "label2": "list of dictionaries",
+      "template2": "- name: Users exist and are in the correct groups\n  ansible.builtin.user:\n    name: \"{{ item['name'] }}\"\n    state: present\n    groups: \"{{ item['groups'] }}\"\n  loop:\n{value0}",
+      "label3": "{'name': '{value0}', 'groups': '{value1}'}",
+      "detail2": "user name={value0} groups={value1}",
+      "widgetLabel": "One task, many runs",
+      "label4": "Loop list type",
+      "template3": "Remove {value0}",
+      "placeholder": "add a service",
+      "placeholder2": "name:group",
+      "label5": "New loop item",
+      "label6": "Add item",
+      "widgetLabel2": "What Ansible does",
+      "code": "item = ",
+      "termMuted": "Empty list: the task is skipped.",
+      "template4": "TASK [{value0}] ****\n",
+      "template5": "changed: [servera] => (item={value0})\n"
+    }
+  },
+  "DataExplorer": {
+    "data": {},
+    "text": {
+      "widgetLabel": ": click to explore",
+      "widgetLabel2": "Reference it as",
+      "template": "{{ {value0} }}",
+      "template2": "{{ {value0} }}",
+      "dxWarn": " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here.",
+      "widgetLabel3": "Old injected name",
+      "template3": "{{ {value0} }}",
+      "widgetLabel4": "Value"
+    }
+  }
+};
+
 <Lead>
 Five users to create means five nearly identical tasks, unless you use a loop. A loop runs one task once for each item in a list, so the playbook stays short and adding a sixth user is a one-line change.
 </Lead>

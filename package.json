@@ -18,9 +18,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\" plugins vite.config.js",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" plugins vite.config.js",
     "test": "node --test tests/*.test.js",
-    "validate:content": "node scripts/validate-content.mjs && node scripts/generate-report-schema.mjs --check",
+    "validate:content": "node scripts/validate-content.mjs && node scripts/validate-widget-content.mjs && node scripts/generate-report-schema.mjs --check",
     "test:labs": "python3 -m unittest discover -s tests -p '*_test.py'",
-    "test:browser": "npm run validate:content && python3 tests/browser_checks.py"
+    "test:browser": "npm run validate:content && python3 tests/browser_checks.py && python3 tests/mobile_checks.py"
   },
   "devDependencies": {
     "@mdx-js/react": "^3.1.1",

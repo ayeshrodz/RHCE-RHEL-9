@@ -283,3 +283,31 @@ python3 scripts/validate-ansible-simulations.py
 ```
 
 It creates a temporary local project, uses the local connection, and prints the runtime and passed comparisons. It does not validate remote system-administration labs.
+
+## Page-owned interactive examples
+
+Chapter widgets render shared components; their explanations, examples, labels, diagrams, and sample facts belong to the MDX page that uses them. Add a JSON-compatible `widgetContent` export after frontmatter:
+
+```mdx
+export const widgetContent = {
+  "InventoryExplorer": {
+    "data": {
+      "sample": "[web]\nservera",
+      "initialSelection1": "all"
+    },
+    "text": {
+      "widgetLabel": "Edit the inventory"
+    }
+  }
+};
+```
+
+This is a shortened illustration. Copy the complete catalog from an existing page using the same widget, then edit its data and wording. `npm run validate:content` checks every required key and composed widget dependency. Keep field names stable; update the component contract when a new field is needed. Widget data is not indexed as lesson prose or counted toward reading time.
+
+`MdxContent` supplies the page catalog through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in `content/_interface.json`; the landing page owns `content/home.json`, and the dashboard owns `content/progress.json`.
+
+Use `{value0}`, `{value1}`, and so on for wording that contains calculated values. The component calls `formatCopy` with the corresponding values. Keep algorithms, state keys, semantic enum values, selectors, and styling in code; keep teaching sentences and example datasets in content. A future content track can supply its own catalogs to the same components.
+
+## Shared mobile rendering
+
+Authors use the same MDX elements on phones and desktops. `LearningPageLayout` supplies the responsive outline; `CodeBlock` provides mobile wrapping; `CodeEditor` supplies indentation, wrapping, and native keyboard navigation. Use `CodeEditor` for editable code instead of adding a page-specific textarea or toolbar. The diagram kit supplies a scrollable natural-size canvas and a focus-managed enlarged view. Use existing theme tokens and shared controls, and put responsive behavior in shared styles rather than individual lessons.

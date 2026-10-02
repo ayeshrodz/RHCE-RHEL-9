@@ -4,6 +4,39 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "PrivilegeEscalation": {
+    "data": {},
+    "text": {
+      "title": "Connecting and escalating privileges",
+      "caption": "Ansible logs in as the remote user with an SSH key, then uses sudo to become root before running the task.",
+      "title2": "student",
+      "sub": "on workstation",
+      "label": "SSH key",
+      "title3": "someuser",
+      "sub2": "on servera",
+      "label2": "sudo",
+      "title4": "root",
+      "sub3": "on servera",
+      "title5": "task",
+      "sub4": "runs as root",
+      "label3": "ask_pass = false",
+      "label4": "remote_user = someuser",
+      "label5": "become_user = root",
+      "label6": "become = true · become_method = sudo · become_ask_pass = false",
+      "label7": "[defaults] controls the connection · [privilege_escalation] controls sudo"
+    }
+  },
+  "PrecedenceResolver": {
+    "data": {},
+    "text": {
+      "template": "{value0}: {value1}",
+      "label": "Not set",
+      "precRank": "·"
+    }
+  }
+};
+
 <Lead>
 Two small files in your project directory shape how every command behaves: `ansible.cfg` tells Ansible where the inventory is, how to log in and how to become root, and `ansible-navigator.yml` tells navigator which execution environment to use and how to run.
 </Lead>

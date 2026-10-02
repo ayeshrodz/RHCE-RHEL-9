@@ -4,6 +4,58 @@ kind: lab
 minutes: 20
 ---
 
+export const widgetContent = {
+  "BaselineTimeline": {
+    "data": {},
+    "text": {
+      "title": "VMs built",
+      "sub": "checks pass",
+      "title2": "Tools installed",
+      "sub2": "navigator · SSH keys",
+      "title3": "utility",
+      "sub3": "optional",
+      "title4": "When to take the clean snapshot",
+      "caption": "clean is the state every reset returns to. Take it once the machines and tools are ready, but before you create any Ansible project.",
+      "title5": "rht-vmctl save",
+      "sub4": "snapshot",
+      "sub5": "= clean",
+      "title6": "~/ansible",
+      "sub6": "your exercises",
+      "label": "rht-vmctl reset servers",
+      "label2": "Phases 08–09",
+      "label3": "Phase 10",
+      "label4": "Phase 11",
+      "label5": "Phase 13 onwards"
+    }
+  },
+  "SnapshotChain": {
+    "data": {
+      "names": [
+        "ch02-done",
+        "ch03-done",
+        "before-vault",
+        "ch04-done",
+        "experiment"
+      ]
+    },
+    "text": {
+      "text": "rht-vmctl save  →  servera: snapshot “clean” taken",
+      "text2": "rht-vmctl save servera -n {value0}  →  saved",
+      "text3": "rht-vmctl restore servera {value0}  →  restored, booted and ready",
+      "text4": "Error: Failed restoring snapshot rootfs: Snapshot \"{value0}\" cannot be restored due to subsequent snapshot(s). Set zfs.remove_snapshots to override",
+      "text5": "rht-vmctl rmsnap servera {value0}  →  deleted",
+      "widgetTitle": "servera’s snapshots, oldest to newest",
+      "widgetSub": "Take a few snapshots, then try to restore an older one.",
+      "btn": " Take snapshot",
+      "label": "newest · restorable",
+      "template": "Restore {value0}",
+      "btn2": " restore",
+      "template2": "Delete {value0}",
+      "widgetCaption": "Keep “clean” as the only (or newest) snapshot on the servers and resets always work. Delete newer snapshots with rht-vmctl rmsnap to go back further."
+    }
+  }
+};
+
 <Lead>
 Phase 12. The classroom resets machines with `rht-vmctl`. Here you install a home-lab version with the same syntax, so resetting a machine is the same command in both places. It runs on the Ubuntu host and uses LXD snapshots underneath.
 </Lead>

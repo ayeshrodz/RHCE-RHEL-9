@@ -4,6 +4,55 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "StorageStack": {
+    "data": {
+      "steps": [
+        {
+          "title": "A blank disk",
+          "text": "/dev/sdb: 5 GiB, no partition table. On the home lab it is sdb; on many other systems vdb or nvme1n1."
+        },
+        {
+          "title": "Partition",
+          "text": "community.general.parted creates /dev/sdb1 and marks it for LVM. part_end sets its size."
+        },
+        {
+          "title": "Volume group",
+          "text": "community.general.lvg turns sdb1 into a physical volume and builds the volume group apps from it."
+        },
+        {
+          "title": "Logical volume",
+          "text": "community.general.lvol carves the logical volume data (500 MiB) out of the group. Later you can grow it."
+        },
+        {
+          "title": "File system",
+          "text": "community.general.filesystem puts XFS on /dev/apps/data. It never reformats a device that already has a file system."
+        },
+        {
+          "title": "Mount",
+          "text": "ansible.posix.mount with state: mounted mounts it on /srv/data now and writes the line to /etc/fstab for every boot."
+        }
+      ]
+    },
+    "text": {
+      "title": "From a blank disk to a mounted file system",
+      "title2": "/dev/sdb",
+      "sub": "5 GiB disk",
+      "title3": "/dev/sdb1",
+      "sub2": "1 GiB, LVM",
+      "title4": "volume group: apps",
+      "title5": "/dev/apps/data",
+      "sub3": "500 MiB",
+      "title6": "XFS",
+      "title7": "/srv/data",
+      "sub4": "mounted, in /etc/fstab",
+      "label": "disk",
+      "label2": "LVM",
+      "label3": "what users see"
+    }
+  }
+};
+
 <Lead>
 Giving an application its own file system is a stack of small jobs: partition a disk, make a volume group, carve out a logical volume, create a file system, mount it. Each has its own module, and each is idempotent, so the same play can also grow the volume later.
 </Lead>

@@ -52,7 +52,7 @@ function makeHeading(Tag) {
     };
 
     return (
-      <Tag id={id} {...props}>
+      <Tag id={id} tabIndex={-1} {...props}>
         {children}
         <button
           type="button"

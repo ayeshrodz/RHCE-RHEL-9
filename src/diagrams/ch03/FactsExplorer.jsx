@@ -1,7 +1,9 @@
 import DataExplorer from './DataExplorer';
-import { sampleFacts } from './sampleFacts';
+import { defineWidget } from '@/components/interactive/TeachingContent';
 
-/** Browse a sample ansible_facts result and see every way to reference a fact. */
-export default function FactsExplorer() {
-  return <DataExplorer name="ansible_facts" data={sampleFacts} initial={['default_ipv4', 'address']} legacyPrefix="ansible_" />;
-}
+export default defineWidget('FactsExplorer', (copy) => {
+  function FactsExplorer() {
+    return <DataExplorer name="ansible_facts" data={copy.data.sampleFacts} initial={['default_ipv4', 'address']} legacyPrefix="ansible_" />;
+  }
+  return FactsExplorer;
+});

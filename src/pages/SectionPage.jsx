@@ -7,8 +7,9 @@ import { useHeadingNavigation } from '@/hooks/useHeadingNavigation';
 import { useStored } from '@/lib/storage';
 import { PageContext } from '@/lib/pageContext';
 import { kindIcon } from '@/components/layout/Sidebar';
-import TableOfContents from '@/components/layout/TableOfContents';
+import LearningPageLayout from '@/components/layout/LearningPageLayout';
 import NotFound from './NotFound';
+import MdxContent from '@/components/mdx/MdxContent';
 
 export default function SectionPage() {
   const { chapterId, slug } = useParams();
@@ -36,7 +37,7 @@ function Section({ page }) {
       return;
     }
     load()
-      .then((mod) => alive && setContent(() => mod.default))
+      .then((mod) => alive && setContent(mod))
       .catch((e) => alive && setError(e.message));
     return () => {
       alive = false;
@@ -50,8 +51,10 @@ function Section({ page }) {
 
   return (
     <PageContext.Provider value={page}>
-      <div className="page-grid">
-        <article className="page-article" ref={articleRef}>
+      <LearningPageLayout
+        articleRef={articleRef}
+        contentKey={Content ? page.key : null}
+        header={
           <header className="page-header">
             <Link to={`/${page.chapter.id}`} className="page-eyebrow">
               Chapter {page.chapter.number} · {page.chapter.title}
@@ -73,55 +76,53 @@ function Section({ page }) {
               )}
             </div>
           </header>
+        }
+      >
+        <div className="prose">
+          {error ? <p className="load-error">{error}</p> : Content ? <MdxContent module={Content} /> : <PageSkeleton />}
+        </div>
 
-          <div className="prose">{error ? <p className="load-error">{error}</p> : Content ? <Content /> : <PageSkeleton />}</div>
+        <footer className="page-footer">
+          <button className={`complete-btn ${done ? 'is-done' : ''}`} onClick={() => toggle(page.key)}>
+            <span className="complete-check">
+              <Check size={14} strokeWidth={3} />
+            </span>
+            {done ? 'Completed. Nice work!' : 'Mark this section complete'}
+          </button>
 
-          <footer className="page-footer">
-            <button className={`complete-btn ${done ? 'is-done' : ''}`} onClick={() => toggle(page.key)}>
-              <span className="complete-check">
-                <Check size={14} strokeWidth={3} />
-              </span>
-              {done ? 'Completed. Nice work!' : 'Mark this section complete'}
-            </button>
-
-            <nav className="pager" aria-label="Section navigation">
-              {prev ? (
-                <Link className="pager-link" to={prev.path}>
-                  <span className="pager-dir">
-                    <ArrowLeft size={14} /> Previous
-                  </span>
-                  <span className="pager-title">
-                    {prev.number} {prev.section.title}
-                  </span>
-                </Link>
-              ) : (
-                <span />
-              )}
-              {next ? (
-                <Link className="pager-link is-next" to={next.path}>
-                  <span className="pager-dir">
-                    Next <ArrowRight size={14} />
-                  </span>
-                  <span className="pager-title">
-                    {next.number} {next.section.title}
-                  </span>
-                </Link>
-              ) : (
-                <Link className="pager-link is-next" to="/">
-                  <span className="pager-dir">
-                    Back to overview <ArrowRight size={14} />
-                  </span>
-                  <span className="pager-title">More chapters are on the way</span>
-                </Link>
-              )}
-            </nav>
-          </footer>
-        </article>
-
-        <aside className="page-aside">
-          <TableOfContents articleRef={articleRef} contentKey={Content ? page.key : null} />
-        </aside>
-      </div>
+          <nav className="pager" aria-label="Section navigation">
+            {prev ? (
+              <Link className="pager-link" to={prev.path}>
+                <span className="pager-dir">
+                  <ArrowLeft size={14} /> Previous
+                </span>
+                <span className="pager-title">
+                  {prev.number} {prev.section.title}
+                </span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <Link className="pager-link is-next" to={next.path}>
+                <span className="pager-dir">
+                  Next <ArrowRight size={14} />
+                </span>
+                <span className="pager-title">
+                  {next.number} {next.section.title}
+                </span>
+              </Link>
+            ) : (
+              <Link className="pager-link is-next" to="/">
+                <span className="pager-dir">
+                  Back to overview <ArrowRight size={14} />
+                </span>
+                <span className="pager-title">More chapters are on the way</span>
+              </Link>
+            )}
+          </nav>
+        </footer>
+      </LearningPageLayout>
     </PageContext.Provider>
   );
 }

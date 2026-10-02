@@ -1,46 +1,49 @@
 import { useState } from 'react';
+import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';
 
-const LINES = ['Example Company', '123 Main Street', 'Atlanta, GA 30303'];
+export default defineWidget('YamlMultiline', (copy) => {
+  const LINES = copy.data.lines;
 
-/** Compare YAML's literal (|) and folded (>) block styles. */
-export default function YamlMultiline() {
-  const [style, setStyle] = useState('|');
-  const value = style === '|' ? LINES.join('\n') + '\n' : LINES.join(' ') + '\n';
+  function YamlMultiline() {
+    const [style, setStyle] = useState(copy.data.initialSelection1);
+    const value = style === '|' ? LINES.join('\n') + '\n' : LINES.join(' ') + '\n';
 
-  return (
-    <div className="widget mline">
-      <div className="verb-head">
-        <p className="widget-label">Multi-line strings</p>
-        <div className="segmented" role="radiogroup" aria-label="Block style">
-          <button role="radio" aria-checked={style === '|'} className={style === '|' ? 'is-active' : ''} onClick={() => setStyle('|')}>
-            | keep newlines
-          </button>
-          <button role="radio" aria-checked={style === '>'} className={style === '>' ? 'is-active' : ''} onClick={() => setStyle('>')}>
-            &gt; fold into one line
-          </button>
+    return (
+      <div className="widget mline">
+        <div className="verb-head">
+          <p className="widget-label">{copy.text.widgetLabel}</p>
+          <div className="segmented" role="radiogroup" aria-label={copy.text.label}>
+            <button role="radio" aria-checked={style === '|'} className={style === '|' ? 'is-active' : ''} onClick={() => setStyle('|')}>
+              {copy.text.button}
+            </button>
+            <button role="radio" aria-checked={style === '>'} className={style === '>' ? 'is-active' : ''} onClick={() => setStyle('>')}>
+              {copy.text.button2}
+            </button>
+          </div>
+        </div>
+        <div className="mline-grid">
+          <div>
+            <p className="mline-cap">{copy.text.mlineCap}</p>
+            <pre className="terminal">{formatCopy(copy.text.template, [style, LINES.map((l) => `  ${l}`).join('\n')])}</pre>
+          </div>
+          <div>
+            <p className="mline-cap">{copy.text.mlineCap2}</p>
+            <pre className="terminal mline-value">
+              {value
+                .split('\n')
+                .slice(0, -1)
+                .map((l, i) => (
+                  <span key={i}>
+                    {l}
+                    <span className="mline-nl">{copy.text.mlineNl}</span>
+                    {'\n'}
+                  </span>
+                ))}
+            </pre>
+          </div>
         </div>
       </div>
-      <div className="mline-grid">
-        <div>
-          <p className="mline-cap">YAML you write</p>
-          <pre className="terminal">{`address: ${style}\n${LINES.map((l) => `  ${l}`).join('\n')}`}</pre>
-        </div>
-        <div>
-          <p className="mline-cap">String Ansible gets</p>
-          <pre className="terminal mline-value">
-            {value
-              .split('\n')
-              .slice(0, -1)
-              .map((l, i) => (
-                <span key={i}>
-                  {l}
-                  <span className="mline-nl">↵</span>
-                  {'\n'}
-                </span>
-              ))}
-          </pre>
-        </div>
-      </div>
-    </div>
-  );
-}
+    );
+  }
+  return YamlMultiline;
+});

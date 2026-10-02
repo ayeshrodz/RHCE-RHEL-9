@@ -1,105 +1,104 @@
 import { Link } from 'react-router-dom';
 import { course } from '@/lib/course';
 import Logo from './Logo';
+import { defineWidget } from '@/components/interactive/TeachingContent';
 
-const year = new Date().getFullYear();
+export default defineWidget('Footer', (copy) => {
+  const year = new Date().getFullYear();
 
-/** Site footer: what this project is, what it is not, and where to find the source. */
-export default function Footer() {
-  const repo = course.repo;
-  return (
-    <footer className="site-footer">
-      <div className="site-footer-inner">
-        <div className="site-footer-about">
-          <p className="site-footer-brand">
-            <Logo /> {course.title}
-          </p>
-          <p>
-            {course.tagline}: a free, community-made course written by learners for learners, focused on the RHCE exam objectives. Free to
-            read, free to reuse, open to contributions.
-          </p>
+  function Footer() {
+    const repo = course.repo;
+    return (
+      <footer className="site-footer">
+        <div className="site-footer-inner">
+          <div className="site-footer-about">
+            <p className="site-footer-brand">
+              <Logo /> {course.title}
+            </p>
+            <p>
+              {course.tagline}
+              {copy.text.p}
+            </p>
+          </div>
+
+          <nav className="site-footer-links" aria-label={copy.text.label}>
+            <p className="site-footer-head">{copy.text.siteFooterHead}</p>
+            <ul>
+              <li>
+                <Link to="/">{copy.text.link}</Link>
+              </li>
+              <li>
+                <Link to="/ch00">{copy.text.link2}</Link>
+              </li>
+              {repo && (
+                <>
+                  <li>
+                    <a href={repo} target="_blank" rel="noopener noreferrer">
+                      {copy.text.a}
+                    </a>
+                  </li>
+                  <li>
+                    <a href={`${repo}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer">
+                      {copy.text.a2}
+                    </a>
+                  </li>
+                  <li>
+                    <a href={`${repo}/issues/new/choose`} target="_blank" rel="noopener noreferrer">
+                      {copy.text.a3}
+                    </a>
+                  </li>
+                </>
+              )}
+            </ul>
+          </nav>
+
+          <nav className="site-footer-links" aria-label={copy.text.label2}>
+            <p className="site-footer-head">{copy.text.siteFooterHead2}</p>
+            <ul>
+              <li>
+                <a href={copy.text.href} target="_blank" rel="noopener noreferrer">
+                  {copy.text.a4}
+                </a>
+              </li>
+              <li>
+                <a href={copy.text.href2} target="_blank" rel="noopener noreferrer">
+                  {copy.text.a5}
+                </a>
+              </li>
+              <li>
+                <a href={copy.text.href3} target="_blank" rel="noopener noreferrer">
+                  {copy.text.a6}
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
 
-        <nav className="site-footer-links" aria-label="Project">
-          <p className="site-footer-head">Project</p>
-          <ul>
-            <li>
-              <Link to="/">Course overview</Link>
-            </li>
-            <li>
-              <Link to="/ch00">Build the practice lab</Link>
-            </li>
-            {repo && (
-              <>
-                <li>
-                  <a href={repo} target="_blank" rel="noopener noreferrer">
-                    Source on GitHub
-                  </a>
-                </li>
-                <li>
-                  <a href={`${repo}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer">
-                    Contribute
-                  </a>
-                </li>
-                <li>
-                  <a href={`${repo}/issues/new/choose`} target="_blank" rel="noopener noreferrer">
-                    Report a mistake
-                  </a>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
-
-        <nav className="site-footer-links" aria-label="Official sources">
-          <p className="site-footer-head">Official sources</p>
-          <ul>
-            <li>
-              <a href="https://www.redhat.com/en/services/certification" target="_blank" rel="noopener noreferrer">
-                Red Hat certification
-              </a>
-            </li>
-            <li>
-              <a href="https://docs.ansible.com/" target="_blank" rel="noopener noreferrer">
-                Ansible documentation
-              </a>
-            </li>
-            <li>
-              <a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9" target="_blank" rel="noopener noreferrer">
-                RHEL 9 documentation
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-
-      <div className="site-footer-legal">
-        <p className="site-footer-disclaimer">
-          <strong>An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.</strong>{' '}
-          This is not official training material and is no substitute for Red Hat's courses, documentation or exam objectives, which remain
-          the authoritative sources.
-        </p>
-        <p>
-          Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks or registered trademarks of Red Hat, Inc. or its subsidiaries
-          in the United States and other countries. Linux is a registered trademark of Linus Torvalds. All other trademarks belong to their
-          respective owners. These names are used only to describe what the guide is about.
-        </p>
-        <p>
-          © {year} {course.title} contributors. Text and diagrams are licensed under{' '}
-          <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-            CC BY 4.0
-          </a>
-          ; source code under the{' '}
-          {repo ? (
-            <a href={`${repo}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">
-              MIT licence
+        <div className="site-footer-legal">
+          <p className="site-footer-disclaimer">
+            <strong>{copy.text.strong}</strong> {copy.text.siteFooterDisclaimer}
+          </p>
+          <p>{copy.text.p2}</p>
+          <p>
+            {copy.text.p3}
+            {year} {course.title}
+            {copy.text.p4}{' '}
+            <a href={copy.text.href4} target="_blank" rel="noopener noreferrer">
+              {copy.text.a7}
             </a>
-          ) : (
-            'MIT licence'
-          )}
-          . Provided as is, with no warranty: test everything on a lab before you rely on it.
-        </p>
-      </div>
-    </footer>
-  );
-}
+            {copy.text.p5}{' '}
+            {repo ? (
+              <a href={`${repo}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">
+                {copy.text.a8}
+              </a>
+            ) : (
+              copy.text.label3
+            )}
+            {copy.text.p6}
+          </p>
+        </div>
+      </footer>
+    );
+  }
+  return Footer;
+});

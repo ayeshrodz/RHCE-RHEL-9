@@ -4,6 +4,136 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "CronBuilder": {
+    "data": {
+      "fields": [
+        {
+          "key": "minute",
+          "label": "minute",
+          "hint": "0–59"
+        },
+        {
+          "key": "hour",
+          "label": "hour",
+          "hint": "0–23"
+        },
+        {
+          "key": "day",
+          "label": "day",
+          "hint": "1–31"
+        },
+        {
+          "key": "month",
+          "label": "month",
+          "hint": "1–12"
+        },
+        {
+          "key": "weekday",
+          "label": "weekday",
+          "hint": "0–6, Sun = 0"
+        }
+      ],
+      "presets": [
+        {
+          "label": "every 5 minutes",
+          "v": {
+            "minute": "*/5",
+            "hour": "*",
+            "day": "*",
+            "month": "*",
+            "weekday": "*"
+          }
+        },
+        {
+          "label": "02:30 every night",
+          "v": {
+            "minute": "30",
+            "hour": "2",
+            "day": "*",
+            "month": "*",
+            "weekday": "*"
+          }
+        },
+        {
+          "label": "weekdays at 09:00",
+          "v": {
+            "minute": "0",
+            "hour": "9",
+            "day": "*",
+            "month": "*",
+            "weekday": "1-5"
+          }
+        },
+        {
+          "label": "first of the month",
+          "v": {
+            "minute": "0",
+            "hour": "0",
+            "day": "1",
+            "month": "*",
+            "weekday": "*"
+          }
+        },
+        {
+          "label": "Sundays 23:15",
+          "v": {
+            "minute": "15",
+            "hour": "23",
+            "day": "*",
+            "month": "*",
+            "weekday": "0"
+          }
+        }
+      ],
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ]
+    },
+    "text": {
+      "template": "every {value0} minutes",
+      "label": "every minute",
+      "template2": "at {value0}:{value1}",
+      "template3": "at minute {value0} of every hour",
+      "template4": "at minute {value0}, hour {value1}",
+      "template5": "on day {value0} of the month",
+      "template6": "in month {value0}",
+      "label2": "Monday to Friday",
+      "template7": "on {value0}",
+      "template8": "on weekdays {value0}",
+      "label3": "every day",
+      "initial": "tar czf /tmp/app.tgz -C /srv app",
+      "label4": "- name: Archive app data",
+      "label5": "  ansible.builtin.cron:",
+      "label6": "    name: Archive app data",
+      "label7": "    user: appadmin",
+      "template9": "    {value0}: \"{value1}\"",
+      "template10": "    job: {value0}",
+      "label8": "    state: present",
+      "widgetLabel": "Cron schedule builder",
+      "span": "job",
+      "cronSay": "Runs ",
+      "cronSay2": ".",
+      "cronCap": "The task",
+      "cronCap2": "What lands in appadmin's crontab",
+      "template11": "#Ansible: Archive app data\n{value0} {value1}",
+      "cronNote": "Fields you leave out default to ",
+      "code": "*",
+      "cronNote2": ". The ",
+      "code2": "#Ansible:",
+      "cronNote3": " comment is how the module finds its own entry again, so the ",
+      "code3": "name",
+      "cronNote4": " must stay the same."
+    }
+  }
+};
+
 <Lead>
 Some work runs on a timetable: nightly backups, log rotation, a report every Monday. Some needs a reboot, or a different boot target. Ansible manages cron and at jobs, services, the default target and reboots, and waits for a rebooted host to come back before it carries on.
 </Lead>

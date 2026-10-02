@@ -4,6 +4,154 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "AdminModuleFinder": {
+    "data": {
+      "areas": {
+        "Software": [
+          [
+            "Install, update or remove packages",
+            "ansible.builtin.dnf",
+            "- ansible.builtin.dnf:\n    name:\n      - httpd\n      - mod_ssl\n    state: present          # latest | absent"
+          ],
+          [
+            "Install a package group",
+            "ansible.builtin.dnf",
+            "- ansible.builtin.dnf:\n    name: \"@Development Tools\"\n    state: present"
+          ],
+          [
+            "Add a repository",
+            "ansible.builtin.yum_repository",
+            "- ansible.builtin.yum_repository:\n    name: lab-crb\n    description: Rocky Linux 9 CRB (lab)\n    mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever\n    gpgcheck: true\n    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9"
+          ],
+          [
+            "Trust a package signing key",
+            "ansible.builtin.rpm_key",
+            "- ansible.builtin.rpm_key:\n    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9\n    state: present"
+          ],
+          [
+            "Find out what is installed",
+            "ansible.builtin.package_facts",
+            "- ansible.builtin.package_facts:\n    manager: auto\n- ansible.builtin.debug:\n    var: ansible_facts['packages']['httpd']"
+          ]
+        ],
+        "Users": [
+          [
+            "Create a user with a password",
+            "ansible.builtin.user",
+            "- ansible.builtin.user:\n    name: jane\n    groups: webdev\n    append: true\n    password: \"{{ 'redhat' | password_hash('sha512') }}\""
+          ],
+          [
+            "Create a group",
+            "ansible.builtin.group",
+            "- ansible.builtin.group:\n    name: webdev\n    gid: 5000"
+          ],
+          [
+            "Let a key log in",
+            "ansible.posix.authorized_key",
+            "- ansible.posix.authorized_key:\n    user: jane\n    key: \"{{ lookup('ansible.builtin.file', 'files/jane.pub') }}\""
+          ],
+          [
+            "Give sudo rights",
+            "ansible.builtin.copy",
+            "- ansible.builtin.copy:\n    content: \"%webdev ALL=(ALL) NOPASSWD: ALL\\n\"\n    dest: /etc/sudoers.d/webdev\n    mode: \"0440\"\n    validate: /usr/sbin/visudo -cf %s"
+          ]
+        ],
+        "Boot and schedule": [
+          [
+            "Run a command on a schedule",
+            "ansible.builtin.cron",
+            "- ansible.builtin.cron:\n    name: Log uptime\n    user: devops\n    minute: \"*/5\"\n    job: uptime >> /home/devops/uptime.log"
+          ],
+          [
+            "Run a command once, later",
+            "ansible.posix.at",
+            "- ansible.posix.at:\n    command: date > /tmp/at-was-here\n    count: 20\n    units: minutes"
+          ],
+          [
+            "Start or enable a service",
+            "ansible.builtin.service",
+            "- ansible.builtin.service:\n    name: httpd\n    state: started\n    enabled: true"
+          ],
+          [
+            "Choose the boot target",
+            "ansible.builtin.file",
+            "- ansible.builtin.file:\n    src: /usr/lib/systemd/system/multi-user.target\n    dest: /etc/systemd/system/default.target\n    state: link"
+          ],
+          [
+            "Reboot and wait for it",
+            "ansible.builtin.reboot",
+            "- ansible.builtin.reboot:\n    reboot_timeout: 300"
+          ]
+        ],
+        "Storage": [
+          [
+            "Partition a disk",
+            "community.general.parted",
+            "- community.general.parted:\n    device: /dev/sdb\n    number: 1\n    part_end: 1GiB\n    flags: [lvm]\n    state: present"
+          ],
+          [
+            "Create a volume group",
+            "community.general.lvg",
+            "- community.general.lvg:\n    vg: apps\n    pvs: /dev/sdb1"
+          ],
+          [
+            "Create or grow a logical volume",
+            "community.general.lvol",
+            "- community.general.lvol:\n    vg: apps\n    lv: data\n    size: 500m\n    resizefs: true"
+          ],
+          [
+            "Make a file system",
+            "community.general.filesystem",
+            "- community.general.filesystem:\n    dev: /dev/apps/data\n    fstype: xfs"
+          ],
+          [
+            "Mount it, now and at boot",
+            "ansible.posix.mount",
+            "- ansible.posix.mount:\n    path: /srv/data\n    src: /dev/apps/data\n    fstype: xfs\n    state: mounted"
+          ]
+        ],
+        "Network": [
+          [
+            "Add or change a connection",
+            "community.general.nmcli",
+            "- community.general.nmcli:\n    conn_name: lab-dummy0\n    type: dummy\n    ifname: dummy0\n    ip4: 192.0.2.10/24\n    state: present"
+          ],
+          [
+            "Configure networking the supported way",
+            "redhat.rhel_system_roles.network",
+            "roles:\n  - redhat.rhel_system_roles.network\nvars:\n  network_connections:\n    - name: eth1\n      type: ethernet\n      ip:\n        address: [192.0.2.20/24]"
+          ],
+          [
+            "Set the host name",
+            "ansible.builtin.hostname",
+            "- ansible.builtin.hostname:\n    name: web01.lab.example.com"
+          ],
+          [
+            "Open a firewall service",
+            "ansible.posix.firewalld",
+            "- ansible.posix.firewalld:\n    service: https\n    permanent: true\n    immediate: true\n    state: enabled"
+          ],
+          [
+            "Read the network configuration",
+            "ansible.builtin.setup",
+            "- ansible.builtin.setup:\n    gather_subset: network\n- ansible.builtin.debug:\n    var: ansible_facts['default_ipv4']"
+          ]
+        ]
+      },
+      "initialSelection1": "Software"
+    },
+    "text": {
+      "widgetLabel": "Which module does it?",
+      "label": "Area",
+      "label2": "Job",
+      "amfHint": "Full reference: ",
+      "code": "ansible-navigator doc ",
+      "code2": " -m stdout"
+    }
+  }
+};
+
 <Lead>
 Almost every playbook installs something. Ansible's package modules install, update and remove software, configure the repositories it comes from, and report what is already there, so a play can make decisions based on it.
 </Lead>

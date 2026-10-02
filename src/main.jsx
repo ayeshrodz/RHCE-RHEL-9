@@ -8,6 +8,7 @@ import './styles/components.css';
 import './styles/diagrams.css';
 import './styles/widgets.css';
 import './styles/pages.css';
+import './styles/mobile.css';
 // After the global styles, so chapter widget styles (loaded via App) can override them.
 import App from './App';
 

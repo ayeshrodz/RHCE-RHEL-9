@@ -4,6 +4,96 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "VariableNameChecker": {
+    "data": {
+      "presets": [
+        "web server",
+        "web_server",
+        "remote.file",
+        "remote_file",
+        "1st file",
+        "file_1",
+        "remoteserver$1",
+        "remote_server_1",
+        "hostvars"
+      ]
+    },
+    "text": {
+      "label": "Type a name to check it.",
+      "template": "Must start with a letter, not “{value0}”.",
+      "template2": "Only letters, numbers and underscores are allowed. Found: {value0}.",
+      "template3": "“{value0}” is a magic variable that Ansible sets itself. Pick another name.",
+      "label2": "Valid variable name.",
+      "initial": "web server",
+      "widgetTitle": "Is this a valid variable name?",
+      "label3": "Variable name",
+      "vnameSuggest": "Try "
+    }
+  },
+  "VariableSubstitution": {
+    "data": {},
+    "text": {
+      "widgetLabel": "vars:",
+      "code": ":",
+      "template": "Value of {value0}",
+      "widgetLabel2": "task you write",
+      "vsubToggle": " quote the value",
+      "template2": "- name: Create the user {{ user }}\n  ansible.builtin.user:\n    name: {value0}\n    home: {value1}",
+      "label": "What Ansible runs",
+      "label2": "What Ansible says",
+      "termMuted": "TASK [Create the user ",
+      "termMuted2": "] ****",
+      "termChanged": "changed: [servera] => user “",
+      "termChanged2": "” with home ",
+      "termFail": "ERROR! Syntax Error while loading YAML.",
+      "label3": "\n  found unacceptable key (unhashable type: ‘AnsibleMapping’)\n\n",
+      "label4": "    name: {{ user }}\n          ^ here\n",
+      "label5": "We could be wrong, but this one looks like it might be an issue with\nmissing quotes. Always quote template expression brackets when they\nstart a value.",
+      "label6": "The task name can use {{ }} freely because the value starts with text. A value that starts with {{ must be quoted.",
+      "label7": "Without quotes, YAML reads the opening { as the start of a dictionary, before Ansible ever sees the variable."
+    }
+  },
+  "DataExplorer": {
+    "data": {},
+    "text": {
+      "widgetLabel": ": click to explore",
+      "widgetLabel2": "Reference it as",
+      "template": "{{ {value0} }}",
+      "template2": "{{ {value0} }}",
+      "dxWarn": " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here.",
+      "widgetLabel3": "Old injected name",
+      "template3": "{{ {value0} }}",
+      "widgetLabel4": "Value"
+    }
+  },
+  "RegisterFlow": {
+    "data": {},
+    "text": {
+      "title": "Capturing a task result with register",
+      "caption": "Every module returns a JSON result. register saves it as a variable, so later tasks can print it, test it or reuse it.",
+      "label": "Task 1",
+      "title2": "ansible.builtin.dnf",
+      "sub": "name: httpd",
+      "title3": "register: install_result",
+      "label2": "returns",
+      "title4": "install_result",
+      "sub2": "changed: false",
+      "sub3": "rc: 0",
+      "sub4": "msg: \"\"",
+      "sub5": "results: [ … ]",
+      "label3": "Later tasks",
+      "title5": "debug",
+      "sub6": "var: install_result",
+      "title6": "when:",
+      "sub7": "install_result.changed",
+      "title7": "msg:",
+      "sub8": "{{ install_result.rc }}",
+      "label4": "(when: is covered in chapter 4)"
+    }
+  }
+};
+
 <Lead>
 So far every value in your playbooks has been typed in directly: the package name, the service, the path. Variables let you name those values once and reuse them everywhere, so a change happens in one place instead of ten, and one playbook can serve different hosts.
 </Lead>

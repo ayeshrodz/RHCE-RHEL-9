@@ -4,7 +4,7 @@ import { BookOpen, Check, ChevronRight, CircleHelp, FlaskConical, House, ListChe
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { useDialogFocus } from '@/hooks/useDialogFocus';
+import { useOverlay } from '@/hooks/useOverlay';
 import ProgressRing from './ProgressRing';
 
 export const kindIcon = { lesson: BookOpen, lab: FlaskConical, quiz: CircleHelp, summary: ListChecks };
@@ -19,7 +19,7 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapsed })
   const isMobile = useMediaQuery('(max-width: 960px)');
   const rail = collapsed && !isMobile;
   const navRef = useRef(null);
-  useDialogFocus(navRef, isMobile && open, onClose);
+  useOverlay(navRef, isMobile && open, onClose);
 
   return (
     <>
@@ -31,6 +31,8 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapsed })
         inert={isMobile && !open ? true : undefined}
         aria-hidden={isMobile && !open ? true : undefined}
         className={`sidebar ${open ? 'is-open' : ''} ${rail ? 'is-rail' : ''}`}
+        role={isMobile && open ? 'dialog' : undefined}
+        aria-modal={isMobile && open ? true : undefined}
         aria-label="Course navigation"
       >
         {rail ? (

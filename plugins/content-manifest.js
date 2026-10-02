@@ -1,3 +1,4 @@
+import { lessonProse } from '../src/lib/contentSource.js';
 // Vite plugin: builds the course structure from the content/ folder.
 //
 //   content/_course.yml                      site-level metadata
@@ -115,7 +116,18 @@ export default function contentManifest({ dir = 'content' } = {}) {
           comingSoon: meta.status === 'planned' || sections.length === 0,
         };
       });
-    return { course, chapters, track: readTrack(contentDir, course.track), objectives: readYaml(path.join(contentDir, '_objectives.yml')) };
+    const interfaceContent = {
+      ...JSON.parse(fs.readFileSync(path.join(contentDir, '_interface.json'), 'utf8')),
+      HomePage: JSON.parse(fs.readFileSync(path.join(contentDir, 'home.json'), 'utf8')),
+      ProgressPage: JSON.parse(fs.readFileSync(path.join(contentDir, 'progress.json'), 'utf8')),
+    };
+    return {
+      course,
+      chapters,
+      interfaceContent,
+      track: readTrack(contentDir, course.track),
+      objectives: readYaml(path.join(contentDir, '_objectives.yml')),
+    };
   }
 
   return {
@@ -138,7 +150,7 @@ export default function contentManifest({ dir = 'content' } = {}) {
 
     configureServer(server) {
       const onFsEvent = (file) => {
-        if (!file.startsWith(contentDir) || !/\.(mdx|ya?ml)$/.test(file)) return;
+        if (!file.startsWith(contentDir) || !/\.(mdx|json|ya?ml)$/.test(file)) return;
         let next;
         try {
           next = JSON.stringify(buildManifest());
@@ -169,6 +181,7 @@ function inferKind(slug) {
 }
 
 function estimateMinutes(body) {
+  body = lessonProse(body);
   const words = body
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<[^>]+>/g, ' ')

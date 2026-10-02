@@ -1,138 +1,182 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, RotateCcw, Upload } from 'lucide-react';
+import { Download, RotateCcw, Upload, X } from 'lucide-react';
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';
 import { exportProgress, importProgress, resetAllProgress } from '@/lib/storage';
 import { useDialogFocus } from '@/hooks/useDialogFocus';
+import { createPortal } from 'react-dom';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useOverlay } from '@/hooks/useOverlay';
 import ProgressRing from './ProgressRing';
+import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';
 
-/** Header progress ring that opens a panel to review, back up or reset progress. */
-export default function ProgressMenu() {
-  const { done, percent, total } = useProgress();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState(null);
-  const rootRef = useRef(null);
-  const fileRef = useRef(null);
-  const panelRef = useRef(null);
-  useDialogFocus(panelRef, open, () => setOpen(false));
+export default defineWidget('ProgressMenu', (copy) => {
+  function ProgressMenu({ open, onToggle, onClose }) {
+    const { done, percent, total } = useProgress();
+    const [message, setMessage] = useState(null);
+    const rootRef = useRef(null);
+    const fileRef = useRef(null);
+    const panelRef = useRef(null);
+    const mobile = useMediaQuery('(max-width: 960px)');
+    useDialogFocus(panelRef, open && !mobile, () => onClose());
+    useOverlay(panelRef, open && mobile, () => onClose());
 
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e) => !rootRef.current?.contains(e.target) && setOpen(false);
-    const onKey = (e) => e.key === 'Escape' && setOpen(false);
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
+    useEffect(() => {
+      if (!open) return;
+      const onDown = (e) => !rootRef.current?.contains(e.target) && !panelRef.current?.contains(e.target) && onClose();
+      const onKey = (e) => e.key === 'Escape' && onClose();
+      document.addEventListener('mousedown', onDown);
+      document.addEventListener('keydown', onKey);
+      return () => {
+        document.removeEventListener('mousedown', onDown);
+        document.removeEventListener('keydown', onKey);
+      };
+    }, [open, onClose]);
+
+    const download = () => {
+      const progress = exportProgress();
+      const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${progress.app}-progress-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setMessage({ ok: true, text: copy.text.text });
     };
-  }, [open]);
 
-  const download = () => {
-    const progress = exportProgress();
-    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${progress.app}-progress-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setMessage({ ok: true, text: 'Progress file downloaded.' });
-  };
+    const upload = async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file) return;
+      try {
+        if (file.size > 2_000_000) throw new Error(copy.text.label2);
+        const count = importProgress(JSON.parse(await file.text()));
+        setMessage({ ok: true, text: formatCopy(copy.text.text2, [count, count === 1 ? '' : 's']) });
+      } catch (err) {
+        setMessage({ ok: false, text: err instanceof SyntaxError ? copy.text.label3 : err.message });
+      }
+    };
 
-  const upload = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-    try {
-      if (file.size > 2_000_000) throw new Error('This progress file is too large.');
-      const count = importProgress(JSON.parse(await file.text()));
-      setMessage({ ok: true, text: `Restored ${count} saved item${count === 1 ? '' : 's'}.` });
-    } catch (err) {
-      setMessage({ ok: false, text: err instanceof SyntaxError ? 'That file is not valid JSON.' : err.message });
-    }
-  };
+    const reset = () => {
+      if (confirm(copy.text.label4)) {
+        resetAllProgress();
+        setMessage({ ok: true, text: copy.text.text3 });
+      }
+    };
 
-  const reset = () => {
-    if (confirm('Reset all progress, lab checklists and quiz answers in this browser?')) {
-      resetAllProgress();
-      setMessage({ ok: true, text: 'Progress reset.' });
-    }
-  };
+    const available = chapters.filter((c) => !c.comingSoon);
 
-  const available = chapters.filter((c) => !c.comingSoon);
-
-  return (
-    <div className="progress-menu" ref={rootRef}>
-      <button
-        className="header-progress"
-        onClick={() => {
-          setOpen((o) => !o);
-          setMessage(null);
-        }}
-        aria-expanded={open}
-        aria-label="Your progress"
-        aria-haspopup="dialog"
-        title="Your progress"
+    const panel = open ? (
+      <div
+        ref={panelRef}
+        tabIndex={-1}
+        className="progress-panel"
+        role="dialog"
+        aria-modal={mobile ? true : undefined}
+        aria-label={copy.text.label5}
       >
-        <ProgressRing value={percent} size={22} stroke={2.5} />
-        <span>{percent}%</span>
-      </button>
+        {mobile && (
+          <button className="icon-btn progress-close" aria-label={copy.text.close} onClick={() => onClose()}>
+            <X size={18} />
+          </button>
+        )}
+        <p className="progress-panel-title">{copy.text.progressPanelTitle}</p>
+        <Link to="/progress" onClick={() => onClose()}>
+          {copy.text.link}
+        </Link>
+        <p className="progress-panel-sub">
+          {done.length}
+          {copy.text.progressPanelSub}
+          {total}
+          {copy.text.progressPanelSub2}
+        </p>
 
-      {open && (
-        <div ref={panelRef} tabIndex={-1} className="progress-panel" role="dialog" aria-label="Your progress">
-          <p className="progress-panel-title">Your progress</p>
-          <Link to="/progress" onClick={() => setOpen(false)}>
-            Open your learning dashboard
-          </Link>
-          <p className="progress-panel-sub">
-            {done.length} of {total} sections complete. Saved in this browser only.
-          </p>
+        <ul className="progress-chapters">
+          {available.map((ch) => {
+            const { count, total: t } = chapterProgress(ch, done);
+            return (
+              <li key={ch.id}>
+                <span className="progress-chapter-name">
+                  {ch.number}
+                  {copy.text.progressChapterName}
+                  {ch.title}
+                </span>
+                <span className="progress-chapter-count">
+                  {count}
+                  {copy.text.progressChapterCount}
+                  {t}
+                </span>
+                <span className="progress-chapter-bar">
+                  <span style={{ width: `${(count / t) * 100}%` }} />
+                </span>
+              </li>
+            );
+          })}
+        </ul>
 
-          <ul className="progress-chapters">
-            {available.map((ch) => {
-              const { count, total: t } = chapterProgress(ch, done);
-              return (
-                <li key={ch.id}>
-                  <span className="progress-chapter-name">
-                    {ch.number}. {ch.title}
-                  </span>
-                  <span className="progress-chapter-count">
-                    {count}/{t}
-                  </span>
-                  <span className="progress-chapter-bar">
-                    <span style={{ width: `${(count / t) * 100}%` }} />
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+        <p className="progress-panel-note">{copy.text.progressPanelNote}</p>
 
-          <p className="progress-panel-note">
-            Clearing site data or switching browsers loses progress. Download a copy to keep it safe or move it to another device.
-          </p>
-
-          <div className="progress-actions">
-            <button className="btn btn-sm" onClick={download}>
-              <Download size={13} /> Export
-            </button>
-            <button className="btn btn-sm" onClick={() => fileRef.current?.click()}>
-              <Upload size={13} /> Import
-            </button>
-            <button className="btn btn-sm btn-ghost progress-reset" onClick={reset}>
-              <RotateCcw size={13} /> Reset
-            </button>
-            <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={upload} />
-          </div>
-
-          {message && (
-            <p role="status" className={`progress-message ${message.ok ? 'is-ok' : 'is-error'}`}>
-              {message.text}
-            </p>
-          )}
+        <div className="progress-actions">
+          <button className="btn btn-sm" onClick={download}>
+            <Download size={13} />
+            {copy.text.btn}
+          </button>
+          <button className="btn btn-sm" onClick={() => fileRef.current?.click()}>
+            <Upload size={13} />
+            {copy.text.btn2}
+          </button>
+          <button className="btn btn-sm btn-ghost progress-reset" onClick={reset}>
+            <RotateCcw size={13} />
+            {copy.text.btn3}
+          </button>
+          <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={upload} />
         </div>
-      )}
-    </div>
-  );
-}
+
+        {message && (
+          <p role="status" className={`progress-message ${message.ok ? 'is-ok' : 'is-error'}`}>
+            {message.text}
+          </p>
+        )}
+      </div>
+    ) : null;
+
+    return (
+      <div className="progress-menu" ref={rootRef}>
+        <button
+          className="header-progress"
+          onClick={() => {
+            onToggle();
+            setMessage(null);
+          }}
+          aria-expanded={open}
+          aria-label={copy.text.label6}
+          aria-haspopup="dialog"
+          title={copy.text.title}
+        >
+          <ProgressRing value={percent} size={22} stroke={2.5} />
+          <span>
+            {percent}
+            {copy.text.span}
+          </span>
+        </button>
+
+        {mobile && open
+          ? createPortal(
+              <div
+                className="progress-backdrop"
+                onMouseDown={(e) => {
+                  if (e.target === e.currentTarget) onClose();
+                }}
+              >
+                {panel}
+              </div>,
+              document.body,
+            )
+          : panel}
+      </div>
+    );
+  }
+  return ProgressMenu;
+});

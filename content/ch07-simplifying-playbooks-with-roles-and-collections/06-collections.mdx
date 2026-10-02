@@ -4,6 +4,60 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "FqcnExplorer": {
+    "data": {
+      "samples": [
+        {
+          "name": "ansible.builtin.copy",
+          "kind": "module",
+          "builtin": true
+        },
+        {
+          "name": "ansible.posix.firewalld",
+          "kind": "module"
+        },
+        {
+          "name": "community.general.parted",
+          "kind": "module"
+        },
+        {
+          "name": "community.crypto.openssl_privatekey",
+          "kind": "module"
+        },
+        {
+          "name": "redhat.rhel_system_roles.timesync",
+          "kind": "role"
+        }
+      ],
+      "paths": [
+        "./collections",
+        "~/.ansible/collections",
+        "/usr/share/ansible/collections"
+      ]
+    },
+    "text": {
+      "widgetLabel": "Read a fully qualified collection name",
+      "label": "Fully qualified collection name",
+      "em": "namespace",
+      "p": "Who publishes it: a vendor, a project or a community.",
+      "em2": "collection",
+      "p2": "The bundle that is installed and versioned as one unit.",
+      "p3": "The ",
+      "p4": " inside that collection.",
+      "code": "ansible.builtin",
+      "fqNote": " is special: it ships inside ",
+      "code2": "ansible-core",
+      "fqNote2": " itself, so it is always available and is never installed separately.",
+      "fqNote3": "Ansible looks for it in each collections path, in order, and uses the first copy it finds:",
+      "template": "{value0}. {value1}/{value2}",
+      "fqNote4": "A fully qualified name has exactly three parts separated by dots: ",
+      "code3": "namespace.collection.name",
+      "fqNote5": ", in lower case with underscores."
+    }
+  }
+};
+
 <Lead>
 Every module name you have typed so far has three parts, such as `ansible.posix.firewalld`. The first two name a collection: a versioned package of modules, roles and plug-ins. Collections are how almost all Ansible content is distributed, so installing and pinning them is an everyday skill.
 </Lead>

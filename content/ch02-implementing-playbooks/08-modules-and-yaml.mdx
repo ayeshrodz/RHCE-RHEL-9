@@ -4,6 +4,162 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "ModuleExplorer": {
+    "data": {
+      "modules": [
+        {
+          "fqcn": "ansible.builtin.copy",
+          "cat": "Files",
+          "text": "Copy a local file (or inline content) to the managed host."
+        },
+        {
+          "fqcn": "ansible.builtin.file",
+          "cat": "Files",
+          "text": "Set permissions, ownership and other properties of files; create directories and links."
+        },
+        {
+          "fqcn": "ansible.builtin.lineinfile",
+          "cat": "Files",
+          "text": "Make sure a particular line is, or is not, in a file."
+        },
+        {
+          "fqcn": "ansible.posix.synchronize",
+          "cat": "Files",
+          "text": "Synchronise content using rsync."
+        },
+        {
+          "fqcn": "ansible.builtin.package",
+          "cat": "Software",
+          "text": "Manage packages with whichever package manager the OS uses."
+        },
+        {
+          "fqcn": "ansible.builtin.dnf",
+          "cat": "Software",
+          "text": "Manage packages with DNF."
+        },
+        {
+          "fqcn": "ansible.builtin.apt",
+          "cat": "Software",
+          "text": "Manage packages with APT."
+        },
+        {
+          "fqcn": "ansible.builtin.pip",
+          "cat": "Software",
+          "text": "Manage Python packages from PyPI."
+        },
+        {
+          "fqcn": "ansible.posix.firewalld",
+          "cat": "System",
+          "text": "Manage arbitrary ports and services with firewalld."
+        },
+        {
+          "fqcn": "ansible.builtin.reboot",
+          "cat": "System",
+          "text": "Reboot a machine and wait for it to come back."
+        },
+        {
+          "fqcn": "ansible.builtin.service",
+          "cat": "System",
+          "text": "Manage services: start, stop, restart, enable at boot."
+        },
+        {
+          "fqcn": "ansible.builtin.user",
+          "cat": "System",
+          "text": "Add, remove and manage user accounts."
+        },
+        {
+          "fqcn": "ansible.builtin.get_url",
+          "cat": "Net tools",
+          "text": "Download files over HTTP, HTTPS or FTP."
+        },
+        {
+          "fqcn": "ansible.builtin.uri",
+          "cat": "Net tools",
+          "text": "Interact with web services; check status codes and content."
+        },
+        {
+          "fqcn": "ansible.builtin.command",
+          "cat": "Commands",
+          "text": "Run a command without a shell. Not idempotent unless you add creates/removes.",
+          "warn": true
+        },
+        {
+          "fqcn": "ansible.builtin.shell",
+          "cat": "Commands",
+          "text": "Run a command through a shell (pipes, redirects, variables). Not idempotent.",
+          "warn": true
+        },
+        {
+          "fqcn": "ansible.builtin.raw",
+          "cat": "Commands",
+          "text": "Run a command over SSH without the module system. Works without Python; useful to bootstrap it.",
+          "warn": true
+        }
+      ],
+      "cats": [
+        "All",
+        "Files",
+        "Software",
+        "System",
+        "Net tools",
+        "Commands"
+      ],
+      "initialSelection1": "All",
+      "initialSelection2": "ansible.builtin.dnf"
+    },
+    "text": {
+      "template": "ansible-navigator doc {value0} -m stdout",
+      "placeholder": "Filter…",
+      "label": "Filter modules",
+      "modsWarn": "not idempotent",
+      "termMuted": "No modules match.",
+      "label2": "Copy command"
+    }
+  },
+  "CommandVsModule": {
+    "data": {},
+    "text": {
+      "title": "shell",
+      "code": "- name: Non-idempotent approach\n  ansible.builtin.shell:\n    cmd: echo \"nameserver 192.0.2.1\" > /etc/resolv.conf",
+      "why": "Rewrites the file on every run, even when it is already correct.",
+      "title2": "command + creates",
+      "code2": "- name: Initialize the database\n  ansible.builtin.command:\n    cmd: /opt/bin/makedb.sh\n    creates: /opt/db/database.db",
+      "okLabel": "ok (did not run)",
+      "why2": "Runs only while /opt/db/database.db is missing; afterwards it reports ok without running. Better, but only as good as the file check.",
+      "title3": "copy module",
+      "code3": "- name: Idempotent approach\n  ansible.builtin.copy:\n    dest: /etc/resolv.conf\n    content: \"nameserver 192.0.2.1\\n\"",
+      "why3": "Compares the content first and only writes when it differs.",
+      "widgetTitle": "Run it again… and again",
+      "widgetSub": "Compare repeated runs: an unconditional command, a command guarded by a file check, and a module that compares content.",
+      "btn": " Run ",
+      "label": "Reset",
+      "span": "#",
+      "termMuted": "not run yet"
+    }
+  },
+  "YamlMultiline": {
+    "data": {
+      "lines": [
+        "Example Company",
+        "123 Main Street",
+        "Atlanta, GA 30303"
+      ],
+      "initialSelection1": "|"
+    },
+    "text": {
+      "widgetLabel": "Multi-line strings",
+      "label": "Block style",
+      "button": "| keep newlines",
+      "button2": "> fold into one line",
+      "mlineCap": "YAML you write",
+      "template": "address: {value0}\n{value1}",
+      "mlineCap2": "String Ansible gets",
+      "mlineNl": "↵"
+    }
+  }
+};
+
 <Lead>
 Two skills make you fast with Ansible: finding the right module (and reading its documentation without leaving the terminal), and writing YAML that is correct the first time. This section covers both.
 </Lead>
@@ -89,7 +245,7 @@ Unlike most modules, these are **not idempotent**. Every run executes the comman
     creates: /opt/db/database.db
 ```
 
-The best fix, though, is usually a proper module. Compare three ways to write the same `/etc/resolv.conf`, and keep pressing run:
+The best fix, though, is usually a proper module. Compare an unconditional file write, a database command guarded by `creates`, and a content-aware file module. Press run again to see which tasks still report a change:
 
 <CommandVsModule />
 

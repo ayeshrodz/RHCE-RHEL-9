@@ -4,6 +4,152 @@ kind: lesson
 minutes: 12
 ---
 
+export const widgetContent = {
+  "VariablePrecedence": {
+    "data": {
+      "levels": [
+        {
+          "where": "Inventory group variable",
+          "example": "[webservers:vars]\npackage=httpd",
+          "value": "httpd"
+        },
+        {
+          "where": "group_vars/ file",
+          "example": "group_vars/webservers",
+          "value": "httpd-core"
+        },
+        {
+          "where": "Inventory host variable",
+          "example": "servera package=nginx",
+          "value": "nginx"
+        },
+        {
+          "where": "host_vars/ file",
+          "example": "host_vars/servera",
+          "value": "lighttpd"
+        },
+        {
+          "where": "Host fact",
+          "example": "gathered by setup",
+          "value": "(fact)"
+        },
+        {
+          "where": "Play variable",
+          "example": "vars: / vars_files:",
+          "value": "apache"
+        },
+        {
+          "where": "Task variable",
+          "example": "vars: on one task",
+          "value": "caddy"
+        },
+        {
+          "where": "Extra variable",
+          "example": "-e \"package=tomcat\"",
+          "value": "tomcat"
+        }
+      ]
+    },
+    "text": {
+      "widgetTitle": "Where is ",
+      "code": "package",
+      "widgetTitle2": " defined?",
+      "widgetSub": "Switch definitions on and off, or edit their values. The highest one that is set wins.",
+      "label": "{{ package }}",
+      "widgetLabel": " is",
+      "vprecFrom": "from ",
+      "span": "higher precedence",
+      "template": "{value0}: {value1}",
+      "template2": "Value from {value0}",
+      "vprecStatus": " wins",
+      "label2": "not set"
+    }
+  },
+  "GroupVarsResolver": {
+    "data": {
+      "files": {
+        "group_vars/datacenters": {
+          "kind": "parent group",
+          "group": "datacenters",
+          "value": "httpd",
+          "rank": 1
+        },
+        "group_vars/datacenter1": {
+          "kind": "group",
+          "group": "datacenter1",
+          "value": "httpd",
+          "rank": 2
+        },
+        "group_vars/datacenter2": {
+          "kind": "group",
+          "group": "datacenter2",
+          "value": "apache",
+          "rank": 2
+        },
+        "host_vars/demo1.example.com": {
+          "kind": "host",
+          "host": "demo1.example.com",
+          "value": "httpd",
+          "rank": 3
+        },
+        "host_vars/demo2.example.com": {
+          "kind": "host",
+          "host": "demo2.example.com",
+          "value": "apache",
+          "rank": 3
+        },
+        "host_vars/demo3.example.com": {
+          "kind": "host",
+          "host": "demo3.example.com",
+          "value": "mariadb-server",
+          "rank": 3
+        },
+        "host_vars/demo4.example.com": {
+          "kind": "host",
+          "host": "demo4.example.com",
+          "value": "mysql-server",
+          "rank": 3
+        }
+      },
+      "hosts": {
+        "demo1.example.com": [
+          "datacenters",
+          "datacenter1"
+        ],
+        "demo2.example.com": [
+          "datacenters",
+          "datacenter1"
+        ],
+        "demo3.example.com": [
+          "datacenters",
+          "datacenter2"
+        ],
+        "demo4.example.com": [
+          "datacenters",
+          "datacenter2"
+        ]
+      },
+      "initialSelection1": "demo3.example.com"
+    },
+    "text": {
+      "template": "package: {value0}",
+      "label": "not created",
+      "widgetLabel": "Pick a host",
+      "gvrMembership": " is in ",
+      "gvrMembership2": ", a child of ",
+      "code": "datacenters",
+      "gvrMembership3": ".",
+      "caption": "Click a group_vars or host_vars file to create or delete it.",
+      "widgetLabel2": "Applies to ",
+      "widgetLabel3": ", strongest first",
+      "termMuted": "No file sets package for this host, so it is undefined.",
+      "span": " · ",
+      "label2": "{{ package }}",
+      "gvrAnswer": " = "
+    }
+  }
+};
+
 <Lead>
 A variable can be set for every host, for a group, for a single host, for one play, or just for one run of a playbook. When the same name is set in more than one place, Ansible needs a rule to decide which value wins. That rule is precedence.
 </Lead>
