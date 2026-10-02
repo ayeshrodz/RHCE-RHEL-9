@@ -115,6 +115,10 @@ when: run_my_task | bool
 
 YAML 1.1, which Ansible uses, also accepts `yes`/`no`, `True`/`False` and `1`/`0` as Booleans. The YAML 1.2 standard only accepts `true` and `false`, and the Ansible community is gradually standardising on those. You will see both in existing content.
 
+<Callout type="note" title="Newer cores require booleans">
+Core 2.19 rejects non-boolean conditional results. Use actual booleans or an explicit conversion such as `run_my_task | bool` when working with input strings.
+</Callout>
+
 ## Several conditions
 
 Combine conditions with **`or`** (either is enough) and **`and`** (both are needed):
