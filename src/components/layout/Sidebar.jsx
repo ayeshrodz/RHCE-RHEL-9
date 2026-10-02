@@ -7,7 +7,6 @@ import {
   ChevronDown,
   CircleHelp,
   FlaskConical,
-  House,
   ListChecks,
   PanelLeftClose,
   PanelLeftOpen,
@@ -192,20 +191,26 @@ function ProgressCard({ text, pathname, onNavigate }) {
   const { done, percent, total } = useProgress();
   const [lastVisited] = useStored('lastVisited', null);
   const next = upNext(done, pathname, lastVisited);
-  const size = 44;
+  const size = 38;
   const r = (size - 4) / 2;
   const c = 2 * Math.PI * r;
   return (
     <div className="map-card">
-      <Link to="/progress" className="map-card-ring" aria-label={text.progressLink} title={text.progressLink} onClick={onNavigate}>
+      <Link
+        to="/progress"
+        className="map-card-ring"
+        aria-label={`${formatCopy(text.progress, [done.length, total])}. ${text.progressLink}`}
+        title={formatCopy(text.progress, [done.length, total])}
+        onClick={onNavigate}
+      >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-          <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={4} className="map-ring-track" />
+          <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={3.5} className="map-ring-track" />
           {percent > 0 && (
             <circle
               cx={size / 2}
               cy={size / 2}
               r={r}
-              strokeWidth={4}
+              strokeWidth={3.5}
               className="map-ring-fill"
               strokeDasharray={c}
               strokeDashoffset={c - (percent / 100) * c}
@@ -215,20 +220,20 @@ function ProgressCard({ text, pathname, onNavigate }) {
         </svg>
         <span>{percent}%</span>
       </Link>
-      <div className="map-card-body">
-        <p className="map-card-stat">{formatCopy(text.progress, [done.length, total])}</p>
-        {next ? (
-          <Link to={next.path} className="map-next" onClick={onNavigate}>
-            <span className="map-next-label">{text.upNext}</span>
-            <span className="map-next-title">
-              {next.number} {next.section.title}
-            </span>
-            <ArrowRight size={14} className="map-next-arrow" aria-hidden="true" />
-          </Link>
-        ) : (
-          <p className="map-next is-finished">{text.allDone}</p>
-        )}
-      </div>
+      {next ? (
+        <Link to={next.path} className="map-next" onClick={onNavigate}>
+          <span className="map-next-label">
+            {text.upNext}
+            <span className="map-next-stat"> · {formatCopy(text.progressShort, [done.length, total])}</span>
+          </span>
+          <span className="map-next-title">
+            {next.number} {next.section.title}
+          </span>
+          <ArrowRight size={14} className="map-next-arrow" aria-hidden="true" />
+        </Link>
+      ) : (
+        <p className="map-next is-finished">{text.allDone}</p>
+      )}
     </div>
   );
 }
@@ -266,48 +271,45 @@ function CourseMap({ text, groups, pathname, chapterId, onNavigate, closeRef, on
 
   return (
     <div className="map">
-      <div className="map-top">
-        <NavLink to="/" end className="map-home" onClick={onNavigate}>
-          <House size={15} aria-hidden="true" />
-          {text.overview}
-        </NavLink>
-        {onClose && (
-          <button ref={closeRef} className="icon-btn map-close" onClick={onClose} aria-label={text.close}>
-            <X size={18} />
-          </button>
-        )}
-        {onCollapse && (
-          <button className="icon-btn map-collapse" onClick={onCollapse} aria-label={text.collapseSidebar} title={text.shortcut}>
-            <PanelLeftClose size={17} />
-          </button>
-        )}
-      </div>
-
-      <div className="map-scroll" ref={scrollRef}>
-        <ProgressCard text={text} pathname={pathname} onNavigate={onNavigate} />
-
-        <div className={`map-filter ${q ? 'has-query' : ''}`} role="search">
-          <Search size={14} aria-hidden="true" />
-          <input
-            type="search"
-            value={query}
-            placeholder={text.filter}
-            aria-label={text.filterLabel}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape' && query) {
-                e.stopPropagation();
-                setQuery('');
-              }
-              if (e.key === 'Enter' && first) scrollRef.current?.querySelector(`a[href$="${first.path}"]`)?.click();
-            }}
-          />
-          {q && (
-            <button className="map-filter-clear" onClick={() => setQuery('')} aria-label={text.clear}>
-              <X size={13} />
+      <div className="map-head">
+        <div className="map-search-row">
+          <div className={`map-filter ${q ? 'has-query' : ''}`} role="search">
+            <Search size={14} aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              placeholder={text.filter}
+              aria-label={text.filterLabel}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape' && query) {
+                  e.stopPropagation();
+                  setQuery('');
+                }
+                if (e.key === 'Enter' && first) scrollRef.current?.querySelector(`a[href$="${first.path}"]`)?.click();
+              }}
+            />
+            {q && (
+              <button className="map-filter-clear" onClick={() => setQuery('')} aria-label={text.clear}>
+                <X size={13} />
+              </button>
+            )}
+          </div>
+          {onClose && (
+            <button ref={closeRef} className="icon-btn map-close" onClick={onClose} aria-label={text.close}>
+              <X size={18} />
+            </button>
+          )}
+          {onCollapse && (
+            <button className="icon-btn map-collapse" onClick={onCollapse} aria-label={text.collapseSidebar} title={text.shortcut}>
+              <PanelLeftClose size={17} />
             </button>
           )}
         </div>
+        <ProgressCard text={text} pathname={pathname} onNavigate={onNavigate} />
+      </div>
+
+      <div className="map-scroll" ref={scrollRef}>
         <p className="visually-hidden" aria-live="polite">
           {q ? formatCopy(text.matches, [matches.size]) : ''}
         </p>
@@ -361,9 +363,6 @@ function Rail({ text, groups, chapterId, onExpand }) {
       <button className="icon-btn" onClick={onExpand} aria-label={text.expandSidebar} title={text.shortcut}>
         <PanelLeftOpen size={17} />
       </button>
-      <NavLink to="/" end className="rail-item" title={text.overview} aria-label={text.overview}>
-        <House size={16} />
-      </NavLink>
       {groups.map((group) => (
         <ol className="rail-stage" key={group.title} aria-label={group.title}>
           {group.chapters.map((ch) => {
