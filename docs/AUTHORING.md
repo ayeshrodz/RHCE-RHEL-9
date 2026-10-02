@@ -4,7 +4,7 @@ How to add sections, diagrams and exercises so they match the rest of the guide.
 
 ## 1. How content is organised
 
-The `content/` folder is the single source of truth. A Vite plugin (`plugins/content-manifest.js`) reads it and builds the navigation, so you never edit JavaScript to add material.
+The `content/` folder is the single source of truth. The compiler (`packages/compiler`, run as `kernel validate` or `kernel build`) reads it and builds the navigation, so you never edit JavaScript to add material. `npm run dev` recompiles it on every change.
 
 ```
 content/
@@ -87,7 +87,7 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 
 ## 4. Components available in MDX
 
-No imports needed. They are registered in `src/components/mdx/index.jsx`.
+No imports needed. They are listed in the component catalog (`packages/schema/catalog/components.json`) and rendered by `packages/engine/src/components/content/registry.jsx`.
 
 | Component | Use |
 | --- | --- |
@@ -129,7 +129,7 @@ Strings passed as props (quiz text, card text) support `` `code` ``, `**bold**` 
 
 ## 5. Diagrams
 
-Diagrams are React components that draw SVG with the kit in `src/diagrams/kit`. They share one visual language: flat pastel boxes, hairline borders, 14px titles, 12px subtitles, thin grey arrows, and a `680`-wide coordinate space that scales to fit.
+Diagrams are React components that draw SVG with the kit in `packages/engine/src/diagrams/kit`. They share one visual language: flat pastel boxes, hairline borders, 14px titles, 12px subtitles, thin grey arrows, and a `680`-wide coordinate space that scales to fit.
 
 ```jsx
 import { Arrow, Diagram, Group, Node } from '../kit';
@@ -153,13 +153,13 @@ export default function Example() {
 
 Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
 
-Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+Export new diagrams from `packages/engine/src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `packages/engine/src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
 Reusable pieces from chapter 4 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
 
 ### Lab placeholders
 
-Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (section 1.1), including in copied text. Add new placeholder keys in `src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
+Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (section 1.1), including in copied text. Add new placeholder keys in `packages/engine/src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
 
 ### Classroom and home lab
 
@@ -169,7 +169,7 @@ Readers follow the guide either in the Red Hat classroom or on the home lab from
 | --- | --- |
 | `<Env><Classroom>…</Classroom><HomeLab>…</HomeLab></Env>` | Two versions of a command, file or output. A switch shows one at a time. |
 | `<HomeLab title="…">…</HomeLab>` on its own | An always-visible note for home-lab readers (teal callout). |
-| `<Lab classroom="lab start NAME">` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `public/lab/NAME/`. Pass `starter={false}` if there are none. |
+| `<Lab classroom="lab start NAME">` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `packages/engine/public/lab/NAME/`. Pass `starter={false}` if there are none. |
 | `<Lab classroom="lab start NAME" own>` | For an exercise that exists only in this guide: the classroom tab then tells readers to create the folder themselves. |
 | `<HomeSetup>…</HomeSetup>` inside `<Lab>` | Extra home-lab preparation notes for that exercise. |
 | `<Finish name="NAME" />` (add `grade` for chapter labs) | The body of an exercise's last task, for both environments. |
@@ -178,16 +178,16 @@ Keep the classroom commands as the default text of an exercise, and use these on
 
 ### Exercise starter files
 
-Every exercise that starts with `lab start NAME` needs a folder `public/lab/NAME/`:
+Every exercise that starts with `lab start NAME` needs a folder `packages/engine/public/lab/NAME/`:
 
 ```text
-public/lab/NAME/
+packages/engine/public/lab/NAME/
   MANIFEST        first line "# title"; then one path per line; "dest=src" to rename (for dotfiles); "@setup.sh" runs a script
   ansible.cfg, inventory, files/…
   setup.sh        optional: generates files on the reader's workstation (certificates, Vault files)
 ```
 
-Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/lab`, installed in section 1.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/public/lab bash public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
+Add the exercise to `packages/engine/public/lab/INDEX`. The home-lab `lab` command (`packages/engine/public/lab/lab`, installed in section 1.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/packages/engine/public/lab bash packages/engine/public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
 
 ## 6. Code font
 

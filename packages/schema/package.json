@@ -9,11 +9,13 @@
     ".": "./src/index.js",
     "./schemas/*": "./schemas/*",
     "./catalog/*": "./catalog/*",
-    "./revision": "./src/revision.js"
+    "./revision": "./src/revision.js",
+    "./validators": "./generated/validators.js"
   },
   "files": [
     "src",
     "schemas",
-    "catalog"
+    "catalog",
+    "generated"
   ]
 }

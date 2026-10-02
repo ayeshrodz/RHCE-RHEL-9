@@ -9,7 +9,7 @@ function files(dir) {
   });
 }
 const contracts = new Map();
-for (const file of files('src').filter((file) => file.endsWith('.jsx'))) {
+for (const file of files('packages/engine/src').filter((file) => file.endsWith('.jsx'))) {
   const source = fs.readFileSync(file, 'utf8');
   const name = source.match(/defineWidget\('([^']+)'/)?.[1];
   if (!name) continue;

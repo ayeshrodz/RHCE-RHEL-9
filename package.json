@@ -2,7 +2,7 @@
   "name": "kernel-path",
   "private": true,
   "version": "1.0.0",
-  "description": "Learn Ansible automation by doing: a free, hands-on course with a home lab, focused on the RHCE exam objectives",
+  "description": "Kernel Path: an open learning platform for Linux and automation. Engine, compiler and content.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,41 +12,27 @@
   "bugs": "https://github.com/ayeshrodz/playbook-path/issues",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,jsx,css}\" \"packages/*/{src,test}/**/*.js\" plugins vite.config.js",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" \"packages/*/{src,test}/**/*.js\" plugins vite.config.js",
+    "dev": "npm run dev -w @kernel-path/engine",
+    "build": "npm run build -w @kernel-path/engine && kernel build content --out dist/content && node scripts/inject-meta.mjs dist",
+    "preview": "npm run preview -w @kernel-path/engine --",
+    "format": "prettier --write \"packages/*/{src,test,plugins,scripts}/**/*.{js,jsx,mjs,css}\" packages/engine/vite.config.js",
+    "format:check": "prettier --check \"packages/*/{src,test,plugins,scripts}/**/*.{js,jsx,mjs,css}\" packages/engine/vite.config.js",
     "test": "node --test tests/*.test.js packages/*/test/*.test.js",
-    "validate:content": "kernel validate content && node scripts/validate-content.mjs && node scripts/validate-widget-content.mjs && node scripts/generate-report-schema.mjs --check",
+    "validate:content": "node packages/schema/scripts/build-validators.mjs --check && kernel validate content && node scripts/validate-content.mjs && node scripts/validate-widget-content.mjs && node scripts/generate-report-schema.mjs --check",
     "test:labs": "python3 -m unittest discover -s tests -p '*_test.py'",
     "test:browser": "npm run validate:content && python3 tests/browser_checks.py && python3 tests/mobile_checks.py",
     "content:validate": "kernel validate content",
-    "content:build": "kernel build content --out node_modules/.cache/kernel-path/bundle"
+    "content:build": "kernel build content --out node_modules/.cache/kernel-path/bundle",
+    "schema:validators": "node packages/schema/scripts/build-validators.mjs"
   },
   "devDependencies": {
-    "@mdx-js/react": "^3.1.1",
-    "@mdx-js/rollup": "^3.1.1",
-    "@shikijs/rehype": "^4.4.3",
-    "@shikijs/transformers": "^4.4.3",
-    "@vitejs/plugin-react": "^6.1.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "prettier": "^3.9.9",
-    "rehype-slug": "^6.0.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
-    "remark-mdx-frontmatter": "^6.0.0",
-    "shiki": "^4.4.3",
-    "vite": "^8.3.1",
-    "yaml": "^2.9.1"
-  },
-  "dependencies": {
-    "github-slugger": "^2.0.0",
-    "lucide-react": "^1.48.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-router-dom": "^7.18.4"
+    "yaml": "^2.9.1",
+    "@mdx-js/mdx": "^3.1.1"
   },
   "workspaces": [
     "packages/*"

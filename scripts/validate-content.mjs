@@ -13,7 +13,7 @@ const challenges = readPractice();
 
 const processor = createProcessor({ remarkPlugins: [remarkFrontmatter, remarkGfm] });
 const objectives = YAML.parse(fs.readFileSync('content/_objectives.yml', 'utf8'));
-const catalog = JSON.parse(fs.readFileSync('public/lab/graders.json', 'utf8'));
+const catalog = JSON.parse(fs.readFileSync('packages/engine/public/lab/graders.json', 'utf8'));
 const objectiveIds = new Set(objectives.map((o) => o.id));
 assert.equal(objectiveIds.size, objectives.length, 'Duplicate objective IDs');
 const routes = new Map([['/', new Set()], ['/progress', new Set()]]);
@@ -136,14 +136,14 @@ for (const challenge of challenges) {
   assert(Array.isArray(challenge.options) && challenge.options.length >= 3 && challenge.options.every((o) => typeof o === 'string' && o.trim()), `${challenge.id}: needs at least three options`);
   assert(challenge.options.filter((o) => o === challenge.expected).length === 1, `${challenge.id}: expected must match exactly one option`);
   assert(objectiveIds.has(challenge.objective), `Unknown objective ${challenge.objective}`); stable(challenge.id, 'challenge'); }
-const manifests = fs.readdirSync('public/lab').filter((d) => fs.existsSync(`public/lab/${d}/MANIFEST`));
+const manifests = fs.readdirSync('packages/engine/public/lab').filter((d) => fs.existsSync(`packages/engine/public/lab/${d}/MANIFEST`));
 assert.deepEqual([...labs].sort(), manifests.sort(), 'Published labs and manifests differ');
 assert.deepEqual(Object.keys(catalog.exercises).sort(), manifests.sort(), 'Graders and manifests differ');
-const indexed = fs.readFileSync('public/lab/INDEX', 'utf8').split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim().split(/\s+/)[0]);
+const indexed = fs.readFileSync('packages/engine/public/lab/INDEX', 'utf8').split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim().split(/\s+/)[0]);
 assert.deepEqual(indexed.sort(), manifests.sort(), 'INDEX and manifests differ');
 for (const name of manifests) {
   const exercise = catalog.exercises[name]; assert(routes.has(exercise.lesson.slice(1)), `${name}: invalid grader lesson`);
-  const manifest = fs.readFileSync(`public/lab/${name}/MANIFEST`, 'utf8'); assert(manifest.startsWith('#'), `${name}: invalid manifest`);
+  const manifest = fs.readFileSync(`packages/engine/public/lab/${name}/MANIFEST`, 'utf8'); assert(manifest.startsWith('#'), `${name}: invalid manifest`);
   const destinations = new Set();
   for (let line of manifest.split('\n')) {
     line = line.replace(/#.*/, '').trim(); if (!line) continue;
@@ -151,7 +151,7 @@ for (const name of manifests) {
     const [dest, src = dest] = line.split('=');
     for (const part of [dest, src]) assert(/^[a-zA-Z0-9_./-]+$/.test(part) && !part.startsWith('/') && !part.includes('..'), `${name}: unsafe manifest path ${part}`);
     assert(!destinations.has(dest), `${name}: duplicate destination ${dest}`); destinations.add(dest);
-    const target = path.join('public/lab', name, src); assert(fs.existsSync(target), `${name}: missing ${src}`);
+    const target = path.join('packages/engine/public/lab', name, src); assert(fs.existsSync(target), `${name}: missing ${src}`);
     if (hook) assert.equal(spawnSync('bash', ['-n', target]).status, 0, `${target}: invalid Bash`);
     else if (/\.ya?ml$/.test(src) && !exercise.intentionalFaults) YAML.parse(fs.readFileSync(target, 'utf8'));
   }

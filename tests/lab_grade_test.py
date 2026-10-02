@@ -8,14 +8,14 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('grade', ROOT / 'public/lab/grade.py')
+spec = importlib.util.spec_from_file_location('grade', ROOT / 'packages/engine/public/lab/grade.py')
 grader = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(grader)
-CATALOG = json.loads((ROOT / 'public/lab/graders.json').read_text())
+CATALOG = json.loads((ROOT / 'packages/engine/public/lab/graders.json').read_text())
 
 class GradingTests(unittest.TestCase):
     def test_catalog_covers_every_manifest(self):
-        names = {p.parent.name for p in (ROOT / 'public/lab').glob('*/MANIFEST')}
+        names = {p.parent.name for p in (ROOT / 'packages/engine/public/lab').glob('*/MANIFEST')}
         self.assertEqual(names, set(CATALOG['exercises']))
         for name, exercise in CATALOG['exercises'].items():
             self.assertTrue(exercise['lesson'].startswith('#/ch'))

@@ -42,34 +42,32 @@ npm run test:labs
 
 ## How it is built
 
-- **React 19 + Vite 8.** Hash-based routing (`#/ch03/inventory`), so the built site works on any GitHub Pages path without server rewrites.
-- **MDX content.** Each section is an `.mdx` file in `content/`. Pages can use React components directly (diagrams, quizzes, labs) without importing them.
-- **Shiki** highlights code at build time, with light and dark themes.
-- **Content-driven.** `plugins/content-manifest.js` builds the navigation from the `content/` folder (folder names, filenames and frontmatter), with live reload in dev.
-- **No backend.** Progress, lab checklists, quiz answers and the last page read are stored in the reader's `localStorage`. They sync across open tabs and can be exported or imported as a JSON file from the progress menu in the header.
+Kernel Path is being turned into a data-only learning platform (see [docs/architecture.md](docs/architecture.md)). It is three parts plus the content:
+
+- **The contract** (`packages/schema`): JSON schemas for content and for the compiled bundle, the catalog of tags content may use, and generated browser validators.
+- **The compiler** (`packages/compiler`, the `kernel` command): validates `content/` against the contract and compiles it into a static, content-hashed bundle. Code is highlighted at build time.
+- **The engine** (`packages/engine`): a React 19 + Vite 8 player. At startup it fetches the bundle from the location in `kernel.config.json`, validates every file, and renders pages through its own components. It contains no course text and never renders raw HTML.
+- **No backend.** Routing lives in the URL hash (`#/ch03/inventory`). Progress, lab checklists, quiz answers and the last page read are stored in the reader's `localStorage`, sync across tabs, and can be exported or imported from the progress menu.
 
 ```
-content/                         everything readers see (see docs/AUTHORING.md)
-  _course.yml                     site metadata and selected track
-  tracks/rhel9/                   track metadata and platform reference MDX
-  ch02-introducing-ansible/      _chapter.yml + one .mdx per section
-plugins/content-manifest.js      builds the course manifest from content/
-src/
-  App.jsx, main.jsx              router + MDX provider
-  lib/course.js                  helpers over the generated manifest
-  lib/storage.js                 localStorage store with subscriptions
-  lib/inventory.js               INI inventory parser + host range expansion
-  components/layout/             header, sidebar, table of contents
-  components/mdx/                code blocks, callouts, cards, tabs, steps…
-  components/interactive/        Quiz, Lab/Task, Flashcards
-  components/search/             client-side search (built lazily from MDX)
-  diagrams/kit/                  SVG diagram primitives (Diagram, Node, Arrow…)
-  diagrams/chNN/                 chapter diagrams and interactive widgets
-  pages/                         home, chapter overview, section, 404
-  styles/                        design tokens, layout, prose, components
-public/lab/                      home-lab helper, read-only graders, and starter files
-docs/AUTHORING.md                how to write new sections and activities
+content/                          the course (see docs/AUTHORING.md)
+packages/
+  schema/                         the content contract
+  compiler/                       `kernel validate|build`
+  engine/
+    src/lib/content.js            fetches and validates the bundle
+    src/lib/course.js             the loaded program: chapters, pages, objectives
+    src/components/content/       render-tree renderer and tag → component registry
+    src/components/              layout, interactive components, search
+    src/diagrams/                 diagram kit and chapter widgets (moving to generic components)
+    plugins/content-bundle.js     dev server: compiles content/ and serves it at /content/
+    public/kernel.config.json     where the engine loads content from
+    public/lab/                   home-lab helper, read-only graders, starter files
+scripts/                          content checks and build helpers
+tests/                            browser, phone, lab and content tests
 ```
+
+`npm run build` builds the engine into `dist/` and the content bundle into `dist/content/`. To load content from somewhere else (for example a CDN), change `contentBase` in `dist/kernel.config.json`; no rebuild is needed.
 
 See [validation evidence](docs/VALIDATION.md) for the tested stack and remaining host checks, [progress compatibility](docs/PROGRESS.md) for backups, and [local grading](docs/LAB-GRADING.md) for exercise checkpoints.
 
@@ -81,7 +79,7 @@ The workflow in `.github/workflows/deploy.yml` builds and publishes the site on 
 2. In **Settings → Pages**, set **Source** to **GitHub Actions**.
 3. Push to `main` (or run the workflow manually). The site appears at `https://<user>.github.io/<repo>/`.
 
-No configuration is needed for the repository name: assets use relative paths and routes live in the URL hash (`#/ch03/inventory`), so deep links and page refreshes work from any sub-path without a 404 fallback. `public/.nojekyll` stops GitHub from running Jekyll over the output.
+No configuration is needed for the repository name: assets use relative paths and routes live in the URL hash (`#/ch03/inventory`), so deep links and page refreshes work from any sub-path without a 404 fallback. `packages/engine/public/.nojekyll` stops GitHub from running Jekyll over the output.
 
 ## Contributing
 
@@ -91,7 +89,7 @@ Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Security
 
 ## License
 
-- **Source code** (`src/`, `plugins/`, build and configuration files): [MIT](LICENSE).
+- **Source code** (`packages/`, `scripts/`, build and configuration files): [MIT](LICENSE).
 - **Written content** (`content/`, `docs/`) and the site's text and diagrams: [CC BY 4.0](LICENSE-CONTENT). Reuse is welcome with credit.
 
 Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks of Red Hat, Inc. This project is independent and is not affiliated with, sponsored by, or endorsed by Red Hat, Inc.

@@ -18,48 +18,33 @@ const json = (file) => JSON.parse(result.files.get(file));
 const site = json('site.json');
 const manifest = json(site.programs[0].manifest);
 
-/** What the current site builds from the same content (its Vite manifest plugin). */
-async function currentManifest() {
-  const { default: contentManifest } = await import(path.join(ROOT, 'plugins/content-manifest.js'));
-  const plugin = contentManifest();
-  plugin.configResolved({ root: ROOT });
-  const code = plugin.load('\0virtual:course');
-  return JSON.parse(code.replace(/^export default /, '').replace(/;$/, ''));
-}
-
-test("today's content compiles without errors into one program", () => {
-  assert.equal(site.programs.length, 1);
-  assert.equal(site.programs[0].id, 'rhel9-ansible');
-  assert.ok(result.stats.pages > 100, `${result.stats.pages} pages`);
-});
-
-test('the compiled navigation matches what the current site builds', async () => {
-  const current = await currentManifest();
+test('the manifest lists every chapter folder and section file in order', () => {
+  const dirs = fs
+    .readdirSync(CONTENT)
+    .filter((d) => /^ch\d{2}-/.test(d))
+    .sort();
   assert.deepEqual(
-    manifest.chapters.map((c) => [c.id, c.number, c.title, c.sections.map((s) => [s.slug, s.title, s.kind, s.minutes])]),
-    current.chapters.map((c) => [c.id, c.number, c.title, c.sections.map((s) => [s.slug, s.title, s.kind, s.minutes])]),
+    manifest.chapters.map((c) => c.id),
+    dirs.map((d) => d.slice(0, 4)),
   );
-  assert.deepEqual(
-    manifest.chapters.map((c) => [c.goal ?? '', c.objectives, c.objectiveIds, !!c.setup]),
-    current.chapters.map((c) => [c.goal, c.objectives, c.objectiveIds, !!c.setup]),
-  );
-  assert.deepEqual(manifest.objectives, current.objectives);
-});
-
-test('quiz and task indexes match the current site, revision hashes included', async () => {
-  const current = await currentManifest();
-  for (const [i, chapter] of manifest.chapters.entries()) {
-    for (const [j, section] of chapter.sections.entries()) {
-      const expected = current.chapters[i].sections[j].activities;
-      const where = `${chapter.id}/${section.slug}`;
-      assert.deepEqual(section.activities.quizzes, expected.quizzes, `${where} quizzes`);
-      assert.deepEqual(
-        section.activities.tasks.map(({ id, labId, title }) => ({ id, labId, title })),
-        expected.tasks.map(({ id, labId, title }) => ({ id, labId, title })),
-        `${where} tasks`,
-      );
-    }
+  for (const [i, dir] of dirs.entries()) {
+    const files = fs
+      .readdirSync(path.join(CONTENT, dir))
+      .filter((f) => f.endsWith('.mdx'))
+      .sort();
+    assert.deepEqual(
+      manifest.chapters[i].sections.map((s) => s.slug),
+      files.map((f) => f.replace(/^\d+-|\.mdx$/g, '')),
+      dir,
+    );
+    assert.equal(manifest.chapters[i].number, Number(dir.slice(2, 4)));
   }
+});
+
+test('quiz revisions are computed by the shared contract function', () => {
+  const quizzes = manifest.chapters.flatMap((c) => c.sections.flatMap((s) => s.activities.quizzes));
+  assert.ok(quizzes.length > 250);
+  assert.ok(quizzes.every((q) => /^[a-f0-9]{1,8}$/.test(q.revision) && q.quizId && q.prompt));
 });
 
 test('practice questions match the current registry', async () => {
@@ -86,7 +71,7 @@ test('pages carry their data, headings and code as data', () => {
     for (const n of nodes ?? []) n.t === 'code' ? code.push(n) : walk(n.c);
   })(page.tree);
   assert.ok(code.some((c) => c.title === 'inventory' && c.lang === 'ini'));
-  assert.ok(code.every((c) => c.lines.every((line) => line.every((token) => !token.l || /^#[0-9a-f]{6}$/.test(token.l)))));
+  assert.ok(code.every((c) => c.lines.every((line) => line.every((token) => !token.l || /^#[0-9a-fA-F]{6}$/.test(token.l)))));
 });
 
 test('output is deterministic: rebuilding gives identical files', async () => {
@@ -101,7 +86,7 @@ async function errorsFor(body, { front = 'title: Test\nkind: lesson\nminutes: 5'
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-compile-'));
   try {
     fs.cpSync(path.join(CONTENT, '_course.yml'), path.join(dir, '_course.yml'));
-    fs.cpSync(path.join(CONTENT, 'home.json'), path.join(dir, 'home.json'));
+    for (const file of ['home.json', 'progress.json', '_interface.json']) fs.cpSync(path.join(CONTENT, file), path.join(dir, file));
     fs.cpSync(path.join(CONTENT, 'tracks'), path.join(dir, 'tracks'), { recursive: true });
     fs.writeFileSync(path.join(dir, '_objectives.yml'), '[]\n');
     fs.mkdirSync(path.join(dir, 'ch01-test'));

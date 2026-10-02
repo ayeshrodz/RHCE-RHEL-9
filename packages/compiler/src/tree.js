@@ -53,8 +53,13 @@ export function convertPage(page, { file, diagnostics, validator }) {
         return [];
       case 'text':
         return [{ t: 'text', v: node.value }];
-      case 'paragraph':
-        return options.tight ? many(node.children, parent) : [el('p', many(node.children, parent))];
+      case 'paragraph': {
+        // A paragraph holding only components (and whitespace) is not a paragraph of text.
+        const onlyComponents =
+          node.children.some((c) => c.type === 'mdxJsxTextElement') &&
+          node.children.every((c) => c.type === 'mdxJsxTextElement' || (c.type === 'text' && !c.value.trim()));
+        return options.tight || onlyComponents ? many(node.children, parent) : [el('p', many(node.children, parent))];
+      }
       case 'heading': {
         if (node.depth < 2 || node.depth > 4) {
           fail(node, 'use ## to #### headings; the page title comes from the frontmatter');

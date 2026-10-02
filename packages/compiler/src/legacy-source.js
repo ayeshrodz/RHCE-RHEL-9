@@ -86,6 +86,27 @@ export function readLegacyContent(contentDir) {
     lab: true,
   };
 
+  const detailsFront = YAML.parse(
+    fs
+      .readFileSync(detailsFile, 'utf8')
+      .match(FRONTMATTER)[0]
+      .replace(/^---\r?\n|\r?\n---\r?\n?$/g, ''),
+  );
+  const readJson = (name) => JSON.parse(fs.readFileSync(path.join(contentDir, name), 'utf8'));
+  const legacy = {
+    apiVersion: 1,
+    course: { title: course.title, tagline: course.tagline, ...(course.repo ? { repo: course.repo } : {}) },
+    track: {
+      ...Object.fromEntries(
+        Object.entries(track)
+          .filter(([key]) => key !== 'platform')
+          .map(([key, value]) => [key, String(value)]),
+      ),
+      platform: { title: detailsFront.title, eyebrow: detailsFront.eyebrow, description: detailsFront.description, path: '/platform' },
+    },
+    interface: { ...readJson('_interface.json'), HomePage: home, ProgressPage: readJson('progress.json') },
+  };
+
   return {
     site: { apiVersion: 1, name: course.title, tagline: course.tagline, repo: course.repo, programs: [LEGACY_PROGRAM_ID] },
     programs: [
@@ -94,6 +115,7 @@ export function readLegacyContent(contentDir) {
         chapters,
         objectives: readYaml(path.join(contentDir, '_objectives.yml')),
         details: { file: detailsFile, source: fs.readFileSync(detailsFile, 'utf8') },
+        legacy,
       },
     ],
   };

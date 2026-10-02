@@ -2,11 +2,11 @@
 
 Kernel Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
 
-The public site is `https://kernelpath.dev/`; `public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/_course.yml`, including the dashboard document title.
+The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/_course.yml`, including the dashboard document title.
 
 ## Content and routing
 
-`plugins/content-manifest.js` builds `virtual:course` from chapter metadata and MDX frontmatter. `src/lib/course.js` exposes navigation and page lookup. MDX pages load on demand through Vite imports.
+The compiler (`packages/compiler`) turns `content/` into a static bundle of JSON files: a site index, a program manifest, one render tree per page, and a search index. At startup the engine (`packages/engine`) fetches the bundle from `contentBase` in `kernel.config.json`, validates every file with the generated validators from `@kernel-path/schema`, and `src/lib/course.js` exposes navigation and page lookup. Pages load on demand. `PageTree` renders only allowlisted elements and catalog tags; see [architecture.md](architecture.md) for the platform design and security model.
 
 Published URLs use hash routing, for example `#/ch03/inventory`. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
 
@@ -14,15 +14,15 @@ Published URLs use hash routing, for example `#/ch03/inventory`. A second hash i
 
 ## Track boundary and platform reference
 
-Site metadata lives in `content/_course.yml`; it names the active track. Track identity and version metadata live in `content/tracks/<id>/_track.yml`. `scripts/read-track.mjs` is shared by the content manifest and validation, and supplies the track's reference page metadata and content location. `src/lib/course.js` exposes the `track` alongside the course/chapter data.
+Site metadata lives in `content/_course.yml`; it names the active track. Track identity and version metadata live in `content/tracks/<id>/_track.yml`. `scripts/read-track.mjs` is shared by the compiler and validation, and supplies the track's reference page metadata and content location. `packages/engine/src/lib/course.js` exposes the `track` alongside the course/chapter data.
 
-The header badge links to `#/platform`. The lazy `ReferencePage` receives a page descriptor and loads its MDX; it contains no RHEL-specific wording. `FlowMap` renders authored steps with the existing diagram kit and muted controls. Lessons and reference pages share `useHeadingNavigation` for copied links, table-of-contents navigation, and opening optional details. Reference pages have no completion key and do not replace the last visited lesson.
+The header badge links to `#/platform`. The lazy `ReferencePage` receives a page descriptor and loads its compiled page; it contains no RHEL-specific wording. `FlowMap` renders authored steps with the existing diagram kit and muted controls. Lessons and reference pages share `useHeadingNavigation` for copied links, table-of-contents navigation, and opening optional details. Reference pages have no completion key and do not replace the last visited lesson.
 
 This starts the content boundary for multiple tracks; it does not implement track switching. Before publishing a second track, scope chapter/objective manifests, lab downloads/grading contracts, activity IDs, and progress by track. Migrate existing saved RHEL 9 progress explicitly and preserve published URLs. Prefer explicit track URLs for shared links, and reuse components and grading engines across content packages. Keep the current RHEL 9 curriculum in place until that migration is implemented and verified.
 
 ## Shared content tables
 
-`src/components/mdx/Table.jsx` renders all Markdown tables through the MDX component registry. It keeps content unchanged, adds explicit table/header semantics and mobile labels, and generates column widths from typical text length through `tableLayout.js`. A single exceptional command cannot dictate the table's width.
+`packages/engine/src/components/mdx/Table.jsx` renders all Markdown tables in compiled pages. It keeps content unchanged, adds explicit table/header semantics and mobile labels, and generates column widths from typical text length through `tableLayout.js`. A single exceptional command cannot dictate the table's width.
 
 `prose.css` constrains desktop tables to the article, wraps prose and code, and keeps headers visible during long-table reading. Container queries preserve labelled row cards below 640 pixels of available table space, including tables inside lab tasks and other nested content. The renderer is shared across chapters and track reference pages; authors continue to write plain Markdown tables.
 
@@ -32,13 +32,13 @@ This starts the content boundary for multiple tracks; it does not implement trac
 
 - `Quiz.jsx` stores attempts by question ID. Question revisions come from the question, options, and answer. Corrections request another attempt and retain history.
 - `Lab.jsx` stores checked task IDs separately from reading completion. Guided mode shows the procedure; Challenge mode renders explicit MDX `<LabChallenge>` requirements and keeps the full guided walkthrough closed until requested. `<LabNotes>` supplies MDX prerequisites, verification, and independent variations. Setup labs without challenge briefs expose only the walkthrough.
-- Chapter quiz MDX exports define twenty practice questions; `scripts/read-practice.mjs` reads their JSON-compatible data and `plugins/practice-manifest.js` exposes the shared dashboard registry as `virtual:challenges`. `ChapterPractice` renders them through the same `Quiz` component as every other knowledge check, and also logs each answer as a `challenge:<id>` attempt for the dashboard.
-- Chapter diagrams are React/SVG components. `plugins/chapter-widgets.js` discovers named default exports in chapter indexes and creates lazy wrappers. Chapter widgets, browser challenges, search, and the progress dashboard load when needed.
+- Chapter quiz MDX exports define twenty practice questions; the compiler lists them in the program manifest, and `course.js` exposes them as the shared dashboard registry. `ChapterPractice` renders them through the same `Quiz` component as every other knowledge check, and also logs each answer as a `challenge:<id>` attempt for the dashboard.
+- Chapter diagrams are React/SVG components. `packages/engine/plugins/chapter-widgets.js` discovers named default exports in chapter indexes and creates lazy wrappers. Chapter widgets, browser challenges, search, and the progress dashboard load when needed.
 - `AssessmentTimer.jsx` persists an optional end time. The two integrated assessments have independent requirements, solutions, and local graders.
 
 ## Browser progress
 
-`src/lib/storage.js` wraps individual `rhce:` localStorage keys and subscriptions. The original prefix is retained so earlier progress survives. Same-tab writes and cross-tab storage events update readers; unavailable storage falls back to memory and shows a warning.
+`packages/engine/src/lib/storage.js` wraps individual `rhce:` localStorage keys and subscriptions. The original prefix is retained so earlier progress survives. Same-tab writes and cross-tab storage events update readers; unavailable storage falls back to memory and shows a warning.
 
 Version 2 exports include reading completion, quiz history, task completion, challenge attempts, confidence, timers, and imported lab reports. Preferences are separate. Imports validate every entry before replacing progress. Invalid stored entries are preserved on disk, ignored by the UI, and omitted from exports.
 
@@ -48,7 +48,7 @@ The dashboard combines these independent signals into a next lesson, review queu
 
 ## Local lab tooling
 
-`public/lab/lab` downloads an exercise into a staging directory, validates downloads and setup hooks, then moves it into place. Failed preparation is explicit and preserves existing work. Starter folders use `MANIFEST`; the index and grading catalog cover every published exercise.
+`packages/engine/public/lab/lab` downloads an exercise into a staging directory, validates downloads and setup hooks, then moves it into place. Failed preparation is explicit and preserves existing work. Starter folders use `MANIFEST`; the index and grading catalog cover every published exercise.
 
 `grade.py` checks project files, inventory groups, and read-only host probes defined in `graders.json`. It uses the learner's Ansible connection settings. Checks report PASS, FAIL, or SKIP and link to the lesson. Grading does not run playbooks or repair systems. See [lab grading](LAB-GRADING.md) for report and exit-code contracts.
 

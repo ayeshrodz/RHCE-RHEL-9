@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-const catalog = JSON.parse(fs.readFileSync('public/lab/graders.json', 'utf8'));
+const catalog = JSON.parse(fs.readFileSync('packages/engine/public/lab/graders.json', 'utf8'));
 const schema = { exercises: {} };
 for (const [id, exercise] of Object.entries(catalog.exercises)) {
   schema.exercises[id] = { version: exercise.version, lesson: exercise.lesson, checkpoints: {} };
@@ -12,7 +12,7 @@ for (const [id, exercise] of Object.entries(catalog.exercises)) {
     };
   }
 }
-const target = 'src/data/labReportSchema.json';
+const target = 'packages/engine/src/data/labReportSchema.json';
 const output = JSON.stringify(schema, null, 2) + '\n';
 if (process.argv.includes('--check')) {
   if (fs.readFileSync(target, 'utf8') !== output) throw new Error('Lab report schema is stale. Run node scripts/generate-report-schema.mjs');
