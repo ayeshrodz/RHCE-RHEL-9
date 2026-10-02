@@ -126,19 +126,16 @@ export const practice = [
     "chapter": "ch07",
     "objective": "ch07.role-structure",
     "title": "Place the role files",
-    "prompt": "Map each file to its relative role path: defaults, handler, and template. Keep the YAML keys below.",
-    "type": "yaml",
-    "starter": "defaults: vars/main.yml\nhandler: tasks/main.yml\ntemplate: files/site.j2\n",
-    "expected": {
-      "defaults": "defaults/main.yml",
-      "handler": "handlers/main.yml",
-      "template": "templates/site.j2"
-    },
-    "hints": [
-      "User-adjustable settings belong in defaults.",
-      "Templates and handlers each have their own directory."
+    "prompt": "Where do a role's default variables, handlers and templates go?",
+    "type": "choice",
+    "options": [
+      "`defaults/main.yml`, `handlers/main.yml`, `templates/site.j2`",
+      "`vars/main.yml`, `tasks/main.yml`, `files/site.j2`",
+      "`defaults/main.yml`, `tasks/handlers.yml`, `files/site.j2`",
+      "`vars/defaults.yml`, `handlers/main.yml`, `templates/site.j2`"
     ],
-    "explain": "The standard layout lets Ansible discover each kind of content."
+    "expected": "`defaults/main.yml`, `handlers/main.yml`, `templates/site.j2`",
+    "explain": "The standard layout lets Ansible find each kind of content: user-adjustable settings in `defaults`, handlers in `handlers`, and Jinja2 templates in `templates`."
   },
   {
     "id": "collection-location",
@@ -147,17 +144,13 @@ export const practice = [
     "title": "Find the dependency",
     "prompt": "A play runs inside an EE and cannot find ansible.posix.firewalld. The collection is installed only on workstation. What should you inspect first?",
     "type": "choice",
-    "starter": "",
-    "expected": "The EE collection list and requirements",
-    "hints": [
-      "Runtime content belongs to the selected environment."
-    ],
-    "explain": "Inspect the execution environment and its requirements; workstation packages alone do not populate the image.",
     "options": [
       "The web page",
       "The EE collection list and requirements",
       "The managed host’s SSH banner"
-    ]
+    ],
+    "expected": "The EE collection list and requirements",
+    "explain": "Inspect the execution environment and its requirements; workstation packages alone do not populate the image."
   }
 ];
 

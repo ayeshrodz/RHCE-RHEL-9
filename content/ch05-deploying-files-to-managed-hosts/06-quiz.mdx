@@ -98,41 +98,33 @@ export const practice = [
     "chapter": "ch05",
     "objective": "ch05.files",
     "title": "Deploy a private file",
-    "prompt": "Write a copy task creating /etc/private-note from content lab with mode 0600. Quote the mode.",
-    "type": "yaml",
-    "starter": "- ansible.builtin.copy:\n    content: lab\n    dest: /etc/private-note\n    mode: 644\n",
-    "expected": [
-      {
-        "ansible.builtin.copy": {
-          "content": "lab",
-          "dest": "/etc/private-note",
-          "mode": "0600"
-        }
-      }
+    "prompt": "Only the owner should read and write /etc/private-note. Which `mode` line is correct?",
+    "type": "choice",
+    "code": "- ansible.builtin.copy:\n    content: lab\n    dest: /etc/private-note\n    mode: 644",
+    "options": [
+      "`mode: \"0600\"`",
+      "`mode: 600`",
+      "`mode: \"0644\"`",
+      "`mode: 644`"
     ],
-    "hints": [
-      "Only the owner should read and write.",
-      "Use mode: \"0600\"."
-    ],
-    "explain": "Quoted modes avoid YAML number interpretation and express the intended permissions."
+    "expected": "`mode: \"0600\"`",
+    "explain": "Quoting the mode keeps YAML from reading it as a decimal number, and 0600 gives read and write to the owner only."
   },
   {
     "id": "render-banner",
     "chapter": "ch05",
     "objective": "ch05.templates",
     "title": "Render a banner",
-    "prompt": "Edit the template to produce exactly: Welcome SERVERA. Context: host is servera.",
-    "type": "template",
-    "starter": "Welcome {{ host }}",
-    "expected": "Welcome SERVERA",
-    "hints": [
-      "The upper filter changes a string to uppercase."
+    "prompt": "The variable `host` is `servera`. Which template renders exactly `Welcome SERVERA`?",
+    "type": "choice",
+    "options": [
+      "`Welcome {{ host | upper }}`",
+      "`Welcome {{ host }}`",
+      "`Welcome {{ host | capitalize }}`",
+      "`Welcome {{ upper(host) }}`"
     ],
-    "explain": "Welcome {{ host | upper }} renders the requested banner.",
-    "context": {
-      "host": "servera"
-    },
-    "solution": "Welcome {{ host | upper }}"
+    "expected": "`Welcome {{ host | upper }}`",
+    "explain": "The `upper` filter turns the whole string to uppercase. `capitalize` only changes the first letter, and `upper` is a filter, not a function."
   }
 ];
 

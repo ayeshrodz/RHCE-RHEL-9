@@ -131,7 +131,10 @@ for (const objective of objectives) {
 }
 for (const challenge of challenges) {
   for (const field of ['id', 'chapter', 'objective', 'title', 'prompt', 'type', 'explain']) assert(typeof challenge[field] === 'string' && challenge[field].trim(), `Missing challenge ${field}`);
-  assert(Array.isArray(challenge.hints) && challenge.hints.length && challenge.hints.every((hint) => typeof hint === 'string' && hint.trim()), `${challenge.id}: empty hints`);
+  // Practice questions share the quiz format: one click, instant feedback, no typed answers.
+  assert.equal(challenge.type, 'choice', `${challenge.id}: practice questions must be multiple choice`);
+  assert(Array.isArray(challenge.options) && challenge.options.length >= 3 && challenge.options.every((o) => typeof o === 'string' && o.trim()), `${challenge.id}: needs at least three options`);
+  assert(challenge.options.filter((o) => o === challenge.expected).length === 1, `${challenge.id}: expected must match exactly one option`);
   assert(objectiveIds.has(challenge.objective), `Unknown objective ${challenge.objective}`); stable(challenge.id, 'challenge'); }
 const manifests = fs.readdirSync('public/lab').filter((d) => fs.existsSync(`public/lab/${d}/MANIFEST`));
 assert.deepEqual([...labs].sort(), manifests.sort(), 'Published labs and manifests differ');

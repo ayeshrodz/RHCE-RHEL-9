@@ -113,17 +113,13 @@ export const practice = [
     "title": "Resolve a variable",
     "prompt": "group_vars sets port 80, host_vars sets 8080, and play vars sets 8443. Which wins?",
     "type": "choice",
-    "starter": "",
-    "expected": "8443",
-    "hints": [
-      "Compare inventory values with play values."
-    ],
-    "explain": "Play variables override these inventory variables; extra variables would override the play.",
     "options": [
       "80",
       "8080",
       "8443"
-    ]
+    ],
+    "expected": "8443",
+    "explain": "Play variables override these inventory variables; extra variables would override the play."
   },
   {
     "id": "vault-runtime",
@@ -132,17 +128,13 @@ export const practice = [
     "title": "Protect runtime output",
     "prompt": "Vault encrypts a password file. Which extra measure prevents an ordinary debug-style task from writing a sensitive value into run output?",
     "type": "choice",
-    "starter": "",
-    "expected": "no_log: true",
-    "hints": [
-      "Vault protects data at rest."
-    ],
-    "explain": "Apply no_log to tasks that handle secrets; avoid debugging the secret itself.",
     "options": [
       "gather_facts: false",
       "no_log: true",
       "become: true"
-    ]
+    ],
+    "expected": "no_log: true",
+    "explain": "Apply no_log to tasks that handle secrets; avoid debugging the secret itself."
   }
 ];
 

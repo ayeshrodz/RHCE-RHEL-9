@@ -203,7 +203,7 @@ Keep explanations in the content and shared presentation in the renderer/styles.
 
 ## Visual consistency and exercise titles
 
-Reuse the existing component treatments and theme tokens. Browser practice and quizzes share `ActivityPanel`, `AnswerOptions`, and `ActivityFeedback`. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
+Reuse the existing component treatments and theme tokens. Every knowledge check, including chapter practice, uses the one `Quiz` format: pick an option, get instant feedback and an explanation. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
 
 Use `Exercise: Topic` for practical exercise titles, whether they offer Guided or Challenge mode. Use `Assessment: Topic` for integrated assessments. Keep sentence case and a colon separator. Setup pages describe their setup step directly. Display titles can change without renaming published filenames, activity IDs, or objective IDs.
 
@@ -223,7 +223,7 @@ Give each question and task a unique, descriptive ID, such as `ch02-inventory-ch
 
 Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
 
-Browser challenges are authored in their chapter's quiz MDX, as a JSON-compatible `export const practice = [...]` followed by `<ChapterPractice chapter="chNN" challenges={practice} />`. Supply a stable `id`, chapter, objective, type, `prompt`, starter input or choices, `expected` result, nonempty progressive hints, explanation, and optional explicit solution. The build reads the same export for the dashboard; editing wording needs no React change. Keep simulations within the supported parser behavior. Test correct, incorrect, incomplete, and equivalent answers in `tests/challenges.test.js`; compare relevant cases with actual Ansible.
+Practice questions are authored in their chapter's quiz MDX, as a JSON-compatible `export const practice = [...]` followed by `<ChapterPractice chapter="chNN" challenges={practice} />`. Each one is multiple choice, exactly like a quiz question: supply a stable `id`, chapter, objective, `title`, `prompt`, `type: "choice"`, at least three `options`, the `expected` option (copied exactly), an explanation, and an optional `code` snippet shown above the options. Do not add typed-answer, hint or solution variants; consistency across pages matters more than a one-off format. The build reads the same export for the dashboard; editing wording needs no React change. Check every distractor against real Ansible behavior so exactly one option is right.
 
 Lab wording belongs in MDX. A graded `<Lab>` contains exactly one `<LabNotes>` and one `<LabChallenge>`, alongside its existing `<Task>` children. `LabNotes` holds prerequisites and optional verification/variation reveals. `LabChallenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
 

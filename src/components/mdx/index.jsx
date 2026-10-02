@@ -11,7 +11,7 @@ import AssessmentTimer from '@/components/interactive/AssessmentTimer';
 import { lazyWidget } from '@/components/interactive/LazyWidget';
 import chapterDiagrams from 'virtual:chapter-widgets';
 const FlowMap = lazyWidget(() => import('@/components/interactive/FlowMap'));
-const ChapterPractice = lazyWidget(() => import('@/components/interactive/Challenge'));
+const ChapterPractice = lazyWidget(() => import('@/components/interactive/ChapterPractice'));
 import Flashcards from '@/components/interactive/Flashcards';
 import { Lab, Task, LabChallenge, LabNotes } from '@/components/interactive/Lab';
 import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';

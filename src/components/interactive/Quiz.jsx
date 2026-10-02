@@ -11,8 +11,9 @@ const EMPTY = { version: 2, items: {} };
 /**
  * Multiple-choice quiz with instant feedback and a running score.
  * questions: [{ q, options: [...], answer: index, explain, code? }]
+ * onAnswer(question, choice) lets a caller keep its own record as well.
  */
-export default function Quiz({ id = 'quiz', title, questions }) {
+export default function Quiz({ id = 'quiz', title, questions, onAnswer }) {
   const pageKey = usePageKey();
   const [answers, setAnswers] = useStored(`quiz:${pageKey}:${id}`, EMPTY);
 
@@ -51,7 +52,10 @@ export default function Quiz({ id = 'quiz', title, questions }) {
                 answer={item.answer}
                 disabled={done}
                 label={`Answers to question ${qi + 1}`}
-                onChange={(index) => setAnswers((a) => recordAnswer(a, item, index))}
+                onChange={(index) => {
+                  setAnswers((a) => recordAnswer(a, item, index));
+                  onAnswer?.(item, index);
+                }}
               />
               {done && item.explain && (
                 <ActivityFeedback correct={chosen === item.answer} label={chosen === item.answer ? 'Correct.' : 'Not quite.'}>
