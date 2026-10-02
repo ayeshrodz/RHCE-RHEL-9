@@ -65,9 +65,7 @@
   },
   "Diagram": {
     "text": {
-      "explore": "Swipe to explore the diagram",
       "fit": "Fit to screen",
-      "actual": "Actual size",
       "enlarge": "Enlarge diagram",
       "close": "Close diagram",
       "steps": "Steps",
@@ -75,7 +73,8 @@
       "position": "Step {value0} of {value1}",
       "previous": "Previous step",
       "next": "Next",
-      "replay": "Replay"
+      "replay": "Replay",
+      "zoom": "Zoom in"
     }
   },
   "Outline": {
