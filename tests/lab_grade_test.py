@@ -24,7 +24,7 @@ class GradingTests(unittest.TestCase):
                 self.assertTrue(checkpoint['files'] or checkpoint['probes'] or checkpoint.get('groups'))
                 self.assertEqual(len(checkpoint['probes']), len({p['id'] for p in checkpoint['probes']}))
                 for probe in checkpoint['probes']:
-                    self.assertNotRegex(probe['command'], r'\b(reboot|rm|touch|mkdir|chmod|usermod|mount|mkfs|lvcreate)\b|systemctl (restart|stop|start)|firewall-cmd --add')
+                    self.assertNotRegex(probe['command'], r'(?<![\w-])(reboot|rm|touch|mkdir|chmod|usermod|mount|mkfs|lvcreate)\b|systemctl (restart|stop|start)|firewall-cmd --add')
 
     def test_all_checkpoints_working_broken_and_unreachable(self):
         for name, exercise in CATALOG['exercises'].items():

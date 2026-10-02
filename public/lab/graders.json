@@ -1933,7 +1933,7 @@
                 "localhost"
               ],
               "message": "site.yml passes ansible-lint in the development container",
-              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
+              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir:ro\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
             },
             {
               "id": "kernel-record",
@@ -1989,7 +1989,7 @@
                 "localhost"
               ],
               "message": "site.yml passes ansible-lint in the development container",
-              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
+              "command": "podman run --rm --pull=never --security-opt label=disable -v \"$PWD:/workdir:ro\" -w /workdir ghcr.io/ansible/community-ansible-dev-tools:latest ansible-lint -q site.yml"
             },
             {
               "id": "committed",
