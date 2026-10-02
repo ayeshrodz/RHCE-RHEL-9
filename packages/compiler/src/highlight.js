@@ -40,8 +40,9 @@ function resolveLang(lang) {
 export function tokenize(code, lang) {
   if (!highlighter) throw new Error('initHighlighter() must be awaited first');
   const resolved = resolveLang(lang);
-  if (resolved === 'text') return code.split('\n').map((line) => (line ? [{ v: line }] : []));
-  const lines = highlighter.codeToTokensWithThemes(code, { lang: resolved, themes: THEMES });
+  // Plain text: one token per line, empty lines included (as Shiki renders it).
+  if (resolved === 'text') return code.split('\n').map((line) => [{ v: line }]);
+  const lines = highlighter.codeToTokensWithThemes(code, { lang: resolved, themes: THEMES }).map(mergeWhitespace);
   return lines.map((tokens) =>
     tokens.map((token) => {
       const out = { v: token.content };
@@ -55,11 +56,25 @@ export function tokenize(code, lang) {
   );
 }
 
-/** Colours are emitted as #rrggbb only. */
+/** Like Shiki's HTML output: a whitespace-only token joins the token after it on the same line. */
+function mergeWhitespace(line) {
+  const merged = [];
+  let carry = '';
+  line.forEach((token, i) => {
+    if (/^\s+$/.test(token.content) && line[i + 1]) carry += token.content;
+    else {
+      merged.push(carry ? { ...token, content: carry + token.content } : token);
+      carry = '';
+    }
+  });
+  return merged;
+}
+
+/** Colours are emitted as six-digit hex only. */
 function normalise(color) {
-  const hex = color.toLowerCase();
-  if (/^#[0-9a-f]{6}$/.test(hex)) return hex;
-  if (/^#[0-9a-f]{8}$/.test(hex)) return hex.slice(0, 7);
-  if (/^#[0-9a-f]{3}$/.test(hex)) return '#' + [...hex.slice(1)].map((c) => c + c).join('');
+  // Keep the theme's own spelling (case) so output matches the theme exactly.
+  if (/^#[0-9a-fA-F]{6}$/.test(color)) return color;
+  if (/^#[0-9a-fA-F]{8}$/.test(color)) return color.slice(0, 7);
+  if (/^#[0-9a-fA-F]{3}$/.test(color)) return '#' + [...color.slice(1)].map((c) => c + c).join('');
   throw new Error(`unexpected token colour ${color}`);
 }

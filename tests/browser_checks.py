@@ -1,8 +1,11 @@
 """Production-route and learning-flow checks; starts a local preview when needed."""
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
 import tempfile
+import threading
 from playwright.sync_api import sync_playwright
 from browser_server import preview_server
 
@@ -14,9 +17,78 @@ def go(page, route):
     page.locator('h1').first.wait_for()
     page.wait_for_function("!document.querySelector('.skeleton')")
 
+def engine_has_no_course_text():
+    """The built engine is generic: no chapter or section title from the content bundle appears in its code."""
+    site = json.loads((ROOT / 'dist/content/site.json').read_text())
+    manifest = json.loads((ROOT / 'dist/content' / site['programs'][0]['manifest']).read_text())
+    titles = {c['title'] for c in manifest['chapters']} | {s['title'] for c in manifest['chapters'] for s in c['sections']}
+    code = ''.join(f.read_text() for f in (ROOT / 'dist/assets').glob('*.js'))
+    leaked = sorted(t for t in titles if t in code)
+    assert not leaked, f'course text compiled into the engine: {leaked}'
+
+
+class CorsHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
+
+    def log_message(self, *args):
+        pass
+
+
+def content_from_another_origin(browser):
+    """The engine loads its content from whatever origin kernel.config.json names."""
+    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(CorsHandler, directory=str(ROOT / 'dist/content')))
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    origin = f'http://127.0.0.1:{server.server_address[1]}/'
+    try:
+        context = browser.new_context()
+        page = context.new_page()
+        requested = []
+        page.on('request', lambda r: requested.append(r.url))
+        page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
+        page.route(BASE + 'content/**', lambda route: route.abort())
+        go(page, '/ch03/inventory')
+        assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
+        assert page.locator('pre.shiki').count() > 3
+        assert any(url.startswith(origin + 'p/') for url in requested), 'pages came from the content origin'
+        context.close()
+    finally:
+        server.shutdown()
+
+
+def tampered_content_is_refused(browser):
+    """A page whose JSON was altered to carry markup or a script link is refused, not rendered."""
+    for tamper in [
+        lambda page: page['tree'].append({'t': 'el', 'tag': 'script', 'c': [{'t': 'text', 'v': 'window.pwned = 1'}]}),
+        lambda page: page['tree'].append({'t': 'el', 'tag': 'a', 'attrs': {'href': 'javascript:window.pwned=1'}, 'c': [{'t': 'text', 'v': 'x'}]}),
+        lambda page: page['tree'].append({'t': 'tag', 'name': 'callout', 'attrs': {'title': {'object': True}}}),
+    ]:
+        context = browser.new_context()
+        page = context.new_page()
+
+        def handler(change):
+            def fulfill(route):
+                body = route.fetch().json()
+                change(body)
+                route.fulfill(json=body)
+            return fulfill
+
+        page.route('**/p/*/pages/ch03-inventory.*.json', handler(tamper))
+        page.goto(BASE + '#/ch03/inventory')
+        page.locator('.load-error').wait_for()
+        assert 'not valid content' in page.locator('.load-error').inner_text()
+        assert page.evaluate('window.pwned') is None
+        context.close()
+
+
+engine_has_no_course_text()
+
 with preview_server(BASE, ROOT):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
+        content_from_another_origin(browser)
+        tampered_content_is_refused(browser)
         context = browser.new_context(reduced_motion='reduce')
         page = context.new_page(); errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
@@ -115,7 +187,7 @@ with preview_server(BASE, ROOT):
                 assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
         page.set_viewport_size({'width': 1440, 'height': 1000})
         # Every graded lab has a separately authored challenge; help is closed by default.
-        lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'public/lab/graders.json').read_text())['exercises'].values()]
+        lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'packages/engine/public/lab/graders.json').read_text())['exercises'].values()]
         for route in lab_routes:
             go(page, route)
             page.get_by_role('button', name='Challenge', exact=True).click()
@@ -244,7 +316,7 @@ with preview_server(BASE, ROOT):
         page.keyboard.press('Escape')
         # Complete grading reports import as independent practice evidence.
         go(page, '/progress')
-        catalog = json.loads((ROOT / 'public/lab/graders.json').read_text())
+        catalog = json.loads((ROOT / 'packages/engine/public/lab/graders.json').read_text())
         exercise = catalog['exercises']['system-archive']; cp = exercise['checkpoints']['final']
         ids = ['file:' + f for f in cp['files']] + [x['id'] for x in cp.get('local', [])] + ['group:' + g for g in cp.get('groups', {})] + [probe['id'] + ':' + host for probe in cp['probes'] for host in probe['targets']]
         report = {'app': 'playbook-path-lab', 'version': 1, 'exerciseId': 'system-archive', 'exerciseVersion': exercise['version'], 'checkpointId': 'final', 'checkedAt': '2026-10-02T00:00:00Z', 'checks': [{'id': id, 'status': 'pass', 'message': 'Requirement observed', 'lesson': exercise['lesson']} for id in ids]}

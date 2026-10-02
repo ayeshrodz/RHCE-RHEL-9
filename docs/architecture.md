@@ -148,9 +148,9 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 
 ## Delivery phases
 
-1. **Contract:** `packages/schema` (this phase).
-2. **Compiler foundations:** `kernel validate|build` compiles today's content into the bundle, with parity tests against the current site and a route-by-route rendering snapshot tool.
-3. **Engine renders from the compiled bundle**, and moves into `packages/engine`.
+1. **Contract:** `packages/schema`. Done.
+2. **Compiler foundations** (done): `kernel validate|build` compiles today's content into the bundle, with parity tests against the current site and a route-by-route rendering snapshot tool.
+3. **Engine renders from the compiled bundle**, and moves into `packages/engine` (done). Rendering is identical on 129 of 130 routes; the remaining one replaces a raw-HTML box with a callout.
 4. **Markdoc migration:** MDX becomes `.md` files plus `.data.yml`.
 5. **Programs:** routing, scoped progress and search, variants, reader variables, UI strings.
 6. **Platform home and program selector.**

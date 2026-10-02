@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DownloadTests(unittest.TestCase):
     def invoke(self, root, assets, *args):
-        return subprocess.run(['bash', str(ROOT / 'public/lab/lab'), *args], text=True,
+        return subprocess.run(['bash', str(ROOT / 'packages/engine/public/lab/lab'), *args], text=True,
             capture_output=True, env={**os.environ, 'LAB_HOME': str(root), 'LAB_URL': assets.as_uri()})
     def test_failed_download_preserves_existing_work(self):
         with tempfile.TemporaryDirectory() as temp:

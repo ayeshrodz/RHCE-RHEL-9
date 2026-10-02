@@ -89,7 +89,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   };
 
   const programs = [];
-  for (const { program, chapters, objectives, details } of source.programs) {
+  for (const { program, chapters, objectives, details, legacy } of source.programs) {
     const base = `p/${program.id}`;
     expect(validator.ids.program, program, null, 'program');
     expect(validator.ids.objectives, objectives, null, 'objectives');
@@ -151,7 +151,20 @@ export async function compile(contentDir, { now = new Date() } = {}) {
 
     const searchFile = emit(base, 'search', { apiVersion: 1, entries: search });
     expect(validator.ids.bundle.search, JSON.parse(files.get(searchFile)), null, 'search index');
-    const manifest = { apiVersion: 1, program, chapters: manifestChapters, objectives, pages, search: searchFile };
+    let legacyFile;
+    if (legacy) {
+      expect(validator.ids.bundle.legacy, legacy, null, 'interface bundle');
+      legacyFile = emit(base, 'legacy', legacy);
+    }
+    const manifest = {
+      apiVersion: 1,
+      program,
+      chapters: manifestChapters,
+      objectives,
+      pages,
+      search: searchFile,
+      ...(legacyFile ? { legacy: legacyFile } : {}),
+    };
     expect(validator.ids.bundle.manifest, manifest, null, 'manifest');
     const sectionCount = manifestChapters.reduce((n, c) => n + c.sections.length, 0);
     programs.push({
