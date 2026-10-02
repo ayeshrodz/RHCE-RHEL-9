@@ -27,6 +27,25 @@ def fits(page, element):
     assert rect['x'] + rect['width'] <= size['width'] + 1, rect
     assert rect['y'] + rect['height'] <= size['height'] + 1, rect
 
+def check_code_headers(page):
+    problems = page.locator('.code-head').evaluate_all("""headers => headers.filter(h => h.clientWidth).flatMap(h => {
+        const frame = h.getBoundingClientRect();
+        const issues = [];
+        for (const child of h.querySelectorAll('.code-label, .is-file, .code-lang, .code-actions, .code-copy, .ayaml-hint')) {
+            const r = child.getBoundingClientRect();
+            if (r.width && (r.top < frame.top - 1 || r.bottom > frame.bottom + 1 || r.left < frame.left - 1 || r.right > frame.right + 1))
+                issues.push('header does not contain ' + child.className + ': ' + child.textContent);
+        }
+        const label = h.querySelector('.code-label')?.getBoundingClientRect();
+        const actions = h.querySelector('.code-actions')?.getBoundingClientRect();
+        if (label && actions && label.left < actions.right && label.right > actions.left && label.top < actions.bottom && label.bottom > actions.top)
+            issues.push('title overlaps actions');
+        const code = h.nextElementSibling?.getBoundingClientRect();
+        if (code && code.top < frame.bottom - 1) issues.push('header overlaps code');
+        return issues;
+    })""")
+    assert not problems, (page.url, page.viewport_size, problems)
+
 with preview_server(BASE, ROOT):
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -43,18 +62,20 @@ with preview_server(BASE, ROOT):
                     e.clientWidth && (e.scrollWidth > e.clientWidth + 1 || e.querySelector('svg').getBoundingClientRect().width > e.clientWidth + 1)
                 ).map(e => e.querySelector('svg').getAttribute('aria-label'))""")
                 assert not overflowing_diagrams, (width, route, overflowing_diagrams)
+                check_code_headers(page)
                 tiny_editors = page.locator('textarea, input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), select').evaluate_all("""elements => elements.filter(e => {
                     const r = e.getBoundingClientRect();
                     return r.width && r.height && parseFloat(getComputedStyle(e).fontSize) < 16;
                 }).map(e => e.className)""")
                 assert not tiny_editors, (width, route, tiny_editors)
         # Resize the same mounted page between breakpoints, including intermediate widths.
-        for route in ['/', '/ch01/architecture', '/ch02/writing-playbooks', '/ch04/task-failure']:
+        for route in ['/', '/ch00/create-and-verify-vms', '/ch01/architecture', '/ch02/writing-playbooks', '/ch04/task-failure']:
             go(page, route)
             for width in [320, 360, 412, 480, 540, 640, 700, 820, 960, 1200, 1440]:
                 page.set_viewport_size({'width': width, 'height': 900})
                 page.wait_for_function('(width) => innerWidth === width', arg=width)
                 assert page.evaluate('(width) => document.documentElement.scrollWidth <= width', width), (route, width)
+                check_code_headers(page)
                 badge = page.locator('.brand-pill').bounding_box()
                 logo = page.locator('.brand svg').bounding_box()
                 assert badge['height'] <= logo['height'] + 1, (route, width, badge)
