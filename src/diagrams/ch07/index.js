@@ -1,6 +1,5 @@
 import './ch07.css';
 
-export { default as RoleAnatomy } from './RoleAnatomy';
-export { default as PlayOrder } from './PlayOrder';
-export { default as RoleVarResolver } from './RoleVarResolver';
-export { default as FqcnExplorer } from './FqcnExplorer';
+export { default as HostPatternTester } from './HostPatternTester';
+export { default as ReuseSimulator } from './ReuseSimulator';
+export { default as ProjectMap } from './ProjectMap';

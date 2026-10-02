@@ -10,7 +10,7 @@ Kernel Path teaches Ansible through short lessons, browser activities, and real 
 
 <Cards>
   <Card title="Free home lab" kicker="Start here for independent practice" tone="teal">
-    Rocky Linux 9 virtual machines on LXD, community collections, and tools installed on workstation. Chapter 0 builds the environment and provides reset points. The platform requires no account; your learning progress stays in this browser.
+    Rocky Linux 9 virtual machines on LXD, community collections, and tools installed on workstation. Chapter 1 builds the environment and provides reset points. The platform requires no account; your learning progress stays in this browser.
   </Card>
   <Card title="Classroom reference" kicker="RHEL 9 with AAP 2.2" tone="purple">
     Older classroom examples use Ansible Automation Platform 2.2 and an execution environment containing core 2.13. Follow those commands when you have that environment. Classroom lab helpers and private registry images are supplied by that environment.
@@ -54,7 +54,7 @@ These are **different stacks**. An AAP release, a navigator release, an Ansible 
 | Automation engine | ansible-core 2.14; VM checks recorded on 2.14.18 | core 2.13 inside the AAP 2.2 EE |
 | Navigator | 26.9.0 in its own Python environment | The version supplied by the classroom |
 | Collections | Pinned on workstation: ansible.posix 1.5.4 and community.general 9.5.13 | Collections provided by the selected EE |
-| Execution environment | Disabled for the baseline; chapter 11 runs projects in a community image | Enabled; image provided by the classroom registry |
+| Execution environment | Disabled for the baseline; chapter 12 runs projects in a community image | Enabled; image provided by the classroom registry |
 
 The home-lab versions above are the documented baseline checked on **2 October 2026**. They describe selected verified lab runs, rather than complete validation of every exercise. Use compatible collection versions: installing the newest collection can raise its required core version.
 
@@ -86,7 +86,7 @@ ansible-navigator exec --mode stdout -- ansible --version
 ansible-navigator exec --mode stdout -- ansible-galaxy collection list
 ```
 
-These commands may pull the configured image if it is missing. The output inside the container can differ from the local commands above. Chapter 11 shows how to choose a public image for a project in [the development-container lesson](#/ch11/development-containers).
+These commands may pull the configured image if it is missing. The output inside the container can differ from the local commands above. Chapter 12 shows how to choose a public image for a project in [the development-container lesson](#/ch12/development-containers).
 </Reveal>
 
 ## Turn practice into reliable skills
@@ -101,12 +101,12 @@ For certification planning, read the RHCE exam's published objectives on the Red
 
 <Cards cols={3}>
   <Card title="Build your lab" kicker="Practical setup" tone="teal">
-    [Start chapter 0](#/ch00) to create the VMs, install the tools, and prepare a clean reset point.
+    [Start chapter 1](#/ch01) to create the VMs, install the tools, and prepare a clean reset point.
   </Card>
   <Card title="Learn the foundations" kicker="Core automation skills" tone="amber">
-    [Start chapter 1](#/ch01) to understand the architecture and follow your first automation tasks.
+    [Start chapter 2](#/ch02) to understand the architecture and follow your first automation tasks.
   </Card>
   <Card title="Extend your workflow" kicker="After the foundations" tone="purple">
-    [Start chapter 11](#/ch11) to keep projects in Git and run them from development containers.
+    [Start chapter 12](#/ch12) to keep projects in Git and run them from development containers.
   </Card>
 </Cards>

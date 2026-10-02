@@ -48,7 +48,7 @@ export default defineWidget('HomePage', (copy) => {
 
     const [lastVisited] = useStored('lastVisited', null);
     // Resume where the reader last was; otherwise the first unfinished section.
-    const firstLesson = pages.find((p) => p.chapter.number >= 1) ?? pages[0];
+    const firstLesson = pages.find((p) => !p.chapter.setup) ?? pages[0];
     const resume = pages.find((p) => p.key === lastVisited) ?? pages.find((p) => !done.includes(p.key)) ?? firstLesson;
     const started = done.length > 0 || !!lastVisited;
 
@@ -81,7 +81,7 @@ export default defineWidget('HomePage', (copy) => {
                 {started ? formatCopy(copy.text.template2, [resume.number]) : copy.text.label} <ArrowRight size={16} />
               </Link>
               {!started && (
-                <Link className="btn btn-lg" to="/ch00">
+                <Link className="btn btn-lg" to="/ch01">
                   <FlaskConical size={16} />
                   {copy.text.btn2}
                 </Link>
@@ -179,7 +179,7 @@ export default defineWidget('HomePage', (copy) => {
               {copy.text.p} <code>{copy.text.code}</code>
               {copy.text.p2}
             </p>
-            <Link className="btn home-lab-cta" to="/ch00">
+            <Link className="btn home-lab-cta" to="/ch01">
               <FlaskConical size={15} />
               {copy.text.btn3}
               <ArrowRight size={15} />

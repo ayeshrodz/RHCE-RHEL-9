@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # lab - starts and finishes exercises on the Kernel Path home lab
 # (same syntax as a classroom 'lab' command). Runs on workstation as student.
-# Install or update: see section 0.6 of the guide, or run: lab update
+# Install or update: see section 1.6 of the guide, or run: lab update
 # Version 4
 set -euo pipefail
 
@@ -126,7 +126,7 @@ cmd_check() {
     echo
     echo "  Missing key logins on the servers usually mean the 'clean' baseline was saved"
     echo "  before they were set up, and a reset removed them. Repeat steps 5 and 6 of"
-    echo "  section 0.6, then on the Ubuntu host run:  rht-vmctl save"
+    echo "  section 1.6, then on the Ubuntu host run:  rht-vmctl save"
     return 1
   fi
   say "the lab is ready"

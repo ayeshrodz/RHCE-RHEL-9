@@ -240,7 +240,7 @@ function ProgressCard({ text, pathname, onNavigate }) {
 
 function CourseMap({ text, groups, pathname, chapterId, onNavigate, closeRef, onClose, onCollapse }) {
   const { done, isDone } = useProgress();
-  const [openId, setOpenId] = useState(chapterId ?? 'ch01');
+  const [openId, setOpenId] = useState(chapterId ?? chapters.find((c) => !c.setup)?.id);
   const [query, setQuery] = useState('');
   const scrollRef = useRef(null);
   const q = query.trim();

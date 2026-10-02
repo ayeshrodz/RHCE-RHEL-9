@@ -1,0 +1,137 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 8
+---
+
+<Lead>
+Twelve questions on loops, conditionals, handlers and failure handling. Aim for at least nine before moving on to chapter 6.
+</Lead>
+
+<Quiz objectives={["ch05.loops-conditions","ch05.handlers","ch05.failure"]}
+  id="chapter"
+  title="Chapter 5 knowledge check"
+  questions={[
+    { id: 'q-2aab5d535778', legacyIndex: 0,
+      q: 'What is wrong with this task?',
+      code: '- name: Services are running\n  ansible.builtin.service:\n    name: "{{ item }}"\n    state: started\n    loop:\n      - httpd\n      - firewalld',
+      options: ['Nothing', '`loop` is indented under the module; it must be at task level', '`item` must be written `{{ items }}`'],
+      answer: 1,
+      explain: '`loop` is a task keyword. Indented under the module, it is passed to the service module as an unknown argument.',
+    },
+    { id: 'q-e92a61716ded', legacyIndex: 1,
+      q: 'Each entry in `loop` is `{name: jane, groups: wheel}`. How do you pass the group to the user module?',
+      options: ["`groups: \"{{ item['groups'] }}\"`", '`groups: "{{ groups }}"`', '`groups: "{{ item }}"`'],
+      answer: 0,
+      explain: 'item is the whole dictionary; read the key with brackets (or item.groups).',
+    },
+    { id: 'q-cff2d026c331', legacyIndex: 2,
+      q: 'Which older keyword behaves like `loop` for a simple list?',
+      options: ['`with_file`', '`with_items`', '`with_sequence`'],
+      answer: 1,
+      explain: 'with_items is the most common legacy loop. Unlike loop, it flattens a list of lists.',
+    },
+    { id: 'q-c2950d5f8036', legacyIndex: 3,
+      q: 'Which condition runs the task only when `max_retries` has been set?',
+      options: ['`when: max_retries`', '`when: max_retries is defined`', '`when: defined(max_retries)`'],
+      answer: 1,
+      explain: '`is defined` tests for existence; the plain variable would fail if undefined, or be false if it is 0.',
+    },
+    { id: 'q-d600d231ebd5', legacyIndex: 4,
+      q: 'Which condition is true for a host running RHEL or Fedora?',
+      options: [
+        '`ansible_facts[\'distribution\'] == "RedHat" and ansible_facts[\'distribution\'] == "Fedora"`',
+        '`ansible_facts[\'distribution\'] in ["RedHat", "Fedora"]`',
+        '`ansible_facts[\'distribution\'] == "RedHat, Fedora"`',
+      ],
+      answer: 1,
+      explain: 'The in test checks list membership. The `and` version can never be true.',
+    },
+    { id: 'q-b6d71cd30fdd', legacyIndex: 5,
+      q: 'What does this `when` mean?',
+      code: 'when:\n  - ansible_facts[\'distribution\'] == "RedHat"\n  - ansible_facts[\'memtotal_mb\'] > 1024',
+      options: ['Either condition', 'Both conditions', 'Only the first; the second is ignored'],
+      answer: 1,
+      explain: 'A list of conditions is combined with and.',
+    },
+    { id: 'q-dc8a02a626ca', legacyIndex: 6,
+      q: 'With Ansible Core 2.13, `do_it: "no"` (quoted) and `when: do_it`. Does the task run?',
+      options: ['No', 'Yes, a non-empty string is true', 'It errors'],
+      answer: 1,
+      explain: 'Use `when: do_it | bool` to interpret the string as a Boolean.',
+    },
+    { id: 'q-c0c5da4938ff', legacyIndex: 7,
+      q: 'A task has `notify: restart httpd` and reports `ok`. What happens to the handler?',
+      options: ['It runs at the end of the play', 'It is not notified and does not run', 'It runs immediately'],
+      answer: 1,
+      explain: 'Only tasks that report changed notify handlers.',
+    },
+    { id: 'q-17ed48e23f4b', legacyIndex: 8,
+      q: 'Which play setting runs already-notified handlers even when a later task fails?',
+      options: ['`ignore_errors: true`', '`force_handlers: true`', '`any_errors_fatal: false`'],
+      answer: 1,
+      explain: 'force_handlers runs notified handlers despite task failures, provided the host remains reachable.',
+    },
+    { id: 'q-457870b5ac32', legacyIndex: 9,
+      q: 'Which keyword makes a task report failure based on its output?',
+      options: ['`changed_when`', '`failed_when`', '`register`'],
+      answer: 1,
+      explain: 'failed_when replaces the default failure rule with your own condition.',
+    },
+    { id: 'q-fc528532bbb1', legacyIndex: 10,
+      q: 'In a block with rescue and always, the block succeeds. What runs next?',
+      options: ['rescue, then always', 'always only', 'Nothing more'],
+      answer: 1,
+      explain: 'rescue handles an ordinary failed task; always follows block and rescue. Connection and task-definition failures are exceptions.',
+    },
+    { id: 'q-2092f33ea726', legacyIndex: 11,
+      q: 'Which task keeps the second run at `changed=0`?',
+      options: [
+        '`ansible.builtin.command: date` with `register: now`',
+        '`ansible.builtin.command: date` with `changed_when: false`',
+        '`ansible.builtin.command: date` with `ignore_errors: true`',
+      ],
+      answer: 1,
+      explain: 'command always reports changed unless you override it with changed_when.',
+    },
+  ]}
+/>
+
+## Apply what you learned
+
+export const practice = [
+  {
+    "id": "conditional-task",
+    "chapter": "ch05",
+    "objective": "ch05.loops-conditions",
+    "title": "Use a fact in a condition",
+    "prompt": "This task should run only when the variable `enabled` is true. How should the `when` line be written?",
+    "type": "choice",
+    "code": "- ansible.builtin.debug:\n    msg: Ready\n  when: \"{{ enabled }}\"",
+    "options": [
+      "`when: enabled`",
+      "`when: \"{{ enabled }}\"`",
+      "`when: {{ enabled }}`",
+      "`when: \"$enabled\"`"
+    ],
+    "expected": "`when: enabled`",
+    "explain": "`when` is already a Jinja2 expression, so the variable is written bare. Template delimiters are unnecessary there and newer ansible-core versions warn about or reject them."
+  },
+  {
+    "id": "handler-count",
+    "chapter": "ch05",
+    "objective": "ch05.handlers",
+    "title": "Count the handler runs",
+    "prompt": "Two changed tasks notify the same handler during the tasks stage. There is no explicit flush. How many times does that handler run at the end of the stage?",
+    "type": "choice",
+    "options": [
+      "Never",
+      "Once",
+      "Twice"
+    ],
+    "expected": "Once",
+    "explain": "A notified handler runs once per flush, even if several tasks notify it."
+  }
+];
+
+<ChapterPractice chapter="ch05" challenges={practice} />

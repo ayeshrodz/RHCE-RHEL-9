@@ -42,7 +42,7 @@ npm run test:labs
 
 ## How it is built
 
-- **React 19 + Vite 8.** Hash-based routing (`#/ch02/inventory`), so the built site works on any GitHub Pages path without server rewrites.
+- **React 19 + Vite 8.** Hash-based routing (`#/ch03/inventory`), so the built site works on any GitHub Pages path without server rewrites.
 - **MDX content.** Each section is an `.mdx` file in `content/`. Pages can use React components directly (diagrams, quizzes, labs) without importing them.
 - **Shiki** highlights code at build time, with light and dark themes.
 - **Content-driven.** `plugins/content-manifest.js` builds the navigation from the `content/` folder (folder names, filenames and frontmatter), with live reload in dev.
@@ -52,7 +52,7 @@ npm run test:labs
 content/                         everything readers see (see docs/AUTHORING.md)
   _course.yml                     site metadata and selected track
   tracks/rhel9/                   track metadata and platform reference MDX
-  ch01-introducing-ansible/      _chapter.yml + one .mdx per section
+  ch02-introducing-ansible/      _chapter.yml + one .mdx per section
 plugins/content-manifest.js      builds the course manifest from content/
 src/
   App.jsx, main.jsx              router + MDX provider
@@ -81,7 +81,7 @@ The workflow in `.github/workflows/deploy.yml` builds and publishes the site on 
 2. In **Settings → Pages**, set **Source** to **GitHub Actions**.
 3. Push to `main` (or run the workflow manually). The site appears at `https://<user>.github.io/<repo>/`.
 
-No configuration is needed for the repository name: assets use relative paths and routes live in the URL hash (`#/ch02/inventory`), so deep links and page refreshes work from any sub-path without a 404 fallback. `public/.nojekyll` stops GitHub from running Jekyll over the output.
+No configuration is needed for the repository name: assets use relative paths and routes live in the URL hash (`#/ch03/inventory`), so deep links and page refreshes work from any sub-path without a 404 fallback. `public/.nojekyll` stops GitHub from running Jekyll over the output.
 
 ## Contributing
 

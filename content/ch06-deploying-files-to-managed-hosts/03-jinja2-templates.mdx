@@ -1,0 +1,386 @@
+---
+title: Deploying custom files with Jinja2 templates
+kind: lesson
+minutes: 12
+---
+
+export const widgetContent = {
+  "TemplateFlow": {
+    "data": {
+      "steps": [
+        {
+          "title": "One template",
+          "text": "templates/motd.j2 lives in the project on the control node. It is plain text with {{ }} placeholders."
+        },
+        {
+          "title": "Per-host data",
+          "text": "For each host in the play, Ansible has that host’s own variables and gathered facts."
+        },
+        {
+          "title": "Render on the control node",
+          "text": "The template module fills in the placeholders once per host. The managed hosts never see Jinja2 syntax, and do not need Jinja2 installed."
+        },
+        {
+          "title": "Copy the result",
+          "text": "Each host receives its own finished file, with the owner, group and mode the task asked for."
+        },
+        {
+          "title": "Run again: nothing to do",
+          "text": "The rendered text is compared with the file already on the host. Identical content means ok, not changed, so handlers are not notified."
+        }
+      ]
+    },
+    "text": {
+      "title": "One template, a different file on every host",
+      "label": "Control node",
+      "title2": "templates/motd.j2",
+      "sub": "{{ ansible_facts['fqdn'] }}",
+      "title3": "servera",
+      "sub2": "facts + variables",
+      "title4": "serverb",
+      "sub3": "facts + variables",
+      "title5": "template",
+      "sub4": "render per host",
+      "label2": "servera",
+      "title6": "/etc/motd",
+      "sub5": "same content → ok",
+      "sub6": "This is the system servera…",
+      "label3": "serverb",
+      "title7": "/etc/motd",
+      "sub7": "same content → ok",
+      "sub8": "This is the system serverb…",
+      "label4": "copy",
+      "label5": "copy"
+    }
+  },
+  "TemplatePlayground": {
+    "data": {
+      "hosts": {
+        "servera.lab.example.com": {
+          "hostname": "servera",
+          "ip": "172.25.250.10",
+          "mem": 960,
+          "cpus": 1
+        },
+        "serverb.lab.example.com": {
+          "hostname": "serverb",
+          "ip": "172.25.250.11",
+          "mem": 1960,
+          "cpus": 2
+        },
+        "workstation.lab.example.com": {
+          "hostname": "workstation",
+          "ip": "172.25.250.9",
+          "mem": 3900,
+          "cpus": 2
+        }
+      },
+      "presets": [
+        {
+          "id": "motd",
+          "label": "Variables and facts",
+          "template": "{# /etc/motd: this comment never reaches the file #}\nThis is the system {{ ansible_facts['fqdn'] }}.\nThis is a {{ ansible_facts['distribution'] }} version {{ ansible_facts['distribution_version'] }} system.\nOnly use this system with permission.\nPlease report issues to: {{ system_owner }}.\n"
+        },
+        {
+          "id": "for",
+          "label": "for loop",
+          "template": "# {{ ansible_managed }}\n{% for host in groups['all'] %}\n{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }} {{ hostvars[host]['ansible_facts']['hostname'] }}\n{% endfor %}\n"
+        },
+        {
+          "id": "forif",
+          "label": "for with a condition",
+          "template": "{# every user except root #}\n{% for myuser in users if not myuser == \"root\" %}\nUser number {{ loop.index }} - {{ myuser }}\n{% endfor %}\n"
+        },
+        {
+          "id": "if",
+          "label": "if / else",
+          "template": "{% if ansible_facts['memtotal_mb'] >= 1024 %}\nMaxClients 200\n{% else %}\nMaxClients 50   # small host: {{ ansible_facts['memtotal_mb'] }} MiB\n{% endif %}\n{% if inventory_hostname in groups['webservers'] %}\nRole: web server\n{% endif %}\n"
+        },
+        {
+          "id": "filters",
+          "label": "Filters",
+          "template": "Owner: {{ system_owner | upper }}\nUsers: {{ users | join(', ') }} ({{ users | length }} in total)\nBackup host: {{ backup_host | default('none configured') }}\n\nas JSON: {{ users | to_json }}\nas YAML:\n{{ users | to_nice_yaml }}\n"
+        }
+      ],
+      "initialSelection1": "motd",
+      "initialSelection2": "servera.lab.example.com"
+    },
+    "text": {
+      "ansiblemanaged": "Ansible managed",
+      "widgetLabel": "Template playground",
+      "label": "Example template",
+      "widgetSub": "Edit the template on the left. The right side is the file the ",
+      "code": "template",
+      "widgetSub2": " module would write on the chosen host. Available here: ",
+      "code2": "ansible_facts",
+      "widgetSub3": ", ",
+      "code3": "hostvars",
+      "widgetSub4": ", ",
+      "code4": "groups",
+      "widgetSub5": ", ",
+      "code5": "inventory_hostname",
+      "widgetSub6": ",",
+      "code6": "system_owner",
+      "widgetSub7": " and ",
+      "code7": "users",
+      "widgetSub8": ".",
+      "tplFile": "templates/example.j2",
+      "btn": " Reset",
+      "label2": "Jinja2 template",
+      "tplFile2": "rendered on",
+      "label3": "Managed host",
+      "template": "fatal: [{value0}]: FAILED!\nAnsibleError: {value1}",
+      "tplFoot": "Facts shown are for ",
+      "label4": "the home lab (Rocky Linux)",
+      "label5": "a RHEL classroom",
+      "tplFoot2": ". A variable that is not defined stops the task, as it does in Ansible."
+    }
+  }
+};
+
+<Lead>
+`lineinfile` and `blockinfile` patch a file that something else owns. A template goes further: you write the whole file once, with placeholders, and Ansible fills them in for each host from its variables and facts. One template, a correct file everywhere.
+</Lead>
+
+<Objectives>
+- Read and write the three Jinja2 delimiters.
+- Deploy a template with `ansible.builtin.template`.
+- Use `for` loops and `if` conditions inside a template.
+- Reformat values with filters such as `to_json` and `to_nice_yaml`.
+</Objectives>
+
+## Why template a file
+
+Editing single lines gets fragile as soon as a file has many settings, or settings that differ between hosts. With a **template** you keep the complete configuration file in your project and mark the parts that vary. When the play runs, those parts are replaced by the right values for the managed host being configured. It is easier to review, harder to get wrong, and the result is fully described by your project.
+
+Ansible uses the **Jinja2** templating system. You have been using it since chapter 4: the `{{ }}` around a variable in a playbook is Jinja2.
+
+## The three delimiters
+
+<Cards cols={3}>
+  <Card title="{{ expression }}" kicker="Output" tone="teal">
+    Replaced by the value of the variable or expression.
+  </Card>
+  <Card title="{% statement %}" kicker="Logic" tone="purple">
+    Control structures: `for` loops and `if` tests. Produces no output by itself.
+  </Card>
+  <Card title="{# comment #}" kicker="Comment" tone="gray">
+    A note for whoever maintains the template. Never appears in the deployed file.
+  </Card>
+</Cards>
+
+```jinja
+{# /etc/hosts line #}
+{{ ansible_facts['default_ipv4']['address'] }}    {{ ansible_facts['hostname'] }}
+```
+
+The first line is a comment and is dropped. On the second, both expressions become that host's own address and short name.
+
+## Building a template
+
+A template is an ordinary text file made of fixed text, variables and expressions. The variables can come from anywhere Ansible gets them: the play's `vars`, `group_vars`, `host_vars`, and the facts gathered from the managed host.
+
+By convention templates live in a **`templates/`** directory in the project and end in **`.j2`**. Neither is required, but both make it obvious what the file is.
+
+Part of a template for `/etc/ssh/sshd_config`:
+
+```jinja title="templates/sshd_config.j2"
+# {{ ansible_managed }}
+# DO NOT MAKE LOCAL MODIFICATIONS TO THIS FILE BECAUSE THEY WILL BE LOST
+
+Port {{ ssh_port }}
+ListenAddress {{ ansible_facts['default_ipv4']['address'] }}
+
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+PermitRootLogin {{ root_allowed }}
+AllowGroups {{ groups_allowed }}
+
+PasswordAuthentication {{ passwords_allowed }}
+UsePAM yes
+Subsystem sftp /usr/libexec/openssh/sftp-server
+```
+
+Most of it is the literal configuration. Only five values change from host to host or from one environment to the next.
+
+## Deploying a template
+
+`ansible.builtin.template` renders the file and puts it in place. `src` is the template on the control node; `dest` is the file to create on the managed hosts.
+
+```yaml
+tasks:
+  - name: template render
+    ansible.builtin.template:
+      src: /tmp/j2-template.j2
+      dest: /tmp/dest-config-file.txt
+```
+
+Step through what happens:
+
+<TemplateFlow />
+
+`template` takes the same `owner`, `group`, `mode` and SELinux arguments as `file` and `copy`. It also has **`validate`**, which runs a command against the rendered file before it replaces the real one. If the command fails, nothing is changed:
+
+```yaml
+- name: sudoers rule is deployed
+  ansible.builtin.template:
+    src: templates/ops.sudoers.j2
+    dest: /etc/sudoers.d/ops
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s      # %s is the temporary rendered file
+```
+
+### Marking a file as managed
+
+Put a comment at the top of every template so that nobody edits the deployed file by hand and loses the change on the next run. The `ansible_managed` directive holds a standard string for this. Set it in `ansible.cfg`:
+
+```ini title="ansible.cfg"
+[defaults]
+ansible_managed = Ansible managed
+```
+
+and use it in the template:
+
+```jinja
+# {{ ansible_managed }}
+```
+
+## Control structures
+
+### Loops
+
+`{% for %}` repeats a piece of the template for each item in a list.
+
+```jinja
+{% for user in users %}
+      {{ user }}
+{% endfor %}
+```
+
+A `for` can carry a condition, and inside the loop **`loop.index`** counts from 1:
+
+```jinja
+{# every user except root #}
+{% for myuser in users if not myuser == "root" %}
+User number {{ loop.index }} - {{ myuser }}
+{% endfor %}
+```
+
+Loops become powerful with the magic variables from chapter 4. This three-line template builds a complete `/etc/hosts` from the facts of **every** host in the inventory:
+
+```jinja title="templates/hosts.j2"
+{% for host in groups['all'] %}
+{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }} {{ hostvars[host]['ansible_facts']['hostname'] }}
+{% endfor %}
+```
+
+```yaml
+- name: /etc/hosts is up to date
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Deploy /etc/hosts
+      ansible.builtin.template:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+```
+
+<Callout type="warning" title="hostvars only knows hosts whose facts were gathered">
+`hostvars[host]['ansible_facts']` is filled in when a play gathers facts from that host. Run the play against `all` (as above), or a host missing from the play raises an "undefined" error halfway through the file.
+</Callout>
+
+### Conditionals
+
+`{% if %}` includes part of the file only when a condition holds.
+
+```jinja
+{% if finished %}
+{{ result }}
+{% endif %}
+```
+
+<Callout type="important" title="Templates only">
+Jinja2 `for` and `if` blocks belong in template files. In a playbook, use the task keywords `loop` and `when` from chapter 5 instead.
+</Callout>
+
+## Try it
+
+Edit the template, switch host, break it on purpose. The examples cover everything above:
+
+<TemplatePlayground />
+
+Things worth trying:
+
+- In the first example, change `fqdn` to `hostname`, then misspell it to see Ansible's error.
+- In the `for` example, change `groups['all']` to `groups['webservers']`.
+- In the filters example, the variable `backup_host` is not defined anywhere: remove `| default(...)` and see what happens.
+
+<HomeLab title="Your facts say Rocky">
+On the home lab, `ansible_facts['distribution']` is `Rocky` and `distribution_version` is `9.8`, where a RHEL host reports `RedHat` and `9.0`. The playground follows whichever environment you selected.
+</HomeLab>
+
+## Filters
+
+A **filter** changes a value on its way into the file. Write it after a pipe:
+
+```jinja
+{{ output | to_json }}
+{{ output | to_yaml }}
+```
+
+| Filter | Result |
+| --- | --- |
+| `to_json`, `to_yaml` | The value as JSON or YAML, compact |
+| `to_nice_json`, `to_nice_yaml` | The same, indented for people to read |
+| `from_json`, `from_yaml` | Parse a JSON or YAML **string** into data |
+| `default('x')` | Use `x` when the variable is undefined |
+| `upper`, `lower`, `join(', ')`, `length` | Everyday text and list helpers |
+
+Filters work anywhere Jinja2 does, in playbooks as well as templates. There are many more: see "Using filters to manipulate data" in the Ansible documentation.
+
+<Quiz objectives={["ch06.templates"]}
+  id="check"
+  title="Check your understanding"
+  questions={[
+    { id: 'q-2749ef28936e', legacyIndex: 0,
+      q: 'Which delimiter holds a `for` loop?',
+      options: ['`{{ }}`', '`{% %}`', '`{# #}`'],
+      answer: 1,
+      explain: '{% %} is for statements: for, if, and their end tags.',
+    },
+    { id: 'q-68bb6cffabc1', legacyIndex: 1,
+      q: 'Where is a template rendered?',
+      options: ['On the managed host', 'On the control node, once for each host', 'In the execution environment image at build time'],
+      answer: 1,
+      explain: 'The control node renders it with that host’s variables and facts, then copies the finished file.',
+    },
+    { id: 'q-1dcef18899fd', legacyIndex: 2,
+      q: 'What does `validate: /usr/sbin/visudo -cf %s` do in a template task?',
+      options: [
+        'Checks the deployed file after every run',
+        'Checks the rendered file before it replaces the real one, and aborts on failure',
+        'Checks the template syntax',
+      ],
+      answer: 1,
+      explain: '%s is the temporary rendered file. A failed check leaves the existing file untouched.',
+    },
+    { id: 'q-d53a95b62ecd', legacyIndex: 3,
+      q: 'In `{% for u in users if u != "root" %}`, the list has four users including root. What is `loop.index` on the last pass?',
+      options: ['4', '3', '2'],
+      answer: 1,
+      explain: 'The condition filters the list first, so the loop sees three items and counts 1, 2, 3.',
+    },
+    { id: 'q-e4d6d95f5540', legacyIndex: 4,
+      q: 'Can you use `{% if %}` to skip a task in a playbook?',
+      options: ['Yes', 'No, use `when`'],
+      answer: 1,
+      explain: 'Jinja2 control structures are for template files. Tasks use when and loop.',
+    },
+  ]}
+/>
+
+## Takeaway
+
+Read and write the three Jinja2 delimiters. Use the chapter lab to check this on a real host.

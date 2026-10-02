@@ -4,53 +4,53 @@
       {
         "title": "Foundations",
         "chapters": [
-          1,
-          2
+          2,
+          3
         ],
         "text": "What Ansible is, inventories, configuration, and your first playbooks."
       },
       {
         "title": "Data and control",
         "chapters": [
-          3,
-          4
+          4,
+          5
         ],
         "text": "Variables, facts and secrets; loops, conditions, handlers and errors."
       },
       {
         "title": "Files and structure",
         "chapters": [
-          5,
-          6
+          6,
+          7
         ],
         "text": "Templates and file modules; host patterns, imports and includes."
       },
       {
         "title": "Reuse",
         "chapters": [
-          7
+          8
         ],
         "text": "Roles, collections and the system roles."
       },
       {
         "title": "Real work",
         "chapters": [
-          8,
-          9
+          9,
+          10
         ],
         "text": "Troubleshooting, then software, users, storage and networking."
       },
       {
         "title": "Prove it",
         "chapters": [
-          10
+          11
         ],
         "text": "Four review exercises and two integrated assessments."
       },
       {
         "title": "Project workflow",
         "chapters": [
-          11
+          12
         ],
         "text": "Git for automation projects, VS Code and development containers."
       }
@@ -89,7 +89,7 @@
     "heroFocus2": ") exam, so it doubles as exam preparation.",
     "btn": "Your learning",
     "template2": "Continue with {value0}",
-    "label": "Start with chapter 1",
+    "label": "Start with chapter 2",
     "btn2": " Build the practice lab",
     "heroProgress": "% complete",
     "h2": "The path",
@@ -100,7 +100,7 @@
     "pill2": " sections",
     "template3": "{value0} of {value1} complete",
     "h23": "Build the practice lab",
-    "p": "The exercises use the machines from the official classroom. Chapter 0 builds a faithful copy on one Ubuntu machine: Rocky Linux 9 VMs on LXD, with the usual classroom names, addresses and users, sealed off from your home network, plus a classroom-style",
+    "p": "The exercises use the machines from the official classroom. Chapter 1 builds a faithful copy on one Ubuntu machine: Rocky Linux 9 VMs on LXD, with the usual classroom names, addresses and users, sealed off from your home network, plus a classroom-style",
     "code": "rht-vmctl",
     "p2": " to reset machines between exercises.",
     "btn3": " Open the lab guide ",

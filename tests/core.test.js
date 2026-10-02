@@ -7,10 +7,10 @@ import { validateProgress, importProgress, exportProgress, writeStored, resetAll
 
 const payload = (data, version = 1) => ({ app: 'kernel-path', version, data });
 test('invalid imports preserve saved progress', () => {
-  writeStored('completed', ['ch01/why-automate']);
+  writeStored('completed', ['ch02/why-automate']);
   for (const value of [null, [], { completed: false }, { completed: [42] }, { readiness: { x: 4 } }, { unknown: 1 }]) {
     assert.throws(() => importProgress(payload(value)));
-    assert.deepEqual(exportProgress().data.completed, ['ch01/why-automate']);
+    assert.deepEqual(exportProgress().data.completed, ['ch02/why-automate']);
   }
   assert.throws(() => importProgress(payload({}, 99)));
   assert.throws(() => importProgress(payload({}, '1')));
@@ -19,19 +19,19 @@ test('legacy exports and preferences remain compatible', () => {
   writeStored('theme', 'dark');
   for (const app of ['kernel-path', 'playbook-path', 'rhce-field-guide']) {
     for (const version of [1, 2]) {
-      importProgress({ ...payload({ completed: ['ch02/inventory'], theme: 'light' }, version), app });
-      assert.deepEqual(exportProgress().data, { completed: ['ch02/inventory'] });
+      importProgress({ ...payload({ completed: ['ch03/inventory'], theme: 'light' }, version), app });
+      assert.deepEqual(exportProgress().data, { completed: ['ch03/inventory'] });
       assert.equal(exportProgress().app, 'kernel-path');
     }
   }
-  const migrated = validateProgress(payload({ 'quiz:ch02/inventory:check': { 0: 1 } }))['quiz:ch02/inventory:check'];
+  const migrated = validateProgress(payload({ 'quiz:ch03/inventory:check': { 0: 1 } }))['quiz:ch03/inventory:check'];
   assert.equal(migrated.version, 2);
   assert.equal(Object.values(migrated.items)[0].attempts[0].choice, 1);
 });
 test('progress exports include memory-only changes when storage is unavailable', () => {
   resetAllProgress();
-  writeStored('completed', ['ch03/facts']);
-  assert.deepEqual(exportProgress().data.completed, ['ch03/facts']);
+  writeStored('completed', ['ch04/facts']);
+  assert.deepEqual(exportProgress().data.completed, ['ch04/facts']);
 });
 test('cyclic inventories produce useful feedback instead of a stack overflow', () => {
   const inv = parseInventory('[a:children]\nb\n[b:children]\na');

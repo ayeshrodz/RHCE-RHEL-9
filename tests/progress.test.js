@@ -20,7 +20,7 @@ test('stable task and confidence IDs preserve old positional progress', () => {
   const migrated = migrateEntry(key, [1, 2]);
   assert.deepEqual(migrated, legacy.labs[key].slice(0, 2));
   assert.deepEqual(migrateEntry(key, migrated), migrated);
-  assert.deepEqual(migrateEntry('readiness', { 'ch01:0': 2 }), { [legacy.readiness['ch01:0']]: 2 });
+  assert.deepEqual(migrateEntry('readiness', { 'ch02:0': 2 }), { [legacy.readiness['ch02:0']]: 2 });
 });
 test('quiz attempts survive resets and corrected questions request another answer', () => {
   const quiz = recordAnswer({ version: 2, items: {} }, question, 1);
@@ -35,7 +35,7 @@ test('quiz attempts survive resets and corrected questions request another answe
 });
 test('version two exports round-trip histories and reject malformed data atomically', () => {
   const value = recordAnswer({ version: 2, items: {} }, question, 1);
-  writeStored('quiz:ch01/quiz:chapter', value);
+  writeStored('quiz:ch02/quiz:chapter', value);
   const backup = exportProgress();
   assert.equal(backup.version, 2);
   assert.equal(backup.app, 'kernel-path');
@@ -45,7 +45,7 @@ test('version two exports round-trip histories and reject malformed data atomica
     { version: 2, items: null },
     { version: 2, items: { a: { active: true, attempts: [{ choice: -1 }] } } },
   ]) {
-    assert.throws(() => importProgress({ app: 'playbook-path', version: 2, data: { 'quiz:ch01/quiz:chapter': bad } }));
+    assert.throws(() => importProgress({ app: 'playbook-path', version: 2, data: { 'quiz:ch02/quiz:chapter': bad } }));
     assert.deepEqual(exportProgress().data, backup.data);
   }
 });
@@ -103,7 +103,7 @@ test('reports for retired exercises still import', () => {
     exerciseVersion: 1,
     checkpointId: 'final',
     checkedAt: '2026-10-01T00:00:00Z',
-    checks: [{ id: 'restored:servera.lab.example.com', status: 'pass', message: 'Restored', lesson: '#/ch11/lab-archive-recovery' }],
+    checks: [{ id: 'restored:servera.lab.example.com', status: 'pass', message: 'Restored', lesson: '#/ch12/lab-archive-recovery' }],
   };
   assert.equal(validateLabReport(report, catalog), report);
 });
@@ -112,11 +112,11 @@ test('renamed and legacy lab reports survive old progress imports and new export
     const report = { ...reportFor('assessment-release'), app };
     assert.equal(validateLabReport(report, catalog), report);
     for (const progressApp of ['kernel-path', 'playbook-path', 'rhce-field-guide']) {
-      importProgress({ app: progressApp, version: 2, data: { labReports: [report], completed: ['ch10/assessment-release'] } });
+      importProgress({ app: progressApp, version: 2, data: { labReports: [report], completed: ['ch11/assessment-release'] } });
       const backup = exportProgress();
       assert.equal(backup.app, 'kernel-path');
       assert.deepEqual(backup.data.labReports, [report]);
-      assert.deepEqual(backup.data.completed, ['ch10/assessment-release']);
+      assert.deepEqual(backup.data.completed, ['ch11/assessment-release']);
     }
   }
 });
@@ -138,10 +138,10 @@ test('cross-tab writes and clears invalidate cached values', async () => {
   };
   try {
     const store = await import('../src/lib/storage.js?cross-tab-regression');
-    store.writeStored('completed', ['ch01/why-automate']);
-    values.set('rhce:completed', JSON.stringify(['ch02/inventory']));
+    store.writeStored('completed', ['ch02/why-automate']);
+    values.set('rhce:completed', JSON.stringify(['ch03/inventory']));
     receive({ key: 'rhce:completed', newValue: values.get('rhce:completed') });
-    assert.deepEqual(store.readStored('completed', []), ['ch02/inventory']);
+    assert.deepEqual(store.readStored('completed', []), ['ch03/inventory']);
     values.clear();
     receive({ key: null });
     assert.deepEqual(store.readStored('completed', []), []);
@@ -171,8 +171,8 @@ test('corrupt stored data cannot crash the dashboard or replace the raw backup',
     assert.deepEqual(store.readStored('readiness', {}), {});
     assert.deepEqual(store.exportProgress().data, {});
     assert.equal(values.get('rhce:completed'), 'false');
-    store.writeStored('completed', ['ch01/why-automate']);
-    assert.deepEqual(store.exportProgress().data.completed, ['ch01/why-automate']);
+    store.writeStored('completed', ['ch02/why-automate']);
+    assert.deepEqual(store.exportProgress().data.completed, ['ch02/why-automate']);
   } finally {
     globalThis.localStorage = previous;
   }

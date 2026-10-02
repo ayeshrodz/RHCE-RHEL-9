@@ -1,0 +1,135 @@
+---
+title: Summary and cheat sheet
+kind: summary
+minutes: 6
+---
+
+<Lead>
+The chapter on one page: the rules to remember, the keywords in one place, and flashcards for quick revision.
+</Lead>
+
+## The chapter in six sentences
+
+- **Loops** (`loop`, or the older `with_items`) run one task over a list of values, such as strings or dictionaries; `item` holds the current value.
+- **Conditionals** (`when`) run a task, or skip it, host by host, based on variables, facts and registered results.
+- **Handlers** are tasks that run at the end of the play, once, and only if notified.
+- Handlers are notified only when a task reports that it **changed** something on the host.
+- Tasks can **ignore** failures, **force handlers** to run after a failure, decide for themselves what counts as **failed** or **changed**, or stop the play with **`fail`**.
+- **Blocks** group tasks, and with **`rescue`** and **`always`** they run recovery and clean-up tasks depending on whether the block succeeded.
+
+## Cheat sheet
+
+<Tabs>
+  <Tab label="Loops">
+
+```yaml
+- name: Users exist
+  ansible.builtin.user:
+    name: "{{ item['name'] }}"
+    groups: "{{ item['groups'] }}"
+  loop: "{{ users }}"          # quoted: starts with {{
+  register: user_results       # results list, one per item
+
+- ansible.builtin.debug:
+    msg: "{{ item['item']['name'] }} changed: {{ item['changed'] }}"
+  loop: "{{ user_results['results'] }}"
+```
+
+  </Tab>
+  <Tab label="Conditionals">
+
+```yaml
+when: ansible_facts['distribution'] == "RedHat"      # string: quoted
+when: ansible_facts['memtotal_mb'] >= 2048            # number: not quoted
+when: my_var is defined                               # or: is not defined
+when: ansible_facts['distribution'] in supported      # list membership
+when: flag | bool                                     # string → Boolean
+when:                                                 # list = and
+  - cond_one
+  - cond_two
+when: >                                               # grouping
+  (a == "x" and b == "y") or c == "z"
+```
+
+  </Tab>
+  <Tab label="Handlers">
+
+```yaml
+tasks:
+  - name: Config is deployed
+    ansible.builtin.copy:
+      src: app.conf
+      dest: /etc/app.conf
+    notify:
+      - restart app
+
+handlers:                     # same level as tasks
+  - name: restart app         # must match notify exactly
+    ansible.builtin.service:
+      name: app
+      state: restarted
+```
+
+  </Tab>
+  <Tab label="Failure">
+
+```yaml
+- hosts: all
+  force_handlers: true              # play level
+  tasks:
+    - name: Check config
+      ansible.builtin.command: httpd -t
+      register: check
+      changed_when: false           # read-only: never "changed"
+      failed_when: "'Syntax OK' not in check.stderr"
+      ignore_errors: true           # keep going if it fails
+
+    - name: Upgrade
+      block:
+        - ansible.builtin.command: /usr/local/bin/upgrade
+      rescue:
+        - ansible.builtin.command: /usr/local/bin/rollback
+      always:
+        - ansible.builtin.service:
+            name: app
+            state: restarted
+```
+
+  </Tab>
+</Tabs>
+
+| Keyword | Level | Effect |
+| --- | --- | --- |
+| `loop` / `with_items` | task | Run the task once per list item |
+| `when` | task, block | Run only if the condition is true (per item with loops) |
+| `register` | task | Save the task result (a `results` list for loops) |
+| `notify` | task | Trigger handlers if the task reports changed |
+| `handlers` | play | Tasks run once at the end of the play, if notified |
+| `force_handlers` | play | Run notified handlers even after a failure |
+| `ignore_errors` | task | Report failure but continue |
+| `failed_when` | task | Your own rule for failure |
+| `changed_when` | task | Your own rule for changed |
+| `ansible.builtin.fail` | module | Fail on purpose with a message |
+| `block` / `rescue` / `always` | task | Group, recover, clean up |
+
+<Flashcards
+  title="Chapter 5 flashcards"
+  cards={[
+    { front: 'Which variable holds the current value in a loop?', back: '`item`' },
+    { front: 'Where does `loop:` go in a task?', back: 'At **task level**, aligned with `name` and the module, not under the module.' },
+    { front: 'What does a looping task register?', back: 'A dictionary with a **`results` list**, one entry per item.' },
+    { front: 'Do you use `{{ }}` in a `when` condition?', back: 'No. `when` is already an expression: `when: my_var == "x"`.' },
+    { front: 'How do you test that a variable exists?', back: '`when: my_var is defined` (or `is not defined`).' },
+    { front: 'Why can `when: flag` be wrong for `flag: "false"`?', back: 'A non-empty string is true. Use `when: flag | bool`.' },
+    { front: 'When is a handler notified?', back: 'Only when the notifying task reports **changed**.' },
+    { front: 'How many times does a handler run if notified by 3 tasks?', back: '**Once**, after all tasks, in the handlers-section order.' },
+    { front: 'What happens to notified handlers if a later task fails?', back: 'They do not run, unless the play sets `force_handlers: true`.' },
+    { front: 'How do you stop a read-only command from reporting changed?', back: '`changed_when: false`' },
+    { front: 'When does `rescue` run? When does `always` run?', back: 'rescue: only if the block failed. always: every time.' },
+    { front: 'Which module fails a play on purpose with your message?', back: '`ansible.builtin.fail` with `msg:`' },
+  ]}
+/>
+
+<Callout type="exam" title="Speed drill">
+In 15 minutes: write a play that fails fast unless the host has at least 1 GB of RAM, installs and starts `httpd` and `firewalld` with a loop, deploys an `index.html` that notifies a handler to restart `httpd`, and wraps the deployment in a block whose rescue prints a message. Run it twice; the second run must show `changed=0` and no handler.
+</Callout>

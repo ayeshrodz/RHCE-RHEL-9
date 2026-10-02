@@ -1,7 +1,9 @@
-export { default as ManualVsCode } from './ManualVsCode';
-export { default as DevOpsLifecycle } from './DevOpsLifecycle';
-export { default as ArchitectureMap } from './ArchitectureMap';
-export { default as TaskLifecycle } from './TaskLifecycle';
-export { default as IdempotencyDemo } from './IdempotencyDemo';
-export { default as PlatformComponents } from './PlatformComponents';
-export { default as NavigatorRuntime } from './NavigatorRuntime';
+import './ch01.css';
+
+export { default as LabNetworkMap } from './LabNetworkMap';
+export { default as TwoAddresses } from './TwoAddresses';
+export { default as AccessPaths } from './AccessPaths';
+export { default as BaselineTimeline } from './BaselineTimeline';
+export { default as SnapshotChain } from './SnapshotChain';
+export { default as LabValues } from './LabValues';
+export { default as BuildRoadmap } from './BuildRoadmap';

@@ -1,0 +1,12 @@
+title: Implementing an Ansible Playbook
+goal: Build an inventory, configure Ansible for your project, and write and run playbooks with one or more plays.
+objectives:
+  - Write static INI inventories with groups, nested groups and host ranges, and verify them.
+  - Explain how Ansible and ansible-navigator find their configuration files, and set connection and privilege escalation options.
+  - Write a playbook in correct YAML, then syntax-check, dry-run and run it with ansible-navigator.
+  - Write playbooks with multiple plays, per-play privilege escalation, and modules found through the documentation.
+objectiveIds:
+  - ch03.inventory
+  - ch03.configuration
+  - ch03.playbooks
+  - ch03.modules

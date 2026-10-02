@@ -1,0 +1,825 @@
+---
+title: What you are building
+kind: lesson
+minutes: 10
+---
+
+export const widgetContent = {
+  "LabNetworkMap": {
+    "data": {
+      "flows": [
+        {
+          "id": "vm-vm",
+          "label": "VM ↔ VM",
+          "ok": true,
+          "text": "Machines inside the lab talk freely: SSH, ping, HTTP, anything. This is how Ansible on workstation reaches the servers.",
+          "rule": "chain forward:  iifname \"rhcebr0\" oifname \"rhcebr0\" accept",
+          "arrows": [
+            {
+              "points": [
+                [
+                  466,
+                  150
+                ],
+                [
+                  456,
+                  150
+                ],
+                [
+                  456,
+                  190
+                ],
+                [
+                  464,
+                  190
+                ]
+              ],
+              "variant": "ok",
+              "both": true,
+              "label": "ssh",
+              "labelAt": 0.5,
+              "labelDx": -14,
+              "labelDy": 4
+            }
+          ],
+          "nodes": [
+            "ws",
+            "sa"
+          ]
+        },
+        {
+          "id": "vm-internet",
+          "label": "VM → internet",
+          "ok": true,
+          "text": "VMs reach the internet through the gateway, which translates their addresses (NAT) and sends the traffic out of the host’s LAN interface. This is what makes dnf install work.",
+          "rule": "chain forward:  everything else from the lab is allowed (after the private-range drop)",
+          "arrows": [
+            {
+              "points": [
+                [
+                  450,
+                  298
+                ],
+                [
+                  412,
+                  298
+                ]
+              ],
+              "variant": "ok"
+            },
+            {
+              "points": [
+                [
+                  272,
+                  258
+                ],
+                [
+                  272,
+                  240
+                ]
+              ],
+              "variant": "ok"
+            },
+            {
+              "points": [
+                [
+                  272,
+                  188
+                ],
+                [
+                  272,
+                  170
+                ]
+              ],
+              "variant": "ok",
+              "label": "NAT",
+              "labelAnchor": "end",
+              "labelDx": -8,
+              "labelDy": 4
+            },
+            {
+              "points": [
+                [
+                  210,
+                  128
+                ],
+                [
+                  158,
+                  128
+                ]
+              ],
+              "variant": "ok"
+            },
+            {
+              "points": [
+                [
+                  140,
+                  114
+                ],
+                [
+                  140,
+                  58
+                ]
+              ],
+              "variant": "ok"
+            }
+          ],
+          "nodes": [
+            "sa",
+            "gw",
+            "seal",
+            "nic",
+            "router",
+            "net"
+          ]
+        },
+        {
+          "id": "lxc",
+          "label": "You → VM (lxc exec)",
+          "ok": true,
+          "text": "lxc exec and the LXD UI Terminal tab reach VMs through the lxd-agent console channel, not the network, so the firewall never sees them. This is how you get in.",
+          "rule": "no rule involved: not network traffic",
+          "arrows": [
+            {
+              "points": [
+                [
+                  410,
+                  360
+                ],
+                [
+                  440,
+                  360
+                ],
+                [
+                  440,
+                  138
+                ],
+                [
+                  464,
+                  138
+                ]
+              ],
+              "variant": "ok",
+              "label": "console channel",
+              "labelAt": 0.12
+            }
+          ],
+          "nodes": [
+            "lxc",
+            "ws"
+          ]
+        },
+        {
+          "id": "dhcp",
+          "label": "VM → DHCP / DNS",
+          "ok": true,
+          "text": "VMs may ask the gateway for their IP address (DHCP) and look up names such as servera.lab.example.com (DNS). Nothing else on the host is open to them.",
+          "rule": "chain input:  iifname \"rhcebr0\" udp dport { 53, 67 } accept",
+          "arrows": [
+            {
+              "points": [
+                [
+                  450,
+                  290
+                ],
+                [
+                  412,
+                  290
+                ]
+              ],
+              "variant": "ok",
+              "label": "53 · 67",
+              "labelDy": -6
+            }
+          ],
+          "nodes": [
+            "sd",
+            "gw"
+          ]
+        },
+        {
+          "id": "lan-lab",
+          "label": "LAN device → lab",
+          "ok": false,
+          "text": "A laptop on your network cannot open a connection into the lab. Your router has no route to 172.25.250.0/24 anyway, and even if it did, the host drops it.",
+          "rule": "chain forward:  oifname \"rhcebr0\" drop   # anything new INTO the lab",
+          "arrows": [
+            {
+              "points": [
+                [
+                  158,
+                  214
+                ],
+                [
+                  182,
+                  214
+                ],
+                [
+                  182,
+                  150
+                ],
+                [
+                  208,
+                  150
+                ]
+              ],
+              "hot": true
+            },
+            {
+              "points": [
+                [
+                  300,
+                  168
+                ],
+                [
+                  300,
+                  186
+                ]
+              ],
+              "variant": "bad"
+            }
+          ],
+          "nodes": [
+            "laptop",
+            "nic",
+            "seal"
+          ]
+        },
+        {
+          "id": "host-lab",
+          "label": "Host → lab",
+          "ok": false,
+          "text": "Even the host itself cannot ssh or ping the VMs. It only hands out addresses and answers DNS. That is why you use lxc exec, which does not use the network.",
+          "rule": "chain output:  oifname \"rhcebr0\" drop   # host can’t start connections",
+          "arrows": [
+            {
+              "points": [
+                [
+                  412,
+                  274
+                ],
+                [
+                  448,
+                  274
+                ]
+              ],
+              "variant": "bad",
+              "label": "ssh / ping",
+              "labelDy": -7
+            }
+          ],
+          "nodes": [
+            "gw"
+          ]
+        },
+        {
+          "id": "lab-lan",
+          "label": "Lab → your LAN",
+          "ok": false,
+          "text": "VMs cannot reach devices on your local network, your router’s admin page, or VPN ranges. Everything private is dropped; only the public internet is allowed.",
+          "rule": "chain forward:  iifname \"rhcebr0\" ip daddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10 } drop",
+          "arrows": [
+            {
+              "points": [
+                [
+                  450,
+                  306
+                ],
+                [
+                  412,
+                  306
+                ]
+              ],
+              "hot": true
+            },
+            {
+              "points": [
+                [
+                  250,
+                  258
+                ],
+                [
+                  250,
+                  242
+                ]
+              ],
+              "variant": "bad"
+            }
+          ],
+          "nodes": [
+            "sb",
+            "gw",
+            "seal"
+          ]
+        },
+        {
+          "id": "lab-host",
+          "label": "Lab → host services",
+          "ok": false,
+          "text": "VMs cannot reach the host’s SSH, the LXD UI on :8443, or any other service on it. Only DHCP and DNS are answered.",
+          "rule": "chain input:  iifname \"rhcebr0\" drop   # nothing else on the host",
+          "arrows": [
+            {
+              "points": [
+                [
+                  450,
+                  282
+                ],
+                [
+                  414,
+                  282
+                ]
+              ],
+              "variant": "bad",
+              "label": ":22 :8443",
+              "labelDy": -6
+            }
+          ],
+          "nodes": [
+            "sc",
+            "gw"
+          ]
+        }
+      ],
+      "n": {
+        "net": {
+          "x": 10,
+          "y": 10,
+          "w": 150,
+          "h": 46,
+          "tone": "blue",
+          "title": "Internet"
+        },
+        "router": {
+          "x": 20,
+          "y": 114,
+          "w": 138,
+          "h": 48,
+          "tone": "gray",
+          "title": "Router",
+          "sub": "<ROUTER_IP>"
+        },
+        "laptop": {
+          "x": 20,
+          "y": 190,
+          "w": 138,
+          "h": 48,
+          "tone": "gray",
+          "title": "Laptops, phones"
+        },
+        "nic": {
+          "x": 210,
+          "y": 116,
+          "w": 200,
+          "h": 52,
+          "tone": "purple",
+          "title": "LAN interface",
+          "sub": "<HOST_LAN_IP>"
+        },
+        "seal": {
+          "x": 210,
+          "y": 188,
+          "w": 200,
+          "h": 52,
+          "tone": "red",
+          "title": "nftables seal",
+          "sub": "table inet rhce_isolate"
+        },
+        "gw": {
+          "x": 210,
+          "y": 258,
+          "w": 200,
+          "h": 58,
+          "tone": "teal",
+          "title": "rhcebr0 · 172.25.250.254",
+          "sub": "gateway · DHCP · DNS · NAT",
+          "titleSize": 12.5
+        },
+        "lxc": {
+          "x": 210,
+          "y": 336,
+          "w": 200,
+          "h": 50,
+          "tone": "amber",
+          "title": "lxc exec / LXD UI",
+          "sub": "lxd-agent console channel"
+        },
+        "ws": {
+          "x": 466,
+          "y": 116,
+          "w": 192,
+          "h": 42,
+          "tone": "green",
+          "title": "workstation  .9",
+          "mono": true
+        },
+        "sa": {
+          "x": 466,
+          "y": 168,
+          "w": 94,
+          "h": 42,
+          "tone": "green",
+          "title": "servera",
+          "sub": ".10"
+        },
+        "sb": {
+          "x": 564,
+          "y": 168,
+          "w": 94,
+          "h": 42,
+          "tone": "green",
+          "title": "serverb",
+          "sub": ".11"
+        },
+        "sc": {
+          "x": 466,
+          "y": 218,
+          "w": 94,
+          "h": 42,
+          "tone": "green",
+          "title": "serverc",
+          "sub": ".12"
+        },
+        "sd": {
+          "x": 564,
+          "y": 218,
+          "w": 94,
+          "h": 42,
+          "tone": "green",
+          "title": "serverd",
+          "sub": ".13"
+        },
+        "ut": {
+          "x": 466,
+          "y": 268,
+          "w": 192,
+          "h": 42,
+          "tone": "gray",
+          "title": "utility  .8",
+          "sub": "optional",
+          "mono": true
+        }
+      },
+      "initialSelection1": "vm-internet"
+    },
+    "text": {
+      "label": "Traffic flow",
+      "lnmVerdictTitle": ": ",
+      "title": "The sealed lab network",
+      "caption": "Traffic may leave the lab for the internet, and flows freely between VMs. Nothing may start a connection into the lab, not even the host.",
+      "label2": "Local network",
+      "label3": "Ubuntu host",
+      "label4": "Sealed lab",
+      "sub": "172.25.250.0/24"
+    }
+  },
+  "LabValues": {
+    "data": {},
+    "text": {
+      "widgetTitle": "Your lab values",
+      "widgetSub": "Fill these in once. Every command in this guide then shows your own values, and the copy buttons copy them. Saved only in this browser.",
+      "span": "/",
+      "span2": " set",
+      "labvalsHint": "find it with ",
+      "label": "Save values",
+      "btn": " Clear"
+    }
+  },
+  "TwoAddresses": {
+    "data": {},
+    "text": {
+      "title": "Why the host has two IP addresses",
+      "caption": "The host keeps its normal LAN address (wired or Wi-Fi) and gains a second one, 172.25.250.254, on the lab's virtual switch. The VMs use that second address as their gateway.",
+      "title2": "Internet",
+      "title3": "Your router",
+      "sub": "LAN gateway",
+      "label": "Ubuntu host",
+      "title4": "LAN card",
+      "title5": "rhcebr0",
+      "sub2": "172.25.250.254",
+      "label2": "faces your network",
+      "label3": "faces the lab only",
+      "label4": "the host forwards (NAT) between the two",
+      "label5": "Lab VMs",
+      "title6": "workstation",
+      "title7": "servera…d",
+      "title8": "utility",
+      "label6": "gateway"
+    }
+  },
+  "BuildRoadmap": {
+    "data": {
+      "phases": [
+        {
+          "n": "01",
+          "title": "Prepare the Ubuntu host",
+          "min": 15,
+          "where": [
+            "host"
+          ],
+          "slug": "prepare-host"
+        },
+        {
+          "n": "02",
+          "title": "Open the LXD UI",
+          "min": 5,
+          "where": [
+            "ui",
+            "host"
+          ],
+          "slug": "prepare-host"
+        },
+        {
+          "n": "03",
+          "title": "Create the lab network",
+          "min": 5,
+          "where": [
+            "ui"
+          ],
+          "slug": "network-and-seal"
+        },
+        {
+          "n": "04",
+          "title": "Seal the lab network",
+          "min": 10,
+          "where": [
+            "host"
+          ],
+          "slug": "network-and-seal"
+        },
+        {
+          "n": "05",
+          "title": "Create the rhce project",
+          "min": 2,
+          "where": [
+            "ui",
+            "host"
+          ],
+          "slug": "project-profile-disks"
+        },
+        {
+          "n": "06",
+          "title": "Set up the lab profile",
+          "min": 10,
+          "where": [
+            "ui"
+          ],
+          "slug": "project-profile-disks"
+        },
+        {
+          "n": "07",
+          "title": "Create the extra disks",
+          "min": 5,
+          "where": [
+            "ui"
+          ],
+          "slug": "project-profile-disks"
+        },
+        {
+          "n": "08",
+          "title": "Create the VMs",
+          "min": 20,
+          "where": [
+            "ui"
+          ],
+          "slug": "create-and-verify-vms"
+        },
+        {
+          "n": "09",
+          "title": "Get inside and check",
+          "min": 10,
+          "where": [
+            "host",
+            "vm"
+          ],
+          "slug": "create-and-verify-vms"
+        },
+        {
+          "n": "10",
+          "title": "Prepare the control node",
+          "min": 15,
+          "where": [
+            "vm"
+          ],
+          "slug": "control-node"
+        },
+        {
+          "n": "11",
+          "title": "Utility server (optional)",
+          "min": 10,
+          "where": [
+            "host",
+            "vm"
+          ],
+          "slug": "control-node"
+        },
+        {
+          "n": "12",
+          "title": "Snapshots and rht-vmctl",
+          "min": 10,
+          "where": [
+            "host"
+          ],
+          "slug": "snapshots-and-rht-vmctl"
+        },
+        {
+          "n": "13",
+          "title": "Your first Ansible project",
+          "min": 10,
+          "where": [
+            "vm"
+          ],
+          "slug": "first-project-and-daily-use"
+        },
+        {
+          "n": "14",
+          "title": "Daily use",
+          "min": 0,
+          "where": [
+            "you",
+            "host"
+          ],
+          "slug": "first-project-and-daily-use"
+        }
+      ]
+    },
+    "text": {
+      "label": "LXD UI",
+      "label2": "Your PC",
+      "widgetTitle": "The build, phase by phase",
+      "pill": "about ",
+      "pill2": " minutes in total",
+      "template": "~{value0} min"
+    }
+  }
+};
+
+<Lead>
+The guide's exercises assume a conventional Ansible training classroom: a `workstation` control node and managed hosts `servera` to `serverd` on `lab.example.com`. This chapter builds a faithful copy on one Ubuntu machine at home, with Rocky Linux 9 VMs using the usual classroom names, IP addresses and users, on a private network that nothing outside can connect into.
+</Lead>
+
+<Objectives>
+- Understand the lab's layout, addresses and accounts before you build anything.
+- See exactly which traffic the sealed network allows and blocks.
+- Check that your machine meets the requirements, and fill in your own lab values.
+</Objectives>
+
+<Callout type="note" title="Tested end to end">
+Every step in this chapter was built and verified on real hardware with the versions listed below. Follow it in order the first time; afterwards, the [fast rebuild script](#/ch01/troubleshooting) does most of it in one go.
+</Callout>
+
+## The idea in one picture
+
+Six VMs sit on a private network called `rhcebr0`. Inside that network they talk to each other freely, and they can reach the internet, so `dnf install` works. From outside, nobody can open a connection in: not your laptop, not your router, and not even the host itself. You step inside with `lxc exec` (which does not use the network at all), then SSH between the VMs exactly as in the classroom.
+
+Pick a traffic flow to see its path and the firewall rule that decides it:
+
+<LabNetworkMap />
+
+<Columns>
+<Column title="Allowed" tone="green">
+
+- VM ↔ VM inside the lab (SSH, ping, HTTP, anything)
+- VMs → internet (package installs, downloads)
+- You → a VM through `lxc exec` or the LXD UI's Terminal tab
+- VMs → the lab's own DHCP and DNS service
+
+</Column>
+<Column title="Blocked" tone="red">
+
+- Any device on your local network → the lab
+- The host itself → the lab (no ssh, no ping)
+- The lab → your local network and any private or VPN ranges
+- The lab → any service on the host other than DHCP/DNS
+
+</Column>
+</Columns>
+
+## The address plan
+
+The lab uses the classroom network `172.25.250.0/24` and the domain `lab.example.com`, so every hostname and IP address in this guide works unchanged.
+
+| Name | IP | vCPU / RAM | Extra disk | Role |
+| --- | --- | --- | --- | --- |
+| (rhcebr0 gateway) | 172.25.250.254 | — | — | Lives on the host. Routes the lab to the internet; runs DHCP and DNS. |
+| `utility` | 172.25.250.8 | 1 / 1 GiB | — | Web server for practice files (optional) |
+| `workstation` | 172.25.250.9 | 2 / 2 GiB | — | Ansible control node. You work here. |
+| `servera` | 172.25.250.10 | 1 / 1 GiB | 5 GiB | Managed host |
+| `serverb` | 172.25.250.11 | 1 / 1 GiB | 5 GiB | Managed host |
+| `serverc` | 172.25.250.12 | 1 / 1 GiB | 5 GiB | Managed host |
+| `serverd` | 172.25.250.13 | 1 / 1 GiB | 5 GiB | Managed host |
+
+## Accounts on every VM
+
+| User | Password | Purpose |
+| --- | --- | --- |
+| `student` | `student` | Your everyday login. sudo with a password. |
+| `devops` | `redhat` | The account Ansible connects as. Passwordless sudo. |
+| `root` | `redhat` | Same as the classroom |
+
+## Where each step happens
+
+Every step in this chapter is labelled with where you run it:
+
+<Cards cols={3}>
+  <Card title="Host" tone="purple">
+    A terminal on the Ubuntu host.
+  </Card>
+  <Card title="LXD UI" tone="blue">
+    The LXD web interface in your browser.
+  </Card>
+  <Card title="VM" tone="green">
+    Inside a lab VM, usually as `student` on workstation.
+  </Card>
+</Cards>
+
+## Your lab values
+
+A few values differ on every home network. The instructions write them as placeholders, highlighted in amber: `<HOST_LAN_IP>`, `<HOST_USER>` and `<ROUTER_IP>`. Enter yours once here and every command in this guide shows (and copies) your real values instead:
+
+<LabValues />
+
+| Placeholder | Meaning | How to find it |
+| --- | --- | --- |
+| `<HOST_LAN_IP>` | The Ubuntu host's address on your local network | `hostname -I` on the host |
+| `<HOST_USER>` | Your login name on the Ubuntu host | `whoami` on the host |
+| `<ROUTER_IP>` | Your local network's default gateway | `ip route \| grep default` |
+
+Everything else, including the `172.25.250.0/24` network, the hostnames and the `student`/`devops` passwords, is the same for everyone.
+
+## Why the host has two IP addresses
+
+Your Ubuntu host keeps its normal address on your local network, `<HOST_LAN_IP>`. When you create the lab network, LXD builds a virtual switch called `rhcebr0` inside the host and gives the host a **second** address on it: `172.25.250.254`. That second address is the lab's **gateway**.
+
+<TwoAddresses />
+
+<Callout type="tip" title="Think of your home router">
+Your router works the same way: a public address towards your internet provider, and a private one (often `192.168.x.1`) towards your devices, which use it as their way out. Here the VMs use 172.25.250.254 as their way out, and the host forwards their traffic through `<HOST_LAN_IP>`.
+</Callout>
+
+The gateway can't be removed: without it the VMs would get no addresses (DHCP), couldn't find each other by name (DNS), and couldn't install packages. What you *can* do, and what the seal does, is make it **one-way**: traffic may leave the lab, but nothing, including the host, may start a connection into it.
+
+| Host interface | Address | Faces |
+| --- | --- | --- |
+| Your ethernet / Wi-Fi card | `<HOST_LAN_IP>` | Your local network and the internet. Unchanged. |
+| `rhcebr0` (virtual, created by LXD) | 172.25.250.254 | The lab VMs only. Gateway, DHCP and DNS. |
+
+## What you need
+
+| | Minimum | Recommended | Tested on |
+| --- | --- | --- | --- |
+| Operating system | Ubuntu Server LTS, x86_64, with snap support | | Ubuntu Server 26.04.1 LTS |
+| CPU | 4 threads with Intel VT-x or AMD-V | 4+ cores | Intel Core i5-7500, 4 cores / 4 threads, 3.4 GHz |
+| Memory | 12 GB | 16 GB or more | 32 GB (30 GiB usable) |
+| Free disk | 40 GB | 100 GB or more (SSD) | 200 GiB ZFS pool on a loop file |
+| Network | A fixed address on your LAN and internet access | Wired | Wi-Fi (USB adapter) on a `/16` home LAN. The lab is routed with NAT, not bridged, so Wi-Fi works. |
+
+With all six VMs running idle, the tested host measured:
+
+| Resource | Lab stopped | Lab running | What it means |
+| --- | --- | --- | --- |
+| Host RAM available | 26 GiB | 22 GiB | The whole lab costs about **4 GiB** at idle |
+| RAM inside each VM | — | ≈ 295 MiB per server · 373 MiB utility · 501 MiB workstation | Guests use far less than their limits |
+| Configured RAM limits | 7 GiB in total | | The ceiling if every VM is busy; size the host for this plus the OS |
+| CPU | — | load average 0.12 (4 cores) | 7 vCPUs on 4 cores is fine; Ansible runs are short bursts |
+| Storage pool used | 2.19 GiB of 192.81 GiB | | All VMs, the image and the `clean` snapshots; ZFS stores only what's written |
+
+<Callout type="note" title="How the minimums were chosen">
+**Memory:** 7 GiB of VM limits plus room for Ubuntu, LXD and the ZFS cache puts the floor at 12 GB. 16 GB leaves headroom for a browser with the LXD UI, or other workloads.
+
+**Disk:** the lab itself is small, but snapshots grow as VMs change, and the storage exercises write to the 5 GiB extra disks. The ZFS pool is a sparse file that only takes space as it fills, so a smaller disk works.
+</Callout>
+
+## Tested versions
+
+Newer patch releases should behave the same. If something differs, compare against this table first.
+
+| Layer | Component | Version | How it's pinned |
+| --- | --- | --- | --- |
+| Host | Ubuntu Server | 26.04.1 LTS, kernel 7.0.0-34-generic | — |
+| | LXD (snap) | 5.21.8 LTS, rev 40958 | `--channel=5.21/stable` + `snap refresh --hold` |
+| | nftables | Ubuntu 26.04 package | — |
+| Guest image | `images:rockylinux/9/cloud` | build 20260929_0805 | Optional local copy: `rocky9-lab` |
+| | Rocky Linux | 9.8 (Blue Onyx) | — |
+| workstation | ansible-core (dnf) | 2.14.18-3.el9_8.1 | Rocky 9.8 AppStream |
+| | rhel-system-roles | 1.120.5 | Rocky 9.8 AppStream |
+| | podman | 5.8.2 | Rocky 9.8 AppStream |
+| | python3.11 | 3.11.13 | Rocky 9.8 AppStream |
+| | ansible-navigator | 26.9.0 | `pip install "ansible-navigator==26.9.0"` in a venv |
+| | ansible.posix | 1.5.4 | `ansible-galaxy collection install ansible.posix:1.5.4` |
+| | community.general | 9.5.13 | `ansible-galaxy collection install community.general:9.5.13` |
+| Managed hosts | Python (platform) | 3.9 | Rocky 9 system Python |
+| All VMs | SELinux | Enforcing, selinux-policy 38.1.75 | Added by the profile; the image ships without it |
+| | firewalld, chrony | Running | Added by the profile, as on a RHEL server |
+
+<Callout type="important" title="How this differs from a Red Hat classroom">
+- **Rocky Linux 9 instead of RHEL 9.** Rocky is a free rebuild of RHEL, so packages, paths and services match. The fact `ansible_facts['distribution']` reports `Rocky`, not `RedHat`, so adjust conditions like `== "RedHat"` from chapter 5 when you practise them here, or test `ansible_facts['os_family'] == "RedHat"`, which is true on both.
+- **ansible-core 2.14 without an execution environment.** A Red Hat classroom runs playbooks inside Red Hat's supported EE, which needs a Red Hat registry login. Here navigator runs Rocky's own `ansible-core` 2.14, the same generation RHEL 9 uses, and the `ansible.posix` and `community.general` collections the EE would provide are installed on workstation. Section 1.6 explains how to try the container workflow anyway.
+- **The extra disk is `/dev/sdb`**, not `/dev/vdb`: adjust storage exercises accordingly.
+- **`lab start` is a stand-in.** A classroom's `lab` command exists only there. Section 1.6 installs this guide's own script with the same syntax that downloads each exercise's starter files; `lab grade` checks your project and host state without changing them.
+- **Classroom or home lab: pick once.** Wherever the two differ, exercises and lessons show both, behind a switch the site remembers.
+</Callout>
+
+## The build at a glance
+
+<BuildRoadmap />

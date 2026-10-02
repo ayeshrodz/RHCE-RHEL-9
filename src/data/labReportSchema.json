@@ -2,7 +2,7 @@
   "exercises": {
     "intro-install": {
       "version": 1,
-      "lesson": "#/ch01/lab-installing-ansible",
+      "lesson": "#/ch02/lab-installing-ansible",
       "checkpoints": {
         "final": {
           "files": [],
@@ -21,7 +21,7 @@
     },
     "playbook-inventory": {
       "version": 1,
-      "lesson": "#/ch02/lab-inventory",
+      "lesson": "#/ch03/lab-inventory",
       "checkpoints": {
         "final": {
           "files": [
@@ -40,7 +40,7 @@
     },
     "playbook-manage": {
       "version": 1,
-      "lesson": "#/ch02/lab-configuration",
+      "lesson": "#/ch03/lab-configuration",
       "checkpoints": {
         "final": {
           "files": [
@@ -58,7 +58,7 @@
     },
     "playbook-basic": {
       "version": 1,
-      "lesson": "#/ch02/lab-playbooks",
+      "lesson": "#/ch03/lab-playbooks",
       "checkpoints": {
         "final": {
           "files": [
@@ -95,7 +95,7 @@
     },
     "playbook-multi": {
       "version": 1,
-      "lesson": "#/ch02/lab-multiple-plays",
+      "lesson": "#/ch03/lab-multiple-plays",
       "checkpoints": {
         "final": {
           "files": [
@@ -129,7 +129,7 @@
     },
     "playbook-review": {
       "version": 1,
-      "lesson": "#/ch02/chapter-lab",
+      "lesson": "#/ch03/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -163,7 +163,7 @@
     },
     "data-variables": {
       "version": 1,
-      "lesson": "#/ch03/lab-variables",
+      "lesson": "#/ch04/lab-variables",
       "checkpoints": {
         "final": {
           "files": [
@@ -197,7 +197,7 @@
     },
     "data-secret": {
       "version": 1,
-      "lesson": "#/ch03/lab-vault",
+      "lesson": "#/ch04/lab-vault",
       "checkpoints": {
         "final": {
           "files": [
@@ -226,7 +226,7 @@
     },
     "data-facts": {
       "version": 1,
-      "lesson": "#/ch03/lab-facts",
+      "lesson": "#/ch04/lab-facts",
       "checkpoints": {
         "final": {
           "files": [
@@ -257,7 +257,7 @@
     },
     "data-review": {
       "version": 1,
-      "lesson": "#/ch03/chapter-lab",
+      "lesson": "#/ch04/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -304,7 +304,7 @@
     },
     "control-flow": {
       "version": 2,
-      "lesson": "#/ch04/lab-loops-conditionals",
+      "lesson": "#/ch05/lab-loops-conditionals",
       "checkpoints": {
         "final": {
           "files": [
@@ -327,7 +327,7 @@
     },
     "control-handlers": {
       "version": 1,
-      "lesson": "#/ch04/lab-handlers",
+      "lesson": "#/ch05/lab-handlers",
       "checkpoints": {
         "final": {
           "files": [
@@ -355,7 +355,7 @@
     },
     "control-errors": {
       "version": 1,
-      "lesson": "#/ch04/lab-task-failure",
+      "lesson": "#/ch05/lab-task-failure",
       "checkpoints": {
         "final": {
           "files": [
@@ -377,7 +377,7 @@
     },
     "control-review": {
       "version": 1,
-      "lesson": "#/ch04/chapter-lab",
+      "lesson": "#/ch05/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -411,7 +411,7 @@
     },
     "file-manage": {
       "version": 1,
-      "lesson": "#/ch05/lab-file-modules",
+      "lesson": "#/ch06/lab-file-modules",
       "checkpoints": {
         "final": {
           "files": [
@@ -490,7 +490,7 @@
     },
     "file-template": {
       "version": 1,
-      "lesson": "#/ch05/lab-templates",
+      "lesson": "#/ch06/lab-templates",
       "checkpoints": {
         "final": {
           "files": [
@@ -521,7 +521,7 @@
     },
     "file-review": {
       "version": 1,
-      "lesson": "#/ch05/chapter-lab",
+      "lesson": "#/ch06/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -557,7 +557,7 @@
     },
     "projects-host": {
       "version": 1,
-      "lesson": "#/ch06/lab-host-patterns",
+      "lesson": "#/ch07/lab-host-patterns",
       "checkpoints": {
         "final": {
           "files": [
@@ -575,7 +575,7 @@
     },
     "projects-file": {
       "version": 1,
-      "lesson": "#/ch06/lab-reuse",
+      "lesson": "#/ch07/lab-reuse",
       "checkpoints": {
         "final": {
           "files": [
@@ -613,7 +613,7 @@
     },
     "projects-review": {
       "version": 1,
-      "lesson": "#/ch06/chapter-lab",
+      "lesson": "#/ch07/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -660,7 +660,7 @@
     },
     "role-create": {
       "version": 1,
-      "lesson": "#/ch07/lab-role-create",
+      "lesson": "#/ch08/lab-role-create",
       "checkpoints": {
         "final": {
           "files": [
@@ -692,7 +692,7 @@
     },
     "role-galaxy": {
       "version": 1,
-      "lesson": "#/ch07/lab-role-galaxy",
+      "lesson": "#/ch08/lab-role-galaxy",
       "checkpoints": {
         "final": {
           "files": [
@@ -736,7 +736,7 @@
     },
     "role-collections": {
       "version": 1,
-      "lesson": "#/ch07/lab-role-collections",
+      "lesson": "#/ch08/lab-role-collections",
       "checkpoints": {
         "final": {
           "files": [
@@ -759,7 +759,7 @@
     },
     "role-system": {
       "version": 1,
-      "lesson": "#/ch07/lab-role-system",
+      "lesson": "#/ch08/lab-role-system",
       "checkpoints": {
         "final": {
           "files": [
@@ -791,7 +791,7 @@
     },
     "role-review": {
       "version": 1,
-      "lesson": "#/ch07/chapter-lab",
+      "lesson": "#/ch08/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -823,7 +823,7 @@
     },
     "troubleshoot-playbook": {
       "version": 1,
-      "lesson": "#/ch08/lab-troubleshoot-playbook",
+      "lesson": "#/ch09/lab-troubleshoot-playbook",
       "checkpoints": {
         "final": {
           "files": [
@@ -846,7 +846,7 @@
     },
     "troubleshoot-host": {
       "version": 1,
-      "lesson": "#/ch08/lab-troubleshoot-host",
+      "lesson": "#/ch09/lab-troubleshoot-host",
       "checkpoints": {
         "final": {
           "files": [
@@ -871,7 +871,7 @@
     },
     "troubleshoot-review": {
       "version": 2,
-      "lesson": "#/ch08/chapter-lab",
+      "lesson": "#/ch09/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -907,7 +907,7 @@
     },
     "system-software": {
       "version": 1,
-      "lesson": "#/ch09/lab-software",
+      "lesson": "#/ch10/lab-software",
       "checkpoints": {
         "final": {
           "files": [
@@ -951,7 +951,7 @@
     },
     "system-users": {
       "version": 1,
-      "lesson": "#/ch09/lab-users",
+      "lesson": "#/ch10/lab-users",
       "checkpoints": {
         "final": {
           "files": [
@@ -992,7 +992,7 @@
     },
     "system-process": {
       "version": 1,
-      "lesson": "#/ch09/lab-boot-and-scheduling",
+      "lesson": "#/ch10/lab-boot-and-scheduling",
       "checkpoints": {
         "final": {
           "files": [
@@ -1050,7 +1050,7 @@
     },
     "system-storage": {
       "version": 1,
-      "lesson": "#/ch09/lab-storage",
+      "lesson": "#/ch10/lab-storage",
       "checkpoints": {
         "final": {
           "files": [
@@ -1078,7 +1078,7 @@
     },
     "system-network": {
       "version": 1,
-      "lesson": "#/ch09/lab-network",
+      "lesson": "#/ch10/lab-network",
       "checkpoints": {
         "final": {
           "files": [
@@ -1102,7 +1102,7 @@
     },
     "system-review": {
       "version": 1,
-      "lesson": "#/ch09/chapter-lab",
+      "lesson": "#/ch10/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -1158,7 +1158,7 @@
     },
     "review-deploy": {
       "version": 1,
-      "lesson": "#/ch10/lab-review-deploy",
+      "lesson": "#/ch11/lab-review-deploy",
       "checkpoints": {
         "final": {
           "files": [
@@ -1191,7 +1191,7 @@
     },
     "review-playbooks": {
       "version": 2,
-      "lesson": "#/ch10/lab-review-playbooks",
+      "lesson": "#/ch11/lab-review-playbooks",
       "checkpoints": {
         "final": {
           "files": [
@@ -1291,7 +1291,7 @@
     },
     "review-admin": {
       "version": 1,
-      "lesson": "#/ch10/lab-review-admin",
+      "lesson": "#/ch11/lab-review-admin",
       "checkpoints": {
         "final": {
           "files": [
@@ -1342,7 +1342,7 @@
     },
     "review-roles": {
       "version": 1,
-      "lesson": "#/ch10/lab-review-roles",
+      "lesson": "#/ch11/lab-review-roles",
       "checkpoints": {
         "final": {
           "files": [
@@ -1383,7 +1383,7 @@
     },
     "assessment-release": {
       "version": 1,
-      "lesson": "#/ch10/assessment-release",
+      "lesson": "#/ch11/assessment-release",
       "checkpoints": {
         "final": {
           "files": [
@@ -1454,7 +1454,7 @@
     },
     "assessment-operations": {
       "version": 1,
-      "lesson": "#/ch10/assessment-operations",
+      "lesson": "#/ch11/assessment-operations",
       "checkpoints": {
         "final": {
           "files": [
@@ -1529,7 +1529,7 @@
     },
     "workflow-git": {
       "version": 1,
-      "lesson": "#/ch11/lab-git",
+      "lesson": "#/ch12/lab-git",
       "checkpoints": {
         "final": {
           "files": [
@@ -1593,7 +1593,7 @@
     },
     "workflow-container": {
       "version": 1,
-      "lesson": "#/ch11/lab-development-containers",
+      "lesson": "#/ch12/lab-development-containers",
       "checkpoints": {
         "final": {
           "files": [
@@ -1630,7 +1630,7 @@
     },
     "workflow-review": {
       "version": 1,
-      "lesson": "#/ch11/chapter-lab",
+      "lesson": "#/ch12/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -1692,7 +1692,7 @@
     },
     "system-archive": {
       "version": 1,
-      "lesson": "#/ch09/lab-archives",
+      "lesson": "#/ch10/lab-archives",
       "checkpoints": {
         "final": {
           "files": [

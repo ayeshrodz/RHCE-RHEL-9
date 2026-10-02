@@ -1,0 +1,14 @@
+title: Comprehensive Review
+goal: Demonstrate the skills learned in this course by installing, optimizing and configuring Ansible to manage hosts.
+objectives:
+  - Find and close the gaps in what you have learned, chapter by chapter.
+  - Install and configure Ansible, and create, modify and troubleshoot playbooks.
+  - Write playbooks that use templates, handlers, blocks and imports.
+  - Manage storage, users, networking and scheduled jobs with modules and system roles.
+  - Create a role from an existing playbook, and apply it to managed hosts.
+objectiveIds:
+  - ch11.review
+  - ch11.deployment
+  - ch11.composition
+  - ch11.administration
+  - ch11.reusable-roles

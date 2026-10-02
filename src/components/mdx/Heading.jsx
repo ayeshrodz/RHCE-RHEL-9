@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Check, Link as LinkIcon } from 'lucide-react';
 
-// The router owns the URL hash ("#/ch07/collections"), so a section's address
-// adds the heading id after a second "#": "#/ch07/collections#the-role-layout".
+// The router owns the URL hash ("#/ch08/collections"), so a section's address
+// adds the heading id after a second "#": "#/ch08/collections#the-role-layout".
 // React Router reads that second part as location.hash; shared heading
 // navigation scrolls to it once the MDX page has loaded.
 export function sectionUrl(pathname, id) {

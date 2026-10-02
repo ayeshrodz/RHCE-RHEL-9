@@ -1,8 +1,0 @@
-title: Managing Complex Plays and Playbooks
-goal: Write playbooks for larger, more complex projects by selecting hosts precisely and splitting work into reusable files.
-objectives:
-  - Write host patterns that select exactly the hosts a play or a command should manage.
-  - Split large playbooks into smaller playbooks and task files, and bring them back together with imports and includes, unconditionally or based on a condition.
-objectiveIds:
-  - ch06.patterns
-  - ch06.reuse

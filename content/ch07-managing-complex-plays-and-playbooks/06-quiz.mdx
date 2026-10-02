@@ -1,0 +1,132 @@
+---
+title: Knowledge check
+kind: quiz
+minutes: 8
+---
+
+<Lead>
+Twelve questions on host patterns, imports and includes. Aim for at least nine before moving on to chapter 8.
+</Lead>
+
+<Quiz objectives={["ch07.patterns","ch07.reuse"]}
+  id="chapter"
+  title="Chapter 7 knowledge check"
+  questions={[
+    { id: 'q-8e47208674a7', legacyIndex: 0,
+      q: 'A host is listed in the inventory as `web1.example.com`. Its IP address is 192.0.2.10 and it is not listed by address. What does `hosts: 192.0.2.10` select?',
+      options: ['web1.example.com', 'Nothing: patterns match inventory names only', 'It is a syntax error'],
+      answer: 1,
+      explain: 'Patterns are compared with the names in the inventory. Ansible does not resolve names or addresses to find a match.',
+    },
+    { id: 'q-5747e563b2f1', legacyIndex: 1,
+      q: "Which hosts does `'web,db,!staging'` select?",
+      options: ['Hosts in web or db, except those in staging', 'Hosts that are in web, db and staging', 'Only the staging hosts'],
+      answer: 0,
+      explain: 'web and db are added together, then the staging hosts are removed.',
+    },
+    { id: 'q-3041e6fc66e8', legacyIndex: 2,
+      q: "Which pattern is equivalent to `'web,&production'`?",
+      options: ["`'&production,web'`", "`'web,production'`", "`'production,!web'`"],
+      answer: 0,
+      explain: 'Term order does not matter: plain terms first, then intersections, then exclusions.',
+    },
+    { id: 'q-4aa9b45ecb9e', legacyIndex: 3,
+      q: 'The inventory has a group `prod` and a host `prod-db1`. What does `prod*` match?',
+      options: ['Only the host prod-db1', 'Only the members of the group prod', 'The host prod-db1 and every member of the group prod'],
+      answer: 2,
+      explain: 'Wildcards are tested against both host names and group names.',
+    },
+    { id: 'q-44bec0fc2baa', legacyIndex: 4,
+      q: 'What does `web[0]` select?',
+      options: ['The first host of the group web, in inventory order', 'A host literally named web[0]', 'Every host except the first'],
+      answer: 0,
+      explain: 'Positions count from 0; web[-1] is the last host, web[0:1] the first two.',
+    },
+    { id: 'q-ceee4a7ef70a', legacyIndex: 5,
+      q: 'A playbook has two plays, for `web` and for `db`. You run it with `--limit web`. What happens to the second play?',
+      options: ['It runs on the db hosts as usual', 'It is skipped: no hosts matched', 'The run fails'],
+      answer: 1,
+      explain: '--limit applies to every play. A play left with no hosts is skipped and the run continues.',
+    },
+    { id: 'q-f72d4c468746', legacyIndex: 6,
+      q: 'What is wrong with this playbook?',
+      code: "- name: Deploy\n  hosts: web\n  tasks:\n    - name: Database too\n      ansible.builtin.import_playbook: db.yml",
+      options: ['Nothing', '`import_playbook` cannot be used inside a play; it belongs at the top level', '`import_playbook` needs a loop'],
+      answer: 1,
+      explain: 'A playbook import stands where a play would. Inside tasks, use import_tasks or include_tasks with a task file.',
+    },
+    { id: 'q-9ab3f21d00f5', legacyIndex: 7,
+      q: 'Which statement about `import_tasks` is true?',
+      options: [
+        'The file is read when the task is reached during the run',
+        'The file is read when the playbook is parsed, and its tasks become part of the play',
+        'It can be used with `loop`',
+      ],
+      answer: 1,
+      explain: 'Imports are static. That is why --list-tasks can show the tasks, and why a loop is impossible.',
+    },
+    { id: 'q-074f43d9cf25', legacyIndex: 8,
+      q: 'An `include_tasks` has `when: install_db` and the variable is false. How many tasks from the file appear in the output?',
+      options: ['All of them, each marked skipping', 'None: only the include itself is shown as skipped', 'Only the first'],
+      answer: 1,
+      explain: 'The condition is tested once on the include. The file is never opened.',
+    },
+    { id: 'q-c9cecbd439fb', legacyIndex: 9,
+      q: 'You want the task file to be chosen by a fact: `tasks/setup-{{ ansible_facts[\'os_family\'] }}.yml`. Which keyword works?',
+      options: ['`import_tasks`', '`include_tasks`', 'Either'],
+      answer: 1,
+      explain: 'Facts exist only at run time. An import fails with "Error when evaluating variable in import path".',
+    },
+    { id: 'q-f80bab03a1c7', legacyIndex: 10,
+      q: 'How do you give a task file a different package list each time it is used?',
+      options: ['Edit the task file before each run', 'Set `vars:` on the import or include task', 'It is not possible'],
+      answer: 1,
+      explain: 'Variables under vars: on the import or include apply to the tasks it brings in.',
+    },
+    { id: 'q-4e878426f04d', legacyIndex: 11,
+      q: 'A task in an included file has `notify: restart httpd`. Where must that handler be defined?',
+      options: ['In the included file', 'In the handlers section of the play that includes the file', 'In ansible.cfg'],
+      answer: 1,
+      explain: 'Handlers belong to the play. Tasks brought in from files notify them by name.',
+    },
+  ]}
+/>
+
+## Apply what you learned
+
+export const practice = [
+  {
+    "id": "exclude-staging",
+    "chapter": "ch07",
+    "objective": "ch07.patterns",
+    "title": "Keep staging untouched",
+    "prompt": "Which pattern selects the production web host web1 and leaves the staging host web2 alone?",
+    "type": "choice",
+    "code": "[web]\nweb1\nweb2\n[staging]\nweb2",
+    "options": [
+      "`web,!staging`",
+      "`web,&staging`",
+      "`web:staging`",
+      "`staging`"
+    ],
+    "expected": "`web,!staging`",
+    "explain": "`!staging` removes staging hosts from the web group. `&staging` keeps only hosts in both groups, which is web2."
+  },
+  {
+    "id": "reuse-condition",
+    "chapter": "ch07",
+    "objective": "ch07.reuse",
+    "title": "Choose an include",
+    "prompt": "The first task changes a flag. You want one condition to decide whether the entire task file runs. Which keyword fits?",
+    "type": "choice",
+    "options": [
+      "import_tasks",
+      "include_tasks",
+      "import_playbook inside tasks"
+    ],
+    "expected": "include_tasks",
+    "explain": "include_tasks checks its condition once at the include. import_tasks checks it on each imported task."
+  }
+];
+
+<ChapterPractice chapter="ch07" challenges={practice} />

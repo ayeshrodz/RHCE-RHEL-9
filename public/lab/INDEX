@@ -1,45 +1,45 @@
-# exercise            page  title
-intro-install        1.6   Installing Ansible (nothing to download: the tools are already installed)
-playbook-inventory   2.2   Building an inventory (empty project: you write the inventory)
-playbook-manage      2.4   Managing Ansible configuration files
-playbook-basic       2.6   Writing and running playbooks
-playbook-multi       2.9   Implementing multiple plays
-playbook-review      2.10  Chapter lab: Implementing an Ansible Playbook
-data-variables       3.3   Managing variables
-data-secret          3.5   Managing secrets
-data-facts           3.8   Managing facts
-data-review          3.9   Chapter lab: Managing variables and facts
-control-flow         4.3   Loops and conditional tasks
-control-handlers     4.5   Implementing handlers
-control-errors       4.7   Handling task failure
-control-review       4.8   Chapter lab: Implementing task control
-file-manage          5.2   Modifying and copying files to hosts
-file-template        5.4   Deploying custom files with Jinja2 templates
-file-review          5.5   Chapter lab: Deploying files to managed hosts
-projects-host        6.2   Selecting hosts with host patterns
-projects-file        6.4   Including and importing files
-projects-review      6.5   Chapter lab: Managing complex plays and playbooks
-role-create          7.3   Creating roles
-role-galaxy          7.5   Deploying roles from external content sources
-role-collections     7.7   Getting roles and modules from content collections
-role-system          7.9   Reusing content with system roles
-role-review          7.10  Chapter lab: Simplifying playbooks with roles and content collections
-troubleshoot-playbook 8.2   Troubleshooting playbooks
-troubleshoot-host     8.4   Troubleshooting Ansible managed hosts
-troubleshoot-review   8.5   Chapter lab: Troubleshooting Ansible
-system-software       9.2   Managing software and subscriptions
-system-users          9.4   Managing users and authentication
-system-process        9.6   Managing the boot process and scheduled processes
-system-storage        9.8   Managing storage
-system-network        9.10  Managing network configuration
-system-archive        9.12  Archiving and restoring files
-system-review         9.13  Chapter lab: Automating Linux administration tasks
-review-deploy         10.2  Review lab: Deploying Ansible
-review-playbooks      10.3  Review lab: Creating playbooks
-review-admin          10.4  Review lab: Managing Linux hosts and using system roles
-review-roles          10.5  Review lab: Creating roles
-assessment-release    10.8  Integrated practice: Release a web service
-assessment-operations 10.9  Integrated practice: Prepare an operations host
-workflow-git          11.2  Managing a project with Git (empty folder: you clone the project into it)
-workflow-container    11.4  Running a project in a development container
-workflow-review       11.5  Chapter lab: Git and development containers
+# exercise            page   title
+intro-install         2.6    Installing Ansible (nothing to download: the tools are already installed)
+playbook-inventory    3.2    Building an inventory (empty project: you write the inventory)
+playbook-manage       3.4    Managing Ansible configuration files
+playbook-basic        3.6    Writing and running playbooks
+playbook-multi        3.9    Implementing multiple plays
+playbook-review       3.10   Chapter lab: Implementing an Ansible Playbook
+data-variables        4.3    Managing variables
+data-secret           4.5    Managing secrets
+data-facts            4.8    Managing facts
+data-review           4.9    Chapter lab: Managing variables and facts
+control-flow          5.3    Loops and conditional tasks
+control-handlers      5.5    Implementing handlers
+control-errors        5.7    Handling task failure
+control-review        5.8    Chapter lab: Implementing task control
+file-manage           6.2    Modifying and copying files to hosts
+file-template         6.4    Deploying custom files with Jinja2 templates
+file-review           6.5    Chapter lab: Deploying files to managed hosts
+projects-host         7.2    Selecting hosts with host patterns
+projects-file         7.4    Including and importing files
+projects-review       7.5    Chapter lab: Managing complex plays and playbooks
+role-create           8.3    Creating roles
+role-galaxy           8.5    Deploying roles from external content sources
+role-collections      8.7    Getting roles and modules from content collections
+role-system           8.9    Reusing content with system roles
+role-review           8.10   Chapter lab: Simplifying playbooks with roles and content collections
+troubleshoot-playbook 9.2    Troubleshooting playbooks
+troubleshoot-host     9.4    Troubleshooting Ansible managed hosts
+troubleshoot-review   9.5    Chapter lab: Troubleshooting Ansible
+system-software       10.2   Managing software and subscriptions
+system-users          10.4   Managing users and authentication
+system-process        10.6   Managing the boot process and scheduled processes
+system-storage        10.8   Managing storage
+system-network        10.10  Managing network configuration
+system-archive        10.12  Archiving and restoring files
+system-review         10.13  Chapter lab: Automating Linux administration tasks
+review-deploy         11.2   Review lab: Deploying Ansible
+review-playbooks      11.3   Review lab: Creating playbooks
+review-admin          11.4   Review lab: Managing Linux hosts and using system roles
+review-roles          11.5   Review lab: Creating roles
+assessment-release    11.8   Integrated practice: Release a web service
+assessment-operations 11.9   Integrated practice: Prepare an operations host
+workflow-git          12.2   Managing a project with Git (empty folder: you clone the project into it)
+workflow-container    12.4   Running a project in a development container
+workflow-review       12.5   Chapter lab: Git and development containers
