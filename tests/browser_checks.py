@@ -169,6 +169,28 @@ with preview_server(BASE, ROOT):
         assert page.evaluate("document.querySelector('#course-navigation').contains(document.activeElement)")
         page.keyboard.press('Escape'); assert opener.evaluate('(e) => e === document.activeElement')
         page.set_viewport_size({'width': 1440, 'height': 1000})
+        # Course map: filter, sliding highlight, one open chapter, rail flyouts.
+        go(page, '/ch03/variables')
+        nav = page.locator('#course-navigation')
+        mark = "() => { const m = document.querySelector('.map-chapter.is-open .map-marker'), a = document.querySelector('.map-chapter.is-open a[aria-current=page]'); return Math.abs(m.getBoundingClientRect().top - a.getBoundingClientRect().top) }"
+        assert page.evaluate(mark) < 1
+        nav.locator('a[href$="/ch03/facts"]').click(); page.wait_for_timeout(700)
+        assert page.evaluate(mark) < 1
+        nav.get_by_role('button', name='Expand chapter 4').click()
+        assert nav.get_by_role('button', name='Collapse chapter 4').count() and not nav.get_by_role('button', name='Collapse chapter 3').count()
+        assert nav.locator('#map-ch03').get_attribute('inert') is not None
+        box = nav.get_by_role('searchbox', name='Filter sections by title or number')
+        box.fill('vault')
+        visible = nav.locator('.map-section-link').evaluate_all('(ls) => ls.filter((l) => !l.closest("[inert]")).length')
+        assert visible >= 1 and nav.locator('mark').count() >= 1
+        box.press('Enter'); page.locator('h1').filter(has_text='Vault').wait_for()
+        box.fill('no such section'); assert nav.locator('.map-empty').is_visible()
+        box.press('Escape'); assert box.input_value() == ''
+        nav.get_by_role('button', name='Collapse sidebar').click(); entry = page.locator('.rail-entry').nth(3); entry.hover()
+        flyout = entry.locator('.rail-flyout'); flyout.wait_for(state='visible')
+        assert page.evaluate('(e) => e.getBoundingClientRect().right <= innerWidth', flyout.element_handle())
+        flyout.locator('a').first.click(); page.locator('h1').filter(has_text='3.1').wait_for()
+        nav.get_by_role('button', name='Expand sidebar').click()
         # Keyboard dialog containment and focus return.
         search = page.get_by_role('button', name='Search the course')
         search.click(); dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
