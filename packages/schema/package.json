@@ -10,7 +10,8 @@
     "./schemas/*": "./schemas/*",
     "./catalog/*": "./catalog/*",
     "./revision": "./src/revision.js",
-    "./validators": "./generated/validators.js"
+    "./validators": "./generated/validators.js",
+    "./limits": "./src/limits.js"
   },
   "files": [
     "src",

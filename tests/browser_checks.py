@@ -1,23 +1,55 @@
 """Production-route and learning-flow checks; starts a local preview when needed."""
+from contextlib import contextmanager
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import re
 import os
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import threading
 from playwright.sync_api import sync_playwright
 from browser_server import preview_server
+from waiting import wait_until
 
 ROOT = Path(__file__).resolve().parents[1]
 PROGRAM = 'rhel9-ansible'
 BASE = os.environ.get('PLAYBOOK_TEST_URL', 'http://127.0.0.1:4173/')
 
-def go(page, route):
-    page.goto(BASE + '#/' + PROGRAM + route)
+# Any security-policy violation is a failure: scripts, styles, fonts and connections stay on this site.
+CSP_WATCH = "window.__csp = []; document.addEventListener('securitypolicyviolation', e => window.__csp.push(e.violatedDirective + ' ' + e.blockedURI));"
+
+
+@contextmanager
+def site_with_content(origin, public_key=None):
+    """A copy of the built engine, served on its own port, configured to load content from `origin`.
+    A deployment does the same: the configuration names the content and the page's security policy lists
+    it (the build writes the policy; here it is edited to match). Yields the copy's base URL."""
+    with tempfile.TemporaryDirectory() as temp:
+        copy = Path(temp) / 'site'
+        shutil.copytree(ROOT / 'dist', copy, ignore=shutil.ignore_patterns('content', 'lab'))
+        html = (copy / 'index.html').read_text()
+        assert 'connect-src &#39;self&#39;' in html
+        (copy / 'index.html').write_text(html.replace('connect-src &#39;self&#39;', 'connect-src &#39;self&#39; ' + origin.rstrip('/')))
+        config = {'contentBase': origin, **({'publicKey': public_key} if public_key else {})}
+        (copy / 'kernel.config.json').write_text(json.dumps(config))
+        server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(copy)))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            yield f'http://127.0.0.1:{server.server_address[1]}/'
+        finally:
+            server.shutdown()
+            server.server_close()
+
+
+def go(page, route, base=None):
+    page.goto((base or BASE) + '#/' + PROGRAM + route)
     page.locator('h1').first.wait_for()
-    page.wait_for_function("!document.querySelector('.skeleton')")
+    wait_until(page, "!document.querySelector('.skeleton')")
+    assert not page.evaluate('window.__csp || []'), ('security policy violation', route, page.evaluate('window.__csp'))
+
 
 def engine_has_no_course_text():
     """The built engine is generic: no chapter or section title from the content bundle appears in its code."""
@@ -27,6 +59,11 @@ def engine_has_no_course_text():
     code = ''.join(f.read_text() for f in (ROOT / 'dist/assets').glob('*.js'))
     leaked = sorted(t for t in titles if t in code)
     assert not leaked, f'course text compiled into the engine: {leaked}'
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
 
 
 class CorsHandler(SimpleHTTPRequestHandler):
@@ -44,17 +81,18 @@ def content_from_another_origin(browser):
     threading.Thread(target=server.serve_forever, daemon=True).start()
     origin = f'http://127.0.0.1:{server.server_address[1]}/'
     try:
-        context = browser.new_context()
-        page = context.new_page()
-        requested = []
-        page.on('request', lambda r: requested.append(r.url))
-        page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
-        page.route(BASE + 'content/**', lambda route: route.abort())
-        go(page, '/ch03/inventory')
-        assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
-        assert page.locator('pre.shiki').count() > 3
-        assert any(url.startswith(origin + 'p/') for url in requested), 'pages came from the content origin'
-        context.close()
+        with site_with_content(origin) as base:
+            context = browser.new_context()
+            page = context.new_page()
+            requested = []
+            page.on('request', lambda r: requested.append(r.url))
+            page.goto(base + '#/' + PROGRAM + '/ch03/inventory')
+            page.locator('h1').first.wait_for()
+            assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
+            assert page.locator('pre.shiki').count() > 3
+            assert any(url.startswith(origin + 'p/') for url in requested), 'pages came from the content origin'
+            assert not any(url.startswith(base + 'content/') for url in requested), 'nothing came from this site'
+            context.close()
     finally:
         server.shutdown()
 
@@ -67,7 +105,6 @@ def serve_bundle(directory):
 
 def programs_stay_separate(browser):
     """A second program has its own pages, search and progress; old addresses still open the first."""
-    import shutil, subprocess, tempfile
     with tempfile.TemporaryDirectory() as temp:
         content = Path(temp) / 'content'
         shutil.copytree(ROOT / 'content', content)
@@ -77,24 +114,25 @@ def programs_stay_separate(browser):
         out = Path(temp) / 'bundle'
         subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'build', str(content), '--out', str(out)], check=True, capture_output=True)
         server, origin = serve_bundle(out)
+        site = site_with_content(origin)
         try:
+            base = site.__enter__()
             context = browser.new_context()
             page = context.new_page()
-            page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
             # The site home lists every program, with the reader's progress in each.
-            page.goto(BASE + '#/'); page.reload()
+            page.goto(base + '#/'); page.reload()
             page.get_by_role('heading', name='Learn Linux and automation by doing', level=1).wait_for()
             cards = page.locator('.program-cards .chapter-card')
             cards.first.wait_for()
-            assert cards.count() == 2
+            assert cards.count() == 2, page.locator('main').inner_text()[:600]
             assert 'Ansible automation on RHEL 9' in cards.nth(0).inner_text()
             assert 'Linux basics' in cards.nth(1).inner_text()
             assert not page.locator('.sidebar, .search-trigger').count(), 'the site home has no program navigation'
             # The first program keeps its own progress.
-            go(page, '/ch02/why-automate')
+            go(page, '/ch02/why-automate', base)
             page.evaluate("localStorage.setItem('rhce:rhel9-ansible@completed', JSON.stringify(['ch02/why-automate']))")
             # The second program opens beside it, with its own navigation and empty progress.
-            page.goto(BASE + '#/second-program/ch01/hello'); page.reload()
+            page.goto(base + '#/second-program/ch01/hello'); page.reload()
             page.locator('h1').first.wait_for()
             assert page.locator('h1').first.inner_text().endswith('Saying hello')
             assert page.evaluate("JSON.parse(localStorage.getItem('rhce:second-program@completed') || '[]').length") == 0
@@ -114,11 +152,11 @@ def programs_stay_separate(browser):
             page.get_by_role('dialog', name='Programs').get_by_role('link', name='Linux basics (test fixture)').click()
             page.wait_for_url('**/#/second-program')
             page.get_by_role('heading', name='Linux basics (test fixture)', level=1).wait_for()
-            page.goto(BASE + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
-            page.goto(BASE + '#/second-program/progress')
+            page.goto(base + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
+            page.goto(base + '#/second-program/progress')
             page.get_by_role('heading', name='Your learning', level=1).wait_for()
             assert '0 of 2 sections complete' in page.locator('.reference-intro').inner_text() or '1 of 2 sections complete' in page.locator('.reference-intro').inner_text()
-            page.goto(BASE + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
+            page.goto(base + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
             # Search covers this program only.
             page.get_by_role('button', name='Search the course').click()
             dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
@@ -128,24 +166,76 @@ def programs_stay_separate(browser):
             assert dialog.get_by_role('option').count() == 0, 'the other program is not searched'
             page.keyboard.press('Escape')
             # The first program does not find the second one's words.
-            go(page, '/ch02/why-automate')
+            go(page, '/ch02/why-automate', base)
             page.get_by_role('button', name='Search the course').click()
             dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
             dialog.get_by_role('combobox').fill('zebrafish'); page.wait_for_timeout(300)
             assert dialog.get_by_role('option').count() == 0
             page.keyboard.press('Escape')
             # Addresses from before programs existed still work; unknown programs are a 404.
-            page.goto(BASE + '#/ch03/inventory')
+            page.goto(base + '#/ch03/inventory')
             page.wait_for_url('**/#/rhel9-ansible/ch03/inventory')
-            page.goto(BASE + '#/no-such-program/ch01/x')
+            page.goto(base + '#/no-such-program/ch01/x')
             page.get_by_role('heading', name="That page isn't here").wait_for()
             context.close()
+        finally:
+            site.__exit__(None, None, None)
+            server.shutdown()
+
+
+def new_signing_key(directory):
+    """Make a signing key with the compiler's own command; returns (private key file, public JWK)."""
+    key = Path(directory) / 'signing-key.pem'
+    out = subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'keygen', str(key)], check=True, capture_output=True, text=True).stdout
+    return key, json.loads(out[out.index('{'):])['publicKey']
+
+
+def signed_content(browser):
+    """With a public key configured, only content signed by the matching private key is used."""
+    with tempfile.TemporaryDirectory() as temp:
+        key, public_key = new_signing_key(temp)
+        (Path(temp) / 'other').mkdir()
+        _, other_public = new_signing_key(Path(temp) / 'other')
+        signed = Path(temp) / 'signed'
+        subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'build', str(ROOT / 'content'), '--out', str(signed), '--sign-key', str(key)], check=True, capture_output=True)
+        server, origin = serve_bundle(signed)
+        try:
+            def open_with(configured_key, source_origin=origin):
+                with site_with_content(source_origin, configured_key) as base:
+                    context = browser.new_context()
+                    page = context.new_page()
+                    page.goto(base + '#/' + PROGRAM + '/ch03/inventory')
+                    try:
+                        page.locator('h1').first.wait_for()
+                        return page.locator('h1').first.inner_text(), context
+                    except Exception:
+                        return None, context
+
+            title, context = open_with(public_key)
+            assert title and title.endswith('Building an Ansible inventory'), 'signed content with the right key is used'
+            context.close()
+            title, context = open_with(other_public)
+            assert title and 'could not load' in title.lower(), 'content signed by another key is refused'
+            context.close()
+        finally:
+            server.shutdown()
+        # Unsigned content is refused once a key is pinned.
+        server, origin = serve_bundle(ROOT / 'dist/content')
+        try:
+            with site_with_content(origin, public_key) as base:
+                context = browser.new_context()
+                page = context.new_page()
+                page.goto(base + '#/')
+                page.locator('.boot-error').wait_for()
+                assert 'not signed' in page.locator('.boot-error').inner_text()
+                context.close()
         finally:
             server.shutdown()
 
 
 def tampered_content_is_refused(browser):
-    """A page whose JSON was altered to carry markup or a script link is refused, not rendered."""
+    """A page whose JSON was altered in transit to carry markup or a script link is refused: its content
+    no longer matches the fingerprint in its file name, so it is never parsed, let alone rendered."""
     for tamper in [
         lambda page: page['tree'].append({'t': 'el', 'tag': 'script', 'c': [{'t': 'text', 'v': 'window.pwned = 1'}]}),
         lambda page: page['tree'].append({'t': 'el', 'tag': 'a', 'attrs': {'href': 'javascript:window.pwned=1'}, 'c': [{'t': 'text', 'v': 'x'}]}),
@@ -164,7 +254,7 @@ def tampered_content_is_refused(browser):
         page.route('**/p/*/pages/ch03-inventory.*.json', handler(tamper))
         page.goto(BASE + '#/' + PROGRAM + '/ch03/inventory')
         page.locator('.load-error').wait_for()
-        assert 'not valid content' in page.locator('.load-error').inner_text()
+        assert 'published fingerprint' in page.locator('.load-error').inner_text()
         assert page.evaluate('window.pwned') is None
         context.close()
 
@@ -176,14 +266,16 @@ with preview_server(BASE, ROOT):
         browser = p.chromium.launch(headless=True)
         content_from_another_origin(browser)
         tampered_content_is_refused(browser)
+        signed_content(browser)
         programs_stay_separate(browser)
         context = browser.new_context(reduced_motion='reduce')
+        context.add_init_script(CSP_WATCH)
         page = context.new_page(); errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
         routes = json.loads((ROOT / 'node_modules/.cache/kernel-path/routes.json').read_text())
         for route in routes:
             go(page, route)
-            page.wait_for_function("!document.querySelector('.prose .widget[role=status]')")
+            wait_until(page, "!document.querySelector('.prose .widget[role=status]')")
             assert 'Page not found' not in page.locator('h1').first.inner_text(), route
             assert not page.locator('.load-error').count(), route
             assert 'This activity could not load' not in page.inner_text('body'), route
@@ -238,7 +330,7 @@ with preview_server(BASE, ROOT):
         assert abs(pinned_header['y'] - page.locator('.header').bounding_box()['height']) <= 1
         link = table.get_by_role('link', name='repair the lab', exact=True).first
         link.focus(); assert link.evaluate('(e) => e === document.activeElement')
-        link.click(); page.wait_for_function("document.getElementById('repair-an-existing-lab').getBoundingClientRect().top < 150")
+        link.click(); wait_until(page, "document.getElementById('repair-an-existing-lab').getBoundingClientRect().top < 150")
         # The platform badge navigates to a track-owned reference page.
         go(page, '/')
         lesson_before_reference = page.evaluate("localStorage.getItem('rhce:rhel9-ansible@lastVisited')")
@@ -270,7 +362,7 @@ with preview_server(BASE, ROOT):
                 page.set_viewport_size({'width': width, 'height': 1000})
                 go(page, '/platform#check-what-will-actually-run')
                 page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
-                page.wait_for_function("document.getElementById('check-what-will-actually-run').getBoundingClientRect().top < 150")
+                wait_until(page, "document.getElementById('check-what-will-actually-run').getBoundingClientRect().top < 150")
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'platform {theme} {width}'
                 page.reload(); page.locator('#check-what-will-actually-run').wait_for()
                 assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
@@ -303,7 +395,7 @@ with preview_server(BASE, ROOT):
         page.reload(); page.locator('.lab-walkthrough > summary').click()
         assert page.locator('.lab-task').first.get_by_role('checkbox').get_attribute('aria-checked') == 'true'
         go(page, '/ch10/lab-archives#task-56ef7e8d45cf')
-        page.wait_for_function("document.querySelector('.lab-walkthrough').open")
+        wait_until(page, "document.querySelector('.lab-walkthrough').open")
         assert page.locator('#task-56ef7e8d45cf').is_visible()
         page.get_by_role('button', name='Guided', exact=True).click()
         assert page.locator('.lab-mode').evaluate('(e) => e.classList.contains("option-switch")')
@@ -376,7 +468,7 @@ with preview_server(BASE, ROOT):
         if heading.count():
             target = heading.get_attribute('id')
             go(page, '/ch03/configuration#' + target)
-            page.wait_for_function('(id) => { const e = document.getElementById(id); return e && e.closest("details").open }', arg=target)
+            wait_until(page, '(id) => { const e = document.getElementById(id); return e && e.closest("details").open }', target)
         # Quiz attempt, reload, and review queue.
         go(page, '/ch02/quiz')
         first = page.locator('.quiz-item').first
@@ -434,7 +526,7 @@ with preview_server(BASE, ROOT):
         # Cross-tab updates.
         go(page, '/progress'); other = context.new_page(); go(other, '/')
         other.evaluate("localStorage.setItem('rhce:rhel9-ansible@completed', JSON.stringify(['ch02/why-automate']))")
-        page.wait_for_function("document.querySelector('.dashboard-stats dd').innerText.trim().split(/\\s+/)[0] === '1'")
+        wait_until(page, "document.querySelector('.dashboard-stats dd').innerText.trim().split(/\\s+/)[0] === '1'")
         # Readiness migration and preference updates should stay independent.
         other.close()
         blocked = browser.new_context()

@@ -68,7 +68,7 @@ scripts/                          content checks and build helpers
 tests/                            browser, phone, lab and content tests
 ```
 
-`npm run build` builds the engine into `dist/` and the content bundle into `dist/content/`; the lab tree (the `lab` command, exercise starter files and the grading catalog) is also placed at `dist/lab/`, where learners install it from. To load content from somewhere else (for example a CDN), change `contentBase` in `dist/kernel.config.json`; no rebuild is needed.
+`npm run build` builds the engine into `dist/` and the content bundle into `dist/content/`; the lab tree (the `lab` command, exercise starter files and the grading catalog) is also placed at `dist/lab/`, where learners install it from. To load content from somewhere else (for example a CDN), change `contentBase` in `dist/kernel.config.json`. The security policy, optional content signing and cache rules are in [docs/HOSTING.md](docs/HOSTING.md).
 
 See [validation evidence](docs/VALIDATION.md) for the tested stack and remaining host checks, [progress compatibility](docs/PROGRESS.md) for backups, and [local grading](docs/LAB-GRADING.md) for exercise checkpoints.
 

@@ -16,7 +16,7 @@
 // Reading only gathers files; checking against the contract happens in the compiler.
 import fs from 'node:fs';
 import path from 'node:path';
-import YAML from 'yaml';
+import { parseYaml } from './yaml.js';
 
 const FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/;
 
@@ -26,7 +26,7 @@ function readData(file) {
   return { dataFile, dataSource: fs.existsSync(dataFile) ? fs.readFileSync(dataFile, 'utf8') : null };
 }
 
-const readYaml = (file, fallback = {}) => (fs.existsSync(file) ? (YAML.parse(fs.readFileSync(file, 'utf8')) ?? fallback) : fallback);
+const readYaml = (file, fallback = {}) => (fs.existsSync(file) ? (parseYaml(fs.readFileSync(file, 'utf8')) ?? fallback) : fallback);
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 
 function readChapters(dir) {
@@ -47,7 +47,7 @@ function readChapters(dir) {
         .map((file) => {
           const full = path.join(chapterDir, file);
           const source = fs.readFileSync(full, 'utf8');
-          const front = YAML.parse(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? '') ?? {};
+          const front = parseYaml(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? '') ?? {};
           const slug = front.slug ?? file.replace(/\.md$/, '').replace(/^\d+-/, '');
           return { file: full, source, ...readData(full), front, slug, kind: front.kind, minutes: front.minutes };
         })

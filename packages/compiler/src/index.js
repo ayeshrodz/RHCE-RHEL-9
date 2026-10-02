@@ -5,6 +5,7 @@
 //   p/<program>/search.<hash>.json            search index
 // Every file is validated against the bundle schemas before it is written.
 import crypto from 'node:crypto';
+import { MAX_BYTES } from '@kernel-path/schema/limits';
 import fs from 'node:fs';
 import path from 'node:path';
 import { questionRevision } from '@kernel-path/schema/revision';
@@ -87,7 +88,7 @@ function checkFileTypes(dir, diagnostics) {
  * Compile `contentDir`. Returns { files, diagnostics, stats } where files maps bundle
  * paths to file contents. Throws CompileError when the content has errors.
  */
-export async function compile(contentDir, { now = new Date() } = {}) {
+export async function compile(contentDir, { now = new Date(), signingKey = null } = {}) {
   const root = path.resolve(contentDir);
   const diagnostics = new Diagnostics(path.dirname(root));
   const validator = createValidator();
@@ -95,9 +96,13 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   await initHighlighter();
   const source = readContent(root, diagnostics);
   const files = new Map();
-  const emit = (dir, name, value) => {
+  // Which size limit applies to a bundle file, by the folder and name it is written under.
+  const limitFor = (dir, name) => (dir.endsWith('/pages') || name === 'home' ? MAX_BYTES.page : (MAX_BYTES[name] ?? MAX_BYTES.page));
+  const emit = (dir, name, value, ext = 'json') => {
     const json = JSON.stringify(value);
-    const file = `${dir}/${name}.${hash(json)}.json`;
+    const file = `${dir}/${name}.${hash(json)}.${ext}`;
+    if (json.length > limitFor(dir, name))
+      diagnostics.error(null, null, `${file} is ${json.length} bytes, over the ${limitFor(dir, name)} byte limit for this kind of file`);
     files.set(file, json);
     return file;
   };
@@ -263,8 +268,19 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     ...(hasLabs ? { lab: 'lab/' } : {}),
     programs,
   };
+  // The signature covers the site index as written without the signature field. Every other file
+  // is named for a hash of its content, so signing the index vouches for the whole bundle.
+  if (signingKey) {
+    const signature = crypto
+      .sign('sha256', Buffer.from(JSON.stringify(site)), { key: signingKey, dsaEncoding: 'ieee-p1363' })
+      .toString('base64url');
+    site.signature = emit('site', 'signature', { apiVersion: 1, alg: 'ES256', signature }, 'sig');
+  }
   expect(validator.ids.bundle.site, site, null, 'site index');
-  files.set('site.json', JSON.stringify(site));
+  const siteJson = JSON.stringify(site);
+  if (siteJson.length > MAX_BYTES.site)
+    diagnostics.error(null, null, `site.json is ${siteJson.length} bytes, over the ${MAX_BYTES.site} byte limit`);
+  files.set('site.json', siteJson);
 
   if (!diagnostics.ok) throw new CompileError(diagnostics);
   const stats = { programs: programs.length, pages: [...files.keys()].filter((f) => f.includes('/pages/')).length, files: files.size };

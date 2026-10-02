@@ -5,7 +5,7 @@
 // Markdoc runs as a parser only. Variables, functions and annotations are refused, and
 // code blocks are never scanned for tags, so Jinja and similar syntax stays plain text.
 import Markdoc from '@markdoc/markdoc';
-import YAML from 'yaml';
+import { parseYaml } from './yaml.js';
 import GithubSlugger from 'github-slugger';
 import { catalog } from '@kernel-path/schema';
 import { tokenize } from './highlight.js';
@@ -50,14 +50,14 @@ export function readPage(source, dataSource, file, dataFile, diagnostics) {
   const ast = Markdoc.parse(tokens);
   let front = {};
   try {
-    front = YAML.parse(ast.attributes.frontmatter ?? '') ?? {};
+    front = parseYaml(ast.attributes.frontmatter ?? '') ?? {};
   } catch (e) {
     diagnostics.error(file, 1, `invalid frontmatter: ${e.message}`);
   }
   let data = {};
   if (dataSource != null) {
     try {
-      data = YAML.parse(dataSource) ?? {};
+      data = parseYaml(dataSource) ?? {};
       if (typeof data !== 'object' || Array.isArray(data)) throw new Error('expected a map of ref: data');
     } catch (e) {
       diagnostics.error(dataFile, null, `invalid page data: ${e.message}`);

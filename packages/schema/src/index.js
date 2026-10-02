@@ -23,6 +23,15 @@ import bundleSearch from '../schemas/bundle/search.schema.json' with { type: 'js
 import bundleInterface from '../schemas/bundle/interface.schema.json' with { type: 'json' };
 import bundleLegacy from '../schemas/bundle/legacy.schema.json' with { type: 'json' };
 
+// A compiled page may only use tags the catalog offers (not the planned ones, which cannot be rendered yet).
+const pageSchema = structuredClone(bundlePage);
+pageSchema.$defs.tag.properties.name = {
+  type: 'string',
+  enum: Object.entries(catalog.components)
+    .filter(([, c]) => c.status !== 'planned')
+    .map(([name]) => name),
+};
+
 /** The contract version this package describes. */
 export const API_VERSION = 1;
 
@@ -45,7 +54,7 @@ export const schemas = [
   legacyWidget,
   bundleSite,
   bundleManifest,
-  bundlePage,
+  pageSchema,
   bundleSearch,
   bundleInterface,
   bundleLegacy,
@@ -64,7 +73,7 @@ export const schemaIds = {
   bundle: {
     site: bundleSite.$id,
     manifest: bundleManifest.$id,
-    page: bundlePage.$id,
+    page: pageSchema.$id,
     search: bundleSearch.$id,
     legacy: bundleLegacy.$id,
     interface: bundleInterface.$id,
@@ -73,6 +82,33 @@ export const schemaIds = {
 
 /** The component catalog: tag name → typed description. */
 export { catalog };
+
+/**
+ * What the browser needs to check a tag's attributes before rendering it: for each usable tag, its
+ * attributes with their types, allowed values and limits, and which are required.
+ */
+export function tagTable() {
+  return Object.fromEntries(
+    Object.entries(catalog.components)
+      .filter(([, c]) => c.status !== 'planned')
+      .map(([name, c]) => [
+        name,
+        {
+          required: c.required ?? [],
+          attributes: Object.fromEntries(
+            Object.entries(c.attributes ?? {}).map(([attribute, a]) => [
+              attribute,
+              Object.fromEntries(
+                Object.entries({ type: a.type, enum: a.enum, minimum: a.minimum, maximum: a.maximum, maxItems: a.maxItems }).filter(
+                  ([, v]) => v !== undefined,
+                ),
+              ),
+            ]),
+          ),
+        },
+      ]),
+  );
+}
 
 /** Tags content may use today: stable entries plus legacy entries during the migration. */
 export function usableTags() {

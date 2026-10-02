@@ -7,7 +7,7 @@
 // as a page; the lab tools save them under their real names.
 import fs from 'node:fs';
 import path from 'node:path';
-import YAML from 'yaml';
+import { parseYaml } from './yaml.js';
 
 const MAX_FILE_BYTES = 200_000;
 const CONTROL_ONLY = new Set(['git', 'lint']);
@@ -53,7 +53,7 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
       if (bytes.includes(0)) return fail(`${subject} '${relative}' is not a text file`);
       if (!def.intentionalFaults && /\.ya?ml$/.test(relative)) {
         try {
-          YAML.parse(bytes.toString('utf8'));
+          parseYaml(bytes.toString('utf8'));
         } catch (e) {
           fail(`${subject} '${relative}' is not valid YAML: ${e.message.split('\n')[0]}`);
         }

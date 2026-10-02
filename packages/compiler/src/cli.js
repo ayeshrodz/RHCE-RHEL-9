@@ -1,30 +1,60 @@
 #!/usr/bin/env node
 // kernel validate [content-dir]
-// kernel build [content-dir] --out <dir>
+// kernel build [content-dir] --out <dir> [--sign-key <private-key.pem>]
+// kernel keygen <private-key.pem>        make a signing key; prints the public key to put in kernel.config.json
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import { compile, writeBundle } from './index.js';
 import { CompileError } from './diagnostics.js';
 
-const USAGE = 'usage: kernel validate [content-dir]\n       kernel build [content-dir] --out <dir>';
+const USAGE =
+  'usage: kernel validate [content-dir]\n       kernel build [content-dir] --out <dir> [--sign-key <private-key.pem>]\n       kernel keygen <private-key.pem>';
+
+/** Make an ECDSA P-256 signing key: the private key goes to a file, the public key is printed. */
+function keygen(file) {
+  if (!file) {
+    console.error(USAGE);
+    return 2;
+  }
+  if (fs.existsSync(file)) {
+    console.error(`${file} already exists; it was not overwritten.`);
+    return 1;
+  }
+  const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  fs.writeFileSync(file, privateKey.export({ type: 'pkcs8', format: 'pem' }), { mode: 0o600 });
+  const { x, y } = publicKey.export({ format: 'jwk' });
+  console.log(`Private key written to ${file}. Keep it secret (a CI secret is ideal).`);
+  console.log('Add this to kernel.config.json to require signed content:');
+  console.log(JSON.stringify({ publicKey: { kty: 'EC', crv: 'P-256', x, y } }, null, 2));
+  return 0;
+}
 
 async function main(argv) {
   const [command, ...rest] = argv;
+  if (command === 'keygen') return keygen(rest[0]);
   const outFlag = rest.indexOf('--out');
   const out = outFlag >= 0 ? rest[outFlag + 1] : null;
-  const contentDir = rest.find((arg, i) => !arg.startsWith('--') && i !== outFlag + 1) ?? 'content';
+  const keyFlag = rest.indexOf('--sign-key');
+  const keyFile = keyFlag >= 0 ? rest[keyFlag + 1] : null;
+  const flagValues = new Set([outFlag, keyFlag].filter((i) => i >= 0).map((i) => i + 1));
+  const contentDir = rest.find((arg, i) => !arg.startsWith('--') && !flagValues.has(i)) ?? 'content';
   if (!['validate', 'build'].includes(command) || (command === 'build' && !out)) {
     console.error(USAGE);
     return 2;
   }
   const started = performance.now();
   try {
-    const { files, diagnostics, stats } = await compile(contentDir);
+    // The private key comes from a file, or from KERNEL_SIGNING_KEY (for a CI secret). Without one the bundle is unsigned.
+    const pem = keyFile ? fs.readFileSync(keyFile, 'utf8') : process.env.KERNEL_SIGNING_KEY;
+    const signingKey = command === 'build' && pem?.trim() ? crypto.createPrivateKey(pem) : null;
+    const { files, diagnostics, stats } = await compile(contentDir, { signingKey });
     if (diagnostics.warnings.length) console.warn(diagnostics.format());
     if (command === 'build') writeBundle(files, path.resolve(out));
     const ms = Math.round(performance.now() - started);
     console.log(
       `${command === 'build' ? 'Built' : 'Validated'} ${stats.programs} program(s), ${stats.pages} pages` +
-        (command === 'build' ? ` into ${out}` : '') +
+        (command === 'build' ? ` into ${out}${signingKey ? ' (signed)' : ''}` : '') +
         ` in ${ms} ms.`,
     );
     return 0;

@@ -37,6 +37,7 @@ def capture(out):
     sys.path.insert(0, str(ROOT / 'tests'))
     from playwright.sync_api import sync_playwright
     from browser_server import preview_server
+from waiting import wait_until
 
     routes = json.loads((ROOT / 'node_modules/.cache/kernel-path/routes.json').read_text())
     snapshots = {}
@@ -47,7 +48,7 @@ def capture(out):
             for route in routes:
                 page.goto(BASE + '#/' + PROGRAM + route)
                 page.locator('h1').first.wait_for()
-                page.wait_for_function("!document.querySelector('.skeleton, .prose .widget[role=status]')")
+                wait_until(page, "!document.querySelector('.skeleton, .prose .widget[role=status]')")
                 height = page.evaluate('document.body.scrollHeight')
                 for y in range(0, height, 900):
                     page.evaluate(f'window.scrollTo(0, {y})')
