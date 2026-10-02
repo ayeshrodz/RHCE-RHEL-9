@@ -1,0 +1,13 @@
+---
+- name: Build host keeps a record of its kernel
+  hosts: web
+  become: yes
+  tasks:
+    - name: Tools directory exists
+      file:
+        path: /opt/tools
+        state: directory
+        mode: "0755"
+
+    - name: Kernel version is recorded
+      ansible.builtin.shell: uname -r > /opt/tools/kernel.txt

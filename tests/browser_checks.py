@@ -135,19 +135,19 @@ with preview_server(BASE, ROOT):
         # Setup instructions remain a walkthrough; task checks survive mode changes/reload.
         go(page, '/ch00/prepare-host')
         assert not page.locator('.lab-mode').count()
-        go(page, '/ch11/lab-archive-recovery')
+        go(page, '/ch09/lab-archives')
         task = page.locator('.lab-task').first
         task.get_by_role('checkbox').click()
         page.get_by_role('button', name='Challenge', exact=True).click()
         page.reload(); page.locator('.lab-walkthrough > summary').click()
         assert page.locator('.lab-task').first.get_by_role('checkbox').get_attribute('aria-checked') == 'true'
-        go(page, '/ch11/lab-archive-recovery#task-56ef7e8d45cf')
+        go(page, '/ch09/lab-archives#task-56ef7e8d45cf')
         page.wait_for_function("document.querySelector('.lab-walkthrough').open")
         assert page.locator('#task-56ef7e8d45cf').is_visible()
         page.get_by_role('button', name='Guided', exact=True).click()
         assert page.locator('.lab-mode').evaluate('(e) => e.classList.contains("option-switch")')
         assert not page.locator('.lab-mode .btn-primary').count()
-        assert page.locator('h1').inner_text().endswith('Exercise: Archive and restore a release')
+        assert page.locator('h1').inner_text().endswith('Exercise: Archiving and restoring files')
         # Dashboard typography and action spacing in both themes and viewports.
         for theme in ['light', 'dark']:
             for width in [390, 1440]:
@@ -223,13 +223,13 @@ with preview_server(BASE, ROOT):
         # Complete grading reports import as independent practice evidence.
         go(page, '/progress')
         catalog = json.loads((ROOT / 'public/lab/graders.json').read_text())
-        exercise = catalog['exercises']['bridge-security']; cp = exercise['checkpoints']['final']
+        exercise = catalog['exercises']['system-archive']; cp = exercise['checkpoints']['final']
         ids = ['file:' + f for f in cp['files']] + [x['id'] for x in cp.get('local', [])] + ['group:' + g for g in cp.get('groups', {})] + [probe['id'] + ':' + host for probe in cp['probes'] for host in probe['targets']]
-        report = {'app': 'playbook-path-lab', 'version': 1, 'exerciseId': 'bridge-security', 'exerciseVersion': exercise['version'], 'checkpointId': 'final', 'checkedAt': '2026-10-02T00:00:00Z', 'checks': [{'id': id, 'status': 'pass', 'message': 'Requirement observed', 'lesson': exercise['lesson']} for id in ids]}
+        report = {'app': 'playbook-path-lab', 'version': 1, 'exerciseId': 'system-archive', 'exerciseVersion': exercise['version'], 'checkpointId': 'final', 'checkedAt': '2026-10-02T00:00:00Z', 'checks': [{'id': id, 'status': 'pass', 'message': 'Requirement observed', 'lesson': exercise['lesson']} for id in ids]}
         with tempfile.TemporaryDirectory() as temp:
             file = Path(temp) / 'lab-report.json'; file.write_text(json.dumps(report))
             page.locator('article input[type=file]').set_input_files(file)
-            page.get_by_text('Saved bridge-security / final.', exact=False).wait_for()
+            page.get_by_text('Saved system-archive / final.', exact=False).wait_for()
             assert page.evaluate("JSON.parse(localStorage.getItem('rhce:labReports')).length") == 1
             assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
             file.write_text(json.dumps({**report, 'checks': report['checks'][1:]}))

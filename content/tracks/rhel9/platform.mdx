@@ -54,7 +54,7 @@ These are **different stacks**. An AAP release, a navigator release, an Ansible 
 | Automation engine | ansible-core 2.14; VM checks recorded on 2.14.18 | core 2.13 inside the AAP 2.2 EE |
 | Navigator | 26.9.0 in its own Python environment | The version supplied by the classroom |
 | Collections | Pinned on workstation: ansible.posix 1.5.4 and community.general 9.5.13 | Collections provided by the selected EE |
-| Execution environment | Disabled for the baseline; optional container practice in chapter 11 | Enabled; image provided by the classroom registry |
+| Execution environment | Disabled for the baseline; chapter 11 runs projects in a community image | Enabled; image provided by the classroom registry |
 
 The home-lab versions above are the documented baseline checked on **2 October 2026**. They describe selected verified lab runs, rather than complete validation of every exercise. Use compatible collection versions: installing the newest collection can raise its required core version.
 
@@ -86,7 +86,7 @@ ansible-navigator exec --mode stdout -- ansible --version
 ansible-navigator exec --mode stdout -- ansible-galaxy collection list
 ```
 
-These commands may pull the configured image if it is missing. The output inside the container can differ from the local commands above. Configure an available public image through [the development-container lesson](#/ch11/development-containers) when practising the community workflow.
+These commands may pull the configured image if it is missing. The output inside the container can differ from the local commands above. Chapter 11 shows how to choose a public image for a project in [the development-container lesson](#/ch11/development-containers).
 </Reveal>
 
 ## Turn practice into reliable skills
@@ -95,7 +95,7 @@ RHEL 9 administration gives your playbooks a concrete goal: packages installed w
 
 For each exercise, check the required state, run the playbook again, and explain any remaining changes. Perform reboot checks when the task requires persistence. Try Challenge mode once you can complete the guided procedure.
 
-For certification planning, consult the [current EX294 objectives and available exam versions](https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux). The published objectives follow the most recent product version; check the version you plan to book. Chapter 11 bridges the foundations to Git, VS Code, and container workflows. This independent community platform provides practice evidence, without guaranteeing an exam result.
+For certification planning, read the RHCE exam's published objectives on the Red Hat website, and check which product version applies when you book. This independent community platform provides practice evidence, without guaranteeing an exam result.
 
 ## Choose your next step
 
@@ -107,6 +107,6 @@ For certification planning, consult the [current EX294 objectives and available 
     [Start chapter 1](#/ch01) to understand the architecture and follow your first automation tasks.
   </Card>
   <Card title="Extend your workflow" kicker="After the foundations" tone="purple">
-    [Explore chapter 11](#/ch11) to track changes, run explicit runtimes, and practise recovery.
+    [Start chapter 11](#/ch11) to keep projects in Git and run them from development containers.
   </Card>
 </Cards>

@@ -5,7 +5,7 @@ Run `lab update` on workstation to install the current helper. Grade before `lab
 ```sh
 lab grade system-storage
 lab grade file-manage --checkpoint copied
-lab grade bridge-security --json > bridge-security-result.json
+lab grade system-archive --json > system-archive-result.json
 ```
 
 The grader reads project files, resolves inventory with Ansible, and sends maintained read-only probes through Ansible's `raw` module. It does not run your playbook or repair the managed hosts. Run your playbooks again yourself and perform the reboot checks requested by each exercise.

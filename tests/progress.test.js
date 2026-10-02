@@ -49,7 +49,7 @@ test('version two exports round-trip histories and reject malformed data atomica
     assert.deepEqual(exportProgress().data, backup.data);
   }
 });
-function reportFor(name = 'bridge-security') {
+function reportFor(name = 'system-archive') {
   const e = catalog.exercises[name],
     c = e.checkpoints.final;
   const ids = [
@@ -95,6 +95,18 @@ test('lab reports require supported versions, valid checks and complete coverage
   );
 });
 
+test('reports for retired exercises still import', () => {
+  const report = {
+    app: 'playbook-path-lab',
+    version: 1,
+    exerciseId: 'bridge-archive',
+    exerciseVersion: 1,
+    checkpointId: 'final',
+    checkedAt: '2026-10-01T00:00:00Z',
+    checks: [{ id: 'restored:servera.lab.example.com', status: 'pass', message: 'Restored', lesson: '#/ch11/lab-archive-recovery' }],
+  };
+  assert.equal(validateLabReport(report, catalog), report);
+});
 test('renamed and legacy lab reports survive old progress imports and new exports', () => {
   for (const app of ['kernel-path-lab', 'playbook-path-lab']) {
     const report = { ...reportFor('assessment-release'), app };
