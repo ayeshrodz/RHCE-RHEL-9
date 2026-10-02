@@ -151,7 +151,7 @@ with preview_server(BASE, ROOT):
         link = table.get_by_role('link', name='repair the lab', exact=True).first
         link.focus(); assert link.evaluate('(e) => e === document.activeElement')
         link.click(); page.wait_for_function("document.getElementById('repair-an-existing-lab').getBoundingClientRect().top < 150")
-        # The platform badge navigates to a track-owned MDX reference page.
+        # The platform badge navigates to a track-owned reference page.
         go(page, '/')
         lesson_before_reference = page.evaluate("localStorage.getItem('rhce:lastVisited')")
         page.get_by_role('link', name='RHEL 9: platform and versions', exact=True).click()

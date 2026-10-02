@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+    - front: What are host patterns matched against?
+      back: The host and group **names in the inventory**. Nothing is resolved through DNS.
+    - front: Pattern for "in web AND in production"?
+      back: "`'web,&production'`"
+    - front: Pattern for "all except the db group"?
+      back: "`'all,!db'`"
+    - front: In what order are pattern terms applied?
+      back: Plain terms are added, then `&` intersections, then `!` exclusions, whatever order they are written in.
+    - front: What does `--limit` do to a play's `hosts`?
+      back: "Narrows it: the play runs on hosts matching **both**. It never adds hosts."
+    - front: How do you preview the hosts of each play?
+      back: "`ansible-navigator run -m stdout site.yml --list-hosts`"
+    - front: What happens when a pattern term matches nothing?
+      back: A warning, "Could not match supplied host pattern", and the run continues.
+    - front: Where does `import_playbook` go?
+      back: At the **top level** of a playbook, in place of a play.
+    - front: What is in a task file?
+      back: "A YAML **list of tasks** only: no `hosts`, no `tasks:` keyword."
+    - front: "Static or dynamic: `import_tasks`?"
+      back: "**Static**: read at parse time. `include_tasks` is dynamic: read when the task runs."
+    - front: Which one can take a `loop`?
+      back: "`include_tasks`. A loop on `import_tasks` is an error."
+    - front: How does `when` behave on `import_tasks`?
+      back: It is copied to **every task** in the file, and each one tests it.

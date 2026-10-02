@@ -1,0 +1,36 @@
+dev-ops-lifecycle:
+  text:
+    title: Ansible across the application lifecycle
+    caption: Every team reads the same human-readable playbook, from development through to production.
+    label: from development…
+    label2: …to production
+    title2: Ansible Playbook
+    sub: one shared language
+  data:
+    teams:
+      - title: Dev / Test
+        sub: writes it
+        tone: blue
+      - title: QA
+        sub: verifies it
+        tone: teal
+      - title: Operations
+        sub: runs it
+        tone: green
+      - title: Management
+        sub: audits it
+        tone: amber
+      - title: Outsourcers
+        sub: reuse it
+        tone: pink
+check:
+  questions:
+    - id: q-94bfa1cda240
+      legacyIndex: 0
+      q: What does it mean to say Ansible is a **desired-state engine**?
+      options:
+        - It runs every command in a playbook on every run, in order
+        - You describe the state you want, and Ansible changes only what does not already match
+        - It stores the state of every host in a central database
+      answer: 1
+      explain: Ansible compares the current state with the desired state and acts only on differences. It does not need a state database; each module checks the host directly.

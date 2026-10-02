@@ -1,0 +1,52 @@
+flow-map:
+  steps:
+    - id: project
+      title: Project
+      sub:
+        - inventory + playbook
+        - ansible.cfg
+      tone: amber
+      text: On workstation, write the playbook and inventory together. The project configuration selects connection settings. Keep these files in Git so you can reproduce your work.
+    - id: runtime
+      title: Runtime
+      sub:
+        - workstation
+        - core 2.14 + collections
+      tone: purple
+      text: The baseline disables execution environments in navigator settings. Ansible and collections are installed on workstation. Navigator itself is isolated in a Python virtual environment; its version is separate from the engine used for the playbook.
+    - id: hosts
+      title: Managed hosts
+      sub:
+        - servera … serverd
+        - Rocky Linux 9
+      tone: green
+      text: "Ansible connects as the inventory's remote user, normally devops in the home lab, and uses sudo for privileged tasks. Check files, services, permissions, and persistence here: these machines hold the resulting state."
+  connections:
+    - starts
+    - SSH
+flow-map-2:
+  steps:
+    - id: project
+      title: Project
+      sub:
+        - inventory + playbook
+        - navigator settings
+      tone: amber
+      text: The project still contains your playbook, inventory, and configuration. Navigator settings choose the EE image, and the project is made available inside that container.
+    - id: runtime
+      title: EE container
+      sub:
+        - AAP 2.2 reference
+        - core 2.13 + collections
+      tone: purple
+      text: Podman runs the selected image, which supplies ansible-core and collections. A rhel8 image name describes the container base; it does not mean the managed hosts must run RHEL 8. Check the image contents when comparing versions.
+    - id: hosts
+      title: Managed hosts
+      sub:
+        - servera … serverd
+        - RHEL 9
+      tone: green
+      text: The EE connects to the managed hosts over SSH using the project's connection settings. Those hosts run the configured services and store the deployed files, just as in the home-lab path.
+  connections:
+    - starts
+    - SSH

@@ -10,7 +10,7 @@ export function readTrack(contentDir, id) {
   const meta = YAML.parse(fs.readFileSync(path.join(contentDir, dir, '_track.yml'), 'utf8'));
   assert.equal(meta.id, id, 'Track metadata must match its directory');
   assert(typeof meta.label === 'string' && meta.label.trim(), 'Track needs a label');
-  assert.match(meta.platform ?? '', /^[a-z][a-z0-9-]*\.mdx$/, 'Track platform must be an MDX filename');
+  assert.match(meta.platform ?? '', /^[a-z][a-z0-9-]*\.md$/, 'Track platform must be a Markdoc (.md) filename');
   const contentFile = `${dir}/${meta.platform}`;
   const source = fs.readFileSync(path.join(contentDir, contentFile), 'utf8');
   const front = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);

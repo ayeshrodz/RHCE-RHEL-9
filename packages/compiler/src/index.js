@@ -11,8 +11,7 @@ import { questionRevision } from '@kernel-path/schema/revision';
 import { CompileError, Diagnostics } from './diagnostics.js';
 import { createValidator } from './validator.js';
 import { initHighlighter } from './highlight.js';
-import { readMdxPage } from './mdx-bridge.js';
-import { convertPage } from './tree.js';
+import { readPage, convertPage } from './tree.js';
 import { readLegacyContent } from './legacy-source.js';
 
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
@@ -56,15 +55,26 @@ function activitiesOf(tree, data) {
       if (node.t !== 'tag') continue;
       const a = node.attrs ?? {};
       if (node.name === 'quiz')
-        for (const q of data[a.ref].questions)
+        for (const q of data[a.ref]?.questions ?? [])
           quizzes.push({ id: q.id, quizId: a.id ?? 'quiz', prompt: q.q, revision: questionRevision(q) });
       if (node.name === 'practice')
-        for (const q of data[a.ref].questions) practice.push({ id: q.id, objective: q.objective, title: q.title });
+        for (const q of data[a.ref]?.questions ?? []) practice.push({ id: q.id, objective: q.objective, title: q.title });
       if (node.name === 'task') tasks.push({ id: a.id, labId, title: a.title });
       visit(node.c, node.name === 'lab' ? (a.id ?? 'lab') : labId);
     }
   })(tree, 'lab');
   return { quizzes, tasks, ...(practice.length ? { practice } : {}) };
+}
+
+/** Content is data: Markdoc pages, YAML and JSON. Images and other assets arrive with the asset pipeline. */
+const DATA_FILE = /\.(md|ya?ml|json)$/;
+
+function checkFileTypes(dir, diagnostics) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) checkFileTypes(file, diagnostics);
+    else if (!DATA_FILE.test(entry.name)) diagnostics.error(file, null, 'only Markdoc, YAML, JSON files are allowed in content');
+  }
 }
 
 /**
@@ -75,6 +85,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   const root = path.resolve(contentDir);
   const diagnostics = new Diagnostics(path.dirname(root));
   const validator = createValidator();
+  checkFileTypes(root, diagnostics);
   await initHighlighter();
   const source = readLegacyContent(root);
   const files = new Map();
@@ -96,9 +107,9 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     const pages = {};
     const search = [];
 
-    const compilePage = (key, file, src, frontDefaults) => {
-      const parsed = readMdxPage(src, file, diagnostics);
-      const { tree, data, toc } = convertPage(parsed, { file, diagnostics, validator });
+    const compilePage = (key, { file, source: src, dataFile, dataSource }, frontDefaults) => {
+      const parsed = readPage(src, dataSource, file, dataFile, diagnostics);
+      const { tree, data, toc } = convertPage(parsed, { file, dataFile, diagnostics, validator });
       const front = { ...frontDefaults, ...parsed.front };
       const page = {
         apiVersion: 1,
@@ -123,7 +134,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
       const sections = chapter.sections.map((section) => {
         expect(validator.ids.section, section.front, section.file, 'frontmatter');
         const key = `${chapter.id}/${section.slug}`;
-        const { tree, data } = compilePage(key, section.file, section.source, { kind: section.kind, minutes: section.minutes });
+        const { tree, data } = compilePage(key, section, { kind: section.kind, minutes: section.minutes });
         return {
           slug: section.slug,
           title: section.front.title,
@@ -147,7 +158,7 @@ export async function compile(contentDir, { now = new Date() } = {}) {
       };
     });
 
-    if (details) compilePage('details', details.file, details.source, { kind: 'reference' });
+    if (details) compilePage('details', details, { kind: 'reference' });
 
     const searchFile = emit(base, 'search', { apiVersion: 1, entries: search });
     expect(validator.ids.bundle.search, JSON.parse(files.get(searchFile)), null, 'search index');

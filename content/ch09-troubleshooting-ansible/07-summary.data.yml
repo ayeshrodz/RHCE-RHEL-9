@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+    - front: "`ERROR!` before any PLAY line means…"
+      back: Ansible could not read the playbook. Nothing ran.
+    - front: UNREACHABLE vs FAILED?
+      back: "UNREACHABLE: no connection. FAILED: connected, and the task failed."
+    - front: What does `--syntax-check` not catch?
+      back: Undefined variables, invalid argument values, template errors, connection problems.
+    - front: "Why does `name: {{ pkg }}` fail?"
+      back: 'A value starting with `{{` must be quoted: `name: "{{ pkg }}"`.'
+    - front: Which verbosity shows the SSH command?
+      back: "`-vvv`"
+    - front: How do you keep a debug task quiet by default?
+      back: "`verbosity: 2` on the task: shown only with `-vv` or more."
+    - front: Write every run to a file?
+      back: "`log_path = ./ansible.log` in `[defaults]`."
+    - front: Rerun from one task?
+      back: '`--start-at-task "Task name"` (copy names from `--list-tasks`).'
+    - front: What does check mode do to `command` tasks?
+      back: Skips them.
+    - front: Can a clean `--check` run still fail for real?
+      back: Yes, for example permission problems only happen when a write is attempted.
+    - front: Show connection variables for one host?
+      back: "`ansible-navigator inventory -m stdout --host NAME`"
+    - front: Test privilege escalation alone?
+      back: "`ansible HOST -m ansible.builtin.command -a id --become`"

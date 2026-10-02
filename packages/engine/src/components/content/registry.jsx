@@ -2,8 +2,8 @@
 // by name with typed attributes; how each tag renders is entirely the engine's choice, so
 // components can be rewritten or upgraded without touching content.
 import { lazy } from 'react';
-import Callout from '@/components/mdx/Callout';
-import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step, Steps, Tab, Tabs, Term } from '@/components/mdx/Layout';
+import Callout from '@/components/prose/Callout';
+import { Card, Cards, Column, Columns, Glossary, Lead, Objectives, Reveal, Step, Steps, Tab, Tabs, Term } from '@/components/prose/Layout';
 import Quiz from '@/components/interactive/Quiz';
 import Flashcards from '@/components/interactive/Flashcards';
 import AssessmentTimer from '@/components/interactive/AssessmentTimer';

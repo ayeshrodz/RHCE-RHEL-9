@@ -1,4 +1,4 @@
-// Reads the pre-apiVersion-1 content layout (content/chNN-*/ with MDX sections, one course)
+// Reads the pre-apiVersion-1 content layout (content/chNN-*/ with Markdoc sections, one course)
 // as a single program. Values that later live in programs/<id>/program.yml are derived
 // here from today's files. Removed when content moves to programs/ (phase 5).
 import fs from 'node:fs';
@@ -16,25 +16,13 @@ const READER_VARIABLES = [
   { key: 'ROUTER_IP', label: 'Your router (default gateway)', hint: 'ip route | grep default', example: '192.168.1.1', pattern: 'ipv4' },
 ];
 
+/** A page's optional data file sits beside it: NN-slug.md → NN-slug.data.yml. */
+function readData(file) {
+  const dataFile = file.replace(/\.md$/, '.data.yml');
+  return { dataFile, dataSource: fs.existsSync(dataFile) ? fs.readFileSync(dataFile, 'utf8') : null };
+}
+
 const readYaml = (file) => (fs.existsSync(file) ? (YAML.parse(fs.readFileSync(file, 'utf8')) ?? {}) : {});
-
-function inferKind(slug) {
-  if (/(^|-)lab(-|$)/.test(slug)) return 'lab';
-  if (/quiz/.test(slug)) return 'quiz';
-  if (/summary/.test(slug)) return 'summary';
-  return 'lesson';
-}
-
-/** Reading time, computed exactly as the current site does. */
-function estimateMinutes(source) {
-  const body = source.replace(FRONTMATTER, '').replace(/^export const (?:widgetContent|practice) = [[{][\s\S]*?^[\]}];\s*$/gm, '');
-  const words = body
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean).length;
-  return Math.max(3, Math.round(words / 180));
-}
 
 /** The source model the compiler works on: one site and its programs. */
 export function readLegacyContent(contentDir) {
@@ -53,15 +41,15 @@ export function readLegacyContent(contentDir) {
       const meta = readYaml(path.join(chapterDir, '_chapter.yml'));
       const sections = fs
         .readdirSync(chapterDir)
-        .filter((f) => f.endsWith('.mdx'))
+        .filter((f) => f.endsWith('.md'))
         .sort()
         .map((name) => {
           const file = path.join(chapterDir, name);
           const source = fs.readFileSync(file, 'utf8');
           const front = YAML.parse(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? '') ?? {};
-          const base = name.replace(/\.mdx$/, '');
+          const base = name.replace(/\.md$/, '');
           const slug = front.slug ?? base.replace(/^\d+-/, '');
-          return { file, source, front, slug, kind: front.kind ?? inferKind(slug), minutes: front.minutes ?? estimateMinutes(source) };
+          return { file, source, ...readData(file), front, slug, kind: front.kind, minutes: front.minutes };
         })
         .filter((s) => s.front.draft !== true);
       return { id, dir: chapterDir, meta, number: meta.number ?? Number(id.slice(2)), sections };
@@ -114,7 +102,7 @@ export function readLegacyContent(contentDir) {
         program,
         chapters,
         objectives: readYaml(path.join(contentDir, '_objectives.yml')),
-        details: { file: detailsFile, source: fs.readFileSync(detailsFile, 'utf8') },
+        details: { file: detailsFile, source: fs.readFileSync(detailsFile, 'utf8'), ...readData(detailsFile) },
         legacy,
       },
     ],

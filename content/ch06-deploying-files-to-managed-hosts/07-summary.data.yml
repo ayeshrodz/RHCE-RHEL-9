@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+    - front: Which module is `copy` in reverse?
+      back: "`ansible.builtin.fetch`: managed host → control node."
+    - front: How should `mode` be written?
+      back: Quoted octal with the leading zero, `'0644'`, or symbolic, `u=rw,g=r,o=r`.
+    - front: "What does `state: absent` do on a directory?"
+      back: Removes it and everything inside.
+    - front: "What does `force: false` mean for `copy`?"
+      back: Copy only if the destination does not exist.
+    - front: How does `blockinfile` find its block on the next run?
+      back: By the **BEGIN / END marker** comment lines (set with `marker`).
+    - front: Where is the information in a registered `stat`?
+      back: Under `.stat`, for example `result.stat.exists` or `result.stat.checksum`.
+    - front: Is `setype` from the file module permanent?
+      back: No. Like `chcon`; `restorecon` resets it. Use `sefcontext` or the selinux role to change the policy.
+    - front: The three Jinja2 delimiters?
+      back: "`{{ }}` output, `{% %}` statements, `{# #}` comments."
+    - front: Where are templates rendered?
+      back: On the **control node**, once per host, with that host’s variables and facts.
+    - front: Which variable counts loop passes in a template?
+      back: "`loop.index` (from 1); `loop.index0` from 0."
+    - front: Can a playbook use `{% for %}`?
+      back: "No: Jinja2 control structures are for templates. Tasks use `loop` and `when`."
+    - front: What does `validate` do in a template task?
+      back: Runs a check on the rendered file (`%s`) before replacing the real one.

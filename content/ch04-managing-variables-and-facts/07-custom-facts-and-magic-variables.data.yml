@@ -1,0 +1,101 @@
+custom-fact-builder:
+  text:
+    template: "Line {value0}: expected key = value"
+    template2: "Line {value0}: key outside of a [section]"
+    title: Custom fact flow
+    sub: /etc/ansible/facts.d/
+    sub2: on the managed host
+    label: read by
+    title2: setup
+    sub3: Gathering Facts
+    widgetLabel: File name
+    cfbPath: /etc/ansible/facts.d/
+    label2: Fact file name
+    cfbPath2: .fact
+    label3: Custom fact file content (INI)
+  data:
+    start: |
+      [general]
+      package = httpd
+      service = httpd
+      state = started
+      enabled = true
+    initialSelection1: custom
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+magic-variables:
+  text:
+    label: The name of this host as written in the inventory.
+    label2: The name the host reports about itself. It can differ from the inventory name, as it does for web-alias.
+    label3: Every group this host belongs to, directly or through a parent group (all is not listed).
+    label4: Every group in the inventory and its hosts. The same for every host.
+    label5: This host's variables. Other hosts can read it too, e.g. hostvars['serverc.lab.example.com'], and after facts are gathered it also holds that host's facts.
+    widgetLabel: The task is running on
+  data:
+    inventory: |
+      [webservers]
+      servera.lab.example.com
+      web-alias ansible_host=serverb.lab.example.com
+
+      [dbservers]
+      serverc.lab.example.com
+
+      [production:children]
+      webservers
+      dbservers
+    fqdn:
+      servera.lab.example.com: servera.lab.example.com
+      web-alias: serverb.lab.example.com
+      serverc.lab.example.com: serverc.lab.example.com
+    initialSelection1: web-alias
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+check:
+  questions:
+    - id: q-614fb73eb4ff
+      legacyIndex: 0
+      q: Which file does setup read as a custom fact?
+      options:
+        - "`/etc/ansible/facts.d/web.yml`"
+        - "`/etc/ansible/facts.d/web.fact`"
+        - "`/etc/ansible/custom/web.fact`"
+      answer: 1
+      explain: Custom facts must be in /etc/ansible/facts.d and end in .fact. YAML files are not used.
+    - id: q-aadf53a03bd1
+      legacyIndex: 1
+      q: The file `/etc/ansible/facts.d/app.fact` has a `[db]` section with `port = 5432`. How do you reference it?
+      options:
+        - "`ansible_facts['app']['db']['port']`"
+        - "`ansible_facts['ansible_local']['app']['db']['port']`"
+        - "`ansible_local['db']['port']`"
+      answer: 1
+      explain: Custom facts sit under ansible_local, then the file name, section and key.
+    - id: q-97a6b5605e26
+      legacyIndex: 2
+      q: Which magic variable lists the groups the current host belongs to?
+      options:
+        - "`groups`"
+        - "`group_names`"
+        - "`hostvars`"
+      answer: 1
+      explain: "`group_names` is this host’s groups. `groups` is every group in the inventory."

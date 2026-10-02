@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+    - front: Which two groups always exist in an inventory?
+      back: "`all` (every host) and `ungrouped` (hosts in no other group)."
+    - front: How do you make a group of groups?
+      back: A section named `[parent:children]` listing the child **group** names.
+    - front: What does `server[01:03]` expand to?
+      back: server01, server02, server03. Inclusive, and leading zeros are kept.
+    - front: Where does Ansible look for ansible.cfg first?
+      back: The file named by `ANSIBLE_CONFIG`, then `./ansible.cfg` in the current directory.
+    - front: Are settings merged across several ansible.cfg files?
+      back: No. Only the **first file found** is used.
+    - front: What is the difference between remote_user and become_user?
+      back: "`remote_user` is who Ansible **logs in** as; `become_user` is who it **switches to** afterwards (usually root)."
+    - front: Two YAML indentation rules?
+      back: Same level → same indentation. Children → indented more than their parent. Spaces only.
+    - front: What is an FQCN?
+      back: "Fully qualified collection name: `namespace.collection.module`, e.g. `ansible.posix.firewalld`."
+    - front: --syntax-check versus --check?
+      back: "`--syntax-check` only parses the YAML. `--check` connects to hosts and reports what would change."
+    - front: How do you make a command task idempotent?
+      back: Add `creates:` or `removes:`, or better, use a purpose-built module.
+    - front: Which module works without Python on the host?
+      back: "`ansible.builtin.raw`"
+    - front: "What does hosts: localhost mean under ansible-navigator?"
+      back: The tasks run inside the **execution environment container**.

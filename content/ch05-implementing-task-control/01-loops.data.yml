@@ -1,0 +1,107 @@
+loop-unroller:
+  text:
+    label: list of strings
+    template: |-
+      - name: Postfix and Dovecot are running
+        ansible.builtin.service:
+          name: "{{ item }}"
+          state: started
+        loop:
+      {value0}
+    detail: service name={value0} state=started
+    label2: list of dictionaries
+    template2: |-
+      - name: Users exist and are in the correct groups
+        ansible.builtin.user:
+          name: "{{ item['name'] }}"
+          state: present
+          groups: "{{ item['groups'] }}"
+        loop:
+      {value0}
+    label3: "{'name': '{value0}', 'groups': '{value1}'}"
+    detail2: user name={value0} groups={value1}
+    widgetLabel: One task, many runs
+    label4: Loop list type
+    template3: Remove {value0}
+    placeholder: add a service
+    placeholder2: name:group
+    label5: New loop item
+    label6: Add item
+    widgetLabel2: What Ansible does
+    code: "item = "
+    termMuted: "Empty list: the task is skipped."
+    template4: |
+      TASK [{value0}] ****
+    template5: |
+      changed: [servera] => (item={value0})
+  data:
+    initialSelection1: list
+data-explorer:
+  text:
+    widgetLabel: ": click to explore"
+    widgetLabel2: Reference it as
+    template: "{{ {value0} }}"
+    template2: "{{ {value0} }}"
+    dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+    widgetLabel3: Old injected name
+    template3: "{{ {value0} }}"
+    widgetLabel4: Value
+  data: {}
+  props:
+    name: echo_results
+    data:
+      changed: true
+      msg: All items completed
+      results:
+        - ansible_loop_var: item
+          item: one
+          changed: true
+          cmd: "echo This is my item: one"
+          rc: 0
+          stdout: "This is my item: one"
+          stdout_lines:
+            - "This is my item: one"
+          failed: false
+        - ansible_loop_var: item
+          item: two
+          changed: true
+          cmd: "echo This is my item: two"
+          rc: 0
+          stdout: "This is my item: two"
+          stdout_lines:
+            - "This is my item: two"
+          failed: false
+      skipped: false
+    initial:
+      - results
+      - 0
+      - stdout
+check:
+  questions:
+    - id: q-75557e4a1371
+      legacyIndex: 0
+      q: Inside a looping task, which variable holds the current list entry?
+      options:
+        - "`loop_var`"
+        - "`item`"
+        - "`this`"
+      answer: 1
+      explain: "`item` is the default loop variable."
+    - id: q-43f2d36a4ab3
+      legacyIndex: 1
+      q: Which line correctly loops over the variable `packages`?
+      options:
+        - "`loop: {{ packages }}`"
+        - '`loop: "{{ packages }}"`'
+        - "`loop: packages`"
+      answer: 1
+      explain: The value starts with `{{`, so it must be quoted. A bare `packages` would be a one-item list containing the string "packages".
+    - id: q-adf77b62d0d1
+      legacyIndex: 2
+      q: "A task that loops over three items has `register: out`. Where is the stdout of the second run?"
+      options:
+        - "`out['stdout'][1]`"
+        - "`out['results'][1]['stdout']`"
+        - "`out[1]['stdout']`"
+      answer: 1
+      explain: A looping task registers a `results` list, one dictionary per item, in order.

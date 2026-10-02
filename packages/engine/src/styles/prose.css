@@ -509,7 +509,7 @@ a.page-eyebrow:hover {
   }
 }
 
-/* Links styled as controls retain the shared button treatment inside MDX. */
+/* Links styled as controls retain the shared button treatment inside page content. */
 .prose a.btn {
   color: var(--text);
   text-decoration: none;

@@ -1,0 +1,42 @@
+project-tree:
+  props:
+    paths:
+      - ansible.cfg
+      - group_vars/all
+      - group_vars/webservers
+      - host_vars/servera.lab.example.com/vars
+      - host_vars/servera.lab.example.com/vault
+      - inventory
+      - playbook.yml
+      - vars/secret.yml
+    locked:
+      - host_vars/servera.lab.example.com/vault
+      - vars/secret.yml
+flashcards:
+  cards:
+    - front: What characters can a variable name contain?
+      back: Letters, numbers and underscores, and it must **start with a letter**.
+    - front: When must a variable reference be quoted?
+      back: 'When it is the **first thing in the value**: `name: "{{ user }}"`.'
+    - front: Where do group variables go, by recommended practice?
+      back: "`group_vars/GROUP` (and `host_vars/HOST` for hosts), not in the inventory file."
+    - front: "Which beats which: host_vars or group_vars?"
+      back: "**host_vars**. Narrower scope wins."
+    - front: "Which beats which: inventory variables or play vars?"
+      back: "**Play vars**. The playbook beats the inventory."
+    - front: What has the highest precedence of all?
+      back: "Extra variables: `-e` / `--extra-vars` on the command line."
+    - front: What does register store?
+      back: The full JSON result of the task, in a variable you name.
+    - front: view vs edit in ansible-vault?
+      back: "`view` only reads; `edit` rewrites the file (shows as a change in Git)."
+    - front: Why must playbook artifacts be disabled for --vault-id @prompt?
+      back: Otherwise ansible-navigator cannot prompt and **hangs**.
+    - front: Which module gathers facts?
+      back: "`ansible.builtin.setup`, run automatically as Gathering Facts unless `gather_facts: false`."
+    - front: Where are custom facts stored on the host?
+      back: "`/etc/ansible/facts.d/*.fact`, in INI or JSON (or an executable printing JSON)."
+    - front: Where do custom facts appear?
+      back: "`ansible_facts['ansible_local']['FILE']['SECTION']['KEY']`"
+    - front: group_names vs groups?
+      back: "`group_names`: this host’s groups. `groups`: every group and its hosts."

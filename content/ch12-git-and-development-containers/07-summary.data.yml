@@ -1,0 +1,22 @@
+flashcards:
+  cards:
+    - front: What are the four places your work lives in Git?
+      back: Working tree, staging area, local repository, remote.
+    - front: What does `git add` do?
+      back: Copies the current version of a file into the **staging area**, the draft of the next commit.
+    - front: Which command shows what the next commit contains?
+      back: "`git diff --cached`"
+    - front: What is `origin`?
+      back: The name Git gives the remote you cloned from. `push` and `pull` use it by default.
+    - front: A push is rejected with "fetch first". Why, and what next?
+      back: The remote has commits you do not have. Run `git pull`, then push again.
+    - front: Which files belong in `.gitignore` for an Ansible project?
+      back: Vault password files, keys, `ansible-navigator.log` and `*-artifact-*.json`.
+    - front: "Development container or execution environment: which runs your editor's tools?"
+      back: The **development container**. The execution environment runs playbooks for `ansible-navigator`.
+    - front: Which file tells VS Code which container to open?
+      back: "`.devcontainer/devcontainer.json`"
+    - front: Why does the container need `-v "$HOME/.ssh:/root/.ssh:ro"`?
+      back: To log in to the managed hosts with your SSH key, without being able to change it.
+    - front: "Which navigator settings file wins: project or home?"
+      back: The project's `ansible-navigator.yml`.

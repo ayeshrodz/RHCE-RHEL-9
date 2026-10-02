@@ -4,57 +4,65 @@ How to add sections, diagrams and exercises so they match the rest of the guide.
 
 ## 1. How content is organised
 
-The `content/` folder is the single source of truth. The compiler (`packages/compiler`, run as `kernel validate` or `kernel build`) reads it and builds the navigation, so you never edit JavaScript to add material. `npm run dev` recompiles it on every change.
+The `content/` folder is the single source of truth. It holds only data: Markdoc pages (`.md`), YAML and JSON. The compiler (`packages/compiler`, run as `kernel validate` or `kernel build`) checks it against the content contract and builds the navigation, so you never edit JavaScript to add material. `npm run dev` recompiles it on every change.
 
 ```
 content/
   _course.yml                      site title, repository, selected track ID
   tracks/rhel9/
     _track.yml                     track identity, versions, reference filename
-    platform.mdx                   platform page metadata, explanations, diagrams
+    platform.md                    platform page: explanations, diagrams
+    platform.data.yml              data for that page's tags
   ch03-implementing-playbooks/
     _chapter.yml                   title, goal, objectives
-    01-inventory.mdx               section 3.1
-    02-lab-inventory.mdx           section 3.2
+    01-inventory.md                section 3.1
+    01-inventory.data.yml          quiz questions, widget copy and other data for 3.1
+    02-lab-inventory.md            section 3.2
   ch04-managing-variables-and-facts/
     _chapter.yml                   status: planned + topics → shown as "coming soon"
 ```
 
 - **Order** comes from the numeric filename prefix (`01-`, `02-`…).
-- **URL slug** is the filename without its prefix: `03-configuration.mdx` → `#/ch03/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
-- **Section links** add the heading's id after a second `#`: `#/ch08/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading from MDX with `[text](#/ch01/page#heading-id)`.
-- **Frontmatter** at the top of each `.mdx`:
+- **URL slug** is the filename without its prefix: `03-configuration.md` → `#/ch03/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
+- **Section links** add the heading's id after a second `#`: `#/ch08/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading with `[text](#/ch01/page#heading-id)`.
+- **Frontmatter** at the top of each page:
 
   ```yaml
   ---
   title: Managing Ansible configuration files
-  kind: lesson        # lesson | lab | quiz | summary (inferred from the filename if omitted)
-  minutes: 8         # estimated from word count if omitted
+  kind: lesson        # lesson | lab | quiz | summary
+  minutes: 8
   draft: true         # optional: hide the section from the site
   ---
   ```
 
-- **A new chapter**: create `content/chNN-name/` with a `_chapter.yml`. Once it contains `.mdx` files and has no `status: planned`, it becomes a normal chapter.
+- **Page data** lives beside the page in `NN-slug.data.yml`. Each top-level key is a `ref` that one tag on the page uses; the compiler rejects a missing or unused ref.
+- **A new chapter**: create `content/chNN-name/` with a `_chapter.yml`. Once it contains `.md` pages and has no `status: planned`, it becomes a normal chapter.
 
-While `npm run dev` is running, everything updates live. Body edits hot-reload in place; adding, removing or renaming files, or changing frontmatter and `_chapter.yml`, reloads the page with the new navigation.
+While `npm run dev` is running, saving any content file recompiles it and reloads the page.
 
-The page title, number, breadcrumb, reading time, table of contents, "mark complete" button and previous/next links are generated. **Do not** put an `# H1` in the MDX file.
+The page title, number, breadcrumb, reading time, table of contents, "mark complete" button and previous/next links are generated. **Do not** put an `# H1` in a page.
 
 ## Track reference pages
 
-`_course.yml` selects the current `track` ID. Its reference material lives in `content/tracks/<id>/`: `_track.yml` supplies the label, version metadata, and `platform` filename. The MDX frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/platform`; `ReferencePage` renders the selected track's MDX with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
+`_course.yml` selects the current `track` ID. Its reference material lives in `content/tracks/<id>/`: `_track.yml` supplies the label, version metadata, and `platform` filename. The page frontmatter supplies `title`, `eyebrow`, and `description`. The header badge links to `#/platform`; `ReferencePage` renders the selected track's page with the same typography, heading links, and table of contents as lessons. It does not count as a curriculum section or change reading completion.
 
-`FlowMap` renders a two-to-four-step sequence using the existing pale diagram tones. Author its wording in MDX; each step needs a unique `id`, `title`, and explanatory `text`, with optional `sub` and `tone`. `connections` labels the arrows. For example:
+`flow-map` renders a two-to-four-step sequence using the existing pale diagram tones. Its steps live in the page data; each step needs a unique `id`, `title`, and explanatory `text`, with optional `sub` and `tone`. `connections` labels the arrows. For example:
 
-```mdx
-<FlowMap title="A playbook's journey" caption="Choose a step for its explanation."
-  connections={["SSH"]} steps={[
-    { id: "control", title: "Control node", sub: "starts tasks", tone: "purple", text: "Read the project and run its tasks." },
-    { id: "managed", title: "Managed host", sub: "stores the result", tone: "green", text: "Verify the requested state here." }
-  ]} />
+```markdoc
+{% flow-map ref="journey" title="A playbook's journey" caption="Choose a step for its explanation." /%}
 ```
 
-Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in MDX or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
+```yaml
+# platform.data.yml
+journey:
+  connections: [SSH]
+  steps:
+    - { id: control, title: Control node, sub: starts tasks, tone: purple, text: Read the project and run its tasks. }
+    - { id: managed, title: Managed host, sub: stores the result, tone: green, text: Verify the requested state here. }
+```
+
+Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in content or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
 
 Only RHEL 9 is selectable today. Adding another track's metadata is a content boundary, not a complete course switch: chapters, objectives, downloads, graders, and browser progress must also be scoped together before another track is published.
 
@@ -62,17 +70,19 @@ Only RHEL 9 is selectable today. Adding another track's metadata is a content bo
 
 Aim for 5–12 minutes: purpose, a small example, an activity, an explanation, and a short recap. Put deeper details in optional reveals. A lesson can start like this:
 
-```mdx
-<Lead>One or two sentences on why this matters.</Lead>
+```markdoc
+{% lead %}
+One or two sentences on why this matters.
+{% /lead %}
 
-<Objectives>
+{% objectives %}
 - Three or four things the reader will be able to do.
-</Objectives>
+{% /objectives %}
 
 ## First topic
 ...prose, a diagram, a code block...
 
-<Quiz id="check" objectives={["ch03.playbooks"]} questions={[ ... ]} />
+{% quiz id="check" objectives=["ch03.playbooks"] ref="check" /%}
 ```
 
 Use `##` for topics and `###` for sub-topics; both appear in the table of contents.
@@ -85,47 +95,46 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 - Always use FQCNs in examples (`ansible.builtin.copy`).
 - Only state exam facts you can back up. Phrase advice as practice habits, not as claims about how the exam is graded.
 
-## 4. Components available in MDX
+## 4. Tags
 
-No imports needed. They are listed in the component catalog (`packages/schema/catalog/components.json`) and rendered by `packages/engine/src/components/content/registry.jsx`.
+Pages use Markdown plus Markdoc tags: `{% name attribute="value" %}…{% /name %}`, or `{% name … /%}` for a tag without content. Every tag and attribute is declared in the component catalog (`packages/schema/catalog/components.json`), and the compiler rejects anything else. The engine renders tags through `packages/engine/src/components/content/registry.jsx`.
 
-| Component | Use |
+| Tag | Use |
 | --- | --- |
-| `<Lead>` | Opening paragraph, larger text. |
-| `<Objectives>` | "In this section" box. Put a Markdown list inside. |
-| `<Callout type="note|tip|important|warning|exam" title="…">` | Asides. `exam` is for exam-specific advice. |
-| `<Cards cols={2|3}>` + `<Card title kicker tone>` | Side-by-side comparisons. |
-| `<Columns>` + `<Column title tone>` | Two-column contrasts (bad vs good). |
-| `<Tabs>` + `<Tab label>` | Alternatives, for example file templates. |
-| `<Steps>` + `<Step title>` | Numbered procedures inside a lesson. |
-| `<Glossary>` + `<Term name>` | Definition lists. |
-| `<Reveal title="Show solution">` | Hidden answers. |
-| `<Quiz id objectives questions={[{ id, q, options, answer, explain, code? }]}>` | Multiple choice. One question renders as a compact "quick check". |
-| `<Lab id objectives title outcomes hosts classroom>` + `<Task id title>` | Exercises with persisted checkboxes. `Task` must be a direct child of `Lab`. |
-| `<Flashcards cards={[{ front, back }]}>` | Revision cards. |
+| `lead` | Opening paragraph, larger text. |
+| `objectives` | "In this section" box. Put a Markdown list inside. |
+| `callout type="note\|tip\|important\|warning\|exam" title="…"` | Asides. `exam` is for exam-specific advice. |
+| `cards cols=2` + `card title kicker tone` | Side-by-side comparisons. |
+| `columns` + `column title tone` | Two-column contrasts (bad vs good). |
+| `tabs` + `tab label` | Alternatives, for example file templates. |
+| `steps` + `step title` | Numbered procedures inside a lesson. |
+| `glossary` + `term name` | Definition lists. |
+| `reveal title="Show solution"` | Hidden answers. |
+| `kbd` | A key, inline: `{% kbd %}Ctrl{% /kbd %}`. |
+| `quiz id objectives ref` | Multiple choice; the questions (`id, q, options, answer, explain, code?`) live in page data. One question renders as a compact "quick check". |
+| `lab id objectives title outcomes hosts exercise` + `task id title` | Exercises with persisted checkboxes. `task` must be a direct child of `lab`. |
+| `flashcards ref` | Revision cards; the cards (`front, back`) live in page data. |
+| `practice ref` | The chapter's practice questions on its quiz page. |
 
-Strings passed as props (quiz text, card text) support `` `code` ``, `**bold**` and `*italic*`.
+Text values in page data (quiz text, card text) support `` `code` ``, `**bold**` and `*italic*`.
 
 `tone` is one of `purple`, `teal`, `coral`, `pink`, `gray`, `blue`, `green`, `amber`, `red`.
 
+Attribute values are text in double quotes, numbers, `true`/`false`, or lists such as `["a", "b"]`. Markdoc variables (`$name`), functions and annotations (`{% #id .class %}`) are not allowed, and raw HTML is shown as text.
+
 ### Code blocks
 
-````mdx
-```yaml title="site.yml"
+````markdoc
+```yaml {% title="site.yml" %}
 - name: Example
 ```
 ````
 
-- `title="…"` shows a filename in the header.
+- `{% title="…" %}` after the language shows a filename in the header.
 - `console` blocks render as a terminal; their copy button copies only the commands, without prompts or output.
 - `text` is for command output.
 - Add `# [!code highlight]` at the end of a line to highlight it.
-
-### MDX gotchas
-
-- Keep fenced code blocks at column 0, even inside components.
-- MDX **dedents multi-line template literals** inside JSX props. For multi-line strings (such as YAML for `AnnotatedYaml`), declare them with `export const` at the top of the file and pass the variable in.
-- `{` and `<` in prose are JSX. Put them in inline code or escape them.
+- Code is never scanned for tags, so Jinja such as `{% for %}` is safe inside code blocks and inline code. In prose, put it in inline code.
 
 ## 5. Diagrams
 
@@ -153,32 +162,32 @@ export default function Example() {
 
 Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
 
-Export new diagrams from `packages/engine/src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `packages/engine/src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+Export new diagrams from `packages/engine/src/diagrams/chNN/index.js` and add the name to the `legacy-widget` entry in the catalog; a page then uses it with `{% legacy-widget name="Name" ref="name" /%}` (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Chapter widgets are being replaced by generic, data-driven catalog components. Put a chapter's widget styles in `packages/engine/src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
-Reusable pieces from chapter 4 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
+Reusable pieces from chapter 4 that later chapters can use: `ProjectTree` for directory layouts and `DataExplorer` for any nested variable or JSON result. Their settings go under `props` in the widget's page data.
 
 ### Lab placeholders
 
-Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (section 1.1), including in copied text. Add new placeholder keys in `packages/engine/src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
+Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `{% reader-variables /%}` form (section 1.1), including in copied text. Add new placeholder keys in `packages/engine/src/lib/placeholders.jsx`.
 
 ### Classroom and home lab
 
 Readers follow the guide either in the Red Hat classroom or on the home lab from Chapter 1. Where the two differ, show both. The reader's choice is one site-wide preference.
 
-| Component | Use |
+| Tag | Use |
 | --- | --- |
-| `<Env><Classroom>…</Classroom><HomeLab>…</HomeLab></Env>` | Two versions of a command, file or output. A switch shows one at a time. |
-| `<HomeLab title="…">…</HomeLab>` on its own | An always-visible note for home-lab readers (teal callout). |
-| `<Lab classroom="lab start NAME">` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `packages/engine/public/lab/NAME/`. Pass `starter={false}` if there are none. |
-| `<Lab classroom="lab start NAME" own>` | For an exercise that exists only in this guide: the classroom tab then tells readers to create the folder themselves. |
-| `<HomeSetup>…</HomeSetup>` inside `<Lab>` | Extra home-lab preparation notes for that exercise. |
-| `<Finish name="NAME" />` (add `grade` for chapter labs) | The body of an exercise's last task, for both environments. |
+| `variant-group` containing `variant name="classroom"` and `variant name="homelab"` | Two versions of a command, file or output. A switch shows one at a time. |
+| `variant name="homelab" title="…"` on its own | An always-visible note for home-lab readers (teal callout). |
+| `lab exercise="NAME"` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `packages/engine/public/lab/NAME/`. Add `starter=false` if there are none. |
+| `lab exercise="NAME" ownExercise=true` | For an exercise that exists only in this guide: the classroom tab then tells readers to create the folder themselves. |
+| `lab-setup variant="homelab"` inside `lab` | Extra home-lab preparation notes for that exercise. |
+| `lab-finish exercise="NAME" /` (add `grade=true` for chapter labs) | The body of an exercise's last task, for both environments. |
 
 Keep the classroom commands as the default text of an exercise, and use these only where the home lab really differs (no execution environment, Rocky facts, firewalld running, `sdb` for `vdb`).
 
 ### Exercise starter files
 
-Every exercise that starts with `lab start NAME` needs a folder `packages/engine/public/lab/NAME/`:
+Every exercise with `exercise="NAME"` needs a folder `packages/engine/public/lab/NAME/`:
 
 ```text
 packages/engine/public/lab/NAME/
@@ -195,7 +204,7 @@ All code uses the `--font-mono` token (JetBrains Mono, with code ligatures turne
 
 ## Content tables
 
-Write ordinary Markdown tables in MDX. Every table uses `Table.jsx`; no per-page classes or width settings are needed. Desktop tables stay inside the reading area with content-based column widths, a muted header, lightly shaded alternate rows, and headers that remain visible while scrolling. Commands and long paths wrap visually; their original text remains available for selection and copying.
+Write ordinary Markdown tables. Every table uses `Table.jsx`; no per-page classes or width settings are needed. Desktop tables stay inside the reading area with content-based column widths, a muted header, lightly shaded alternate rows, and headers that remain visible while scrolling. Commands and long paths wrap visually; their original text remains available for selection and copying.
 
 The established labelled row cards appear when a table's container is 640 pixels wide or narrower. This uses the available content space, so tables inside a narrow lab task also adapt on a desktop. Keep headers short and descriptive: they become each value's label in the card layout. Empty headers remain supported, and Markdown column alignment is preserved. Add a code block below a table when a whole procedure needs a copy button.
 
@@ -203,52 +212,59 @@ Keep explanations in the content and shared presentation in the renderer/styles.
 
 ## Visual consistency and exercise titles
 
-Reuse the existing component treatments and theme tokens. Every knowledge check, including chapter practice, uses the one `Quiz` format: pick an option, get instant feedback and an explanation. Solutions use `Reveal` and `CodeBlock`. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
+Reuse the existing component treatments and theme tokens. Every knowledge check, including chapter practice, uses the one `Quiz` format: pick an option, get instant feedback and an explanation. Solutions use `reveal` and code blocks. Environment and exercise modes share `OptionSwitch`. Keep controls neutral and use the existing pale success/failure surfaces for feedback; do not add a separate accent palette for an activity.
 
 Use `Exercise: Topic` for practical exercise titles, whether they offer Guided or Challenge mode. Use `Assessment: Topic` for integrated assessments. Keep sentence case and a colon separator. Setup pages describe their setup step directly. Display titles can change without renaming published filenames, activity IDs, or objective IDs.
 
 ## 7. Stable activities and skills
 
-Give each question and task a unique, descriptive ID, such as `ch03-inventory-child-groups` or `ch03-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.
+Give each question and task a unique, descriptive ID, such as `ch03-inventory-child-groups` or `ch03-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `packages/engine/src/data/legacyActivityMap.json` for earlier learners.
 
-```mdx
-<Quiz id="check" objectives={["ch03.inventory"]} questions={[{
-  id: "ch03-example-group-membership",
-  q: "Which group contains the child group's hosts?",
-  options: ["The parent", "Only the child"],
-  answer: 0,
-  explain: "A parent includes the hosts of its children.",
-}]} />
+```markdoc
+{% quiz id="check" objectives=["ch03.inventory"] ref="check" /%}
+```
+
+```yaml
+# NN-slug.data.yml
+check:
+  questions:
+    - id: ch03-example-group-membership
+      q: Which group contains the child group's hosts?
+      options: [The parent, Only the child]
+      answer: 0
+      explain: A parent includes the hosts of its children.
 ```
 
 Add or update the objective in `content/_objectives.yml` and the chapter's `objectiveIds`. Each objective links to its teaching, practice, and lab pages. Use original explanations and cite public documentation where a version difference matters.
 
-Practice questions are authored in their chapter's quiz MDX, as a JSON-compatible `export const practice = [...]` followed by `<ChapterPractice chapter="chNN" challenges={practice} />`. Each one is multiple choice, exactly like a quiz question: supply a stable `id`, chapter, objective, `title`, `prompt`, `type: "choice"`, at least three `options`, the `expected` option (copied exactly), an explanation, and an optional `code` snippet shown above the options. Do not add typed-answer, hint or solution variants; consistency across pages matters more than a one-off format. The build reads the same export for the dashboard; editing wording needs no React change. Check every distractor against real Ansible behavior so exactly one option is right.
+Practice questions are authored in their chapter's quiz page as `{% practice ref="practice" /%}`, with the questions under `practice.questions` in its data file. Each one is multiple choice, exactly like a quiz question: supply a stable `id`, objective, `title`, `prompt`, at least three `options`, the `expected` option (copied exactly), an explanation, and an optional `code` snippet shown above the options. Do not add typed-answer, hint or solution variants; consistency across pages matters more than a one-off format. The dashboard reads the same data; editing wording needs no code change. Check every distractor against real Ansible behavior so exactly one option is right.
 
-Lab wording belongs in MDX. A graded `<Lab>` contains exactly one `<LabNotes>` and one `<LabChallenge>`, alongside its existing `<Task>` children. `LabNotes` holds prerequisites and optional verification/variation reveals. `LabChallenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
+Lab wording belongs in content. A graded `lab` contains exactly one `lab-notes` and one `lab-challenge`, alongside its `task` children. `lab-notes` holds prerequisites and optional verification/variation reveals. `lab-challenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
 
-```mdx
-<Lab id="site" classroom="lab start example-site" objectives={["ch03.playbooks"]}>
-  <LabNotes>
-    **Prerequisites:** working SSH and sudo access to the target.
+```markdoc
+{% lab id="site" title="Publish a web page" exercise="example-site" objectives=["ch03.playbooks"] %}
+{% lab-notes %}
+**Prerequisites:** working SSH and sudo access to the target.
 
-    <Reveal title="Verify your work">
-      Fetch the page from workstation, repeat the deployment, and inspect unexpected changes.
-    </Reveal>
-  </LabNotes>
-  <LabChallenge>
-    Publish the supplied page on the inventory's web hosts.
+{% reveal title="Verify your work" %}
+Fetch the page from workstation, repeat the deployment, and inspect unexpected changes.
+{% /reveal %}
+{% /lab-notes %}
 
-    - Apache must run now and start at boot.
-    - Workstation must receive the supplied content over HTTP.
-  </LabChallenge>
-  <Task id="example-site-service" title="Prepare the web service">
-    Explain the purpose, show the small step, and say how to verify it.
-  </Task>
-</Lab>
+{% lab-challenge %}
+Publish the supplied page on the inventory's web hosts.
+
+- Apache must run now and start at boot.
+- Workstation must receive the supplied content over HTTP.
+{% /lab-challenge %}
+
+{% task id="example-site-service" title="Prepare the web service" %}
+Explain the purpose, show the small step, and say how to verify it.
+{% /task %}
+{% /lab %}
 ```
 
-Guided mode renders tasks normally. Challenge mode renders the authored requirement brief and keeps the entire task walkthrough/checklist closed until requested. Components never guess which child is a question or manufacture a hint from the remaining children. Setup labs without an authored challenge show the walkthrough only. Keep solutions inside nonempty `<Reveal>` elements; never publish an empty disclosure.
+Guided mode renders tasks normally. Challenge mode renders the authored requirement brief and keeps the entire task walkthrough/checklist closed until requested. Components never guess which child is a question or manufacture a hint from the remaining children. Setup labs without an authored challenge show the walkthrough only. Keep solutions inside nonempty `reveal` tags; never publish an empty disclosure.
 
 The grading catalog contains only machine-check contracts and intentionally broken fixture declarations. Teaching text is not fetched from it.
 
@@ -286,28 +302,23 @@ It creates a temporary local project, uses the local connection, and prints the 
 
 ## Page-owned interactive examples
 
-Chapter widgets render shared components; their explanations, examples, labels, diagrams, and sample facts belong to the MDX page that uses them. Add a JSON-compatible `widgetContent` export after frontmatter:
+Chapter widgets render shared components; their explanations, examples, labels, diagrams, and sample facts belong to the page that uses them. A widget's copy goes under its ref in the page data file:
 
-```mdx
-export const widgetContent = {
-  "InventoryExplorer": {
-    "data": {
-      "sample": "[web]\nservera",
-      "initialSelection1": "all"
-    },
-    "text": {
-      "widgetLabel": "Edit the inventory"
-    }
-  }
-};
+```yaml
+inventory-explorer:
+  data:
+    sample: "[web]\nservera"
+    initialSelection1: all
+  text:
+    widgetLabel: Edit the inventory
 ```
 
-This is a shortened illustration. Copy the complete catalog from an existing page using the same widget, then edit its data and wording. `npm run validate:content` checks every required key and composed widget dependency. Keep field names stable; update the component contract when a new field is needed. Widget data is not indexed as lesson prose or counted toward reading time.
+This is a shortened illustration. Copy the complete entry from an existing page using the same widget, then edit its data and wording. A widget that renders another widget inside itself lists that widget's copy under `dependencies`. `npm run validate:content` checks every required key and composed widget dependency. Keep field names stable; update the component contract when a new field is needed. Widget data is not indexed as lesson prose.
 
-`MdxContent` supplies the page catalog through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in `content/_interface.json`; the landing page owns `content/home.json`, and the dashboard owns `content/progress.json`.
+`PageTree` supplies each widget's copy through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in `content/_interface.json`; the landing page owns `content/home.json`, and the dashboard owns `content/progress.json`.
 
 Use `{value0}`, `{value1}`, and so on for wording that contains calculated values. The component calls `formatCopy` with the corresponding values. Keep algorithms, state keys, semantic enum values, selectors, and styling in code; keep teaching sentences and example datasets in content. A future content track can supply its own catalogs to the same components.
 
 ## Shared mobile rendering
 
-Authors use the same MDX elements on phones and desktops. `LearningPageLayout` supplies the responsive outline; `CodeBlock` provides mobile wrapping; `CodeEditor` supplies indentation, wrapping, and native keyboard navigation. Use `CodeEditor` for editable code instead of adding a page-specific textarea or toolbar. The diagram kit scales its canvas to the available width and supplies a focus-managed enlarged view with optional zoom. Keep dimensions in the SVG viewBox; do not impose that coordinate width on the page layout. Use existing theme tokens and shared controls, and put responsive behavior in shared styles rather than individual lessons.
+Authors use the same tags on phones and desktops. `LearningPageLayout` supplies the responsive outline; `CodeBlock` provides mobile wrapping; `CodeEditor` supplies indentation, wrapping, and native keyboard navigation. Use `CodeEditor` for editable code instead of adding a page-specific textarea or toolbar. The diagram kit scales its canvas to the available width and supplies a focus-managed enlarged view with optional zoom. Keep dimensions in the SVG viewBox; do not impose that coordinate width on the page layout. Use existing theme tokens and shared controls, and put responsive behavior in shared styles rather than individual lessons.

@@ -1,0 +1,71 @@
+multi-play-flow:
+  text:
+    title: A playbook with two plays
+    caption: Plays run in order. The first configures servera with root privileges; the second runs on localhost (inside the execution environment) to test the result.
+    title2: intranet.yml
+    sub: 2 plays
+    title3: "Play 1: Enable intranet services"
+    sub2: "hosts: servera.lab.example.com"
+    sub3: "become: true"
+    label: SSH + sudo
+    title4: servera
+    sub4: httpd, firewalld
+    title5: "Play 2: Test intranet web server"
+    sub5: "hosts: localhost"
+    sub6: "become: false"
+    label2: local
+    title6: localhost
+    sub7: the EE container
+    label3: HTTP GET → 200
+  data: {}
+precedence-resolver:
+  text:
+    template: "{value0}: {value1}"
+    label: Not set
+    precRank: ·
+  data: {}
+  props:
+    title: Which user does Ansible connect as?
+    sub: Ansible uses the first of these that is set. Toggle them to experiment.
+    winnerLabel: Connects as this
+    items:
+      - label: ansible_user variable
+        detail: Set for the host or its group in the inventory (chapter 4).
+      - label: remote_user in the play
+        detail: "For example `remote_user: automation` next to `hosts:`."
+        on: true
+      - label: remote_user in ansible.cfg
+        detail: The project-wide default in `[defaults]`.
+        on: true
+    fallback:
+      label: root (navigator) / your user name (ansible-playbook)
+      detail: "Nothing set: navigator uses the EE’s user, root; ansible-playbook uses the account that ran it."
+check:
+  questions:
+    - id: q-5392bdd54d57
+      legacyIndex: 0
+      q: "`ansible.cfg` sets `become = true`. How do you run one play in the playbook **without** privilege escalation?"
+      options:
+        - "Add `become: false` to that play"
+        - Remove `become` from ansible.cfg
+        - "Add `become_user: none` to the play"
+      answer: 0
+      explain: Play-level keywords override ansible.cfg for that play only.
+    - id: q-159bf8ba6f1d
+      legacyIndex: 1
+      q: No `ansible_user`, no play `remote_user` and no `remote_user` in ansible.cfg. Which user does `ansible-navigator run` connect as?
+      options:
+        - The user who ran ansible-navigator
+        - "`root`, the user inside the execution environment"
+        - "`ansible`"
+      answer: 1
+      explain: Navigator runs Ansible in a container as root, so root is the default. ansible-playbook would use your own user name.
+    - id: q-e5a7cb0b93e6
+      legacyIndex: 2
+      q: "Where does a `hosts: localhost` play run when you use ansible-navigator?"
+      options:
+        - On workstation, outside any container
+        - Inside the execution environment container
+        - On the first host in the inventory
+      answer: 1
+      explain: Navigator runs the whole playbook inside the EE, so localhost is the container.

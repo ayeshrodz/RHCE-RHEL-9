@@ -1,0 +1,20 @@
+multi-play-flow:
+  text:
+    title: A playbook with two plays
+    caption: Plays run in order. The first configures servera with root privileges; the second runs on localhost (inside the execution environment) to test the result.
+    title2: intranet.yml
+    sub: 2 plays
+    title3: "Play 1: Enable intranet services"
+    sub2: "hosts: servera.lab.example.com"
+    sub3: "become: true"
+    label: SSH + sudo
+    title4: servera
+    sub4: httpd, firewalld
+    title5: "Play 2: Test intranet web server"
+    sub5: "hosts: localhost"
+    sub6: "become: false"
+    label2: local
+    title6: localhost
+    sub7: the EE container
+    label3: HTTP GET → 200
+  data: {}

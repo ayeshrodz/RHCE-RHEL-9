@@ -2,10 +2,10 @@
 // elements, code as token data, catalog tags); anything else renders nothing. There is no
 // path from content to raw HTML.
 import { createElement, Fragment, useMemo } from 'react';
-import { Anchor, Code } from '@/components/mdx/elements';
-import { H2, H3 } from '@/components/mdx/Heading';
-import Table from '@/components/mdx/Table';
-import CodeBlock from '@/components/mdx/CodeBlock';
+import { Anchor, Code } from '@/components/prose/elements';
+import { H2, H3 } from '@/components/prose/Heading';
+import Table from '@/components/prose/Table';
+import CodeBlock from '@/components/prose/CodeBlock';
 import { TeachingContentProvider } from '@/components/interactive/TeachingContent';
 import { cleanProps, tags } from './registry';
 

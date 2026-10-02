@@ -3,7 +3,7 @@ import { Arrow, Diagram, InfoPanel, Node } from '@/diagrams/kit';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import OptionSwitch from './OptionSwitch';
 
-/** A responsive sequence diagram. Labels and explanations are authored in MDX. */
+/** A responsive sequence diagram. Labels and explanations are authored in content. */
 export default function FlowMap({ title, caption, steps, connections = [] }) {
   const [selected, setSelected] = useState(steps[0].id);
   const narrow = useMediaQuery('(max-width: 640px)');

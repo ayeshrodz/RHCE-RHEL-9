@@ -1,0 +1,79 @@
+readiness-checklist:
+  text:
+    widgetLabel: Readiness checklist
+    readyScore: " of "
+    readyScore2: " confident · "
+    readyScore3: " rated"
+    label: Chapters
+    template: "Chapter {value0}: {value1}, {value2} of {value3} rated"
+    readyCount: /
+    link: "Chapter "
+    link2: ": "
+    label2: How sure are you?
+    p: Rate each objective honestly. Anything marked not yet or shaky shows up here with where to go back to.
+    p2: "Nothing marked weak. "
+    label3: Rate the remaining objectives, then
+    p3: " prove it: do the four review labs without opening the solutions."
+    p4: "Go back to these before the review labs:"
+    link3: "Chapter "
+    link4: ": "
+    readyWeak: " weak"
+    span: then practise in
+    readyReset: Clear my ratings
+  data:
+    levels:
+      - label: Not yet
+        tone: no
+      - label: Shaky
+        tone: shaky
+      - label: Confident
+        tone: yes
+    labs:
+      lab_deploy:
+        path: /ch11/lab-review-deploy
+        label: 11.2 Deploying Ansible
+      lab_playbooks:
+        path: /ch11/lab-review-playbooks
+        label: 11.3 Creating playbooks
+      lab_admin:
+        path: /ch11/lab-review-admin
+        label: 11.4 Managing hosts
+      lab_roles:
+        path: /ch11/lab-review-roles
+        label: 11.5 Creating roles
+    practice:
+      "1":
+        - lab_deploy
+      "2":
+        - lab_deploy
+        - lab_playbooks
+      "3":
+        - lab_deploy
+        - lab_admin
+      "4":
+        - lab_deploy
+        - lab_playbooks
+      "5":
+        - lab_playbooks
+        - lab_roles
+      "6":
+        - lab_playbooks
+        - lab_admin
+      "7":
+        - lab_admin
+        - lab_roles
+      "8":
+        - lab_deploy
+        - lab_playbooks
+        - lab_admin
+        - lab_roles
+      "9":
+        - lab_admin
+      "10":
+        - lab_deploy
+        - lab_playbooks
+        - lab_admin
+        - lab_roles
+      "11":
+        - lab_playbooks
+        - lab_admin

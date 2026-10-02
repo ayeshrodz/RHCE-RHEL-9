@@ -22,17 +22,17 @@ This starts the content boundary for multiple tracks; it does not implement trac
 
 ## Shared content tables
 
-`packages/engine/src/components/mdx/Table.jsx` renders all Markdown tables in compiled pages. It keeps content unchanged, adds explicit table/header semantics and mobile labels, and generates column widths from typical text length through `tableLayout.js`. A single exceptional command cannot dictate the table's width.
+`packages/engine/src/components/prose/Table.jsx` renders all Markdown tables in compiled pages. It keeps content unchanged, adds explicit table/header semantics and mobile labels, and generates column widths from typical text length through `tableLayout.js`. A single exceptional command cannot dictate the table's width.
 
 `prose.css` constrains desktop tables to the article, wraps prose and code, and keeps headers visible during long-table reading. Container queries preserve labelled row cards below 640 pixels of available table space, including tables inside lab tasks and other nested content. The renderer is shared across chapters and track reference pages; authors continue to write plain Markdown tables.
 
 ## Learning activities
 
-`ActivityPanel`, `AnswerOptions`, and `ActivityFeedback` provide shared quiz/practice chrome. `OptionSwitch` renders both environment and exercise modes with the same muted treatment. `Reveal` supports optional controlled state for solution-view tracking; `CodeBlock` supplies the same code presentation throughout. Activity wording and grading definitions remain in MDX, separate from these rendering components.
+`ActivityPanel`, `AnswerOptions`, and `ActivityFeedback` provide shared quiz/practice chrome. `OptionSwitch` renders both environment and exercise modes with the same muted treatment. `Reveal` supports optional controlled state for solution-view tracking; `CodeBlock` supplies the same code presentation throughout. Activity wording and grading definitions remain in content, separate from these rendering components.
 
 - `Quiz.jsx` stores attempts by question ID. Question revisions come from the question, options, and answer. Corrections request another attempt and retain history.
-- `Lab.jsx` stores checked task IDs separately from reading completion. Guided mode shows the procedure; Challenge mode renders explicit MDX `<LabChallenge>` requirements and keeps the full guided walkthrough closed until requested. `<LabNotes>` supplies MDX prerequisites, verification, and independent variations. Setup labs without challenge briefs expose only the walkthrough.
-- Chapter quiz MDX exports define twenty practice questions; the compiler lists them in the program manifest, and `course.js` exposes them as the shared dashboard registry. `ChapterPractice` renders them through the same `Quiz` component as every other knowledge check, and also logs each answer as a `challenge:<id>` attempt for the dashboard.
+- `Lab.jsx` stores checked task IDs separately from reading completion. Guided mode shows the procedure; Challenge mode renders the authored `lab-challenge` requirements and keeps the full guided walkthrough closed until requested. `lab-notes` supplies prerequisites, verification, and independent variations. Setup labs without challenge briefs expose only the walkthrough.
+- Each chapter quiz page's data file defines its practice questions; the compiler lists them in the program manifest, and `course.js` exposes them as the shared dashboard registry. `ChapterPractice` renders them through the same `Quiz` component as every other knowledge check, and also logs each answer as a `challenge:<id>` attempt for the dashboard.
 - Chapter diagrams are React/SVG components. `packages/engine/plugins/chapter-widgets.js` discovers named default exports in chapter indexes and creates lazy wrappers. Chapter widgets, browser challenges, search, and the progress dashboard load when needed.
 - `AssessmentTimer.jsx` persists an optional end time. The two integrated assessments have independent requirements, solutions, and local graders.
 
@@ -54,7 +54,7 @@ The dashboard combines these independent signals into a next lesson, review queu
 
 ## Build and checks
 
-React 19, React Router 7, Vite 8, MDX, Shiki, and CSS build into `dist/`. `base: './'` and hash routing support GitHub Pages.
+React 19, React Router 7, Vite 8 and CSS build the engine into `dist/`; the compiler (Markdoc, YAML, Shiki) builds the content into `dist/content/`. `base: './'` and hash routing support GitHub Pages.
 
 PR CI runs formatting, content validation, JavaScript regressions, Python lab-tool tests, a production build, and Chromium learning-flow checks. Content validation covers routes and heading links, activity/objective IDs, quiz answers, starter manifests, setup syntax, and grader coverage. Browser checks cover every route plus mobile layouts, focus, persistence, and imports.
 

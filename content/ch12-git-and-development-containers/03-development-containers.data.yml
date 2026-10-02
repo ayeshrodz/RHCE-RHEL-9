@@ -1,0 +1,91 @@
+tool-runtimes:
+  text:
+    title: Three runtimes for one project
+    caption: "Same project, same hosts: the runtime decides which ansible-core and which tools run your playbook."
+    hint: Select any box to see what it holds and who uses it.
+    label: your computer (workstation in this lab)
+    label2: managed hosts
+    project: Project
+    editor: VS Code
+    installed: Installed tools
+    devcontainer: Dev container
+    ee: Execution env.
+    hosts: servera
+  data:
+    info:
+      project:
+        title: The project
+        text: "A Git clone with your playbooks, inventory and ansible.cfg. It also records which tools the project expects: .devcontainer/devcontainer.json names the development container and ansible-navigator.yml names the execution environment. Every runtime reads the same files."
+        tone: amber
+      editor:
+        title: VS Code
+        text: The editor, with the Ansible extension (highlighting, module documentation, ansible-lint as you type) and the Dev Containers extension. Dev Containers starts the development container and runs the editor's terminal and the Ansible extension inside it.
+        tone: purple
+      installed:
+        title: Installed tools
+        text: Whatever is installed on the machine itself. On workstation that is ansible-core 2.14 and ansible-navigator, which you set up in chapter 1. Another learner's machine may have different versions.
+        tone: gray
+      devcontainer:
+        title: Development container
+        text: "A container image with a complete, current toolset: ansible-core, ansible-navigator, ansible-lint and more. The project directory is mounted into it, so the tools work on your files. Everyone who uses the same image gets the same tools."
+        tone: teal
+      ee:
+        title: Execution environment
+        text: A container image that ansible-navigator starts to run a playbook. It holds the engine and collections the playbook needs at run time. ansible-navigator.yml in the project chooses the image.
+        tone: blue
+      hosts:
+        title: Managed hosts
+        text: The managed hosts do not care which runtime the playbook came from. Each runtime connects over SSH, so it needs your SSH key and must be able to reach the hosts over the network.
+        tone: green
+    subs:
+      project:
+        - a Git clone
+        - playbooks, inventory
+        - devcontainer.json
+      editor:
+        - Ansible extension
+        - Dev Containers
+      installed:
+        - ansible-core 2.14
+      devcontainer:
+        - ansible-core 2.21, ansible-lint
+      ee:
+        - started by ansible-navigator
+      hosts:
+        - serverb
+        - serverc …
+containers-check:
+  questions:
+    - id: q-ba334361f226
+      legacyIndex: 0
+      q: A collection is installed on workstation. Is it automatically present inside an execution environment?
+      options:
+        - Yes
+        - "No: the image has its own content and dependencies"
+      answer: 1
+      explain: An execution environment only contains what was built into the image. Check it with `ansible-navigator exec -- ansible-galaxy collection list`.
+    - id: q-e86ff9360799
+      legacyIndex: 1
+      q: Why record an image digest after testing?
+      options:
+        - It identifies the exact image you tested
+        - It encrypts the inventory
+        - It makes SSH unnecessary
+      answer: 0
+      explain: A tag such as `latest` can point to a different image later. A digest always means the same image.
+    - id: q-4d8a2f6c1e93
+      q: Which file tells VS Code which development container to open for a project?
+      options:
+        - "`.devcontainer/devcontainer.json`"
+        - "`ansible-navigator.yml`"
+        - "`ansible.cfg`"
+      answer: 0
+      explain: "`devcontainer.json` names the development container image. `ansible-navigator.yml` names the execution environment that runs playbooks."
+    - id: q-9e1b7c3a5d20
+      q: A project has `ansible-navigator.yml` and your home directory has `~/.ansible-navigator.yml`. Which does `ansible-navigator run` use in that project?
+      options:
+        - The project file
+        - The home file
+        - "Neither: it needs `--config`"
+      answer: 0
+      explain: Navigator checks the project directory before your home directory, so project settings travel with the project.

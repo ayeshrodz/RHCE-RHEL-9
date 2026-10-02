@@ -25,7 +25,7 @@ export default function TableOfContents({ articleRef, contentKey, compact = fals
         })),
       );
     collect();
-    // MDX pages are lazy; re-collect once content is swapped in.
+    // Pages load lazily; re-collect once content is swapped in.
     const mo = new MutationObserver(collect);
     mo.observe(root, { childList: true, subtree: true });
     return () => mo.disconnect();

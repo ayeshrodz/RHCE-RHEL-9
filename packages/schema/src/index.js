@@ -1,7 +1,6 @@
 // @kernel-path/schema: the content contract shared by the compiler, the engine and the lab tools.
 // Everything here is data. Engines implement the catalog; content refers to it by tag name only.
 import catalog from '../catalog/components.json' with { type: 'json' };
-import mdxMigration from '../catalog/mdx-v0-map.json' with { type: 'json' };
 import common from '../schemas/common.schema.json' with { type: 'json' };
 import catalogSchema from '../schemas/catalog.schema.json' with { type: 'json' };
 import site from '../schemas/source/site.schema.json' with { type: 'json' };
@@ -63,9 +62,6 @@ export const schemaIds = {
 
 /** The component catalog: tag name → typed description. */
 export { catalog };
-
-/** Maps the MDX components used before apiVersion 1 to catalog tags (used by the migration). */
-export { mdxMigration };
 
 /** Tags content may use today: stable entries plus legacy entries during the migration. */
 export function usableTags() {

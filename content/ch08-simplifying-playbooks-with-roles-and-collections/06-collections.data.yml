@@ -1,0 +1,83 @@
+fqcn-explorer:
+  text:
+    widgetLabel: Read a fully qualified collection name
+    label: Fully qualified collection name
+    em: namespace
+    p: "Who publishes it: a vendor, a project or a community."
+    em2: collection
+    p2: The bundle that is installed and versioned as one unit.
+    p3: "The "
+    p4: " inside that collection."
+    code: ansible.builtin
+    fqNote: " is special: it ships inside "
+    code2: ansible-core
+    fqNote2: " itself, so it is always available and is never installed separately."
+    fqNote3: "Ansible looks for it in each collections path, in order, and uses the first copy it finds:"
+    template: "{value0}. {value1}/{value2}"
+    fqNote4: "A fully qualified name has exactly three parts separated by dots: "
+    code3: namespace.collection.name
+    fqNote5: ", in lower case with underscores."
+  data:
+    samples:
+      - name: ansible.builtin.copy
+        kind: module
+        builtin: true
+      - name: ansible.posix.firewalld
+        kind: module
+      - name: community.general.parted
+        kind: module
+      - name: community.crypto.openssl_privatekey
+        kind: module
+      - name: redhat.rhel_system_roles.timesync
+        kind: role
+    paths:
+      - ./collections
+      - ~/.ansible/collections
+      - /usr/share/ansible/collections
+check:
+  questions:
+    - id: q-05e9722faa95
+      legacyIndex: 0
+      q: In `community.general.parted`, what is `general`?
+      options:
+        - The namespace
+        - The collection
+        - The module
+      answer: 1
+      explain: "namespace.collection.module: community is the namespace, general the collection, parted the module."
+    - id: q-af52b8811658
+      legacyIndex: 1
+      q: Which collection never needs installing?
+      options:
+        - "`ansible.posix`"
+        - "`ansible.builtin`"
+        - "`community.general`"
+      answer: 1
+      explain: ansible.builtin is part of ansible-core itself.
+    - id: q-f69d03afc23b
+      legacyIndex: 2
+      q: Where does `ansible-galaxy collection install -p collections NAME` put the collection?
+      options:
+        - In `./collections/ansible_collections/…`
+        - On every managed host
+        - In `/usr/share/ansible/collections`
+      answer: 0
+      explain: -p sets the target directory; the ansible_collections level is added automatically.
+    - id: q-89eae66824b4
+      legacyIndex: 3
+      q: A playbook fails at once with "couldn’t resolve module/action". Where is the problem?
+      options:
+        - On the managed host
+        - "On the control node: the collection is missing or not on the collections path"
+        - In the inventory
+      answer: 1
+      explain: Ansible could not find the module’s code at all, so nothing was sent to any host.
+    - id: q-98ba015290a9
+      legacyIndex: 4
+      q: Why write a version in `collections/requirements.yml`?
+      options:
+        - Newer releases may not support your ansible-core, and everyone should get the same one
+        - Versions are mandatory
+        - Unversioned collections cannot be listed
+      answer: 0
+      explain: A collection states the ansible-core versions it supports; pinning keeps the project working and repeatable.

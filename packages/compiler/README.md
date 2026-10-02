@@ -19,8 +19,8 @@ The bundle contains:
 **What the compiler does:**
 
 - Highlights code at build time into token data.
-- Moves structured data (quiz banks, decks, flows, widget copy) into page data.
+- Checks each tag's page data (quiz banks, decks, flows, widget copy) against its data schema.
 - Validates every tag, attribute, data entry, link and output file before writing.
 - Produces output that is deterministic for the same content.
 
-**Current input format.** It reads today's content layout through `legacy-source.js`, and MDX through `mdx-bridge.js`. The bridge evaluates exports and JSX attributes statically and rejects anything that isn't data. Both modules go away when content moves to Markdoc and `programs/` folders (phases 4 and 5 in [docs/architecture.md](../../docs/architecture.md)).
+**Input format.** Pages are Markdoc (`.md`) with an optional `.data.yml` beside them. Markdoc runs as a parser only: variables, functions and annotations are rejected, code blocks are never scanned for tags, and raw HTML stays text. `legacy-source.js` reads today's single-course layout; it goes away when content moves to `programs/` folders (phase 5 in [docs/architecture.md](../../docs/architecture.md)).
