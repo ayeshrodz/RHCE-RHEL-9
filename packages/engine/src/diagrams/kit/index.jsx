@@ -332,6 +332,7 @@ export function InfoPanel({ item, hint = 'Select any box in the diagram to learn
           <p key={`x-${item.title}`} className="dg-info-text">
             {item.text}
           </p>
+          {item.code && <pre className="terminal dg-info-code">{item.code}</pre>}
         </>
       ) : (
         <p className="dg-info-hint">{hint}</p>

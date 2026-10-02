@@ -1,6 +1,7 @@
 // Loads the compiled content bundle. Content is untrusted input: every file is fetched
 // from the configured content base only, and validated against the contract before use.
 import {
+  validateDiagramData,
   validateFlashcardsData,
   validateFlowMapData,
   validateInterface,
@@ -21,6 +22,7 @@ const DATA_VALIDATORS = {
   practice: validatePracticeData,
   flashcards: validateFlashcardsData,
   'flow-map': validateFlowMapData,
+  diagram: validateDiagramData,
   'legacy-widget': validateLegacyWidgetData,
 };
 

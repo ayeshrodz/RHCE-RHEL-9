@@ -48,7 +48,7 @@ This is handy for multi-step orchestration: configure the web tier in one play, 
 
 The second play only starts once the first has finished on all of its hosts.
 
-{% legacy-widget name="MultiPlayFlow" ref="multi-play-flow" /%}
+{% diagram ref="multi-play-flow" /%}
 
 ## Per-play users and privilege escalation
 

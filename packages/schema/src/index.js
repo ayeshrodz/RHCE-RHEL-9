@@ -14,6 +14,7 @@ import quiz from '../schemas/data/quiz.schema.json' with { type: 'json' };
 import practice from '../schemas/data/practice.schema.json' with { type: 'json' };
 import flashcards from '../schemas/data/flashcards.schema.json' with { type: 'json' };
 import flowMap from '../schemas/data/flow-map.schema.json' with { type: 'json' };
+import diagram from '../schemas/data/diagram.schema.json' with { type: 'json' };
 import legacyWidget from '../schemas/data/legacy-widget.schema.json' with { type: 'json' };
 import bundleSite from '../schemas/bundle/site.schema.json' with { type: 'json' };
 import bundleManifest from '../schemas/bundle/manifest.schema.json' with { type: 'json' };
@@ -40,6 +41,7 @@ export const schemas = [
   practice,
   flashcards,
   flowMap,
+  diagram,
   legacyWidget,
   bundleSite,
   bundleManifest,

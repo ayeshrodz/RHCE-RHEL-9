@@ -24,7 +24,7 @@ Most administration has traditionally happened through a terminal or a GUI, one 
 - **Verification is weak.** Checking that each step worked, on each machine, is tedious, so it is often skipped too.
 - **Servers drift apart.** Machines that are meant to be identical slowly become different in small ways (a package version here, a config tweak there). That makes problems harder to reproduce and fixes harder to trust.
 
-{% legacy-widget name="ManualVsCode" ref="manual-vs-code" /%}
+{% diagram ref="manual-vs-code" /%}
 
 **Automation** addresses all three. You describe the work once, and a tool performs it the same way on every system, every time. That frees you from repetitive tasks, lets you roll out changes faster, and gives you time for work that actually needs a human.
 

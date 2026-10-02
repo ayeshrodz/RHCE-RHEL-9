@@ -57,7 +57,7 @@ become_ask_pass = false
 
 Here is how those settings line up along the path from your terminal to a task running as root:
 
-{% legacy-widget name="PrivilegeEscalation" ref="privilege-escalation" /%}
+{% diagram ref="privilege-escalation" /%}
 
 ## Which configuration file wins?
 

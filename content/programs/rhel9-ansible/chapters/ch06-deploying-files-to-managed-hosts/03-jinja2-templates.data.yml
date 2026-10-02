@@ -1,37 +1,226 @@
 template-flow:
-  text:
-    title: One template, a different file on every host
-    label: Control node
-    title2: templates/motd.j2
-    sub: "{{ ansible_facts['fqdn'] }}"
-    title3: servera
-    sub2: facts + variables
-    title4: serverb
-    sub3: facts + variables
-    title5: template
-    sub4: render per host
-    label2: servera
-    title6: /etc/motd
-    sub5: same content → ok
-    sub6: This is the system servera…
-    label3: serverb
-    title7: /etc/motd
-    sub7: same content → ok
-    sub8: This is the system serverb…
-    label4: copy
-    label5: copy
-  data:
-    steps:
-      - title: One template
-        text: templates/motd.j2 lives in the project on the control node. It is plain text with {{ }} placeholders.
-      - title: Per-host data
-        text: For each host in the play, Ansible has that host’s own variables and gathered facts.
-      - title: Render on the control node
-        text: The template module fills in the placeholders once per host. The managed hosts never see Jinja2 syntax, and do not need Jinja2 installed.
-      - title: Copy the result
-        text: Each host receives its own finished file, with the owner, group and mode the task asked for.
-      - title: "Run again: nothing to do"
-        text: The rendered text is compared with the file already on the host. Identical content means ok, not changed, so handlers are not notified.
+  title: One template, a different file on every host
+  height: 262
+  expandable: false
+  mode: steps
+  elements:
+    - kind: group
+      x: 10
+      y: 10
+      w: 360
+      h: 242
+      tone: gray
+      label: Control node
+      active:
+        - 2
+    - kind: node
+      x: 26
+      y: 46
+      w: 150
+      h: 54
+      tone: purple
+      title: templates/motd.j2
+      sub: "{{ ansible_facts['fqdn'] }}"
+      mono: true
+      active:
+        - 0
+      visible:
+        - 0
+        - 2
+    - kind: node
+      x: 26
+      y: 118
+      w: 150
+      h: 48
+      tone: amber
+      title: servera
+      sub: facts + variables
+      active:
+        - 1
+      visible:
+        - 1
+        - 2
+    - kind: node
+      x: 26
+      y: 178
+      w: 150
+      h: 48
+      tone: amber
+      title: serverb
+      sub: facts + variables
+      active:
+        - 1
+      visible:
+        - 1
+        - 2
+    - kind: node
+      x: 214
+      y: 104
+      w: 140
+      h: 62
+      tone: teal
+      title: template
+      sub: render per host
+      active:
+        - 2
+      visible:
+        - 2
+        - 3
+    - kind: arrow
+      points:
+        - - 176
+          - 73
+        - - 284
+          - 73
+        - - 284
+          - 102
+      visible:
+        - 2
+      hot:
+        - 2
+    - kind: arrow
+      points:
+        - - 176
+          - 142
+        - - 212
+          - 142
+      visible:
+        - 2
+      hot:
+        - 2
+    - kind: arrow
+      points:
+        - - 176
+          - 202
+        - - 284
+          - 202
+        - - 284
+          - 168
+      visible:
+        - 2
+      hot:
+        - 2
+    - kind: group
+      x: 440
+      y: 10
+      w: 230
+      h: 112
+      tone: green
+      label: servera
+      active:
+        - 3
+        - 4
+    - kind: node
+      x: 456
+      y: 46
+      w: 198
+      h: 60
+      tone: green
+      title: /etc/motd
+      overrides:
+        sub:
+          "0": This is the system servera…
+          "1": This is the system servera…
+          "2": This is the system servera…
+          "3": This is the system servera…
+          "4": same content → ok
+      mono: true
+      active:
+        - 3
+        - 4
+      visible:
+        - 3
+        - 4
+    - kind: group
+      x: 440
+      y: 140
+      w: 230
+      h: 112
+      tone: green
+      label: serverb
+      active:
+        - 3
+        - 4
+    - kind: node
+      x: 456
+      y: 176
+      w: 198
+      h: 60
+      tone: green
+      title: /etc/motd
+      overrides:
+        sub:
+          "0": This is the system serverb…
+          "1": This is the system serverb…
+          "2": This is the system serverb…
+          "3": This is the system serverb…
+          "4": same content → ok
+      mono: true
+      active:
+        - 3
+        - 4
+      visible:
+        - 3
+        - 4
+    - kind: arrow
+      points:
+        - - 354
+          - 124
+        - - 400
+          - 124
+        - - 400
+          - 76
+        - - 454
+          - 76
+      label: copy
+      labelAt: 0.12
+      overrides:
+        dashed:
+          "0": false
+          "1": false
+          "2": false
+          "3": false
+          "4": true
+      visible:
+        - 3
+        - 4
+      hot:
+        - 3
+    - kind: arrow
+      points:
+        - - 354
+          - 146
+        - - 400
+          - 146
+        - - 400
+          - 206
+        - - 454
+          - 206
+      label: copy
+      labelAt: 0.12
+      overrides:
+        dashed:
+          "0": false
+          "1": false
+          "2": false
+          "3": false
+          "4": true
+      visible:
+        - 3
+        - 4
+      hot:
+        - 3
+  steps:
+    - title: One template
+      text: templates/motd.j2 lives in the project on the control node. It is plain text with {{ }} placeholders.
+    - title: Per-host data
+      text: For each host in the play, Ansible has that host’s own variables and gathered facts.
+    - title: Render on the control node
+      text: The template module fills in the placeholders once per host. The managed hosts never see Jinja2 syntax, and do not need Jinja2 installed.
+    - title: Copy the result
+      text: Each host receives its own finished file, with the owner, group and mode the task asked for.
+    - title: "Run again: nothing to do"
+      text: The rendered text is compared with the file already on the host. Identical content means ok, not changed, so handlers are not notified.
 template-playground:
   text:
     ansiblemanaged: Ansible managed

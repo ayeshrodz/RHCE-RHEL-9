@@ -19,7 +19,7 @@ Giving an application its own file system is a stack of small jobs: partition a 
 
 Step through the layers from a blank disk to a mounted file system:
 
-{% legacy-widget name="StorageStack" ref="storage-stack" /%}
+{% diagram ref="storage-stack" /%}
 
 {% variant name="homelab" title="The spare disk is sdb" %}
 The lab VMs' spare disk is `/dev/sdb`; on many virtual machines it would be `/dev/vdb`. The storage modules live in `community.general` and `ansible.posix`, both installed on workstation.

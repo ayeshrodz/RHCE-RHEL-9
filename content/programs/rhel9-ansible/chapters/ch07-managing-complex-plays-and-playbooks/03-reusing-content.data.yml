@@ -1,81 +1,210 @@
 project-map:
-  text:
-    title: One project, five small files
-    title2: site.yml
-    sub: playbook of playbooks
-    title3: web.yml
-    sub2: "play: hosts web"
-    title4: db.yml
-    sub3: "play: hosts db"
-    title5: tasks/install.yml
-    sub4: task file
-    title6: tasks/firewall.yml
-    sub5: task file
-    label: import_playbook
-    label2: include_tasks
-    label3: import_tasks
-    label4: "solid line: read when the playbook is parsed · dashed: read when the task runs"
-  data:
-    files:
-      site:
-        tone: purple
-        name: site.yml
-        text: "The entry point. It contains no tasks of its own: each line brings in a complete playbook, in order."
-        code: |-
-          - name: Web tier
-            ansible.builtin.import_playbook: web.yml
+  title: One project, five small files
+  height: 230
+  expandable: false
+  mode: select
+  initial: site
+  elements:
+    - kind: node
+      x: 20
+      y: 90
+      w: 130
+      h: 50
+      tone: purple
+      title: site.yml
+      sub: playbook of playbooks
+      mono: true
+      select: site
+      active:
+        - site
+      visible:
+        - site
+    - kind: node
+      x: 260
+      y: 30
+      w: 150
+      h: 50
+      tone: blue
+      title: web.yml
+      sub: "play: hosts web"
+      mono: true
+      select: web
+      active:
+        - web
+      visible:
+        - web
+    - kind: node
+      x: 260
+      y: 150
+      w: 150
+      h: 50
+      tone: blue
+      title: db.yml
+      sub: "play: hosts db"
+      mono: true
+      select: db
+      active:
+        - db
+      visible:
+        - db
+    - kind: node
+      x: 500
+      y: 90
+      w: 165
+      h: 50
+      tone: teal
+      title: tasks/install.yml
+      sub: task file
+      mono: true
+      select: install
+      active:
+        - install
+      visible:
+        - install
+    - kind: node
+      x: 500
+      y: 10
+      w: 165
+      h: 50
+      tone: teal
+      title: tasks/firewall.yml
+      sub: task file
+      mono: true
+      select: firewall
+      active:
+        - firewall
+      visible:
+        - firewall
+    - kind: arrow
+      points:
+        - - 150
+          - 105
+        - - 200
+          - 105
+        - - 200
+          - 55
+        - - 258
+          - 55
+      label: import_playbook
+      labelAt: 0.2
+      labelDy: -46
+      hot:
+        - site
+    - kind: arrow
+      points:
+        - - 150
+          - 125
+        - - 200
+          - 125
+        - - 200
+          - 175
+        - - 258
+          - 175
+      hot:
+        - site
+    - kind: arrow
+      points:
+        - - 410
+          - 45
+        - - 498
+          - 35
+      label: include_tasks
+      labelDy: -9
+      dashed: true
+      hot:
+        - web
+    - kind: arrow
+      points:
+        - - 410
+          - 65
+        - - 455
+          - 65
+        - - 455
+          - 105
+        - - 498
+          - 105
+      hot:
+        - web
+    - kind: arrow
+      points:
+        - - 410
+          - 175
+        - - 455
+          - 175
+        - - 455
+          - 125
+        - - 498
+          - 125
+      label: import_tasks
+      labelAt: 0.2
+      labelDy: 16
+      hot:
+        - db
+    - kind: label
+      x: 342
+      y: 222
+      text: "solid line: read when the playbook is parsed · dashed: read when the task runs"
+      size: 11.5
+      muted: true
+  info:
+    site:
+      title: site.yml
+      text: "The entry point. It contains no tasks of its own: each line brings in a complete playbook, in order."
+      tone: purple
+      code: |-
+        - name: Web tier
+          ansible.builtin.import_playbook: web.yml
 
-          - name: Database tier
-            ansible.builtin.import_playbook: db.yml
-      web:
-        tone: blue
-        name: web.yml
-        text: "An ordinary playbook you can also run by itself. Its play reuses two task files: one imported, one included in a loop."
-        code: |-
-          - name: Web servers are configured
-            hosts: web
-            tasks:
-              - name: Packages
-                ansible.builtin.import_tasks: tasks/install.yml
-                vars:
-                  packages: [httpd, firewalld]
+        - name: Database tier
+          ansible.builtin.import_playbook: db.yml
+    web:
+      title: web.yml
+      text: "An ordinary playbook you can also run by itself. Its play reuses two task files: one imported, one included in a loop."
+      tone: blue
+      code: |-
+        - name: Web servers are configured
+          hosts: web
+          tasks:
+            - name: Packages
+              ansible.builtin.import_tasks: tasks/install.yml
+              vars:
+                packages: [httpd, firewalld]
 
-              - name: Firewall
-                ansible.builtin.include_tasks: tasks/firewall.yml
-                loop: [http, https]
-      db:
-        tone: blue
-        name: db.yml
-        text: A second playbook for another group of hosts. It reuses the same install.yml with a different package list.
-        code: |-
-          - name: Database servers are configured
-            hosts: db
-            tasks:
-              - name: Packages
-                ansible.builtin.import_tasks: tasks/install.yml
-                vars:
-                  packages: [mariadb-server]
-      install:
-        tone: teal
-        name: tasks/install.yml
-        text: "A task file: a plain list of tasks, with no hosts line and no tasks keyword. It says nothing about which packages; the caller passes them in."
-        code: |-
-          - name: Packages are installed
-            ansible.builtin.dnf:
-              name: "{{ packages }}"
-              state: present
-      firewall:
-        tone: teal
-        name: tasks/firewall.yml
-        text: Another task file, written for one firewalld service at a time. Included in a loop, it runs once for each service, which it receives as item.
-        code: |-
-          - name: "{{ item }} is allowed"
-            ansible.posix.firewalld:
-              service: "{{ item }}"
-              permanent: true
-              immediate: true
-              state: enabled
-    initialSelection1: site
+            - name: Firewall
+              ansible.builtin.include_tasks: tasks/firewall.yml
+              loop: [http, https]
+    db:
+      title: db.yml
+      text: A second playbook for another group of hosts. It reuses the same install.yml with a different package list.
+      tone: blue
+      code: |-
+        - name: Database servers are configured
+          hosts: db
+          tasks:
+            - name: Packages
+              ansible.builtin.import_tasks: tasks/install.yml
+              vars:
+                packages: [mariadb-server]
+    install:
+      title: tasks/install.yml
+      text: "A task file: a plain list of tasks, with no hosts line and no tasks keyword. It says nothing about which packages; the caller passes them in."
+      tone: teal
+      code: |-
+        - name: Packages are installed
+          ansible.builtin.dnf:
+            name: "{{ packages }}"
+            state: present
+    firewall:
+      title: tasks/firewall.yml
+      text: Another task file, written for one firewalld service at a time. Included in a loop, it runs once for each service, which it receives as item.
+      tone: teal
+      code: |-
+        - name: "{{ item }} is allowed"
+          ansible.posix.firewalld:
+            service: "{{ item }}"
+            permanent: true
+            immediate: true
+            state: enabled
 reuse-simulator:
   text:
     template: TASK [{value0}] {value1}

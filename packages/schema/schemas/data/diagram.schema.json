@@ -1,0 +1,1087 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/diagram.schema.json",
+  "title": "Diagram",
+  "description": "A diagram drawn from boxes, groups, arrows and labels on a fixed canvas. It can be static, let the reader select boxes to read an explanation, or step through a sequence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "height",
+    "elements"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "caption": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 600
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 1200
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 200,
+      "maximum": 1600
+    },
+    "expandable": {
+      "type": "boolean"
+    },
+    "mode": {
+      "enum": [
+        "static",
+        "select",
+        "steps"
+      ]
+    },
+    "initial": {
+      "description": "The box selected when the page opens (select mode). Without it nothing is selected, and selecting the same box again clears it.",
+      "$ref": "#/$defs/viewKey"
+    },
+    "hint": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 300
+    },
+    "elements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "node",
+              "group",
+              "arrow",
+              "label",
+              "badge"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "node"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/node"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "group"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/group"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "arrow"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/arrow"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "label"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/label"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "badge"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "$ref": "#/$defs/badge"
+            }
+          }
+        ]
+      }
+    },
+    "info": {
+      "description": "Explanations by view key (select mode).",
+      "type": "object",
+      "maxProperties": 30,
+      "propertyNames": {
+        "$ref": "../common.schema.json#/$defs/id"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "text"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1500
+          },
+          "tone": {
+            "$ref": "../common.schema.json#/$defs/tone"
+          },
+          "code": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "steps": {
+      "description": "The sequence (steps mode).",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "text": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 600
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "viewKey": {
+      "$ref": "../common.schema.json#/$defs/id"
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "kind": {
+          "const": "node"
+        },
+        "x": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "y": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "w": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2400
+        },
+        "h": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2400
+        },
+        "tone": {
+          "$ref": "../common.schema.json#/$defs/tone"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "sub": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 300
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 300
+              }
+            }
+          ]
+        },
+        "mono": {
+          "type": "boolean"
+        },
+        "rx": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60
+        },
+        "titleSize": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 32
+        },
+        "align": {
+          "enum": [
+            "start",
+            "middle"
+          ]
+        },
+        "select": {
+          "description": "Makes the element clickable; clicking it shows this view.",
+          "$ref": "#/$defs/viewKey"
+        },
+        "active": {
+          "description": "Highlighted in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "hot": {
+          "description": "Drawn in the accent colour in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "dim": {
+          "description": "Always faded.",
+          "type": "boolean"
+        },
+        "visible": {
+          "description": "Not faded only in these views; faded in every other view.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              {
+                "$ref": "../common.schema.json#/$defs/id"
+              }
+            ]
+          }
+        },
+        "overrides": {
+          "description": "Values that change per view, by property then view.",
+          "type": "object",
+          "maxProperties": 6,
+          "propertyNames": {
+            "enum": [
+              "title",
+              "sub",
+              "label",
+              "text",
+              "n",
+              "dashed",
+              "muted"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "maxProperties": 20,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 300
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 300
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "kind": {
+          "const": "group"
+        },
+        "x": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "y": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "w": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2400
+        },
+        "h": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 2400
+        },
+        "tone": {
+          "$ref": "../common.schema.json#/$defs/tone"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "sub": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "solid": {
+          "type": "boolean"
+        },
+        "select": {
+          "description": "Makes the element clickable; clicking it shows this view.",
+          "$ref": "#/$defs/viewKey"
+        },
+        "active": {
+          "description": "Highlighted in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "hot": {
+          "description": "Drawn in the accent colour in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "dim": {
+          "description": "Always faded.",
+          "type": "boolean"
+        },
+        "visible": {
+          "description": "Not faded only in these views; faded in every other view.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              {
+                "$ref": "../common.schema.json#/$defs/id"
+              }
+            ]
+          }
+        },
+        "overrides": {
+          "description": "Values that change per view, by property then view.",
+          "type": "object",
+          "maxProperties": 6,
+          "propertyNames": {
+            "enum": [
+              "title",
+              "sub",
+              "label",
+              "text",
+              "n",
+              "dashed",
+              "muted"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "maxProperties": 20,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 300
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 300
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "arrow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "points"
+      ],
+      "properties": {
+        "kind": {
+          "const": "arrow"
+        },
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 12,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number",
+              "minimum": -400,
+              "maximum": 2400
+            }
+          }
+        },
+        "label": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "labelAt": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "labelDx": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "labelDy": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "dashed": {
+          "type": "boolean"
+        },
+        "both": {
+          "type": "boolean"
+        },
+        "variant": {
+          "enum": [
+            "ok",
+            "bad"
+          ]
+        },
+        "labelAnchor": {
+          "enum": [
+            "start",
+            "middle",
+            "end"
+          ]
+        },
+        "select": {
+          "description": "Makes the element clickable; clicking it shows this view.",
+          "$ref": "#/$defs/viewKey"
+        },
+        "active": {
+          "description": "Highlighted in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "hot": {
+          "description": "Drawn in the accent colour in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "dim": {
+          "description": "Always faded.",
+          "type": "boolean"
+        },
+        "visible": {
+          "description": "Not faded only in these views; faded in every other view.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              {
+                "$ref": "../common.schema.json#/$defs/id"
+              }
+            ]
+          }
+        },
+        "overrides": {
+          "description": "Values that change per view, by property then view.",
+          "type": "object",
+          "maxProperties": 6,
+          "propertyNames": {
+            "enum": [
+              "title",
+              "sub",
+              "label",
+              "text",
+              "n",
+              "dashed",
+              "muted"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "maxProperties": 20,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 300
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 300
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "x",
+        "y",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "label"
+        },
+        "x": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "y": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "anchor": {
+          "enum": [
+            "start",
+            "middle",
+            "end"
+          ]
+        },
+        "size": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 32
+        },
+        "muted": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 900
+        },
+        "mono": {
+          "type": "boolean"
+        },
+        "select": {
+          "description": "Makes the element clickable; clicking it shows this view.",
+          "$ref": "#/$defs/viewKey"
+        },
+        "active": {
+          "description": "Highlighted in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "hot": {
+          "description": "Drawn in the accent colour in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "dim": {
+          "description": "Always faded.",
+          "type": "boolean"
+        },
+        "visible": {
+          "description": "Not faded only in these views; faded in every other view.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              {
+                "$ref": "../common.schema.json#/$defs/id"
+              }
+            ]
+          }
+        },
+        "overrides": {
+          "description": "Values that change per view, by property then view.",
+          "type": "object",
+          "maxProperties": 6,
+          "propertyNames": {
+            "enum": [
+              "title",
+              "sub",
+              "label",
+              "text",
+              "n",
+              "dashed",
+              "muted"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "maxProperties": 20,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 300
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 300
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "badge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "kind": {
+          "const": "badge"
+        },
+        "x": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "y": {
+          "type": "number",
+          "minimum": -400,
+          "maximum": 2400
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99
+        },
+        "select": {
+          "description": "Makes the element clickable; clicking it shows this view.",
+          "$ref": "#/$defs/viewKey"
+        },
+        "active": {
+          "description": "Highlighted in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "hot": {
+          "description": "Drawn in the accent colour in these views (or always).",
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  },
+                  {
+                    "$ref": "../common.schema.json#/$defs/id"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "dim": {
+          "description": "Always faded.",
+          "type": "boolean"
+        },
+        "visible": {
+          "description": "Not faded only in these views; faded in every other view.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 15
+              },
+              {
+                "$ref": "../common.schema.json#/$defs/id"
+              }
+            ]
+          }
+        },
+        "overrides": {
+          "description": "Values that change per view, by property then view.",
+          "type": "object",
+          "maxProperties": 6,
+          "propertyNames": {
+            "enum": [
+              "title",
+              "sub",
+              "label",
+              "text",
+              "n",
+              "dashed",
+              "muted"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "maxProperties": 20,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 300
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 300
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -239,3 +239,15 @@ test('two programs compile into separate manifests, pages and search indexes', a
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('diagram data is checked: unknown kinds, properties and out-of-range values are rejected', async () => {
+  const spec = (element) => `d:\n  title: T\n  height: 100\n  elements:\n    - ${element}\n`;
+  const ok = '{ kind: node, x: 0, y: 0, w: 10, h: 10, title: Box }';
+  assert.deepEqual(await errorsFor('{% diagram ref="d" /%}', { data: spec(ok) }), []);
+  await rejects('{% diagram ref="d" /%}', /diagram data/, { data: spec('{ kind: script, src: "x" }') });
+  await rejects('{% diagram ref="d" /%}', /diagram data .*additional properties/, {
+    data: spec('{ kind: node, x: 0, y: 0, w: 10, h: 10, onclick: "alert(1)" }'),
+  });
+  await rejects('{% diagram ref="d" /%}', /diagram data/, { data: spec('{ kind: node, x: 0, y: 0, w: 10, h: 10, tone: "red; x:y" }') });
+  await rejects('{% diagram ref="d" /%}', /diagram data/, { data: spec('{ kind: arrow, points: [[0, 0]] }') });
+});

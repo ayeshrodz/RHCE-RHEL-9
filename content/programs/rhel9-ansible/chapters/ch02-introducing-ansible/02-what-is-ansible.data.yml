@@ -1,28 +1,136 @@
 dev-ops-lifecycle:
-  text:
-    title: Ansible across the application lifecycle
-    caption: Every team reads the same human-readable playbook, from development through to production.
-    label: from development…
-    label2: …to production
-    title2: Ansible Playbook
-    sub: one shared language
-  data:
-    teams:
-      - title: Dev / Test
-        sub: writes it
-        tone: blue
-      - title: QA
-        sub: verifies it
-        tone: teal
-      - title: Operations
-        sub: runs it
-        tone: green
-      - title: Management
-        sub: audits it
-        tone: amber
-      - title: Outsourcers
-        sub: reuse it
-        tone: pink
+  title: Ansible across the application lifecycle
+  caption: Every team reads the same human-readable playbook, from development through to production.
+  height: 196
+  mode: static
+  elements:
+    - kind: arrow
+      points:
+        - - 268
+          - 40
+        - - 22
+          - 40
+    - kind: arrow
+      points:
+        - - 412
+          - 40
+        - - 658
+          - 40
+    - kind: label
+      x: 24
+      y: 28
+      text: from development…
+      anchor: start
+      muted: true
+    - kind: label
+      x: 656
+      y: 28
+      text: …to production
+      anchor: end
+      muted: true
+    - kind: node
+      x: 270
+      y: 14
+      w: 140
+      h: 52
+      tone: purple
+      title: Ansible Playbook
+      sub: one shared language
+    - kind: arrow
+      points:
+        - - 340
+          - 66
+        - - 340
+          - 90
+        - - 80
+          - 90
+        - - 80
+          - 118
+      dashed: true
+    - kind: node
+      x: 20
+      y: 120
+      w: 120
+      h: 58
+      tone: blue
+      title: Dev / Test
+      sub: writes it
+    - kind: arrow
+      points:
+        - - 340
+          - 66
+        - - 340
+          - 90
+        - - 210
+          - 90
+        - - 210
+          - 118
+      dashed: true
+    - kind: node
+      x: 150
+      y: 120
+      w: 120
+      h: 58
+      tone: teal
+      title: QA
+      sub: verifies it
+    - kind: arrow
+      points:
+        - - 340
+          - 66
+        - - 340
+          - 90
+        - - 340
+          - 90
+        - - 340
+          - 118
+      dashed: true
+    - kind: node
+      x: 280
+      y: 120
+      w: 120
+      h: 58
+      tone: green
+      title: Operations
+      sub: runs it
+    - kind: arrow
+      points:
+        - - 340
+          - 66
+        - - 340
+          - 90
+        - - 470
+          - 90
+        - - 470
+          - 118
+      dashed: true
+    - kind: node
+      x: 410
+      y: 120
+      w: 120
+      h: 58
+      tone: amber
+      title: Management
+      sub: audits it
+    - kind: arrow
+      points:
+        - - 340
+          - 66
+        - - 340
+          - 90
+        - - 600
+          - 90
+        - - 600
+          - 118
+      dashed: true
+    - kind: node
+      x: 540
+      y: 120
+      w: 120
+      h: 58
+      tone: pink
+      title: Outsourcers
+      sub: reuse it
 check:
   questions:
     - id: q-94bfa1cda240

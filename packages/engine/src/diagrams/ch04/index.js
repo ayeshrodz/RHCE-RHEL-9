@@ -6,8 +6,6 @@ export { default as VariablePrecedence } from './VariablePrecedence';
 export { default as ProjectTree } from './ProjectTree';
 export { default as GroupVarsResolver } from './GroupVarsResolver';
 export { default as DataExplorer } from './DataExplorer';
-export { default as RegisterFlow } from './RegisterFlow';
-export { default as VaultFlow } from './VaultFlow';
 export { default as VaultCommands } from './VaultCommands';
 export { default as FactsExplorer } from './FactsExplorer';
 export { default as FactGathering } from './FactGathering';

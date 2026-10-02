@@ -1,31 +1,177 @@
 manual-vs-code:
-  text:
-    title: Manual administration versus Infrastructure as Code
-    caption: Hand-applied changes slowly drift apart. Changes made through code are reviewed once and applied identically everywhere.
-    label: Manual administration
-    title2: Administrator
-    sub: checklist + SSH
-    label2: by hand, one by one
-    title3: web1
-    sub2: httpd 2.4.57
-    title4: web2
-    sub3: httpd 2.4.53
-    title5: web3
-    sub4: httpd 2.4.57
-    label3: web2 missed a step. Nobody noticed.
-    label4: Infrastructure as Code
-    title6: Git repository
-    sub5: site.yml
-    title7: Ansible
-    sub6: control node
-    title8: web1
-    sub7: httpd 2.4.57
-    title9: web2
-    sub8: httpd 2.4.57
-    title10: web3
-    sub9: httpd 2.4.57
-    label5: Same code, same result, every run.
-  data: {}
+  title: Manual administration versus Infrastructure as Code
+  caption: Hand-applied changes slowly drift apart. Changes made through code are reviewed once and applied identically everywhere.
+  height: 300
+  mode: static
+  elements:
+    - kind: group
+      x: 10
+      y: 10
+      w: 320
+      h: 280
+      tone: coral
+      label: Manual administration
+    - kind: node
+      x: 100
+      y: 48
+      w: 140
+      h: 54
+      tone: gray
+      title: Administrator
+      sub: checklist + SSH
+    - kind: arrow
+      points:
+        - - 170
+          - 102
+        - - 170
+          - 140
+        - - 70
+          - 140
+        - - 70
+          - 186
+    - kind: arrow
+      points:
+        - - 170
+          - 102
+        - - 170
+          - 140
+        - - 170
+          - 140
+        - - 170
+          - 186
+    - kind: arrow
+      points:
+        - - 170
+          - 102
+        - - 170
+          - 140
+        - - 270
+          - 140
+        - - 270
+          - 186
+    - kind: label
+      x: 178
+      y: 124
+      text: by hand, one by one
+      anchor: start
+      muted: true
+    - kind: node
+      x: 25
+      y: 188
+      w: 90
+      h: 56
+      tone: gray
+      title: web1
+      sub: httpd 2.4.57
+    - kind: node
+      x: 125
+      y: 188
+      w: 90
+      h: 56
+      tone: red
+      title: web2
+      sub: httpd 2.4.53
+    - kind: node
+      x: 225
+      y: 188
+      w: 90
+      h: 56
+      tone: gray
+      title: web3
+      sub: httpd 2.4.57
+    - kind: label
+      x: 170
+      y: 272
+      text: web2 missed a step. Nobody noticed.
+      muted: true
+    - kind: group
+      x: 350
+      y: 10
+      w: 320
+      h: 280
+      tone: teal
+      label: Infrastructure as Code
+    - kind: node
+      x: 366
+      y: 48
+      w: 130
+      h: 54
+      tone: purple
+      title: Git repository
+      sub: site.yml
+    - kind: node
+      x: 524
+      y: 48
+      w: 130
+      h: 54
+      tone: teal
+      title: Ansible
+      sub: control node
+    - kind: arrow
+      points:
+        - - 496
+          - 75
+        - - 522
+          - 75
+    - kind: arrow
+      points:
+        - - 589
+          - 102
+        - - 589
+          - 140
+        - - 410
+          - 140
+        - - 410
+          - 186
+    - kind: arrow
+      points:
+        - - 589
+          - 102
+        - - 589
+          - 140
+        - - 510
+          - 140
+        - - 510
+          - 186
+    - kind: arrow
+      points:
+        - - 589
+          - 102
+        - - 589
+          - 140
+        - - 610
+          - 140
+        - - 610
+          - 186
+    - kind: node
+      x: 365
+      y: 188
+      w: 90
+      h: 56
+      tone: green
+      title: web1
+      sub: httpd 2.4.57
+    - kind: node
+      x: 465
+      y: 188
+      w: 90
+      h: 56
+      tone: green
+      title: web2
+      sub: httpd 2.4.57
+    - kind: node
+      x: 565
+      y: 188
+      w: 90
+      h: 56
+      tone: green
+      title: web3
+      sub: httpd 2.4.57
+    - kind: label
+      x: 510
+      y: 272
+      text: Same code, same result, every run.
+      muted: true
 check:
   questions:
     - id: q-f9250bf18f92

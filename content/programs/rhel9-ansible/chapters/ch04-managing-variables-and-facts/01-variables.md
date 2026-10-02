@@ -163,7 +163,7 @@ Dot notation breaks when a key has the same name as a Python method or attribute
 
 Every module returns information about what it did, as JSON. The **`register`** keyword saves that result in a variable, so later tasks can print it, make decisions with it, or reuse part of it.
 
-{% legacy-widget name="RegisterFlow" ref="register-flow" /%}
+{% diagram ref="register-flow" /%}
 
 ```yaml {% title="playbook.yml" %}
 - name: Installs a package and prints the result

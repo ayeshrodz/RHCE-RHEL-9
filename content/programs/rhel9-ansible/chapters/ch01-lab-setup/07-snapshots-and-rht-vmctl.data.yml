@@ -1,24 +1,123 @@
 baseline-timeline:
-  text:
-    title: VMs built
-    sub: checks pass
-    title2: Tools installed
-    sub2: navigator · SSH keys
-    title3: utility
-    sub3: optional
-    title4: When to take the clean snapshot
-    caption: clean is the state every reset returns to. Take it once the machines and tools are ready, but before you create any Ansible project.
-    title5: rht-vmctl save
-    sub4: snapshot
-    sub5: = clean
-    title6: ~/ansible
-    sub6: your exercises
-    label: rht-vmctl reset servers
-    label2: Phases 08–09
-    label3: Phase 10
-    label4: Phase 11
-    label5: Phase 13 onwards
-  data: {}
+  title: When to take the clean snapshot
+  caption: clean is the state every reset returns to. Take it once the machines and tools are ready, but before you create any Ansible project.
+  height: 170
+  mode: static
+  elements:
+    - kind: node
+      x: 8
+      y: 40
+      w: 118
+      h: 56
+      tone: gray
+      title: VMs built
+      sub: checks pass
+      titleSize: 13
+    - kind: arrow
+      points:
+        - - 126
+          - 68
+        - - 148
+          - 68
+    - kind: node
+      x: 142
+      y: 40
+      w: 118
+      h: 56
+      tone: gray
+      title: Tools installed
+      sub: navigator · SSH keys
+      titleSize: 13
+    - kind: arrow
+      points:
+        - - 260
+          - 68
+        - - 282
+          - 68
+    - kind: node
+      x: 276
+      y: 40
+      w: 118
+      h: 56
+      tone: gray
+      title: utility
+      sub: optional
+      titleSize: 13
+    - kind: arrow
+      points:
+        - - 394
+          - 68
+        - - 418
+          - 68
+      hot: true
+    - kind: node
+      x: 420
+      y: 30
+      w: 116
+      h: 76
+      tone: coral
+      title: rht-vmctl save
+      sub:
+        - snapshot
+        - = clean
+      active: true
+    - kind: arrow
+      points:
+        - - 536
+          - 68
+        - - 556
+          - 68
+    - kind: node
+      x: 558
+      y: 40
+      w: 114
+      h: 56
+      tone: purple
+      title: ~/ansible
+      sub: your exercises
+      titleSize: 13
+    - kind: arrow
+      points:
+        - - 615
+          - 96
+        - - 615
+          - 140
+        - - 478
+          - 140
+        - - 478
+          - 108
+      label: rht-vmctl reset servers
+      labelAt: 0.5
+      labelDy: -6
+      dashed: true
+    - kind: label
+      x: 16
+      y: 24
+      text: Phases 08–09
+      anchor: start
+      size: 11.5
+      muted: true
+    - kind: label
+      x: 150
+      y: 24
+      text: Phase 10
+      anchor: start
+      size: 11.5
+      muted: true
+    - kind: label
+      x: 284
+      y: 24
+      text: Phase 11
+      anchor: start
+      size: 11.5
+      muted: true
+    - kind: label
+      x: 566
+      y: 24
+      text: Phase 13 onwards
+      anchor: start
+      size: 11.5
+      muted: true
 snapshot-chain:
   text:
     text: "rht-vmctl save  →  servera: snapshot “clean” taken"

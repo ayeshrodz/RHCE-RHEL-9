@@ -1,66 +1,204 @@
 git-flow:
-  text:
-    title: Where your work lives in Git
-    label: "workstation: your clone"
-    label2: shared
-    title2: Working tree
-    title3: Staging area
-    title4: Local repository
-    title5: Remote
-    label3: git add
-    label4: git commit
-    label5: git push
-    label6: git clone · git pull
-  data:
-    steps:
-      - title: Clone
-        text: git clone copies the whole history from the remote into a new local repository, then checks out the latest version of every file into your working tree.
-        hot: down
-        subs:
-          - motd.yml, templates/
-          - empty
-          - 2 commits
-          - 2 commits
-      - title: Edit
-        text: "You change templates/motd.j2. Git notices: git status lists it as modified and git diff shows the exact lines. Nothing is saved in the history yet."
-        hot: edit
-        subs:
-          - motd.j2 modified
-          - empty
-          - 2 commits
-          - 2 commits
-      - title: Stage
-        text: git add copies the current version of the file into the staging area. The staging area is the draft of your next commit; git diff --cached shows it.
-        hot: add
-        subs:
-          - clean
-          - motd.j2
-          - 2 commits
-          - 2 commits
-      - title: Commit
-        text: git commit saves the staged draft as a new snapshot, with your name and a message. It exists only in your local repository so far.
-        hot: commit
-        subs:
-          - clean
-          - empty
-          - 3 commits
-          - 2 commits
-      - title: Push
-        text: git push sends your new commits to the remote. Now everyone who clones or pulls the project gets your change.
-        hot: push
-        subs:
-          - clean
-          - empty
-          - 3 commits
-          - 3 commits
-      - title: Pull
-        text: A teammate pushed a commit. git pull fetches it into your local repository and updates your working tree, so you build on the latest version.
-        hot: down
-        subs:
-          - README.md updated
-          - empty
-          - 4 commits
-          - 4 commits
+  title: Where your work lives in Git
+  height: 230
+  mode: steps
+  elements:
+    - kind: group
+      x: 10
+      y: 10
+      w: 480
+      h: 210
+      tone: gray
+      label: "workstation: your clone"
+    - kind: group
+      x: 516
+      y: 10
+      w: 154
+      h: 210
+      tone: blue
+      label: shared
+    - kind: node
+      x: 26
+      y: 88
+      w: 128
+      h: 80
+      tone: teal
+      title: Working tree
+      overrides:
+        sub:
+          "0": motd.yml, templates/
+          "1": motd.j2 modified
+          "2": clean
+          "3": clean
+          "4": clean
+          "5": README.md updated
+      active:
+        - 0
+        - 1
+        - 2
+        - 5
+      visible:
+        - 0
+        - 1
+        - 2
+        - 5
+    - kind: node
+      x: 184
+      y: 88
+      w: 128
+      h: 80
+      tone: amber
+      title: Staging area
+      overrides:
+        sub:
+          "0": empty
+          "1": empty
+          "2": motd.j2
+          "3": empty
+          "4": empty
+          "5": empty
+      active:
+        - 2
+        - 3
+      visible:
+        - 2
+        - 3
+    - kind: node
+      x: 342
+      y: 88
+      w: 132
+      h: 80
+      tone: purple
+      title: Local repository
+      overrides:
+        sub:
+          "0": 2 commits
+          "1": 2 commits
+          "2": 2 commits
+          "3": 3 commits
+          "4": 3 commits
+          "5": 4 commits
+      active:
+        - 0
+        - 3
+        - 4
+        - 5
+      visible:
+        - 0
+        - 3
+        - 4
+        - 5
+    - kind: node
+      x: 529
+      y: 88
+      w: 128
+      h: 80
+      tone: blue
+      title: Remote
+      overrides:
+        sub:
+          "0": 2 commits
+          "1": 2 commits
+          "2": 2 commits
+          "3": 2 commits
+          "4": 3 commits
+          "5": 4 commits
+      active:
+        - 0
+        - 4
+        - 5
+      visible:
+        - 0
+        - 4
+        - 5
+    - kind: arrow
+      points:
+        - - 110
+          - 86
+        - - 110
+          - 62
+        - - 228
+          - 62
+        - - 228
+          - 86
+      label: git add
+      visible:
+        - 2
+      hot:
+        - 2
+    - kind: arrow
+      points:
+        - - 268
+          - 86
+        - - 268
+          - 62
+        - - 386
+          - 62
+        - - 386
+          - 86
+      label: git commit
+      visible:
+        - 3
+      hot:
+        - 3
+    - kind: arrow
+      points:
+        - - 430
+          - 86
+        - - 430
+          - 62
+        - - 593
+          - 62
+        - - 593
+          - 86
+      label: git push
+      labelAt: 0.34
+      visible:
+        - 4
+      hot:
+        - 4
+    - kind: arrow
+      points:
+        - - 593
+          - 170
+        - - 593
+          - 198
+        - - 90
+          - 198
+        - - 90
+          - 170
+      label: git clone · git pull
+      visible:
+        - 0
+        - 5
+      hot:
+        - 0
+        - 5
+    - kind: badge
+      x: 10
+      y: 10
+      overrides:
+        n:
+          "0": 1
+          "1": 2
+          "2": 3
+          "3": 4
+          "4": 5
+          "5": 6
+      hot: true
+  steps:
+    - title: Clone
+      text: git clone copies the whole history from the remote into a new local repository, then checks out the latest version of every file into your working tree.
+    - title: Edit
+      text: "You change templates/motd.j2. Git notices: git status lists it as modified and git diff shows the exact lines. Nothing is saved in the history yet."
+    - title: Stage
+      text: git add copies the current version of the file into the staging area. The staging area is the draft of your next commit; git diff --cached shows it.
+    - title: Commit
+      text: git commit saves the staged draft as a new snapshot, with your name and a message. It exists only in your local repository so far.
+    - title: Push
+      text: git push sends your new commits to the remote. Now everyone who clones or pulls the project gets your change.
+    - title: Pull
+      text: A teammate pushed a commit. git pull fetches it into your local repository and updates your working tree, so you build on the latest version.
 git-check:
   questions:
     - id: q-fbeebb28acb1

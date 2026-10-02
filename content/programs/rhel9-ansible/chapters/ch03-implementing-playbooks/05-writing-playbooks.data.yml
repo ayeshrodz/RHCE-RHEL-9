@@ -1,23 +1,78 @@
 playbook-nesting:
-  text:
-    title: How a playbook is structured
-    caption: A playbook is a YAML list of plays. Each play is a dictionary whose tasks key holds a list of tasks. Each task names one module and its arguments.
-    label: "site.yml: a list of plays"
-    label2: "- name: Configure web servers"
-    sub: "hosts: web"
-    title2: "- name: httpd is installed"
-    sub2: ansible.builtin.dnf
-    title3: "- name: index.html is present"
-    sub3: ansible.builtin.copy
-    title4: "- name: httpd is running"
-    sub4: ansible.builtin.service
-    label3: "- name: Configure databases"
-    sub5: "hosts: db"
-    title5: "- name: MariaDB is installed"
-    sub6: ansible.builtin.dnf
-    title6: "- name: MariaDB is running"
-    sub7: ansible.builtin.service
-  data: {}
+  title: How a playbook is structured
+  caption: A playbook is a YAML list of plays. Each play is a dictionary whose tasks key holds a list of tasks. Each task names one module and its arguments.
+  height: 262
+  mode: static
+  elements:
+    - kind: group
+      x: 8
+      y: 8
+      w: 664
+      h: 246
+      tone: purple
+      label: "site.yml: a list of plays"
+      solid: true
+    - kind: group
+      x: 24
+      y: 42
+      w: 306
+      h: 200
+      tone: blue
+      label: "- name: Configure web servers"
+      sub: "hosts: web"
+    - kind: node
+      x: 40
+      y: 76
+      w: 274
+      h: 48
+      tone: teal
+      title: "- name: httpd is installed"
+      sub: ansible.builtin.dnf
+      align: start
+    - kind: node
+      x: 40
+      y: 130
+      w: 274
+      h: 48
+      tone: teal
+      title: "- name: index.html is present"
+      sub: ansible.builtin.copy
+      align: start
+    - kind: node
+      x: 40
+      y: 184
+      w: 274
+      h: 48
+      tone: teal
+      title: "- name: httpd is running"
+      sub: ansible.builtin.service
+      align: start
+    - kind: group
+      x: 350
+      y: 42
+      w: 306
+      h: 200
+      tone: amber
+      label: "- name: Configure databases"
+      sub: "hosts: db"
+    - kind: node
+      x: 366
+      y: 76
+      w: 274
+      h: 48
+      tone: teal
+      title: "- name: MariaDB is installed"
+      sub: ansible.builtin.dnf
+      align: start
+    - kind: node
+      x: 366
+      y: 130
+      w: 274
+      h: 48
+      tone: teal
+      title: "- name: MariaDB is running"
+      sub: ansible.builtin.service
+      align: start
 annotated-yaml:
   text:
     ayamlHint: click a line
@@ -147,30 +202,92 @@ verbosity:
           - "<servera.lab.example.com> SSH: EXEC ssh -vvv -C -o ControlMaster=auto …"
           - "debug1: Reading configuration data /etc/ssh/ssh_config …"
 safe-workflow:
-  text:
-    title: A safe playbook workflow
-    caption: Catch YAML mistakes first, preview changes second, apply third, and prove idempotency last.
-    label: fix and repeat
-  data:
-    stages:
-      - title: Write
-        sub: site.yml
-        tone: purple
-      - title: --syntax-check
-        sub: parse only
-        tone: blue
-        mono: true
-      - title: --check
-        sub: dry run
-        tone: amber
-        mono: true
-      - title: run
-        sub: make changes
-        tone: coral
-        mono: true
-      - title: run again
-        sub: expect changed=0
-        tone: green
+  title: A safe playbook workflow
+  caption: Catch YAML mistakes first, preview changes second, apply third, and prove idempotency last.
+  height: 132
+  mode: static
+  elements:
+    - kind: node
+      x: 10
+      y: 34
+      w: 116
+      h: 60
+      tone: purple
+      title: Write
+      sub: site.yml
+    - kind: arrow
+      points:
+        - - 126
+          - 64
+        - - 144
+          - 64
+    - kind: node
+      x: 146
+      y: 34
+      w: 116
+      h: 60
+      tone: blue
+      title: --syntax-check
+      sub: parse only
+      mono: true
+    - kind: arrow
+      points:
+        - - 262
+          - 64
+        - - 280
+          - 64
+    - kind: node
+      x: 282
+      y: 34
+      w: 116
+      h: 60
+      tone: amber
+      title: --check
+      sub: dry run
+      mono: true
+    - kind: arrow
+      points:
+        - - 398
+          - 64
+        - - 416
+          - 64
+    - kind: node
+      x: 418
+      y: 34
+      w: 116
+      h: 60
+      tone: coral
+      title: run
+      sub: make changes
+      mono: true
+    - kind: arrow
+      points:
+        - - 534
+          - 64
+        - - 552
+          - 64
+    - kind: node
+      x: 554
+      y: 34
+      w: 116
+      h: 60
+      tone: green
+      title: run again
+      sub: expect changed=0
+    - kind: arrow
+      points:
+        - - 612
+          - 94
+        - - 612
+          - 116
+        - - 68
+          - 116
+        - - 68
+          - 96
+      label: fix and repeat
+      labelAt: 0.5
+      labelDy: 4
+      dashed: true
 check:
   questions:
     - id: q-a4931ed68e9e

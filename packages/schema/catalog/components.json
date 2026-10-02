@@ -235,26 +235,22 @@
       ]
     },
     "diagram": {
-      "summary": "A data-defined diagram of nodes, groups and arrows, optionally stepped or clickable.",
-      "status": "planned",
+      "summary": "A diagram of boxes, groups and arrows. It can be static, let the reader select boxes to read an explanation, or step through a sequence.",
+      "status": "stable",
       "since": 1,
       "placement": "block",
       "children": "none",
       "attributes": {
         "ref": {
           "type": "string",
-          "description": "Key of the definition in the page data.",
+          "description": "Key of the diagram in the page data.",
           "format": "dataRef"
-        },
-        "title": {
-          "type": "string",
-          "description": "Title.",
-          "format": "shortText"
         }
       },
       "required": [
         "ref"
-      ]
+      ],
+      "data": "data/diagram.schema.json"
     },
     "feature-grid": {
       "summary": "A grid of short feature descriptions.",
@@ -572,28 +568,15 @@
           "description": "The widget.",
           "enum": [
             "LabNetworkMap",
-            "TwoAddresses",
-            "AccessPaths",
-            "BaselineTimeline",
             "SnapshotChain",
             "BuildRoadmap",
-            "ManualVsCode",
-            "DevOpsLifecycle",
-            "ArchitectureMap",
-            "TaskLifecycle",
             "IdempotencyDemo",
-            "PlatformComponents",
-            "NavigatorRuntime",
             "InventoryExplorer",
             "RangeExpander",
             "PrecedenceResolver",
-            "PrivilegeEscalation",
-            "PlaybookNesting",
             "AnnotatedYaml",
             "PlayRecap",
             "Verbosity",
-            "SafeWorkflow",
-            "MultiPlayFlow",
             "ModuleExplorer",
             "CommandVsModule",
             "YamlMultiline",
@@ -603,8 +586,6 @@
             "ProjectTree",
             "GroupVarsResolver",
             "DataExplorer",
-            "RegisterFlow",
-            "VaultFlow",
             "VaultCommands",
             "FactsExplorer",
             "FactGathering",
@@ -619,12 +600,10 @@
             "ModeCalculator",
             "FileEditSimulator",
             "FetchLayout",
-            "TemplateFlow",
             "TemplatePlayground",
             "StatExplorer",
             "HostPatternTester",
             "ReuseSimulator",
-            "ProjectMap",
             "RoleAnatomy",
             "PlayOrder",
             "RoleVarResolver",
@@ -634,10 +613,7 @@
             "CheckModeSim",
             "AdminModuleFinder",
             "CronBuilder",
-            "StorageStack",
-            "ReadinessChecklist",
-            "GitFlow",
-            "ToolRuntimes"
+            "ReadinessChecklist"
           ]
         },
         "ref": {

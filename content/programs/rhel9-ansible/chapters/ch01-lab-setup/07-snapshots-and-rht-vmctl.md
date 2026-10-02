@@ -18,7 +18,7 @@ Phase 12. The classroom resets machines with `rht-vmctl`. Here you install a hom
 
 Build the lab once, save a `clean` snapshot, then break things freely: any machine can go back to `clean` in seconds.
 
-{% legacy-widget name="BaselineTimeline" ref="baseline-timeline" /%}
+{% diagram ref="baseline-timeline" /%}
 
 ## Install and use it
 

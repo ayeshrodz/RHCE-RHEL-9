@@ -318,36 +318,130 @@ lab-network-map:
         btn: " Clear"
       data: {}
 two-addresses:
-  text:
-    title: Why the host has two IP addresses
-    caption: The host keeps its normal LAN address (wired or Wi-Fi) and gains a second one, 172.25.250.254, on the lab's virtual switch. The VMs use that second address as their gateway.
-    title2: Internet
-    title3: Your router
-    sub: LAN gateway
-    label: Ubuntu host
-    title4: LAN card
-    title5: rhcebr0
-    sub2: 172.25.250.254
-    label2: faces your network
-    label3: faces the lab only
-    label4: the host forwards (NAT) between the two
-    label5: Lab VMs
-    title6: workstation
-    title7: servera…d
-    title8: utility
-    label6: gateway
-  data: {}
-  dependencies:
-    LabValues:
-      text:
-        widgetTitle: Your lab values
-        widgetSub: Fill these in once. Every command in this guide then shows your own values, and the copy buttons copy them. Saved only in this browser.
-        span: /
-        span2: " set"
-        labvalsHint: "find it with "
-        label: Save values
-        btn: " Clear"
-      data: {}
+  title: Why the host has two IP addresses
+  caption: The host keeps its normal LAN address (wired or Wi-Fi) and gains a second one, 172.25.250.254, on the lab's virtual switch. The VMs use that second address as their gateway.
+  height: 250
+  mode: static
+  elements:
+    - kind: node
+      x: 10
+      y: 20
+      w: 140
+      h: 46
+      tone: blue
+      title: Internet
+    - kind: node
+      x: 10
+      y: 100
+      w: 140
+      h: 52
+      tone: gray
+      title: Your router
+      sub: LAN gateway
+    - kind: arrow
+      points:
+        - - 80
+          - 66
+        - - 80
+          - 98
+      both: true
+    - kind: group
+      x: 188
+      y: 10
+      w: 304
+      h: 230
+      tone: purple
+      label: Ubuntu host
+    - kind: node
+      x: 204
+      y: 96
+      w: 130
+      h: 60
+      tone: purple
+      title: LAN card
+      sub: <HOST_LAN_IP>
+      mono: true
+    - kind: node
+      x: 346
+      y: 96
+      w: 130
+      h: 60
+      tone: teal
+      title: rhcebr0
+      sub: 172.25.250.254
+      mono: true
+    - kind: arrow
+      points:
+        - - 150
+          - 126
+        - - 202
+          - 126
+      both: true
+    - kind: label
+      x: 269
+      y: 180
+      text: faces your network
+      size: 12
+      muted: true
+    - kind: label
+      x: 411
+      y: 180
+      text: faces the lab only
+      size: 12
+      muted: true
+    - kind: label
+      x: 340
+      y: 222
+      text: the host forwards (NAT) between the two
+      size: 11.5
+      muted: true
+    - kind: arrow
+      points:
+        - - 334
+          - 136
+        - - 344
+          - 136
+      both: true
+    - kind: group
+      x: 530
+      y: 40
+      w: 142
+      h: 170
+      tone: green
+      label: Lab VMs
+    - kind: node
+      x: 544
+      y: 76
+      w: 114
+      h: 36
+      tone: green
+      title: workstation
+      titleSize: 12.5
+    - kind: node
+      x: 544
+      y: 118
+      w: 114
+      h: 36
+      tone: green
+      title: servera…d
+      titleSize: 12.5
+    - kind: node
+      x: 544
+      y: 160
+      w: 114
+      h: 36
+      tone: gray
+      title: utility
+      titleSize: 12.5
+    - kind: arrow
+      points:
+        - - 476
+          - 126
+        - - 528
+          - 126
+      label: gateway
+      labelDy: -8
+      both: true
 build-roadmap:
   text:
     label: LXD UI

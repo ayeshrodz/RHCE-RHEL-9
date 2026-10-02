@@ -2,6 +2,7 @@
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import re
 import os
 from pathlib import Path
 import tempfile
@@ -356,6 +357,18 @@ with preview_server(BASE, ROOT):
         search.click(); dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
         page.keyboard.press('Shift+Tab'); assert dialog.evaluate('(e) => e.contains(document.activeElement)')
         page.keyboard.press('Escape'); assert search.evaluate('(e) => e === document.activeElement')
+        # Diagrams drawn from data: selecting a box explains it, and steps move through a sequence.
+        go(page, '/ch02/architecture')
+        figure = page.locator('figure.diagram').first
+        figure.locator('.dg-node.is-clickable').first.click()
+        assert figure.locator('.dg-info-title').count() == 1 and figure.locator('.dg-node.is-active').count() == 1
+        figure.locator('.dg-node.is-clickable').first.click()
+        assert figure.locator('.dg-node.is-active').count() == 0 and figure.locator('.dg-info-hint').count() == 1
+        stepped = page.locator('figure.diagram').nth(1)
+        before = stepped.locator('.dg-arrow.is-hot').count()
+        stepped.get_by_role('button', name='Next').click()
+        assert re.search(r'\b2\b', stepped.locator('.step-index').inner_text()), 'the second step is shown'
+        assert stepped.locator('.dg-badge text').text_content() == '2'
         # Links into optional detail still open the containing reveal.
         go(page, '/ch03/configuration')
         heading = page.locator('details .quiz-item[id]').first

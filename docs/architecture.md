@@ -152,7 +152,7 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 4. **Markdoc migration** (done): MDX becomes `.md` files plus `.data.yml`. The compiled bundle is identical, and all 130 routes render identically.
 5. **Programs** (done): `content/programs/<id>/`, program routing (`#/<program>/…`), progress and search kept per program. Variants, reader variables and UI-string overrides stay with the program definition; the interface text still comes from the program's transitional files.
 6. **Platform home and program selector** (done): `#/` is the site home, compiled from `content/site/home.md` with the `program-cards` tag; the header's program menu replaces the track badge; programs without landing or dashboard copy get built-in pages. Shared interface text moved to `content/interface.json`.
-7. **Generic components replace the bespoke widgets.**
+7. **Generic components replace the bespoke widgets** (partly done): a data-driven `diagram` replaces 20 diagram widgets with identical rendering. The 47 stateful simulators and calculators remain platform kits, reached through `legacy-widget`, and move to generic components one family at a time.
 8. **Typed labs.**
 9. **Security hardening:** CSP, SRI, signing, fuzzing.
 10. **RHEL 9 RHCSA** as a planned program.

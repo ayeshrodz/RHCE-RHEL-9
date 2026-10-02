@@ -10,7 +10,7 @@ You will write `intranet.yml`, a playbook with two plays. The first configures `
 
 The project `~/playbook-multi` already has an `ansible.cfg` and an `inventory` that defines `servera.lab.example.com`.
 
-{% legacy-widget name="MultiPlayFlow" ref="multi-play-flow" /%}
+{% diagram ref="multi-play-flow" /%}
 
 {% lab
   objectives=["ch03.modules"]

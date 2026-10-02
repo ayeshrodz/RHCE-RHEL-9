@@ -18,7 +18,7 @@ Playbooks often need passwords, API keys or private keys. Kept as plain text in 
 
 Ansible Vault ships with Ansible. Its command-line tool, **`ansible-vault`**, encrypts and decrypts any data file Ansible uses: inventory variables, variable files loaded by a playbook, files passed as extra variables, or variables in roles.
 
-{% legacy-widget name="VaultFlow" ref="vault-flow" /%}
+{% diagram ref="vault-flow" /%}
 
 The encrypted file starts with a header like `$ANSIBLE_VAULT;1.1;AES256`, followed by ciphertext. It is safe to commit to version control. When a playbook needs the values, `ansible-navigator` decrypts them in memory using the Vault password you provide.
 

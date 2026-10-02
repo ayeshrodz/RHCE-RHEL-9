@@ -23,7 +23,7 @@ Ansible's architecture has only two types of machine:
 
 Click any part of the map to see what it does.
 
-{% legacy-widget name="ArchitectureMap" ref="architecture-map" /%}
+{% diagram ref="architecture-map" /%}
 
 ## The vocabulary
 
@@ -42,7 +42,7 @@ The relationship nests neatly: a **playbook** contains **plays**, a play contain
 
 When you run a playbook, the control node connects to each managed host over SSH (by default), pushes the module that the current task needs, runs it, and collects the result. Step through it:
 
-{% legacy-widget name="TaskLifecycle" ref="task-lifecycle" /%}
+{% diagram ref="task-lifecycle" /%}
 
 If a task **fails** on a host, Ansible's default behaviour is to stop running the rest of the playbook *for that host* while carrying on with the hosts that succeeded. You will learn how to change that in a later chapter.
 

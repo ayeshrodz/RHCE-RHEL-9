@@ -28,7 +28,7 @@ A playbook that does everything in one file is easy to start and hard to live wi
 
 Select a file to see what is in it and how the pieces connect:
 
-{% legacy-widget name="ProjectMap" ref="project-map" /%}
+{% diagram ref="project-map" /%}
 
 ## Importing playbooks
 
