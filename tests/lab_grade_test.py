@@ -1,6 +1,7 @@
 """Exercise every check against passing, broken and unavailable host responses."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -49,6 +50,7 @@ class GradingTests(unittest.TestCase):
                         return runner
                     report, code = grader.grade(name, cp_id, project, CATALOG, runner_for('pass'))
                     self.assertEqual(code, 0, report)
+                    self.assertEqual(report['app'], 'kernel-path-lab')
                     self.assertTrue(all(c['status'] == 'pass' for c in report['checks']))
                     if cp['probes']:
                         _, code = grader.grade(name, cp_id, project, CATALOG, runner_for('broken')); self.assertEqual(code, 1)
@@ -59,5 +61,40 @@ class GradingTests(unittest.TestCase):
 
     def test_cyclic_group_resolution(self):
         with self.assertRaises(ValueError): grader.inventory_members({'a': {'children': ['b']}, 'b': {'children': ['a']}}, 'a')
+
+    def test_release_brand_compatibility_keeps_identity_and_permission_checks(self):
+        probes = {p['id']: p['command'] for p in CATALOG['exercises']['assessment-release']['checkpoints']['final']['probes']}
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); binaries = root / 'bin'; binaries.mkdir()
+            # Synthetic HTTP and ownership responses; grep, mode checks and shell logic run for real.
+            curl = binaries / 'curl'; curl.write_text('#!/bin/sh\ncat "$KP_HTTP_BODY"\n'); curl.chmod(0o755)
+            stat = binaries / 'stat'; stat.write_text('#!/bin/sh\nmode=$(/usr/bin/stat -c %a "$3") || exit 1\nprintf "%s:%s\\n" "$mode" "$KP_TOKEN_OWNER"\n'); stat.chmod(0o755)
+            body = root / 'page.html'
+            env = {**os.environ, 'PATH': str(binaries) + os.pathsep + os.environ['PATH'], 'KP_HTTP_BODY': str(body)}
+            for page, valid in [
+                ('Kernel Path release-2 on serverb.lab.example.com', True),
+                ('Playbook Path release-2 on serverb.lab.example.com', True),
+                ('Kernel Path release-1 on serverb.lab.example.com', False),
+                ('Kernel Path release-2 on servera.lab.example.com', False),
+            ]:
+                with self.subTest(page=page):
+                    body.write_text(page + '\n')
+                    result = subprocess.run(['bash', '-c', probes['http']], env=env, capture_output=True)
+                    self.assertEqual(result.returncode == 0, valid)
+            token_paths = [root / 'current-token', root / 'legacy-token']
+            command = probes['token'].replace('/etc/kernel-path/release-token', str(token_paths[0])).replace('/etc/playbook-path/release-token', str(token_paths[1]))
+            for path in token_paths:
+                for mode, owner, content, valid in [
+                    (0o600, 'root:root', 'practice-only\n', True),
+                    (0o644, 'root:root', 'practice-only\n', False),
+                    (0o600, 'student:student', 'practice-only\n', False),
+                    (0o600, 'root:root', '', False),
+                ]:
+                    with self.subTest(path=path.name, mode=mode, owner=owner, content=content):
+                        path.write_text(content); path.chmod(mode)
+                        result = subprocess.run(['bash', '-c', command], env={**env, 'KP_TOKEN_OWNER': owner}, capture_output=True)
+                        self.assertEqual(result.returncode == 0, valid)
+                        path.unlink()
+            self.assertNotEqual(subprocess.run(['bash', '-c', command], env=env, capture_output=True).returncode, 0)
 
 if __name__ == '__main__': unittest.main()

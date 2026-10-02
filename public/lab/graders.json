@@ -1752,7 +1752,7 @@
                 "serverb.lab.example.com"
               ],
               "message": "HTTP serves release-2 and the inventory host name",
-              "command": "curl --fail --silent http://localhost/ | grep -F 'Playbook Path release-2 on serverb.lab.example.com'"
+              "command": "curl --fail --silent http://localhost/ | grep -F -e 'Kernel Path release-2 on serverb.lab.example.com' -e 'Playbook Path release-2 on serverb.lab.example.com'"
             },
             {
               "id": "firewall",
@@ -1779,7 +1779,7 @@
                 "serverb.lab.example.com"
               ],
               "message": "Deployed token is protected and nonempty",
-              "command": "test -s /etc/playbook-path/release-token && test \"$(stat -c '%a:%U:%G' /etc/playbook-path/release-token)\" = 600:root:root"
+              "command": "for token in /etc/kernel-path/release-token /etc/playbook-path/release-token; do if test -s \"$token\" && test \"$(stat -c '%a:%U:%G' \"$token\")\" = 600:root:root; then exit 0; fi; done; exit 1"
             },
             {
               "id": "recovery",

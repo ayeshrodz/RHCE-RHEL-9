@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { chapters, objectives, pages } from '@/lib/course';
+import { course, chapters, objectives, pages } from '@/lib/course';
 import { useProgressData, useStored } from '@/lib/storage';
 import { challenges } from 'virtual:challenges';
 import { validateLabReport } from '@/lib/labReports';
@@ -56,7 +56,7 @@ export default function ProgressPage() {
     }
   };
   useEffect(() => {
-    document.title = 'Your learning · Playbook Path';
+    document.title = `Your learning · ${course.title}`;
   }, []);
   return (
     <article className="learning-dashboard">

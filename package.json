@@ -1,5 +1,5 @@
 {
-  "name": "playbook-path",
+  "name": "kernel-path",
   "private": true,
   "version": "1.0.0",
   "description": "Learn Ansible automation by doing: a free, hands-on course with a home lab, focused on the RHCE exam objectives",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/ayeshrodz/playbook-path.git"
   },
-  "homepage": "https://ayeshrodz.github.io/playbook-path/",
+  "homepage": "https://kernelpath.dev/",
   "bugs": "https://github.com/ayeshrodz/playbook-path/issues",
   "type": "module",
   "scripts": {

@@ -162,7 +162,7 @@ ssh student@serverb hostname         # serverb.lab.example.com
     In a training classroom, each exercise starts with `lab start NAME`, which creates the exercise's project folder and starter files. That command exists only inside the classroom, so this guide provides its own small script with the same syntax. It downloads the starter files for an exercise from this site into `~/NAME`. It is a short shell script; [read it first](lab/lab) if you like.
 
 ```bash title="student@workstation"
-curl -fsSL https://ayeshrodz.github.io/playbook-path/lab/lab -o ~/.local/bin/lab
+curl -fsSL https://kernelpath.dev/lab/lab -o ~/.local/bin/lab
 chmod +x ~/.local/bin/lab
 lab version                          # lab 2
 lab list                             # every exercise that has starter files

@@ -7,9 +7,9 @@ import { validateLabReport } from './labReports.js';
 
 // Kept from the site's first name, so that saved progress survives the rename.
 const PREFIX = 'rhce:';
-const APP_ID = 'playbook-path';
+const APP_ID = 'kernel-path';
 // Exports made before the site was renamed are still accepted.
-const OLD_APP_IDS = ['rhce-field-guide'];
+const OLD_APP_IDS = ['playbook-path', 'rhce-field-guide'];
 const EXPORT_VERSION = 2;
 // Display preferences: kept on reset and left out of progress exports.
 const PREFERENCES = new Set(['theme', 'sidebarCollapsed', 'labValues', 'labEnv', 'labMode']);
@@ -144,7 +144,7 @@ const indices = (v, min = 0) => Array.isArray(v) && v.every((n) => Number.isSafe
 
 export function validateProgress(payload) {
   if (!record(payload) || ![APP_ID, ...OLD_APP_IDS].includes(payload.app) || !record(payload.data)) {
-    throw new Error('This file is not a Playbook Path progress export.');
+    throw new Error('This file is not a Kernel Path progress export.');
   }
   if (!Number.isInteger(payload.version) || payload.version < 1 || payload.version > EXPORT_VERSION) {
     throw new Error('This progress export version is not supported.');

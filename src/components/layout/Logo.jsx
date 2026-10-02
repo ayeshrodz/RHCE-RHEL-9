@@ -1,4 +1,4 @@
-/** The Playbook Path mark: a path that climbs from a starting point to a goal. */
+/** The Kernel Path mark: a path that climbs from a starting point to a goal. */
 export default function Logo({ size = 26 }) {
   return (
     <svg className="logo" width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">

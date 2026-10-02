@@ -78,7 +78,7 @@ def grade(exercise_id, checkpoint_id, project, catalog, runner=run):
         if probe['hosts'] != 'localhost' and inv is None:
             add(probe['id'], 'skip', probe['message'] + '; inventory unavailable')
             continue
-        with tempfile.TemporaryDirectory(prefix='playbook-path-grade-') as tree:
+        with tempfile.TemporaryDirectory(prefix='kernel-path-grade-') as tree:
             # raw bypasses Python module transfer. Probes are maintained read-only commands;
             # grading never runs a learner's playbook, restarts a service or repairs state.
             command = '( ' + probe['command'] + ' )'
@@ -116,7 +116,7 @@ def grade(exercise_id, checkpoint_id, project, catalog, runner=run):
                 environment_problem = True
                 add(probe['id'], 'skip', probe['message'] + '; ' + type(error).__name__)
     code = 2 if environment_problem else 1 if any(c['status'] == 'fail' for c in checks) else 0
-    return dict(app='playbook-path-lab', version=1, exerciseId=exercise_id,
+    return dict(app='kernel-path-lab', version=1, exerciseId=exercise_id,
                 exerciseVersion=exercise['version'], checkpointId=checkpoint_id,
                 checkedAt=datetime.now(timezone.utc).isoformat(), checks=checks), code
 

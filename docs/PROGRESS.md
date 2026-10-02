@@ -1,6 +1,6 @@
 # Browser progress
 
-The site uses local storage under the existing `rhce:` prefix so earlier installations keep their progress. It has no account, backend, telemetry, or server-side learner record. Exports identify the app as `playbook-path` and use format version 2. Version 1 exports, including exports under the older app name, remain accepted.
+The site uses local storage under the existing `rhce:` prefix so earlier installations keep their progress. It has no account, backend, telemetry, or server-side learner record. New exports identify the app as `kernel-path` and use format version 2. Version 1 and 2 exports from `playbook-path` and `rhce-field-guide` remain accepted, including older lab reports inside those backups.
 
 The dashboard keeps these signals independent:
 
@@ -18,5 +18,7 @@ Keep an existing question's `id` when correcting its wording or answer. The revi
 Import validation finishes before any existing progress is replaced. Unsupported versions, malformed entries, and incomplete lab reports are rejected. Lab reports are learner-provided evidence, not signed certificates. Their schema is generated from the maintained grading catalog with `node scripts/generate-report-schema.mjs`.
 
 When storage is unavailable, progress remains in memory for the current session and the dashboard shows an export reminder. Cross-tab storage events invalidate cached values and update subscribed views. Clearing site data, changing browsers, or using a different site origin does not transfer local progress; use export/import.
+
+The public site is now `https://kernelpath.dev/`. A custom domain is a different browser origin from the previous GitHub Pages address. Import a backup exported from the earlier origin to transfer that progress to Kernel Path; the new domain cannot read the earlier origin's local storage. A name change on the same origin keeps existing saved data automatically.
 
 Malformed saved entries are ignored by the UI and omitted from exports, while their raw stored values are preserved. A new valid attempt replaces the affected entry. Keep a browser backup before clearing site data.

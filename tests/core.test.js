@@ -5,7 +5,7 @@ import { expandRange, parseInventory, graph } from '../src/lib/inventory.js';
 import { matchPattern } from '../src/lib/hostPattern.js';
 import { validateProgress, importProgress, exportProgress, writeStored, resetAllProgress } from '../src/lib/storage.js';
 
-const payload = (data, version = 1) => ({ app: 'playbook-path', version, data });
+const payload = (data, version = 1) => ({ app: 'kernel-path', version, data });
 test('invalid imports preserve saved progress', () => {
   writeStored('completed', ['ch01/why-automate']);
   for (const value of [null, [], { completed: false }, { completed: [42] }, { readiness: { x: 4 } }, { unknown: 1 }]) {
@@ -17,8 +17,13 @@ test('invalid imports preserve saved progress', () => {
 });
 test('legacy exports and preferences remain compatible', () => {
   writeStored('theme', 'dark');
-  importProgress({ ...payload({ completed: ['ch02/inventory'], theme: 'light' }), app: 'rhce-field-guide' });
-  assert.deepEqual(exportProgress().data, { completed: ['ch02/inventory'] });
+  for (const app of ['kernel-path', 'playbook-path', 'rhce-field-guide']) {
+    for (const version of [1, 2]) {
+      importProgress({ ...payload({ completed: ['ch02/inventory'], theme: 'light' }, version), app });
+      assert.deepEqual(exportProgress().data, { completed: ['ch02/inventory'] });
+      assert.equal(exportProgress().app, 'kernel-path');
+    }
+  }
   const migrated = validateProgress(payload({ 'quiz:ch02/inventory:check': { 0: 1 } }))['quiz:ch02/inventory:check'];
   assert.equal(migrated.version, 2);
   assert.equal(Object.values(migrated.items)[0].attempts[0].choice, 1);

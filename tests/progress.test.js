@@ -38,6 +38,7 @@ test('version two exports round-trip histories and reject malformed data atomica
   writeStored('quiz:ch01/quiz:chapter', value);
   const backup = exportProgress();
   assert.equal(backup.version, 2);
+  assert.equal(backup.app, 'kernel-path');
   importProgress(backup);
   assert.deepEqual(exportProgress().data, backup.data);
   for (const bad of [
@@ -58,7 +59,7 @@ function reportFor(name = 'bridge-security') {
     ...c.probes.flatMap((p) => p.targets.map((h) => `${p.id}:${h}`)),
   ];
   return {
-    app: 'playbook-path-lab',
+    app: 'kernel-path-lab',
     version: 1,
     exerciseId: name,
     exerciseVersion: e.version,
@@ -73,6 +74,7 @@ test('lab reports require supported versions, valid checks and complete coverage
   for (const invalid of [
     null,
     {},
+    { ...report, app: 'unrelated-app' },
     { ...report, version: 9 },
     { ...report, checks: [] },
     { ...report, checks: report.checks.slice(1) },
@@ -91,6 +93,20 @@ test('lab reports require supported versions, valid checks and complete coverage
       data: { labReports: [{ ...report, checks: [{ ...report.checks[0], status: 'success' }] }] },
     }),
   );
+});
+
+test('renamed and legacy lab reports survive old progress imports and new exports', () => {
+  for (const app of ['kernel-path-lab', 'playbook-path-lab']) {
+    const report = { ...reportFor('assessment-release'), app };
+    assert.equal(validateLabReport(report, catalog), report);
+    for (const progressApp of ['kernel-path', 'playbook-path', 'rhce-field-guide']) {
+      importProgress({ app: progressApp, version: 2, data: { labReports: [report], completed: ['ch10/assessment-release'] } });
+      const backup = exportProgress();
+      assert.equal(backup.app, 'kernel-path');
+      assert.deepEqual(backup.data.labReports, [report]);
+      assert.deepEqual(backup.data.completed, ['ch10/assessment-release']);
+    }
+  }
 });
 
 test('cross-tab writes and clears invalidate cached values', async () => {
