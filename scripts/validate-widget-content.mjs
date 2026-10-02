@@ -34,8 +34,7 @@ function validate(catalog, file) {
     for (const child of contract.dependencies.filter((name) => contracts.has(name))) assert(catalog[child], `${file}: ${name} needs ${child} content`);
   }
 }
-const { pages, legacy } = await readBundle();
-const shared = legacy.interface;
+const { pages, interface: shared } = await readBundle();
 validate(shared, 'interface copy');
 let count = 0;
 for (const [key, page] of Object.entries(pages)) {

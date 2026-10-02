@@ -72,8 +72,6 @@ def programs_stay_separate(browser):
         shutil.copytree(ROOT / 'content', content)
         second = content / 'programs' / 'second-program'
         shutil.copytree(ROOT / 'packages/compiler/test/fixtures/second-program', second)
-        for name in ['legacy.yml', 'interface.json', 'home.json', 'progress.json']:
-            shutil.copy(ROOT / 'content/programs/rhel9-ansible' / name, second / name)
         (content / 'site.yml').write_text((content / 'site.yml').read_text() + '  - second-program\n')
         out = Path(temp) / 'bundle'
         subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'build', str(content), '--out', str(out)], check=True, capture_output=True)
@@ -82,6 +80,15 @@ def programs_stay_separate(browser):
             context = browser.new_context()
             page = context.new_page()
             page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
+            # The site home lists every program, with the reader's progress in each.
+            page.goto(BASE + '#/'); page.reload()
+            page.get_by_role('heading', name='Learn Linux and automation by doing', level=1).wait_for()
+            cards = page.locator('.program-cards .chapter-card')
+            cards.first.wait_for()
+            assert cards.count() == 2
+            assert 'Ansible automation on RHEL 9' in cards.nth(0).inner_text()
+            assert 'Linux basics' in cards.nth(1).inner_text()
+            assert not page.locator('.sidebar, .search-trigger').count(), 'the site home has no program navigation'
             # The first program keeps its own progress.
             go(page, '/ch02/why-automate')
             page.evaluate("localStorage.setItem('rhce:rhel9-ansible@completed', JSON.stringify(['ch02/why-automate']))")
@@ -96,6 +103,21 @@ def programs_stay_separate(browser):
             page.get_by_role('link', name='Looking around').first.click()
             page.wait_for_url('**/#/second-program/ch01/next')
             assert not page.get_by_role('link', name='Building an Ansible inventory').count(), 'only this program is listed'
+            # The program selector lists both programs and switches between them.
+            page.get_by_role('button', name='Program: Linux basics (test fixture). Switch program').click()
+            panel = page.get_by_role('dialog', name='Programs')
+            assert panel.get_by_role('link', name='Ansible automation on RHEL 9').count() == 1
+            panel.get_by_role('link', name='Ansible automation on RHEL 9').click()
+            page.wait_for_url('**/#/rhel9-ansible')
+            page.get_by_role('button', name='Program: Ansible automation on RHEL 9. Switch program').click()
+            page.get_by_role('dialog', name='Programs').get_by_role('link', name='Linux basics (test fixture)').click()
+            page.wait_for_url('**/#/second-program')
+            page.get_by_role('heading', name='Linux basics (test fixture)', level=1).wait_for()
+            page.goto(BASE + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
+            page.goto(BASE + '#/second-program/progress')
+            page.get_by_role('heading', name='Your learning', level=1).wait_for()
+            assert '0 of 2 sections complete' in page.locator('.reference-intro').inner_text() or '1 of 2 sections complete' in page.locator('.reference-intro').inner_text()
+            page.goto(BASE + '#/second-program/ch01/next'); page.locator('h1').first.wait_for()
             # Search covers this program only.
             page.get_by_role('button', name='Search the course').click()
             dialog = page.get_by_role('dialog', name='Search', exact=True); dialog.wait_for()
@@ -219,7 +241,8 @@ with preview_server(BASE, ROOT):
         # The platform badge navigates to a track-owned reference page.
         go(page, '/')
         lesson_before_reference = page.evaluate("localStorage.getItem('rhce:rhel9-ansible@lastVisited')")
-        page.get_by_role('link', name='RHEL 9: platform and versions', exact=True).click()
+        page.get_by_role('button', name='Program: Ansible automation on RHEL 9. Switch program').click()
+        page.get_by_role('link', name='RHEL 9: Platform and versions', exact=True).click()
         page.get_by_role('heading', name='RHEL 9: Platform and versions', exact=True).wait_for()
         assert page.url.endswith('#/rhel9-ansible/platform')
         assert not page.get_by_role('dialog').count()

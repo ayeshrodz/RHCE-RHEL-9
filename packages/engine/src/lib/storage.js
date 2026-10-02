@@ -55,6 +55,17 @@ export function readStored(key, fallback) {
   return value;
 }
 
+/** A program's completed pages, read without switching to it (for summaries on other pages). */
+export function readProgramCompleted(id) {
+  if (id === scope) return readStored('completed', []);
+  try {
+    const value = JSON.parse(localStorage.getItem(`${PREFIX}${id}@completed`));
+    return Array.isArray(value) ? value.filter((v) => typeof v === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 function notify(key) {
   revision++;
   listeners.get(key)?.forEach((fn) => fn());

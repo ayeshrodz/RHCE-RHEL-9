@@ -10,6 +10,7 @@ import AssessmentTimer from '@/components/interactive/AssessmentTimer';
 import { Lab, LabChallenge, LabNotes, Task } from '@/components/interactive/Lab';
 import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';
 import { lazyWidget } from '@/components/interactive/LazyWidget';
+import ProgramCards from './ProgramCards';
 import chapterWidgets from 'virtual:chapter-widgets';
 
 const FlowMap = lazyWidget(() => import('@/components/interactive/FlowMap'));
@@ -35,6 +36,7 @@ export const tags = {
   glossary: () => [Glossary],
   term: (a) => [Term, { name: a.name }],
   kbd: () => ['kbd'],
+  'program-cards': () => [ProgramCards],
 
   quiz: (a, data) => [Quiz, { id: a.id, title: a.title, questions: data.questions }],
   practice: (a, data, page) => [

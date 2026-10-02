@@ -1,8 +1,9 @@
-import { Link } from '@/lib/router';
+import { RootLink } from '@/lib/router';
 import { Menu, Monitor, Moon, Search, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { course, track } from '@/lib/course';
+import { site } from '@/lib/course';
 import ProgressMenu from './ProgressMenu';
+import ProgramMenu from './ProgramMenu';
 import Logo from './Logo';
 import { defineWidget, formatCopy } from '@/components/interactive/TeachingContent';
 
@@ -17,51 +18,53 @@ export default defineWidget('Header', (copy) => {
 
   const themeIcon = { light: Sun, dark: Moon, system: Monitor };
 
-  function Header({ onMenu, onSearch, navigationOpen, progressOpen, onProgress, onProgressClose }) {
+  function Header({ platform = false, onMenu, onSearch, navigationOpen, progressOpen, onProgress, onProgressClose }) {
     const { pref, cycle } = useTheme();
     const ThemeIcon = themeIcon[pref] ?? Monitor;
     const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 
     return (
       <header className="header">
-        <button
-          className="icon-btn header-menu"
-          onClick={onMenu}
-          aria-expanded={navigationOpen}
-          aria-controls="course-navigation"
-          aria-label={copy.text.label}
-        >
-          <Menu size={18} />
-        </button>
+        {!platform && (
+          <button
+            className="icon-btn header-menu"
+            onClick={onMenu}
+            aria-expanded={navigationOpen}
+            aria-controls="course-navigation"
+            aria-label={copy.text.label}
+          >
+            <Menu size={18} />
+          </button>
+        )}
 
-        <Link to="/" className="brand" aria-label={formatCopy(copy.text.template, [course.title])}>
+        <RootLink to="/" className="brand" aria-label={formatCopy(copy.text.template, [site.site.name])}>
           <Logo />
-          <span className="brand-name">{course.title}</span>
-        </Link>
-        <Link
-          className="brand-pill"
-          to={track.platform.path}
-          aria-label={formatCopy(copy.text.template2, [track.label])}
-          title={copy.text.title}
-        >
-          <span>{track.label}</span>
-          <span>{track.exam}</span>
-        </Link>
+          <span className="brand-name">{site.site.name}</span>
+        </RootLink>
+        {!platform && <ProgramMenu />}
 
-        <button className="search-trigger" onClick={onSearch}>
-          <Search size={15} />
-          <span>{copy.text.span}</span>
-          <kbd>
-            {isMac ? '⌘' : 'Ctrl'}
-            {copy.text.kbd}
-          </kbd>
-        </button>
+        {platform ? (
+          <span className="header-spacer" />
+        ) : (
+          <button className="search-trigger" onClick={onSearch}>
+            <Search size={15} />
+            <span>{copy.text.span}</span>
+            <kbd>
+              {isMac ? '⌘' : 'Ctrl'}
+              {copy.text.kbd}
+            </kbd>
+          </button>
+        )}
 
         <div className="header-actions">
-          <button className="icon-btn search-icon-only" onClick={onSearch} aria-label={copy.text.label2}>
-            <Search size={17} />
-          </button>
-          <ProgressMenu open={progressOpen} onToggle={onProgress} onClose={onProgressClose} />
+          {!platform && (
+            <>
+              <button className="icon-btn search-icon-only" onClick={onSearch} aria-label={copy.text.label2}>
+                <Search size={17} />
+              </button>
+              <ProgressMenu open={progressOpen} onToggle={onProgress} onClose={onProgressClose} />
+            </>
+          )}
           <button
             className="icon-btn"
             onClick={cycle}
@@ -70,10 +73,10 @@ export default defineWidget('Header', (copy) => {
           >
             <ThemeIcon size={17} />
           </button>
-          {course.repo && (
+          {site.site.repo && (
             <a
               className="icon-btn header-source"
-              href={course.repo}
+              href={site.site.repo}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={copy.text.label3}

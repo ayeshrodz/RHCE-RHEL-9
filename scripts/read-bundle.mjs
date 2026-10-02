@@ -21,6 +21,7 @@ export async function readBundle(dir = 'content') {
   const manifest = json(site.programs[0].manifest);
   const pages = Object.fromEntries(Object.entries(manifest.pages).map(([key, file]) => [key, json(file)]));
   const legacy = manifest.legacy ? json(manifest.legacy) : null;
+  const shared = site.interface ? json(site.interface).interface : {};
   const practice = [];
   for (const chapter of manifest.chapters)
     for (const section of chapter.sections) {
@@ -30,5 +31,5 @@ export async function readBundle(dir = 'content') {
           practice.push(...page.data[node.attrs.ref].questions.map((q) => ({ ...q, chapter: chapter.id })));
       });
     }
-  return { site, manifest, pages, legacy, practice };
+  return { site, manifest, pages, legacy, interface: { ...shared, ...legacy?.interface }, practice };
 }

@@ -26,6 +26,9 @@ export const NavLink = forwardRef(function NavLink({ to, ...props }, ref) {
   return <RouterNavLink ref={ref} to={programPath(to)} {...props} />;
 });
 
+/** A link to the site itself rather than to a page of the open program. */
+export { RouterLink as RootLink };
+
 export function useNavigate() {
   const navigate = useRouterNavigate();
   return (to, options) => navigate(typeof to === 'number' ? to : programPath(to), options);

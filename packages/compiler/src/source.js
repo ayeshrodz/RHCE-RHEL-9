@@ -1,6 +1,8 @@
 // Reads the content source tree:
 //
 //   site.yml                               site identity and program order
+//   site/home.md                           optional home page of the whole site
+//   interface.json                         interface text shared by every program (transitional)
 //   programs/<id>/program.yml              the program definition
 //   programs/<id>/objectives.yml           skills mapped to lessons, practice and labs
 //   programs/<id>/details.md               optional "platform and versions" page
@@ -76,7 +78,7 @@ export function readContent(contentDir, diagnostics) {
   const siteFile = path.join(contentDir, 'site.yml');
   if (!fs.existsSync(siteFile)) {
     diagnostics.error(siteFile, null, 'missing site.yml');
-    return { site: { programs: [] }, siteFile, programs: [] };
+    return { site: { programs: [] }, siteFile, programs: [], home: null, interface: null };
   }
   const site = readYaml(siteFile);
   const programsDir = path.join(contentDir, 'programs');
@@ -105,5 +107,13 @@ export function readContent(contentDir, diagnostics) {
   for (const d of present)
     if (!(site.programs ?? []).includes(d.name))
       diagnostics.warn(path.join(programsDir, d.name), null, `program '${d.name}' is not listed in site.yml and was not built`);
-  return { site, siteFile, programs };
+  const homeFile = path.join(contentDir, 'site', 'home.md');
+  const interfaceFile = path.join(contentDir, 'interface.json');
+  return {
+    site,
+    siteFile,
+    programs,
+    home: fs.existsSync(homeFile) ? { file: homeFile, source: fs.readFileSync(homeFile, 'utf8'), ...readData(homeFile) } : null,
+    interface: fs.existsSync(interfaceFile) ? { apiVersion: 1, interface: readJson(interfaceFile) } : null,
+  };
 }

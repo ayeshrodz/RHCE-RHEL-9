@@ -127,6 +127,10 @@
     },
     "signature": {
       "$ref": "#/$defs/hashedUrl"
+    },
+    "interface": {
+      "description": "Shared interface copy file.",
+      "$ref": "#/$defs/hashedUrl"
     }
   },
   "$defs": {

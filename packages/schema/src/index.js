@@ -19,6 +19,7 @@ import bundleSite from '../schemas/bundle/site.schema.json' with { type: 'json' 
 import bundleManifest from '../schemas/bundle/manifest.schema.json' with { type: 'json' };
 import bundlePage from '../schemas/bundle/page.schema.json' with { type: 'json' };
 import bundleSearch from '../schemas/bundle/search.schema.json' with { type: 'json' };
+import bundleInterface from '../schemas/bundle/interface.schema.json' with { type: 'json' };
 import bundleLegacy from '../schemas/bundle/legacy.schema.json' with { type: 'json' };
 
 /** The contract version this package describes. */
@@ -44,6 +45,7 @@ export const schemas = [
   bundleManifest,
   bundlePage,
   bundleSearch,
+  bundleInterface,
   bundleLegacy,
 ];
 
@@ -57,7 +59,14 @@ export const schemaIds = {
   theme: theme.$id,
   lab: lab.$id,
   catalog: catalogSchema.$id,
-  bundle: { site: bundleSite.$id, manifest: bundleManifest.$id, page: bundlePage.$id, search: bundleSearch.$id, legacy: bundleLegacy.$id },
+  bundle: {
+    site: bundleSite.$id,
+    manifest: bundleManifest.$id,
+    page: bundlePage.$id,
+    search: bundleSearch.$id,
+    legacy: bundleLegacy.$id,
+    interface: bundleInterface.$id,
+  },
 };
 
 /** The component catalog: tag name → typed description. */

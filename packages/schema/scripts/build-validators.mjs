@@ -37,6 +37,7 @@ const exports = {
   validatePage: schemaIds.bundle.page,
   validateSearch: schemaIds.bundle.search,
   validateLegacy: schemaIds.bundle.legacy,
+  validateInterface: schemaIds.bundle.interface,
   validateQuizData: dataSchemaFor('quiz'),
   validatePracticeData: dataSchemaFor('practice'),
   validateFlashcardsData: dataSchemaFor('flashcards'),

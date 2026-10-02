@@ -1,22 +1,24 @@
-import { Link } from '@/lib/router';
-import { course } from '@/lib/course';
+import { Link, RootLink } from '@/lib/router';
+import { course, site } from '@/lib/course';
 import Logo from './Logo';
 import { defineWidget } from '@/components/interactive/TeachingContent';
 
 export default defineWidget('Footer', (copy) => {
   const year = new Date().getFullYear();
 
-  function Footer() {
-    const repo = course.repo;
+  function Footer({ platform = false }) {
+    // On the site's own pages no program is open, so the site's identity stands in for the course's.
+    const about = platform ? { title: site.site.name, tagline: site.site.tagline, repo: site.site.repo } : course;
+    const repo = about.repo;
     return (
       <footer className="site-footer">
         <div className="site-footer-inner">
           <div className="site-footer-about">
             <p className="site-footer-brand">
-              <Logo /> {course.title}
+              <Logo /> {about.title}
             </p>
             <p>
-              {course.tagline}
+              {about.tagline}
               {copy.text.p}
             </p>
           </div>
@@ -24,12 +26,22 @@ export default defineWidget('Footer', (copy) => {
           <nav className="site-footer-links" aria-label={copy.text.label}>
             <p className="site-footer-head">{copy.text.siteFooterHead}</p>
             <ul>
-              <li>
-                <Link to="/">{copy.text.link}</Link>
-              </li>
-              <li>
-                <Link to="/ch01">{copy.text.link2}</Link>
-              </li>
+              {platform ? (
+                site.programs.map((entry) => (
+                  <li key={entry.id}>
+                    <RootLink to={`/${entry.id}`}>{entry.title}</RootLink>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li>
+                    <Link to="/">{copy.text.link}</Link>
+                  </li>
+                  <li>
+                    <Link to="/ch01">{copy.text.link2}</Link>
+                  </li>
+                </>
+              )}
               {repo && (
                 <>
                   <li>
@@ -81,7 +93,7 @@ export default defineWidget('Footer', (copy) => {
           <p>{copy.text.p2}</p>
           <p>
             {copy.text.p3}
-            {year} {course.title}
+            {year} {about.title}
             {copy.text.p4}{' '}
             <a href={copy.text.href4} target="_blank" rel="noopener noreferrer">
               {copy.text.a7}
