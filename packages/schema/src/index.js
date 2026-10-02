@@ -19,6 +19,7 @@ import legacyWidget from '../schemas/data/legacy-widget.schema.json' with { type
 import bundleSite from '../schemas/bundle/site.schema.json' with { type: 'json' };
 import bundleManifest from '../schemas/bundle/manifest.schema.json' with { type: 'json' };
 import bundlePage from '../schemas/bundle/page.schema.json' with { type: 'json' };
+import bundleSearch from '../schemas/bundle/search.schema.json' with { type: 'json' };
 
 /** The contract version this package describes. */
 export const API_VERSION = 1;
@@ -42,6 +43,7 @@ export const schemas = [
   bundleSite,
   bundleManifest,
   bundlePage,
+  bundleSearch,
 ];
 
 /** Schema $ids by role, so callers never hard-code URLs. */
@@ -54,7 +56,7 @@ export const schemaIds = {
   theme: theme.$id,
   lab: lab.$id,
   catalog: catalogSchema.$id,
-  bundle: { site: bundleSite.$id, manifest: bundleManifest.$id, page: bundlePage.$id },
+  bundle: { site: bundleSite.$id, manifest: bundleManifest.$id, page: bundlePage.$id, search: bundleSearch.$id },
 };
 
 /** The component catalog: tag name → typed description. */

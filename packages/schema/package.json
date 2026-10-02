@@ -8,7 +8,12 @@
   "exports": {
     ".": "./src/index.js",
     "./schemas/*": "./schemas/*",
-    "./catalog/*": "./catalog/*"
+    "./catalog/*": "./catalog/*",
+    "./revision": "./src/revision.js"
   },
-  "files": ["src", "schemas", "catalog"]
+  "files": [
+    "src",
+    "schemas",
+    "catalog"
+  ]
 }
