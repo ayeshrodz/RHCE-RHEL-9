@@ -1,0 +1,10 @@
+name: playbook-manage
+title: "Managing Ansible configuration files"
+page: ch03/lab-configuration
+version: 2
+starter: ["ping-myself.yml", "ping-intranetweb.yml", "ping-internetweb.yml", "ping-web.yml", "ping-all.yml"]
+checkpoints:
+  final:
+    files: ["ansible-navigator.yml", "ansible.cfg", "inventory"]
+    groups:
+      web: ["servera.lab.example.com", "serverb.lab.example.com"]

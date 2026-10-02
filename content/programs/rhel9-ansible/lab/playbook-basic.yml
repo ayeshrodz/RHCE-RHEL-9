@@ -1,0 +1,12 @@
+name: playbook-basic
+title: "Writing and running playbooks"
+page: ch03/lab-playbooks
+version: 2
+starter: ["ansible.cfg", "inventory", "files/index.html"]
+checkpoints:
+  final:
+    files: ["inventory", "site.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "web", "message": "Apache is running and enabled", "targets": ["serverc.lab.example.com", "serverd.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "web", "message": "Web traffic is permitted now and persistently", "targets": ["serverc.lab.example.com", "serverd.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "web", "message": "Web content is present", "targets": ["serverc.lab.example.com", "serverd.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

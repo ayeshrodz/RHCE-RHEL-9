@@ -1,0 +1,20 @@
+---
+- name: Status page is published
+  hosts: web
+  tasks:
+    - name: Web server is installed
+      dnf:
+        name: httpd
+        state: present
+
+    - name: Status page is deployed
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: 0644
+
+    - name: Web server is running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: yes

@@ -1,0 +1,11 @@
+---
+- name: Message of the day is deployed
+  hosts: web
+  tasks:
+    - name: /etc/motd comes from the template
+      ansible.builtin.template:
+        src: templates/motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: "0644"

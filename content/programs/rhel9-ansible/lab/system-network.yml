@@ -1,0 +1,12 @@
+name: system-network
+title: "Managing network configuration"
+page: ch10/lab-network
+version: 2
+starter: ["ansible.cfg", "inventory", "get-eth1.yml"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+checkpoints:
+  final:
+    files: ["get-eth1.yml", "group_vars/webservers/network.yml", "inventory", "playbook.yml"]
+    checks:
+      - {"id": "address", "kind": "address", "on": "webservers", "message": "Dummy eth1 has 192.0.2.30/24 and a persistent NetworkManager profile", "targets": ["servera.lab.example.com"], "interface": "eth1", "cidr": "192.0.2.30/24"}

@@ -12,6 +12,7 @@
     ".": "./src/index.js"
   },
   "dependencies": {
+    "@kernel-path/lab": "*",
     "@kernel-path/schema": "*",
     "@markdoc/markdoc": "^0.5.10",
     "ajv": "^8.20.0",

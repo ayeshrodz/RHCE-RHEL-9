@@ -1,0 +1,15 @@
+name: system-users
+title: "Managing users and authentication"
+page: ch10/lab-users
+version: 2
+starter: ["ansible.cfg", "inventory", "vars/users_vars.yml"]
+setup:
+  - {"action": "ssh-keypairs", "dir": "files", "names": ["user1", "user2", "user3", "user4", "user5"]}
+checkpoints:
+  final:
+    files: ["inventory", "users.yml", "vars/users_vars.yml"]
+    checks:
+      - {"id": "users", "kind": "user", "on": "webservers", "message": "All five practice users exist and belong to webadmin", "targets": ["servera.lab.example.com"], "names": ["user1", "user2", "user3", "user4", "user5"], "groups": ["webadmin"]}
+      - {"id": "sudo", "kind": "sudoers", "on": "webservers", "message": "The webadmin policy is valid and protected", "targets": ["servera.lab.example.com"], "path": "/etc/sudoers.d/webadmin", "mode": "0440", "valid": true}
+      - {"id": "ssh", "kind": "sshd", "on": "webservers", "message": "Effective SSH root login is disabled", "targets": ["servera.lab.example.com"], "setting": "permitrootlogin", "value": "no"}
+      - {"id": "authorized-keys", "kind": "user", "on": "webservers", "message": "Each practice user has an SSH key with protected permissions", "targets": ["servera.lab.example.com"], "names": ["user1", "user2", "user3", "user4", "user5"], "authorizedKeys": true}

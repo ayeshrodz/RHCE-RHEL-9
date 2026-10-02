@@ -1,0 +1,12 @@
+name: projects-review
+title: "Chapter lab: Managing complex plays and playbooks"
+page: ch07/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory", "playbook.yml", "host-test.yml", "files/tune.conf"]
+checkpoints:
+  final:
+    files: ["host-test.yml", "inventory", "playbook.yml", "tasks/firewall_tasks.yml", "tasks/install_and_enable.yml", "tasks/web_tasks.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webservers", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webservers", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "webservers", "message": "Web content is present", "targets": ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

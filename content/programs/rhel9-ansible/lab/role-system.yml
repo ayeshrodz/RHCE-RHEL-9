@@ -1,0 +1,13 @@
+name: role-system
+title: "Reusing content with system roles"
+page: ch08/lab-role-system
+version: 2
+starter: ["ansible.cfg", "inventory"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+checkpoints:
+  final:
+    files: ["ansible.cfg", "configure_time.yml", "group_vars/all/timesync.yml", "inventory"]
+    checks:
+      - {"id": "chrony", "kind": "service", "on": "database_servers", "message": "Time synchronization is active and enabled", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["chronyd"], "active": true, "enabled": true}
+      - {"id": "timeserver", "kind": "file", "on": "database_servers", "message": "Chrony has an NTP source configured", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/etc/chrony.conf"], "matches": "^(server|pool) "}

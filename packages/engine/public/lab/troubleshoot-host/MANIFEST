@@ -1,7 +1,0 @@
-# Troubleshooting Ansible managed hosts
-ansible.cfg
-inventory
-mailrelay.yml
-postfix-relay-main.conf.j2
-samba.yml
-samba.conf.j2

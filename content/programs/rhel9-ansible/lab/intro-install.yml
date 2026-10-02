@@ -1,0 +1,9 @@
+name: intro-install
+title: "Installing Ansible"
+note: "nothing to download: the tools are already installed"
+page: ch02/lab-installing-ansible
+version: 2
+checkpoints:
+  final:
+    checks:
+      - {"id": "tools", "kind": "commands", "on": "control", "message": "Control-node commands are available", "names": ["ansible", "ansible-navigator", "ansible-galaxy"]}

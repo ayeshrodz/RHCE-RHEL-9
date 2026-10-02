@@ -1,0 +1,11 @@
+name: control-flow
+title: "Loops and conditional tasks"
+page: ch05/lab-loops-conditionals
+version: 3
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml"]
+    checks:
+      - {"id": "database-packages", "kind": "package", "on": "database_dev:database_prod", "message": "Both database groups have the MariaDB server and its Python client", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["mariadb-server", "python3-PyMySQL"]}
+      - {"id": "database-service", "kind": "service", "on": "database_dev:database_prod", "message": "MariaDB is running and enabled; use the matching distribution condition", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["mariadb"], "active": true, "enabled": true}

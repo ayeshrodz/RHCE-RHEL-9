@@ -1,0 +1,12 @@
+name: troubleshoot-playbook
+title: "Troubleshooting playbooks"
+page: ch09/lab-troubleshoot-playbook
+version: 2
+intentionalFaults: true
+starter: ["inventory", "samba.yml", "samba.conf.j2"]
+checkpoints:
+  final:
+    files: ["ansible.cfg", "inventory", "samba.yml"]
+    checks:
+      - {"id": "samba-package", "kind": "package", "on": "samba_servers", "message": "The Samba package is installed", "targets": ["servera.lab.example.com"], "names": ["samba"]}
+      - {"id": "samba-config", "kind": "file", "on": "samba_servers", "message": "The Samba configuration is present", "targets": ["servera.lab.example.com"], "paths": ["/etc/samba/smb.conf"], "nonEmpty": true}

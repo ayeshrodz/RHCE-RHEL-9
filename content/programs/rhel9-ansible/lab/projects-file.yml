@@ -1,0 +1,12 @@
+name: projects-file
+title: "Including and importing files"
+page: ch07/lab-reuse
+version: 2
+starter: ["ansible.cfg", "inventory", "tasks/environment.yml", "tasks/firewall.yml", "tasks/placeholder.yml", "plays/test.yml"]
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml", "plays/test.yml", "tasks/environment.yml", "tasks/firewall.yml", "tasks/placeholder.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "servera.lab.example.com", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "servera.lab.example.com", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "servera.lab.example.com", "message": "Web content is present", "targets": ["servera.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

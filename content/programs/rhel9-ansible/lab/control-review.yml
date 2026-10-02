@@ -1,0 +1,14 @@
+name: control-review
+title: "Chapter lab: Implementing task control"
+page: ch05/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory", "playbook.yml", "vars.yml", "ssl.conf", "index.html"]
+setup:
+  - {"action": "self-signed-cert", "cert": "server.crt", "key": "server.key", "commonName": "serverb.lab.example.com", "days": 3650}
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webservers", "message": "Apache is running and enabled", "targets": ["serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webservers", "message": "Web traffic is permitted now and persistently", "targets": ["serverb.lab.example.com"], "service": "https"}
+      - {"id": "content", "kind": "file", "on": "webservers", "message": "Web content is present", "targets": ["serverb.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

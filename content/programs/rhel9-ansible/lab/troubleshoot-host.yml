@@ -1,0 +1,14 @@
+name: troubleshoot-host
+title: "Troubleshooting Ansible managed hosts"
+page: ch09/lab-troubleshoot-host
+version: 2
+intentionalFaults: true
+starter: ["ansible.cfg", "inventory", "mailrelay.yml", "postfix-relay-main.conf.j2", "samba.yml", "samba.conf.j2"]
+checkpoints:
+  final:
+    files: ["inventory", "mailrelay.yml", "samba.yml"]
+    groups:
+      samba_servers: ["servera.lab.example.com"]
+    checks:
+      - {"id": "postfix", "kind": "service", "on": "mailrelay", "message": "Postfix runs", "targets": ["servera.lab.example.com"], "names": ["postfix"], "active": true, "enabled": true}
+      - {"id": "smtp", "kind": "firewall", "on": "mailrelay", "message": "SMTP is open now and persistently", "targets": ["servera.lab.example.com"], "service": "smtp"}

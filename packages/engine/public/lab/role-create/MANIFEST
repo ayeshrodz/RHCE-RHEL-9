@@ -1,7 +1,0 @@
-# Creating roles
-ansible.cfg
-inventory
-vhost.conf.j2
-verify-httpd.yml
-verify-config.yml
-verify-content.yml

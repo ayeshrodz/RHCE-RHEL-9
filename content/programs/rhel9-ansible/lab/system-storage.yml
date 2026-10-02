@@ -1,0 +1,15 @@
+name: system-storage
+title: "Managing storage"
+page: ch10/lab-storage
+version: 2
+starter: ["ansible.cfg", "inventory", "get-storage.yml"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+checkpoints:
+  final:
+    files: ["inventory", "storage.yml"]
+    checks:
+      - {"id": "content-mount", "kind": "mount", "on": "webservers", "message": "/var/www: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/www", "fstype": "xfs", "persistent": true}
+      - {"id": "content-volume", "kind": "logical-volume", "on": "webservers", "message": "apache-vg/content-lv: at least 512 MiB", "targets": ["servera.lab.example.com"], "vg": "apache-vg", "lv": "content-lv", "minSizeMiB": 512}
+      - {"id": "logs-mount", "kind": "mount", "on": "webservers", "message": "/var/log/httpd: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/log/httpd", "fstype": "xfs", "persistent": true}
+      - {"id": "logs-volume", "kind": "logical-volume", "on": "webservers", "message": "apache-vg/logs-lv: at least 768 MiB", "targets": ["servera.lab.example.com"], "vg": "apache-vg", "lv": "logs-lv", "minSizeMiB": 768}

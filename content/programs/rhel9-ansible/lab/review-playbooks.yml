@@ -1,0 +1,26 @@
+name: review-playbooks
+title: "Review lab: Creating playbooks"
+page: ch11/lab-review-playbooks
+version: 3
+starter: ["ansible.cfg", "inventory", "templates/vhost.conf.j2", "files/index.html"]
+checkpoints:
+  final:
+    files: ["dev_deploy.yml", "get_web_content.yml", "inventory", "site.yml", "error.log"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webservers", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webservers", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "webservers", "message": "The rendered virtual host must serve the provided page from its configured document root.", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/var/www/vhosts/{hostShort}/index.html"], "nonEmpty": true}
+      - {"id": "page", "kind": "http", "on": "webservers", "message": "The virtual host answers with the provided page.", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "url": "http://localhost/", "containsAny": ["This is a test page."]}
+      - {"id": "rescue-log", "kind": "file", "on": "control", "message": "The rescue block wrote its log", "paths": ["error.log"], "nonEmpty": true, "contains": ["Request failed"]}
+  deployed:
+    files: ["dev_deploy.yml", "get_web_content.yml", "inventory", "site.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webservers", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webservers", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "webservers", "message": "The rendered virtual host must serve the provided page from its configured document root.", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/var/www/vhosts/{hostShort}/index.html"], "nonEmpty": true}
+      - {"id": "page", "kind": "http", "on": "webservers", "message": "The virtual host answers with the provided page.", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "url": "http://localhost/", "containsAny": ["This is a test page."]}
+  rescued:
+    files: ["dev_deploy.yml", "get_web_content.yml", "inventory", "site.yml", "error.log"]
+    checks:
+      - {"id": "stopped", "kind": "service", "on": "servera.lab.example.com", "message": "Apache is stopped for the deliberate rescue test", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": false}
+      - {"id": "rescue-log", "kind": "file", "on": "control", "message": "The rescue block wrote its log", "paths": ["error.log"], "nonEmpty": true, "contains": ["Request failed"]}

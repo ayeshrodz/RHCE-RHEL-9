@@ -1,0 +1,12 @@
+name: system-archive
+title: "Archiving and restoring files"
+page: ch10/lab-archives
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "release.yml"]
+    checks:
+      - {"id": "restored", "kind": "file-compare", "on": "servera.lab.example.com", "message": "Restored release matches the source", "targets": ["servera.lab.example.com"], "a": "/srv/release/version.txt", "b": "/srv/restored/version.txt"}
+      - {"id": "archive", "kind": "archive", "on": "servera.lab.example.com", "message": "Release archive is readable", "targets": ["servera.lab.example.com"], "path": "/tmp/release.tar.gz", "format": "tar.gz"}
+      - {"id": "permissions", "kind": "file", "on": "servera.lab.example.com", "message": "Restored release is root-owned with mode 0644", "targets": ["servera.lab.example.com"], "paths": ["/srv/restored/version.txt"], "mode": "0644", "owner": "root", "group": "root"}

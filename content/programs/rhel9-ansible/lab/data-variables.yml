@@ -1,0 +1,12 @@
+name: data-variables
+title: "Managing variables"
+page: ch04/lab-variables
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webserver", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webserver", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "webserver", "message": "Web content is present", "targets": ["servera.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

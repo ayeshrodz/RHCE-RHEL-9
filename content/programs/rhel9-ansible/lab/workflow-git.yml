@@ -1,0 +1,20 @@
+name: workflow-git
+title: "Managing a project with Git"
+note: "empty folder: you clone the project into it"
+page: ch12/lab-git
+version: 2
+setup:
+  - {"action": "git-seed-remote", "remote": "ops/web-motd.git", "author": {"name": "Operations team", "email": "ops@lab.example.com"}, "branches": [{"name": "main", "commits": [{"message": "Add the MOTD project", "tree": "remote/v1"}, {"message": "Warn that the MOTD is managed", "tree": "remote/v2"}]}]}
+checkpoints:
+  final:
+    files: ["motd.yml", "templates/motd.j2", ".gitignore"]
+    checks:
+      - {"id": "template-change", "kind": "file", "on": "control", "message": "The template has the contact line", "paths": ["templates/motd.j2"], "nonEmpty": true, "contains": ["ops@lab.example.com"]}
+      - {"id": "ignore-rule", "kind": "file", "on": "control", "message": "The ignore rule is written", "paths": [".gitignore"], "nonEmpty": true, "contains": ["vault-pass"]}
+      - {"id": "teammate-change", "kind": "file", "on": "control", "message": "Your teammate's change is in the project", "paths": ["README.md"], "nonEmpty": true, "contains": ["changed=0"]}
+      - {"id": "clone", "kind": "git", "on": "control", "message": "Project is a clone of the shared web-motd remote", "remoteEndsWith": "git-repos/ops/web-motd.git"}
+      - {"id": "history", "kind": "git", "on": "control", "message": "History keeps the original commits plus yours and the teammate's", "minCommits": 5}
+      - {"id": "committed", "kind": "git", "on": "control", "message": "Every change is committed; nothing is left unstaged or untracked", "clean": true}
+      - {"id": "pushed", "kind": "git", "on": "control", "message": "Your branch matches the shared remote", "pushedBranch": "main"}
+      - {"id": "ignored", "kind": "git", "on": "control", "message": "vault-pass exists locally but is ignored and was never committed", "ignored": ["vault-pass"]}
+      - {"id": "motd", "kind": "file", "on": "web", "message": "/etc/motd shows the contact line", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/etc/motd"], "contains": ["ops@lab.example.com"]}

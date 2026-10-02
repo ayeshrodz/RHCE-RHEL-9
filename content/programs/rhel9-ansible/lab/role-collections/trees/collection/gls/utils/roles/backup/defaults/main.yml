@@ -1,0 +1,4 @@
+---
+backup_dir: /var/backups/gls
+backup_id: backup
+backup_files: []

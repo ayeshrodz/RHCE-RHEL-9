@@ -276,7 +276,7 @@ with preview_server(BASE, ROOT):
                 assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
         page.set_viewport_size({'width': 1440, 'height': 1000})
         # Every graded lab has a separately authored challenge; help is closed by default.
-        lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'packages/engine/public/lab/graders.json').read_text())['exercises'].values()]
+        lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'packages/engine/src/data/labReportSchema.json').read_text())['exercises'].values()]
         for route in lab_routes:
             go(page, route)
             page.get_by_role('button', name='Challenge', exact=True).click()
@@ -417,7 +417,7 @@ with preview_server(BASE, ROOT):
         page.keyboard.press('Escape')
         # Complete grading reports import as independent practice evidence.
         go(page, '/progress')
-        catalog = json.loads((ROOT / 'packages/engine/public/lab/graders.json').read_text())
+        catalog = json.loads((ROOT / 'packages/engine/src/data/labReportSchema.json').read_text())
         exercise = catalog['exercises']['system-archive']; cp = exercise['checkpoints']['final']
         ids = ['file:' + f for f in cp['files']] + [x['id'] for x in cp.get('local', [])] + ['group:' + g for g in cp.get('groups', {})] + [probe['id'] + ':' + host for probe in cp['probes'] for host in probe['targets']]
         report = {'app': 'playbook-path-lab', 'version': 1, 'exerciseId': 'system-archive', 'exerciseVersion': exercise['version'], 'checkpointId': 'final', 'checkedAt': '2026-10-02T00:00:00Z', 'checks': [{'id': id, 'status': 'pass', 'message': 'Requirement observed', 'lesson': exercise['lesson']} for id in ids]}

@@ -1,0 +1,11 @@
+name: review-deploy
+title: "Review lab: Deploying Ansible"
+page: ch11/lab-review-deploy
+version: 2
+starter: ["packages.yml", "verify_user.yml"]
+checkpoints:
+  final:
+    files: ["inventory", "ansible.cfg", "users.yml", "packages.yml", "verify_user.yml"]
+    checks:
+      - {"id": "accounts", "kind": "user", "on": "dev", "message": "Both requested accounts exist", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["joe", "sam"]}
+      - {"id": "packages", "kind": "package", "on": "dev", "message": "Required packages are installed", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "names": ["httpd", "mariadb-server"]}

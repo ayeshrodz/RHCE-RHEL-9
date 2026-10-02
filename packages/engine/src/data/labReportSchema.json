@@ -1,169 +1,258 @@
 {
   "exercises": {
-    "intro-install": {
-      "version": 1,
-      "lesson": "#/ch02/lab-installing-ansible",
+    "assessment-operations": {
+      "version": 2,
+      "lesson": "#/ch11/assessment-operations",
       "checkpoints": {
         "final": {
-          "files": [],
-          "groups": {},
+          "files": [
+            "ansible.cfg",
+            "inventory",
+            "site.yml",
+            "host.txt.j2",
+            "files/reporter.pub"
+          ],
+          "groups": {
+            "operations": []
+          },
           "local": [],
           "probes": [
             {
-              "id": "tools",
+              "id": "reports-mount",
               "targets": [
-                "localhost"
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "reports-volume",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "account",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "directory",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "policy",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "selinux",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "schedule",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "address",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "summary",
+              "targets": [
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "report",
+              "targets": [
+                "serverc.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "playbook-inventory": {
-      "version": 1,
-      "lesson": "#/ch03/lab-inventory",
+    "assessment-release": {
+      "version": 2,
+      "lesson": "#/ch11/assessment-release",
       "checkpoints": {
         "final": {
           "files": [
-            "inventory"
-          ],
-          "groups": {
-            "webservers": [],
-            "us": [],
-            "production": [],
-            "ungrouped": []
-          },
-          "local": [],
-          "probes": []
-        }
-      }
-    },
-    "playbook-manage": {
-      "version": 1,
-      "lesson": "#/ch03/lab-configuration",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "ansible-navigator.yml",
             "ansible.cfg",
-            "inventory"
+            "inventory",
+            "site.yml",
+            "vault.yml",
+            "group_vars/release_hosts/main.yml",
+            "roles/release_web/defaults/main.yml",
+            "roles/release_web/tasks/main.yml",
+            "roles/release_web/handlers/main.yml",
+            "roles/release_web/templates/index.html.j2"
           ],
           "groups": {
-            "web": []
+            "release_hosts": []
           },
-          "local": [],
-          "probes": []
+          "local": [
+            {
+              "id": "encrypted-token"
+            }
+          ],
+          "probes": [
+            {
+              "id": "services",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "http",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "config",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "token",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "recovery-archive",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "recovery-page",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "permissions-served",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "permissions-recovered",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
         }
       }
     },
-    "playbook-basic": {
-      "version": 1,
-      "lesson": "#/ch03/lab-playbooks",
+    "control-errors": {
+      "version": 2,
+      "lesson": "#/ch05/lab-task-failure",
       "checkpoints": {
         "final": {
           "files": [
             "inventory",
-            "site.yml"
+            "playbook.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "httpd",
+              "id": "package",
               "targets": [
-                "serverc.lab.example.com",
-                "serverd.lab.example.com"
-              ]
-            },
-            {
-              "id": "firewall",
-              "targets": [
-                "serverc.lab.example.com",
-                "serverd.lab.example.com"
-              ]
-            },
-            {
-              "id": "content",
-              "targets": [
-                "serverc.lab.example.com",
-                "serverd.lab.example.com"
+                "servera.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "playbook-multi": {
-      "version": 1,
-      "lesson": "#/ch03/lab-multiple-plays",
+    "control-flow": {
+      "version": 3,
+      "lesson": "#/ch05/lab-loops-conditionals",
       "checkpoints": {
         "final": {
           "files": [
-            "intranet.yml",
-            "inventory"
+            "inventory",
+            "playbook.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "httpd",
+              "id": "database-packages",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             },
             {
-              "id": "firewall",
+              "id": "database-service",
               "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "content",
-              "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "playbook-review": {
-      "version": 1,
-      "lesson": "#/ch03/chapter-lab",
+    "control-handlers": {
+      "version": 2,
+      "lesson": "#/ch05/lab-handlers",
       "checkpoints": {
         "final": {
           "files": [
-            "internet.yml",
-            "inventory"
+            "inventory",
+            "playbook.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "httpd",
+              "id": "services",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "firewall",
+              "id": "nginx-config",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "content",
+              "id": "php-fpm-config",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "data-variables": {
-      "version": 1,
-      "lesson": "#/ch04/lab-variables",
+    "control-review": {
+      "version": 2,
+      "lesson": "#/ch05/chapter-lab",
       "checkpoints": {
         "final": {
           "files": [
@@ -176,48 +265,19 @@
             {
               "id": "httpd",
               "targets": [
-                "servera.lab.example.com"
+                "serverb.lab.example.com"
               ]
             },
             {
               "id": "firewall",
               "targets": [
-                "servera.lab.example.com"
+                "serverb.lab.example.com"
               ]
             },
             {
               "id": "content",
               "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "data-secret": {
-      "version": 1,
-      "lesson": "#/ch04/lab-vault",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "create_users.yml",
-            "inventory"
-          ],
-          "groups": {},
-          "local": [
-            {
-              "id": "ciphertext"
-            },
-            {
-              "id": "vault-permissions"
-            }
-          ],
-          "probes": [
-            {
-              "id": "account",
-              "targets": [
-                "servera.lab.example.com"
+                "serverb.lab.example.com"
               ]
             }
           ]
@@ -225,7 +285,7 @@
       }
     },
     "data-facts": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch04/lab-facts",
       "checkpoints": {
         "final": {
@@ -256,7 +316,7 @@
       }
     },
     "data-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch04/chapter-lab",
       "checkpoints": {
         "final": {
@@ -302,71 +362,27 @@
         }
       }
     },
-    "control-flow": {
+    "data-secret": {
       "version": 2,
-      "lesson": "#/ch05/lab-loops-conditionals",
+      "lesson": "#/ch04/lab-vault",
       "checkpoints": {
         "final": {
           "files": [
-            "inventory",
-            "playbook.yml"
+            "create_users.yml",
+            "inventory"
           ],
           "groups": {},
-          "local": [],
-          "probes": [
+          "local": [
             {
-              "id": "database",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "control-handlers": {
-      "version": 1,
-      "lesson": "#/ch05/lab-handlers",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "playbook.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "services",
-              "targets": [
-                "servera.lab.example.com"
-              ]
+              "id": "ciphertext"
             },
             {
-              "id": "configs",
-              "targets": [
-                "servera.lab.example.com"
-              ]
+              "id": "vault-permissions"
             }
-          ]
-        }
-      }
-    },
-    "control-errors": {
-      "version": 1,
-      "lesson": "#/ch05/lab-task-failure",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "playbook.yml"
           ],
-          "groups": {},
-          "local": [],
           "probes": [
             {
-              "id": "package",
+              "id": "account",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -375,9 +391,9 @@
         }
       }
     },
-    "control-review": {
-      "version": 1,
-      "lesson": "#/ch05/chapter-lab",
+    "data-variables": {
+      "version": 2,
+      "lesson": "#/ch04/lab-variables",
       "checkpoints": {
         "final": {
           "files": [
@@ -390,19 +406,19 @@
             {
               "id": "httpd",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
               "id": "firewall",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
               "id": "content",
               "targets": [
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             }
           ]
@@ -410,7 +426,7 @@
       }
     },
     "file-manage": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch06/lab-file-modules",
       "checkpoints": {
         "final": {
@@ -488,39 +504,8 @@
         }
       }
     },
-    "file-template": {
-      "version": 1,
-      "lesson": "#/ch06/lab-templates",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "motd.j2",
-            "motd.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "motd",
-              "targets": [
-                "servera.lab.example.com",
-                "workstation.lab.example.com"
-              ]
-            },
-            {
-              "id": "mode",
-              "targets": [
-                "servera.lab.example.com",
-                "workstation.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "file-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch06/chapter-lab",
       "checkpoints": {
         "final": {
@@ -555,26 +540,197 @@
         }
       }
     },
-    "projects-host": {
-      "version": 1,
-      "lesson": "#/ch07/lab-host-patterns",
+    "file-template": {
+      "version": 2,
+      "lesson": "#/ch06/lab-templates",
       "checkpoints": {
         "final": {
           "files": [
-            "inventory1",
-            "inventory2",
-            "playbook.yml"
+            "inventory",
+            "motd.j2",
+            "motd.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "motd",
+              "targets": [
+                "servera.lab.example.com",
+                "workstation.lab.example.com"
+              ]
+            },
+            {
+              "id": "mode",
+              "targets": [
+                "servera.lab.example.com",
+                "workstation.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "intro-install": {
+      "version": 2,
+      "lesson": "#/ch02/lab-installing-ansible",
+      "checkpoints": {
+        "final": {
+          "files": [],
+          "groups": {},
+          "local": [
+            {
+              "id": "tools"
+            }
+          ],
+          "probes": []
+        }
+      }
+    },
+    "playbook-basic": {
+      "version": 2,
+      "lesson": "#/ch03/lab-playbooks",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "site.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "serverc.lab.example.com",
+                "serverd.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "serverc.lab.example.com",
+                "serverd.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "serverc.lab.example.com",
+                "serverd.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "playbook-inventory": {
+      "version": 2,
+      "lesson": "#/ch03/lab-inventory",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory"
           ],
           "groups": {
-            "europe": []
+            "webservers": [],
+            "us": [],
+            "production": [],
+            "ungrouped": []
           },
           "local": [],
           "probes": []
         }
       }
     },
+    "playbook-manage": {
+      "version": 2,
+      "lesson": "#/ch03/lab-configuration",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "ansible-navigator.yml",
+            "ansible.cfg",
+            "inventory"
+          ],
+          "groups": {
+            "web": []
+          },
+          "local": [],
+          "probes": []
+        }
+      }
+    },
+    "playbook-multi": {
+      "version": 2,
+      "lesson": "#/ch03/lab-multiple-plays",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "intranet.yml",
+            "inventory"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "playbook-review": {
+      "version": 2,
+      "lesson": "#/ch03/chapter-lab",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "internet.yml",
+            "inventory"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
     "projects-file": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch07/lab-reuse",
       "checkpoints": {
         "final": {
@@ -611,8 +767,26 @@
         }
       }
     },
+    "projects-host": {
+      "version": 2,
+      "lesson": "#/ch07/lab-host-patterns",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory1",
+            "inventory2",
+            "playbook.yml"
+          ],
+          "groups": {
+            "europe": []
+          },
+          "local": [],
+          "probes": []
+        }
+      }
+    },
     "projects-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch07/chapter-lab",
       "checkpoints": {
         "final": {
@@ -658,8 +832,288 @@
         }
       }
     },
+    "review-admin": {
+      "version": 2,
+      "lesson": "#/ch11/lab-review-admin",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "dev-users.yml",
+            "group_vars/webservers/network.yml",
+            "inventory",
+            "log-rotate.yml",
+            "network.yml",
+            "site.yml",
+            "storage.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "address",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "content-mount",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "content-volume",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "uploads-mount",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "uploads-volume",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "admin-user",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "admin-sudo",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "rotation",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "review-deploy": {
+      "version": 2,
+      "lesson": "#/ch11/lab-review-deploy",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "ansible.cfg",
+            "users.yml",
+            "packages.yml",
+            "verify_user.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "accounts",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "packages",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "review-playbooks": {
+      "version": 3,
+      "lesson": "#/ch11/lab-review-playbooks",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "dev_deploy.yml",
+            "get_web_content.yml",
+            "inventory",
+            "site.yml",
+            "error.log"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "rescue-log"
+            }
+          ],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "page",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        },
+        "deployed": {
+          "files": [
+            "dev_deploy.yml",
+            "get_web_content.yml",
+            "inventory",
+            "site.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            },
+            {
+              "id": "page",
+              "targets": [
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
+              ]
+            }
+          ]
+        },
+        "rescued": {
+          "files": [
+            "dev_deploy.yml",
+            "get_web_content.yml",
+            "inventory",
+            "site.yml",
+            "error.log"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "rescue-log"
+            }
+          ],
+          "probes": [
+            {
+              "id": "stopped",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "review-roles": {
+      "version": 2,
+      "lesson": "#/ch11/lab-review-roles",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "ansible-httpd.yml",
+            "inventory",
+            "roles/ansible-httpd/handlers/main.yml",
+            "roles/ansible-httpd/tasks/main.yml",
+            "roles/ansible-httpd/vars/main.yml",
+            "site.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "httpd",
+              "targets": [
+                "serverb.lab.example.com",
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "firewall",
+              "targets": [
+                "serverb.lab.example.com",
+                "serverc.lab.example.com"
+              ]
+            },
+            {
+              "id": "content",
+              "targets": [
+                "serverb.lab.example.com",
+                "serverc.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "role-collections": {
+      "version": 2,
+      "lesson": "#/ch08/lab-role-collections",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "requirements.yml",
+            "bck.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "backup",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
     "role-create": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch08/lab-role-create",
       "checkpoints": {
         "final": {
@@ -675,7 +1129,13 @@
           "local": [],
           "probes": [
             {
-              "id": "vhost",
+              "id": "vhost-config",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "vhost-content",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -691,7 +1151,7 @@
       }
     },
     "role-galaxy": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch08/lab-role-galaxy",
       "checkpoints": {
         "final": {
@@ -734,63 +1194,8 @@
         }
       }
     },
-    "role-collections": {
-      "version": 1,
-      "lesson": "#/ch08/lab-role-collections",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "requirements.yml",
-            "bck.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "backup",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "role-system": {
-      "version": 1,
-      "lesson": "#/ch08/lab-role-system",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "ansible.cfg",
-            "configure_time.yml",
-            "group_vars/all/timesync.yml",
-            "inventory"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "chrony",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "timeserver",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "role-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch08/chapter-lab",
       "checkpoints": {
         "final": {
@@ -821,126 +1226,64 @@
         }
       }
     },
-    "troubleshoot-playbook": {
-      "version": 1,
-      "lesson": "#/ch09/lab-troubleshoot-playbook",
+    "role-system": {
+      "version": 2,
+      "lesson": "#/ch08/lab-role-system",
       "checkpoints": {
         "final": {
           "files": [
             "ansible.cfg",
-            "inventory",
-            "samba.yml"
+            "configure_time.yml",
+            "group_vars/all/timesync.yml",
+            "inventory"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "samba",
+              "id": "chrony",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
-            }
-          ]
-        }
-      }
-    },
-    "troubleshoot-host": {
-      "version": 1,
-      "lesson": "#/ch09/lab-troubleshoot-host",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "mailrelay.yml",
-            "samba.yml"
-          ],
-          "groups": {
-            "samba_servers": []
-          },
-          "local": [],
-          "probes": [
+            },
             {
-              "id": "postfix",
+              "id": "timeserver",
               "targets": [
-                "servera.lab.example.com"
+                "servera.lab.example.com",
+                "serverb.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "troubleshoot-review": {
+    "system-archive": {
       "version": 2,
-      "lesson": "#/ch09/chapter-lab",
+      "lesson": "#/ch10/lab-archives",
       "checkpoints": {
         "final": {
           "files": [
             "inventory",
-            "secure-web.yml"
-          ],
-          "groups": {
-            "webservers": []
-          },
-          "local": [],
-          "probes": [
-            {
-              "id": "secure-web",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "correct-host",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "tls-content",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "system-software": {
-      "version": 1,
-      "lesson": "#/ch10/lab-software",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "repo_playbook.yml"
+            "release.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "repo",
+              "id": "restored",
               "targets": [
                 "servera.lab.example.com"
               ]
             },
             {
-              "id": "removed",
+              "id": "archive",
               "targets": [
                 "servera.lab.example.com"
               ]
-            }
-          ]
-        },
-        "installed": {
-          "files": [
-            "inventory",
-            "repo_playbook.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
+            },
             {
-              "id": "installed",
+              "id": "permissions",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -949,39 +1292,22 @@
         }
       }
     },
-    "system-users": {
-      "version": 1,
-      "lesson": "#/ch10/lab-users",
+    "system-network": {
+      "version": 2,
+      "lesson": "#/ch10/lab-network",
       "checkpoints": {
         "final": {
           "files": [
+            "get-eth1.yml",
+            "group_vars/webservers/network.yml",
             "inventory",
-            "users.yml",
-            "vars/users_vars.yml"
+            "playbook.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "users",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "sudo",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "ssh",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "authorized-keys",
+              "id": "address",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -991,7 +1317,7 @@
       }
     },
     "system-process": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch10/lab-boot-and-scheduling",
       "checkpoints": {
         "final": {
@@ -1048,60 +1374,8 @@
         }
       }
     },
-    "system-storage": {
-      "version": 1,
-      "lesson": "#/ch10/lab-storage",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "storage.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "storage-content-lv",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "storage-logs-lv",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "system-network": {
-      "version": 1,
-      "lesson": "#/ch10/lab-network",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "get-eth1.yml",
-            "group_vars/webservers/network.yml",
-            "inventory",
-            "playbook.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "address",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "system-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch10/chapter-lab",
       "checkpoints": {
         "final": {
@@ -1117,13 +1391,25 @@
           "local": [],
           "probes": [
             {
-              "id": "storage-content-lv",
+              "id": "content-mount",
               "targets": [
                 "servera.lab.example.com"
               ]
             },
             {
-              "id": "storage-logs-lv",
+              "id": "content-volume",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "logs-mount",
+              "targets": [
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "logs-volume",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -1156,131 +1442,42 @@
         }
       }
     },
-    "review-deploy": {
-      "version": 1,
-      "lesson": "#/ch11/lab-review-deploy",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "ansible.cfg",
-            "users.yml",
-            "packages.yml",
-            "verify_user.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "accounts",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "packages",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "review-playbooks": {
+    "system-software": {
       "version": 2,
-      "lesson": "#/ch11/lab-review-playbooks",
+      "lesson": "#/ch10/lab-software",
       "checkpoints": {
         "final": {
           "files": [
-            "dev_deploy.yml",
-            "get_web_content.yml",
             "inventory",
-            "site.yml",
-            "error.log"
-          ],
-          "groups": {},
-          "local": [
-            {
-              "id": "rescue-log"
-            }
-          ],
-          "probes": [
-            {
-              "id": "httpd",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "firewall",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "content",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        },
-        "deployed": {
-          "files": [
-            "dev_deploy.yml",
-            "get_web_content.yml",
-            "inventory",
-            "site.yml"
+            "repo_playbook.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "httpd",
+              "id": "repo",
               "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "firewall",
+              "id": "removed",
               "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "content",
-              "targets": [
-                "servera.lab.example.com",
-                "serverb.lab.example.com"
+                "servera.lab.example.com"
               ]
             }
           ]
         },
-        "rescued": {
+        "installed": {
           "files": [
-            "dev_deploy.yml",
-            "get_web_content.yml",
             "inventory",
-            "site.yml",
-            "error.log"
+            "repo_playbook.yml"
           ],
           "groups": {},
-          "local": [
-            {
-              "id": "rescue-log"
-            }
-          ],
+          "local": [],
           "probes": [
             {
-              "id": "stopped",
+              "id": "installed",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -1289,49 +1486,38 @@
         }
       }
     },
-    "review-admin": {
-      "version": 1,
-      "lesson": "#/ch11/lab-review-admin",
+    "system-storage": {
+      "version": 2,
+      "lesson": "#/ch10/lab-storage",
       "checkpoints": {
         "final": {
           "files": [
-            "dev-users.yml",
-            "group_vars/webservers/network.yml",
             "inventory",
-            "log-rotate.yml",
-            "network.yml",
-            "site.yml",
             "storage.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "address",
+              "id": "content-mount",
               "targets": [
                 "servera.lab.example.com"
               ]
             },
             {
-              "id": "storage-lv_content",
+              "id": "content-volume",
               "targets": [
                 "servera.lab.example.com"
               ]
             },
             {
-              "id": "storage-lv_uploads",
+              "id": "logs-mount",
               "targets": [
                 "servera.lab.example.com"
               ]
             },
             {
-              "id": "admin",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "rotation",
+              "id": "logs-volume",
               "targets": [
                 "servera.lab.example.com"
               ]
@@ -1340,187 +1526,177 @@
         }
       }
     },
-    "review-roles": {
-      "version": 1,
-      "lesson": "#/ch11/lab-review-roles",
+    "system-users": {
+      "version": 2,
+      "lesson": "#/ch10/lab-users",
       "checkpoints": {
         "final": {
           "files": [
-            "ansible-httpd.yml",
             "inventory",
-            "roles/ansible-httpd/handlers/main.yml",
-            "roles/ansible-httpd/tasks/main.yml",
-            "roles/ansible-httpd/vars/main.yml",
-            "site.yml"
+            "users.yml",
+            "vars/users_vars.yml"
           ],
           "groups": {},
           "local": [],
           "probes": [
             {
-              "id": "httpd",
+              "id": "users",
               "targets": [
-                "serverb.lab.example.com",
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "firewall",
+              "id": "sudo",
               "targets": [
-                "serverb.lab.example.com",
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "content",
+              "id": "ssh",
               "targets": [
-                "serverb.lab.example.com",
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
+              ]
+            },
+            {
+              "id": "authorized-keys",
+              "targets": [
+                "servera.lab.example.com"
               ]
             }
           ]
         }
       }
     },
-    "assessment-release": {
-      "version": 1,
-      "lesson": "#/ch11/assessment-release",
+    "troubleshoot-host": {
+      "version": 2,
+      "lesson": "#/ch09/lab-troubleshoot-host",
       "checkpoints": {
         "final": {
           "files": [
-            "ansible.cfg",
             "inventory",
-            "site.yml",
-            "vault.yml",
-            "group_vars/release_hosts/main.yml",
-            "roles/release_web/defaults/main.yml",
-            "roles/release_web/tasks/main.yml",
-            "roles/release_web/handlers/main.yml",
-            "roles/release_web/templates/index.html.j2"
+            "mailrelay.yml",
+            "samba.yml"
           ],
           "groups": {
-            "release_hosts": []
-          },
-          "local": [
-            {
-              "id": "encrypted-token"
-            }
-          ],
-          "probes": [
-            {
-              "id": "services",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "http",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "firewall",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "config",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "token",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "recovery",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            },
-            {
-              "id": "permissions",
-              "targets": [
-                "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "assessment-operations": {
-      "version": 1,
-      "lesson": "#/ch11/assessment-operations",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "ansible.cfg",
-            "inventory",
-            "site.yml",
-            "host.txt.j2",
-            "files/reporter.pub"
-          ],
-          "groups": {
-            "operations": []
+            "samba_servers": []
           },
           "local": [],
           "probes": [
             {
-              "id": "storage",
+              "id": "postfix",
               "targets": [
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "account",
+              "id": "smtp",
               "targets": [
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "troubleshoot-playbook": {
+      "version": 2,
+      "lesson": "#/ch09/lab-troubleshoot-playbook",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "ansible.cfg",
+            "inventory",
+            "samba.yml"
+          ],
+          "groups": {},
+          "local": [],
+          "probes": [
+            {
+              "id": "samba-package",
+              "targets": [
+                "servera.lab.example.com"
               ]
             },
             {
-              "id": "directory",
+              "id": "samba-config",
               "targets": [
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "troubleshoot-review": {
+      "version": 3,
+      "lesson": "#/ch09/chapter-lab",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "inventory",
+            "secure-web.yml"
+          ],
+          "groups": {
+            "webservers": []
+          },
+          "local": [],
+          "probes": [
+            {
+              "id": "secure-web",
+              "targets": [
+                "serverb.lab.example.com"
               ]
             },
             {
-              "id": "policy",
+              "id": "secure-web-firewall",
               "targets": [
-                "serverc.lab.example.com"
+                "serverb.lab.example.com"
               ]
             },
             {
-              "id": "selinux",
+              "id": "correct-host",
               "targets": [
-                "serverc.lab.example.com"
+                "serverb.lab.example.com"
               ]
             },
             {
-              "id": "schedule",
+              "id": "tls-content",
               "targets": [
-                "serverc.lab.example.com"
+                "serverb.lab.example.com"
               ]
+            }
+          ]
+        }
+      }
+    },
+    "workflow-container": {
+      "version": 2,
+      "lesson": "#/ch12/lab-development-containers",
+      "checkpoints": {
+        "final": {
+          "files": [
+            "site.yml",
+            "inventory",
+            ".devcontainer/devcontainer.json",
+            "ansible-navigator.yml"
+          ],
+          "groups": {},
+          "local": [
+            {
+              "id": "devcontainer-image"
             },
             {
-              "id": "network",
-              "targets": [
-                "serverc.lab.example.com"
-              ]
+              "id": "ee-image"
             },
             {
-              "id": "summary",
-              "targets": [
-                "serverc.lab.example.com"
-              ]
-            },
+              "id": "lint"
+            }
+          ],
+          "probes": [
             {
-              "id": "report",
+              "id": "kernel-record",
               "targets": [
-                "serverc.lab.example.com"
+                "servera.lab.example.com"
               ]
             }
           ]
@@ -1528,7 +1704,7 @@
       }
     },
     "workflow-git": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch12/lab-git",
       "checkpoints": {
         "final": {
@@ -1547,39 +1723,24 @@
             },
             {
               "id": "teammate-change"
+            },
+            {
+              "id": "clone"
+            },
+            {
+              "id": "history"
+            },
+            {
+              "id": "committed"
+            },
+            {
+              "id": "pushed"
+            },
+            {
+              "id": "ignored"
             }
           ],
           "probes": [
-            {
-              "id": "clone",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "history",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "committed",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "pushed",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "ignored",
-              "targets": [
-                "localhost"
-              ]
-            },
             {
               "id": "motd",
               "targets": [
@@ -1591,45 +1752,8 @@
         }
       }
     },
-    "workflow-container": {
-      "version": 1,
-      "lesson": "#/ch12/lab-development-containers",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "site.yml",
-            "inventory",
-            ".devcontainer/devcontainer.json",
-            "ansible-navigator.yml"
-          ],
-          "groups": {},
-          "local": [
-            {
-              "id": "devcontainer-image"
-            },
-            {
-              "id": "ee-image"
-            }
-          ],
-          "probes": [
-            {
-              "id": "lint",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "kernel-record",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
     "workflow-review": {
-      "version": 1,
+      "version": 2,
       "lesson": "#/ch12/chapter-lab",
       "checkpoints": {
         "final": {
@@ -1647,77 +1771,34 @@
             },
             {
               "id": "ee-image"
+            },
+            {
+              "id": "clone"
+            },
+            {
+              "id": "lint"
+            },
+            {
+              "id": "committed"
+            },
+            {
+              "id": "pushed"
+            },
+            {
+              "id": "shared-config"
             }
           ],
           "probes": [
             {
-              "id": "clone",
+              "id": "status-service",
               "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "lint",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "committed",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "pushed",
-              "targets": [
-                "localhost"
-              ]
-            },
-            {
-              "id": "shared-config",
-              "targets": [
-                "localhost"
+                "serverb.lab.example.com"
               ]
             },
             {
               "id": "status-page",
               "targets": [
                 "serverb.lab.example.com"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "system-archive": {
-      "version": 1,
-      "lesson": "#/ch10/lab-archives",
-      "checkpoints": {
-        "final": {
-          "files": [
-            "inventory",
-            "release.yml"
-          ],
-          "groups": {},
-          "local": [],
-          "probes": [
-            {
-              "id": "restored",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "archive",
-              "targets": [
-                "servera.lab.example.com"
-              ]
-            },
-            {
-              "id": "permissions",
-              "targets": [
-                "servera.lab.example.com"
               ]
             }
           ]

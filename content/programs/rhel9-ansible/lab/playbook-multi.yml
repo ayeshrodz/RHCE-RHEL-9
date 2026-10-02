@@ -1,0 +1,12 @@
+name: playbook-multi
+title: "Implementing multiple plays"
+page: ch03/lab-multiple-plays
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["intranet.yml", "inventory"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "servera.lab.example.com", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "servera.lab.example.com", "message": "Web traffic is permitted now and persistently", "targets": ["servera.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "servera.lab.example.com", "message": "Web content is present", "targets": ["servera.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

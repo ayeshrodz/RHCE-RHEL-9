@@ -1,0 +1,19 @@
+name: workflow-review
+title: "Chapter lab: Git and development containers"
+page: ch12/chapter-lab
+version: 2
+setup:
+  - {"action": "git-seed-remote", "remote": "ops/web-status.git", "author": {"name": "Operations team", "email": "ops@lab.example.com"}, "branches": [{"name": "main", "commits": [{"message": "Add the status page project", "tree": "remote/v1"}]}]}
+checkpoints:
+  final:
+    files: ["site.yml", "templates/index.html.j2", ".devcontainer/devcontainer.json", "ansible-navigator.yml", ".gitignore"]
+    checks:
+      - {"id": "devcontainer-image", "kind": "file", "on": "control", "message": "The development container uses the Ansible tools image", "paths": [".devcontainer/devcontainer.json"], "nonEmpty": true, "contains": ["community-ansible-dev-tools"]}
+      - {"id": "ee-image", "kind": "file", "on": "control", "message": "ansible-navigator uses the minimal execution environment", "paths": ["ansible-navigator.yml"], "nonEmpty": true, "contains": ["community-ee-minimal"]}
+      - {"id": "clone", "kind": "git", "on": "control", "message": "Project is a clone of the shared web-status remote", "remoteEndsWith": "git-repos/ops/web-status.git"}
+      - {"id": "lint", "kind": "lint", "on": "control", "message": "site.yml passes ansible-lint in the development container", "tool": "ansible-lint", "image": "ghcr.io/ansible/community-ansible-dev-tools:latest", "files": ["site.yml"]}
+      - {"id": "committed", "kind": "git", "on": "control", "message": "Every change is committed", "clean": true}
+      - {"id": "pushed", "kind": "git", "on": "control", "message": "Your branch matches the shared remote", "pushedBranch": "main"}
+      - {"id": "shared-config", "kind": "git", "on": "control", "message": "The remote includes the development container and navigator settings", "remoteHasPaths": [".devcontainer/devcontainer.json", "ansible-navigator.yml"]}
+      - {"id": "status-service", "kind": "service", "on": "web", "message": "httpd is running and enabled", "targets": ["serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "status-page", "kind": "http", "on": "web", "message": "httpd serves the status page", "targets": ["serverb.lab.example.com"], "url": "http://localhost/", "containsAny": ["Status: {host}"]}

@@ -12,7 +12,7 @@ import {
   setProgramScope,
 } from '../src/lib/storage.js';
 import legacy from '../src/data/legacyActivityMap.json' with { type: 'json' };
-import catalog from '../public/lab/graders.json' with { type: 'json' };
+import catalog from '../src/data/labReportSchema.json' with { type: 'json' };
 
 setProgramScope('rhel9-ansible');
 

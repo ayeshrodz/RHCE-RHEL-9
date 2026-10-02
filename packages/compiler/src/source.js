@@ -7,6 +7,9 @@
 //   programs/<id>/objectives.yml           skills mapped to lessons, practice and labs
 //   programs/<id>/details.md               optional "platform and versions" page
 //   programs/<id>/chapters/chNN-<name>/    _chapter.yml and NN-<slug>.md sections
+//   programs/<id>/lab/<name>.yml           an exercise: starter files, setup actions, graded checkpoints
+//   programs/<id>/lab/<name>/starter/      the exercise's starter files
+//   programs/<id>/lab/<name>/trees/        file trees that setup actions use (for example Git history)
 //   programs/<id>/legacy.yml, interface.json, home.json, progress.json
 //                                          transitional interface copy (see the legacy bundle)
 //
@@ -51,6 +54,22 @@ function readChapters(dir) {
         .filter((s) => s.front.draft !== true);
       return { id, dir: chapterDir, meta, number: meta.number ?? Number(id.slice(2)), sections };
     });
+}
+
+/** Lab exercise definitions: programs/<id>/lab/<name>.yml, with files beside them in lab/<name>/. */
+function readLabs(dir) {
+  const labDir = path.join(dir, 'lab');
+  if (!fs.existsSync(labDir)) return [];
+  return fs
+    .readdirSync(labDir)
+    .filter((f) => f.endsWith('.yml'))
+    .sort()
+    .map((f) => ({
+      file: path.join(labDir, f),
+      file_name: f.replace(/\.yml$/, ''),
+      dir: path.join(labDir, f.replace(/\.yml$/, '')),
+      def: readYaml(path.join(labDir, f)),
+    }));
 }
 
 /** Interface copy that the engine still reads from content (course, track and UI text). */
@@ -102,6 +121,7 @@ export function readContent(contentDir, diagnostics) {
         ? { file: detailsFile, source: fs.readFileSync(detailsFile, 'utf8'), ...readData(detailsFile) }
         : null,
       legacy: readInterface(dir),
+      labs: readLabs(dir),
     });
   }
   for (const d of present)

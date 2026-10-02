@@ -55,6 +55,7 @@ content/                          the course (see docs/AUTHORING.md)
 packages/
   schema/                         the content contract
   compiler/                       `kernel validate|build`
+  lab-tools/                      `lab`, the read-only grader and the exercise setup program (run on the learner's machine)
   engine/
     src/lib/content.js            fetches and validates the bundle
     src/lib/course.js             the loaded program: chapters, pages, objectives
@@ -63,12 +64,11 @@ packages/
     src/diagrams/                 diagram kit and chapter widgets (moving to generic components)
     plugins/content-bundle.js     dev server: compiles content/ and serves it at /content/
     public/kernel.config.json     where the engine loads content from
-    public/lab/                   home-lab helper, read-only graders, starter files
 scripts/                          content checks and build helpers
 tests/                            browser, phone, lab and content tests
 ```
 
-`npm run build` builds the engine into `dist/` and the content bundle into `dist/content/`. To load content from somewhere else (for example a CDN), change `contentBase` in `dist/kernel.config.json`; no rebuild is needed.
+`npm run build` builds the engine into `dist/` and the content bundle into `dist/content/`; the lab tree (the `lab` command, exercise starter files and the grading catalog) is also placed at `dist/lab/`, where learners install it from. To load content from somewhere else (for example a CDN), change `contentBase` in `dist/kernel.config.json`; no rebuild is needed.
 
 See [validation evidence](docs/VALIDATION.md) for the tested stack and remaining host checks, [progress compatibility](docs/PROGRESS.md) for backups, and [local grading](docs/LAB-GRADING.md) for exercise checkpoints.
 

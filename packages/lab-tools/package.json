@@ -1,0 +1,18 @@
+{
+  "name": "@kernel-path/lab",
+  "version": "1.0.0",
+  "description": "The Kernel Path lab tools: the `lab` command, the read-only grader and the exercise setup program. They run on the learner's own machine.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "lab",
+    "grade.py",
+    "prepare.py",
+    "setup",
+    "src"
+  ]
+}

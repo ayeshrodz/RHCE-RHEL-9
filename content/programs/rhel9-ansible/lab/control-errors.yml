@@ -1,0 +1,10 @@
+name: control-errors
+title: "Handling task failure"
+page: ch05/lab-task-failure
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml"]
+    checks:
+      - {"id": "package", "kind": "package", "on": "databases", "message": "Corrected httpd package is installed", "targets": ["servera.lab.example.com"], "names": ["httpd"]}

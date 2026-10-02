@@ -3,13 +3,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import YAML from 'yaml';
 import { readBundle, walk, textOf } from './read-bundle.mjs';
 
-const { manifest, pages, legacy, practice: challenges } = await readBundle();
+const { manifest, pages, legacy, lab, files, practice: challenges } = await readBundle();
 const objectives = manifest.objectives;
-const catalog = JSON.parse(fs.readFileSync('packages/engine/public/lab/graders.json', 'utf8'));
 const objectiveIds = new Set(objectives.map((o) => o.id));
 assert.equal(objectiveIds.size, objectives.length, 'Duplicate objective IDs');
 const routes = new Map([['/', new Set()], ['/progress', new Set()]]);
@@ -82,7 +80,7 @@ for (const chapter of manifest.chapters) {
       if (node.name === 'lab' && a.exercise) {
         assert.equal(tags(node.c, 'lab-challenge').length, 1, `${route}: graded lab needs one authored challenge brief`);
         assert.equal(tags(node.c, 'lab-notes').length, 1, `${route}: graded lab needs authored prerequisites and verification`);
-        labs.add(a.exercise); assert(catalog.exercises[a.exercise], `${a.exercise}: no grader`);
+        labs.add(a.exercise); assert(lab.exercises[a.exercise], `${a.exercise}: no exercise definition`);
       }
     });
   }
@@ -104,27 +102,15 @@ for (const challenge of challenges) {
   assert(Array.isArray(challenge.options) && challenge.options.length >= 3 && challenge.options.every((o) => typeof o === 'string' && o.trim()), `${challenge.id}: needs at least three options`);
   assert(challenge.options.filter((o) => o === challenge.expected).length === 1, `${challenge.id}: expected must match exactly one option`);
   assert(objectiveIds.has(challenge.objective), `Unknown objective ${challenge.objective}`); stable(challenge.id, 'challenge'); }
-const manifests = fs.readdirSync('packages/engine/public/lab').filter((d) => fs.existsSync(`packages/engine/public/lab/${d}/MANIFEST`));
-assert.deepEqual([...labs].sort(), manifests.sort(), 'Published labs and manifests differ');
-assert.deepEqual(Object.keys(catalog.exercises).sort(), manifests.sort(), 'Graders and manifests differ');
-const indexed = fs.readFileSync('packages/engine/public/lab/INDEX', 'utf8').split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim().split(/\s+/)[0]);
-assert.deepEqual(indexed.sort(), manifests.sort(), 'INDEX and manifests differ');
-for (const name of manifests) {
-  const exercise = catalog.exercises[name]; assert(routes.has(exercise.lesson.slice(1)), `${name}: invalid grader lesson`);
-  const manifest = fs.readFileSync(`packages/engine/public/lab/${name}/MANIFEST`, 'utf8'); assert(manifest.startsWith('#'), `${name}: invalid manifest`);
-  const destinations = new Set();
-  for (let line of manifest.split('\n')) {
-    line = line.replace(/#.*/, '').trim(); if (!line) continue;
-    const hook = line.startsWith('@'); if (hook) line = line.slice(1);
-    const [dest, src = dest] = line.split('=');
-    for (const part of [dest, src]) assert(/^[a-zA-Z0-9_./-]+$/.test(part) && !part.startsWith('/') && !part.includes('..'), `${name}: unsafe manifest path ${part}`);
-    assert(!destinations.has(dest), `${name}: duplicate destination ${dest}`); destinations.add(dest);
-    const target = path.join('packages/engine/public/lab', name, src); assert(fs.existsSync(target), `${name}: missing ${src}`);
-    if (hook) assert.equal(spawnSync('bash', ['-n', target]).status, 0, `${target}: invalid Bash`);
-    else if (/\.ya?ml$/.test(src) && !exercise.intentionalFaults) YAML.parse(fs.readFileSync(target, 'utf8'));
-  }
-  for (const cp of Object.values(exercise.checkpoints)) for (const probe of cp.probes) assert(probe.targets?.length, `${name}: probe needs required hosts`);
-}
+// Exercise definitions are checked by the compiler (files, trees, check shapes, the lesson that teaches each).
+// Here: every lab tag names an exercise, every exercise is taught on a page that exists, and the published list agrees.
+const names = Object.keys(lab.exercises).sort();
+assert.deepEqual([...labs].sort(), names, 'Lesson lab tags and exercise definitions differ');
+for (const name of names) assert(routes.has(lab.exercises[name].lesson.slice(1)), `${name}: invalid lesson`);
+const listed = files.get('lab/INDEX').split('\n').filter((l) => l.trim() && !l.startsWith('#')).map((l) => l.trim().split(/\s+/)[0]);
+assert.deepEqual(listed.sort(), names, 'INDEX and exercises differ');
+for (const name of names) assert(files.get(`lab/${name}/MANIFEST`)?.startsWith('#'), `${name}: invalid manifest`);
+const manifests = names;
 fs.mkdirSync('node_modules/.cache/kernel-path', { recursive: true });
 fs.writeFileSync('node_modules/.cache/kernel-path/routes.json', JSON.stringify([...routes.keys()]));
 console.log(`Validated ${routes.size} routes, ${questions} questions, ${tasks} tasks, ${challenges.length} challenges, ${objectives.length} objectives and ${manifests.length} starter manifests.`);
