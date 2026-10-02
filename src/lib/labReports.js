@@ -7,7 +7,7 @@ const id = (value) => typeof value === 'string' && /^[a-z0-9][a-z0-9:._/-]{0,199
 export function validateLabReport(report, catalog = reportSchema) {
   if (
     !record(report) ||
-    report.app !== 'playbook-path-lab' ||
+    !['kernel-path-lab', 'playbook-path-lab'].includes(report.app) ||
     report.version !== 1 ||
     !id(report.exerciseId) ||
     !id(report.checkpointId) ||

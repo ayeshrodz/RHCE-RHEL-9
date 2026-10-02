@@ -5,7 +5,7 @@ Thanks for helping make this guide better. Anyone can propose changes; only the 
 ## Ways to help
 
 - **Fix a mistake:** a wrong command, an unclear explanation, a broken diagram. Open a *content correction* issue, or send a pull request straight away for small fixes.
-- **Test the lab:** follow [Chapter 0](https://ayeshrodz.github.io/playbook-path/#/ch00) on your hardware and report anything that doesn't match.
+- **Test the lab:** follow [Chapter 0](https://kernelpath.dev/#/ch00) on your hardware and report anything that doesn't match.
 - **Write a chapter:** propose a focused addition or improvement. Open an issue first to agree on its scope.
 - **Improve a diagram or widget**, or the site itself.
 

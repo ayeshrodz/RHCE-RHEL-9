@@ -6,7 +6,7 @@ import tempfile
 import json
 import sys
 
-with tempfile.TemporaryDirectory(prefix='playbook-path-ansible-') as temp:
+with tempfile.TemporaryDirectory(prefix='kernel-path-ansible-') as temp:
     project = Path(temp)
     (project/'inventory').write_text('[local]\nlocalhost ansible_connection=local port=8080\n[local:vars]\nport=80\n')
     (project/'ansible.cfg').write_text('[defaults]\ninventory=./inventory\nretry_files_enabled=False\n')

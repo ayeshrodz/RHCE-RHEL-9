@@ -154,6 +154,6 @@ for (const name of manifests) {
   }
   for (const cp of Object.values(exercise.checkpoints)) for (const probe of cp.probes) assert(probe.targets?.length, `${name}: probe needs required hosts`);
 }
-fs.mkdirSync('node_modules/.cache/playbook-path', { recursive: true });
-fs.writeFileSync('node_modules/.cache/playbook-path/routes.json', JSON.stringify([...routes.keys()]));
+fs.mkdirSync('node_modules/.cache/kernel-path', { recursive: true });
+fs.writeFileSync('node_modules/.cache/kernel-path/routes.json', JSON.stringify([...routes.keys()]));
 console.log(`Validated ${routes.size} routes, ${questions} questions, ${tasks} tasks, ${challenges.length} challenges, ${objectives.length} objectives and ${manifests.length} starter manifests.`);

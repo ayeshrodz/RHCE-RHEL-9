@@ -36,7 +36,9 @@ The final scheduling check waits for the one-off job's output, so run it after t
 
 ## Report format
 
-Reports use `app: "playbook-path-lab"` and `version: 1`. They include `exerciseId`, `exerciseVersion`, `checkpointId`, `checkedAt`, and `checks`. Each check has a stable `id`, a lower-case `status` (`pass`, `fail`, or `skip`), a message, and a lesson link. Reports contain check results rather than command output or secret values. The browser validates a report before saving it.
+New reports use `app: "kernel-path-lab"` and `version: 1`. Reports from the previous `playbook-path-lab` helper remain accepted. They include `exerciseId`, `exerciseVersion`, `checkpointId`, `checkedAt`, and `checks`. Each check has a stable `id`, a lower-case `status` (`pass`, `fail`, or `skip`), a message, and a lesson link. Reports contain check results rather than command output or secret values. The browser validates a report before saving it.
+
+The web-release assessment now teaches the Kernel Path page text and `/etc/kernel-path/release-token`. Its grader also accepts the earlier page name and `/etc/playbook-path/release-token` with the same required permissions, so existing completed projects and their reports remain valid. This compatibility does not change exercise IDs, checkpoints, or required skills.
 
 ## Contributing checks
 

@@ -1,8 +1,8 @@
-# Playbook Path
+# Kernel Path
 
 [![Deploy](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
 
-**Read it online: https://ayeshrodz.github.io/playbook-path/**
+**Read it online: https://kernelpath.dev/**
 
 **Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. The path follows the objectives of the **RHCE** exam, so it doubles as exam preparation. It is written by learners, for learners, as a way to study together: short explanations combine browser activities, real Linux labs, quizzes, and summaries. A learning dashboard keeps reading, practice, confidence, and local grading evidence separate.
 

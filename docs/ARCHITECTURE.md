@@ -1,6 +1,8 @@
 # Architecture
 
-Playbook Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
+Kernel Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
+
+The public site is `https://kernelpath.dev/`; `public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/_course.yml`, including the dashboard document title.
 
 ## Content and routing
 

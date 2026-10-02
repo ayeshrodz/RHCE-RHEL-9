@@ -32,13 +32,16 @@ try:
         context = browser.new_context(reduced_motion='reduce')
         page = context.new_page(); errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
-        routes = json.loads((ROOT / 'node_modules/.cache/playbook-path/routes.json').read_text())
+        routes = json.loads((ROOT / 'node_modules/.cache/kernel-path/routes.json').read_text())
         for route in routes:
             go(page, route)
             page.wait_for_function("!document.querySelector('.prose .widget[role=status]')")
             assert 'Page not found' not in page.locator('h1').first.inner_text(), route
             assert not page.locator('.load-error').count(), route
             assert 'This activity could not load' not in page.inner_text('body'), route
+            assert 'Kernel Path' in page.title(), route
+            assert page.locator('.brand-name').inner_text() == 'Kernel Path', route
+            assert 'Playbook Path' not in page.inner_text('body'), route
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), route
             overflowing_tables = page.locator('.table-wrap').evaluate_all('(tables) => tables.filter(t => t.clientWidth && t.scrollWidth > t.clientWidth + 1).map(t => t.querySelector("thead")?.textContent)')
             assert not overflowing_tables, f'tables overflow on {route}: {overflowing_tables}'
@@ -95,7 +98,7 @@ try:
         page.get_by_role('heading', name='RHEL 9: Platform and versions', exact=True).wait_for()
         assert page.url.endswith('#/platform')
         assert not page.get_by_role('dialog').count()
-        assert page.title() == 'RHEL 9: Platform and versions · Playbook Path'
+        assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
         page.get_by_role('tab', name='Home lab', exact=True).click()
         diagram = page.locator('.tabs-panel:not([hidden]) .diagram')
         diagram.get_by_role('button', name='Runtime', exact=True).click()
@@ -121,7 +124,7 @@ try:
                 page.wait_for_function("document.getElementById('check-what-will-actually-run').getBoundingClientRect().top < 150")
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'platform {theme} {width}'
                 page.reload(); page.locator('#check-what-will-actually-run').wait_for()
-                assert page.title() == 'RHEL 9: Platform and versions · Playbook Path'
+                assert page.title() == 'RHEL 9: Platform and versions · Kernel Path'
         page.set_viewport_size({'width': 1440, 'height': 1000})
         # Every graded lab has a separately authored challenge; help is closed by default.
         lab_routes = [exercise['lesson'][1:] for exercise in json.loads((ROOT / 'public/lab/graders.json').read_text())['exercises'].values()]
@@ -223,9 +226,11 @@ try:
         # Backups through the actual UI, malformed rejection, and valid restoration.
         page.locator('.header-progress').click()
         with page.expect_download() as downloaded: page.get_by_role('button', name='Export', exact=True).click()
+        assert downloaded.value.suggested_filename.startswith('kernel-path-progress-')
         with tempfile.TemporaryDirectory() as temp:
             file = Path(temp) / 'progress.json'; downloaded.value.save_as(file)
             backup = json.loads(file.read_text()); assert backup['version'] == 2
+            assert backup['app'] == 'kernel-path'
             malformed = Path(temp) / 'invalid.json'; malformed.write_text(json.dumps({**backup, 'data': {'completed': False}}))
             page.locator('.progress-panel input[type=file]').set_input_files(malformed)
             page.get_by_text('Invalid progress entry: completed', exact=True).wait_for()

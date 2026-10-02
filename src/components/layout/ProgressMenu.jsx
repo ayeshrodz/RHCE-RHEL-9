@@ -30,11 +30,12 @@ export default function ProgressMenu() {
   }, [open]);
 
   const download = () => {
-    const blob = new Blob([JSON.stringify(exportProgress(), null, 2)], { type: 'application/json' });
+    const progress = exportProgress();
+    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `playbook-path-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `${progress.app}-progress-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     setMessage({ ok: true, text: 'Progress file downloaded.' });

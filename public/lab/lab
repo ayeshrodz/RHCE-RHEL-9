@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# lab - starts and finishes exercises on the Playbook Path home lab
+# lab - starts and finishes exercises on the Kernel Path home lab
 # (same syntax as a classroom 'lab' command). Runs on workstation as student.
 # Install or update: see section 0.6 of the guide, or run: lab update
-# Version 3
+# Version 4
 set -euo pipefail
 
-VERSION=3
-BASE="${LAB_URL:-https://ayeshrodz.github.io/playbook-path/lab}"
+VERSION=4
+BASE="${LAB_URL:-https://kernelpath.dev/lab}"
 LAB_ROOT="${LAB_HOME:-$HOME}"
 ARCHIVE="$LAB_ROOT/lab-archive"
 SERVERS=(servera serverb serverc serverd)
@@ -18,7 +18,7 @@ fetch() { curl -fsSL --retry 2 "$BASE/$1"; }
 
 usage() {
 cat <<USAGE
-lab v$VERSION - Playbook Path home lab exercises
+lab v$VERSION - Kernel Path home lab exercises
 
   lab start  NAME [--force]    create ~/NAME with the exercise's starter files
   lab finish NAME [--delete]   put ~/NAME away in ~/lab-archive (or delete it)

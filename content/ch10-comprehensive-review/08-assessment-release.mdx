@@ -44,7 +44,7 @@ Record the published result first. The grader checks the original requirements, 
 Deliver a reproducible web release on serverb from `site.yml` in `~/assessment-release`.
 
 - Connect as devops with sudo through project-local configuration. Role `release_web` must default `release_id` to `release-1`; the `release_hosts` group must override it to `release-2`.
-- Encrypted `vault.yml` must hold disposable `release_token: practice-only`. The deployed `/etc/playbook-path/release-token` must be root-owned, mode `0600`, with its task output suppressed.
+- Encrypted `vault.yml` must hold disposable `release_token: practice-only`. The deployed `/etc/kernel-path/release-token` must be root-owned, mode `0600`, with its task output suppressed.
 - Apache and firewalld must run and start at boot, with HTTP allowed persistently. Root-owned `/var/www/html/index.html` (mode `0644`) must identify the resolved release and inventory host.
 - `/etc/httpd/conf.d/release.conf` must contain `ServerTokens Prod` and `ServerSignature Off`; changes must trigger a named restart handler in the role.
 - `/srv/release-site.tar.gz` must contain the web-root contents. Restored `/srv/site-recovered/index.html` must match content, ownership, and mode.
@@ -56,7 +56,7 @@ Deliver a reproducible web release on serverb from `site.yml` in `~/assessment-r
 Use the `release_hosts` group from the starter inventory. Keep configuration local to the project, connect as devops with sudo, and create `site.yml` plus a role named `release_web`. Put `release_id: release-1` in the role defaults and override it to `release-2` in `group_vars/release_hosts/main.yml`.
 </Task>
 <Task id="release-vault" title="Protect the deployment token">
-Create encrypted `vault.yml` with `release_token: practice-only`. Use `ansible-vault create` and a prompt; this token is a disposable exercise value. Load it from `site.yml`. Deploy it to `/etc/playbook-path/release-token`, owned by root with mode `0600`, and suppress task output with `no_log: true`.
+Create encrypted `vault.yml` with `release_token: practice-only`. Use `ansible-vault create` and a prompt; this token is a disposable exercise value. Load it from `site.yml`. Deploy it to `/etc/kernel-path/release-token`, owned by root with mode `0600`, and suppress task output with `no_log: true`.
 <Reveal title="Hint: the two protections do different jobs">Vault protects the saved variable file. File permissions and `no_log` protect the destination and task output. Make the destination directory before copying the token.</Reveal>
 </Task>
 <Task id="release-role" title="Deploy the web role">
@@ -151,7 +151,7 @@ release_id: release-2
   notify: Restart Apache
 - name: Create token directory
   ansible.builtin.file:
-    path: /etc/playbook-path
+    path: /etc/kernel-path
     state: directory
     owner: root
     group: root
@@ -159,7 +159,7 @@ release_id: release-2
 - name: Install deployment token
   ansible.builtin.copy:
     content: "{{ release_token }}\n"
-    dest: /etc/playbook-path/release-token
+    dest: /etc/kernel-path/release-token
     owner: root
     group: root
     mode: '0600'
@@ -174,7 +174,7 @@ release_id: release-2
 ```
 
 ```jinja title="roles/release_web/templates/index.html.j2"
-Playbook Path {{ release_id }} on {{ inventory_hostname }}
+Kernel Path {{ release_id }} on {{ inventory_hostname }}
 ```
 
 The role default is overridden by group variables. The configuration handler runs only when notified; changing just the page does not need a restart. Compare file contents with `cmp`, permissions with `stat`, HTTP from workstation with `curl`, and persistent firewall rules with `firewall-cmd --permanent --query-service=http`.
