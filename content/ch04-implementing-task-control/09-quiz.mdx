@@ -70,7 +70,7 @@ Twelve questions on loops, conditionals, handlers and failure handling. Aim for 
       q: 'Which play setting runs already-notified handlers even when a later task fails?',
       options: ['`ignore_errors: true`', '`force_handlers: true`', '`any_errors_fatal: false`'],
       answer: 1,
-      explain: 'force_handlers makes pending handlers run before the host is marked failed.',
+      explain: 'force_handlers runs notified handlers despite task failures, provided the host remains reachable.',
     },
     {
       q: 'Which keyword makes a task report failure based on its output?',
@@ -82,7 +82,7 @@ Twelve questions on loops, conditionals, handlers and failure handling. Aim for 
       q: 'In a block with rescue and always, the block succeeds. What runs next?',
       options: ['rescue, then always', 'always only', 'Nothing more'],
       answer: 1,
-      explain: 'rescue runs only on failure; always runs every time.',
+      explain: 'rescue handles an ordinary failed task; always follows block and rescue. Connection and task-definition failures are exceptions.',
     },
     {
       q: 'Which task keeps the second run at `changed=0`?',

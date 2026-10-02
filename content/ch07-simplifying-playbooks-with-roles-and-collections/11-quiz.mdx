@@ -5,7 +5,7 @@ minutes: 8
 ---
 
 <Lead>
-Twelve questions on roles and collections. Aim for at least nine before moving on to chapter 8.
+Fifteen questions on roles and collections. Aim for at least nine before moving on to chapter 8.
 </Lead>
 
 <Quiz
@@ -46,7 +46,7 @@ Twelve questions on roles and collections. Aim for at least nine before moving o
       q: 'The same role also has `app_port: 8080` in `vars/main.yml`. Now which value does the web host use?',
       options: ['8080', '9090'],
       answer: 0,
-      explain: 'Role vars outrank inventory variables. Only inline role parameters and -e would beat them.',
+      explain: 'Role vars outrank inventory variables. Role parameters, registered variables, set_fact, include_vars and extra variables can override them.',
     },
     {
       q: 'What does listing a role under `dependencies` in `meta/main.yml` do?',
@@ -92,10 +92,10 @@ Twelve questions on roles and collections. Aim for at least nine before moving o
       explain: 'Add the other directories back: ./collections:~/.ansible/collections:/usr/share/ansible/collections.',
     },
     {
-      q: 'You install a role from a requirements file without `-p roles`, and `roles_path` is not set. Why can a play in the project not find it?',
-      options: ['It was installed into ~/.ansible/roles, outside the project', 'Roles from Git need a restart', 'requirements.yml must be in the project root'],
+      q: 'You install a role from a requirements file without `-p roles`, and `roles_path` is not set. Where is it normally installed?',
+      options: ['It was installed into ~/.ansible/roles, outside a custom roles_path', 'Roles from Git need a restart', 'requirements.yml must be in the project root'],
       answer: 0,
-      explain: 'Use -p roles, or set roles_path = roles in the project’s ansible.cfg.',
+      explain: 'The default location is ~/.ansible/roles, and the default roles_path searches it. Use -p roles for a project-local copy.',
     },
     {
       q: 'Which setting overrides even the values in a role’s `vars/main.yml`?',

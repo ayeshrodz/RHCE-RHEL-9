@@ -138,7 +138,7 @@ uid=1008(ops2) gid=1009(ops2) groups=1009(ops2),1002(webadmin)
   </Task>
 
   <Task title="Storage">
-    Install the system roles collection into `collections/`. Write `storage.yml`, which uses the storage role on the web servers: `/dev/vdb` as the physical volume of `apache-vg`; logical volumes `content-lv` (64 MiB) and `logs-lv` (128 MiB), both XFS; `content-lv` mounted on `/var/www` and `logs-lv` on `/var/log/httpd`. Run it.
+    Install the system roles collection into `collections/`. Write `storage.yml`, which uses the storage role on the web servers: `/dev/vdb` as the physical volume of `apache-vg`; logical volumes `content-lv` (512 MiB) and `logs-lv` (768 MiB), both XFS; `content-lv` mounted on `/var/www` and `logs-lv` on `/var/log/httpd`. Run it.
 
     <Reveal title="Show solution">
 
@@ -162,12 +162,12 @@ uid=1008(ops2) gid=1009(ops2) groups=1009(ops2),1002(webadmin)
             - /dev/vdb
           volumes:
             - name: content-lv
-              size: 64m
+              size: 512m
               mount_point: "/var/www"
               fs_type: xfs
               state: present
             - name: logs-lv
-              size: 128m
+              size: 768m
               mount_point: "/var/log/httpd"
               fs_type: xfs
               state: present

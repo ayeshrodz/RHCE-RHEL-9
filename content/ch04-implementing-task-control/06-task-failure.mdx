@@ -30,7 +30,7 @@ Add **`ignore_errors: true`** to a task that is allowed to fail. The failure is 
   ignore_errors: true
 ```
 
-The recap counts it under `ignored=1` instead of `failed=1`.
+The recap counts it under `ignored=1` instead of `failed=1`. This handles a task that ran and returned a failure; it does not suppress syntax errors or an unreachable host.
 
 ## force_handlers: run handlers even after a failure
 
@@ -56,7 +56,7 @@ Normally, if a later task fails, handlers that were already notified **never run
         state: restarted
 ```
 
-`force_handlers` does not notify anything by itself. It only makes sure handlers that were **already notified** (by a task that reported `changed`) run before the play gives up on the host.
+`force_handlers` does not notify anything by itself. It only makes sure handlers that were **already notified** (by a task that reported `changed`) run despite a task failure. An unreachable host can still prevent them from running.
 
 <Callout type="note">
 If a task fails but has `ignore_errors: true`, the play keeps running, so the handlers run at the end as usual, even without `force_handlers`.
@@ -160,7 +160,7 @@ Blocks become really useful with two companion sections:
     Runs only if a task in **block** failed. Use it to recover or roll back.
   </Card>
   <Card title="always" tone="teal">
-    Runs every time, whether block and rescue succeeded or failed.
+    Runs after block and rescue for ordinary task outcomes. Invalid task definitions and unreachable hosts do not trigger it.
   </Card>
 </Cards>
 
@@ -206,7 +206,7 @@ A `when` on the block applies to its `rescue` and `always` sections too. If `res
       q: 'When do tasks under `rescue` run?',
       options: ['Always', 'Only if a task in the block failed', 'Only if the always section failed'],
       answer: 1,
-      explain: 'rescue is the recovery path. always runs regardless.',
+      explain: 'rescue handles ordinary task failures; always follows the block and recovery. Unreachable hosts and invalid tasks are exceptions.',
     },
     {
       q: 'A script exits with 0 but prints "ERROR". How do you make the task fail?',

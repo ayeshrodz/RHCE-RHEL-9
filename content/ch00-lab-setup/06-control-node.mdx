@@ -75,7 +75,9 @@ which -a ansible                     # /usr/bin/ansible only
     If `which -a ansible` lists `~/.local/bin/ansible`, a pip copy of `ansible-core` is shadowing Rocky's. Remove the user-level pip packages and any PATH line you added to `~/.bashrc`, then repeat this step:
 
 ```bash title="student@workstation: undo a --user install"
-python3.11 -m pip freeze --user | cut -d= -f1 | xargs -r python3.11 -m pip uninstall -y
+python3.11 -m pip show ansible-core ansible-navigator
+# Confirm these packages are in your user site before removing only these tools.
+python3.11 -m pip uninstall ansible-core ansible-navigator
 sed -i '/export PATH=\$HOME\/.local\/bin:\$PATH/d' ~/.bashrc
 exec bash -l                         # reload the shell
 which -a ansible                     # should now be /usr/bin/ansible only

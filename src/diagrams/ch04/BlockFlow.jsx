@@ -30,7 +30,7 @@ export default function BlockFlow() {
     <Diagram
       height={250}
       title="block, rescue and always"
-      caption="rescue runs only if something in block failed. always runs every time, whatever happened before it."
+      caption="rescue runs only if something in block failed. always follows ordinary task outcomes. Unreachable hosts and invalid tasks are exceptions."
       below={controls}
       expandable={false}
     >
@@ -61,7 +61,7 @@ export default function BlockFlow() {
 
       <Group x={492} y={10} w={180} h={150} tone="teal" label="always:" active />
       <Node x={508} y={46} w={148} h={44} tone="teal" title="restart the database" titleSize={12.5} />
-      <Node x={508} y={100} w={148} h={44} tone="teal" title="✓ always runs" titleSize={12.5} />
+      <Node x={508} y={100} w={148} h={44} tone="teal" title="✓ cleanup runs" titleSize={12.5} />
 
       <Arrow
         points={[

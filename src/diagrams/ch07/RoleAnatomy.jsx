@@ -3,7 +3,7 @@ import ProjectTree from '../ch03/ProjectTree';
 
 const FILES = {
   'tasks/main.yml': {
-    what: 'The work the role does: a plain list of tasks, like a task file. This is the only file a role really needs.',
+    what: 'The work the role does: a plain list of tasks, like a task file. This is the default task entry point. A role may instead supply only variables or files.',
     code: `---
 - name: Web packages are installed
   ansible.builtin.dnf:

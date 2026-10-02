@@ -1,7 +1,7 @@
 title: Playbook Path
 tagline: Learn Ansible automation by doing
 exam: RHCE
-rhel: "9.0"
-aap: "2.2"
-ansibleCore: "2.13"
+rhel: "9"
+aap: "2.2 (classroom reference)"
+ansibleCore: "2.14 (home lab)"
 repo: https://github.com/ayeshrodz/playbook-path

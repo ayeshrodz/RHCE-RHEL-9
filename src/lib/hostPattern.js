@@ -31,6 +31,8 @@ function resolveName(inv, name) {
   const groupNames = ['all', ...inv.groups.keys()];
 
   if (name.startsWith('~')) {
+    if (name.length > 100 || /[()\\]|[+*?]{2}/.test(name))
+      return { error: 'This playground supports simple regular expressions without groups or backreferences.' };
     let re;
     try {
       re = new RegExp(name.slice(1));
@@ -84,6 +86,7 @@ function resolveTerm(inv, raw) {
 
 export function matchPattern(inv, pattern) {
   const text = pattern.trim();
+  if (text.length > 2000) return { hosts: [], terms: [], error: 'Use a shorter pattern.' };
   if (!text) return { hosts: [], terms: [], error: 'Type a pattern.' };
   const raws = text
     .split(/[,]|:(?![^[]*\])/)
