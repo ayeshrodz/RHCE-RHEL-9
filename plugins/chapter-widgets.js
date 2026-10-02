@@ -10,6 +10,20 @@ export default function chapterWidgets() {
     configResolved(config) {
       root = config.root;
     },
+    // A new chapter folder has no watched index yet, so rebuild the registry
+    // whenever a chapter index appears or disappears.
+    configureServer(server) {
+      const diagrams = path.join(root, 'src/diagrams');
+      server.watcher.add(diagrams);
+      const refresh = (file) => {
+        if (!/[\\/]ch\d+[\\/]index\.js$/.test(file) || !file.startsWith(diagrams)) return;
+        const module = server.moduleGraph.getModuleById('\0' + virtualId);
+        if (module) server.moduleGraph.invalidateModule(module);
+        server.ws.send({ type: 'full-reload' });
+      };
+      server.watcher.on('add', refresh);
+      server.watcher.on('unlink', refresh);
+    },
     resolveId(id) {
       if (id === virtualId) return '\0' + virtualId;
     },
