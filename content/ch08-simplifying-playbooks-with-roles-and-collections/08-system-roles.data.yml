@@ -1,0 +1,38 @@
+check:
+  questions:
+    - id: q-d51015e5bc1a
+      legacyIndex: 0
+      q: What is the fully qualified name of the time synchronisation system role?
+      options:
+        - "`timesync`"
+        - "`redhat.rhel_system_roles.timesync`"
+        - "`ansible.builtin.timesync`"
+      answer: 1
+      explain: It is a role in the redhat.rhel_system_roles collection. With the RPM installed, rhel-system-roles.timesync also works.
+    - id: q-7a05dc1971a7
+      legacyIndex: 1
+      q: Where do you find the variables a system role accepts?
+      options:
+        - In `/usr/share/doc/rhel-system-roles/ROLE/README.md`
+        - In `/etc/ansible/roles.conf`
+        - Only on the internet
+      answer: 0
+      explain: Each role has a README and example playbooks installed locally, also inside the collection.
+    - id: q-0a00ef598690
+      legacyIndex: 2
+      q: The selinux role needs a reboot to finish. What does it do?
+      options:
+        - Reboots the host by itself
+        - Sets selinux_reboot_required and fails
+        - Ignores the change
+      answer: 1
+      explain: A rescue section can then reboot the host and apply the role again.
+    - id: q-279af43105c2
+      legacyIndex: 3
+      q: A play uses the selinux role but does not set `selinux_state`. What happens to the SELinux mode?
+      options:
+        - It is set to enforcing
+        - It is set to permissive
+        - It is left as it is
+      answer: 2
+      explain: Variables you leave out leave that part of the configuration unchanged.

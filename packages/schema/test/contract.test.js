@@ -7,10 +7,7 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import YAML from 'yaml';
-import { createProcessor } from '@mdx-js/mdx';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import { catalog, mdxMigration, schemaIds, schemas, usableTags, dataSchemaFor } from '../src/index.js';
+import { catalog, schemaIds, schemas, usableTags, dataSchemaFor } from '../src/index.js';
 import common from '../schemas/common.schema.json' with { type: 'json' };
 
 const ROOT = path.resolve(fileURLToPath(new URL('../../..', import.meta.url)));
@@ -58,119 +55,24 @@ test('the catalog matches its meta-schema and every reference resolves', () => {
   }
 });
 
-test('the MDX migration map only targets usable tags', () => {
-  const usable = new Set(usableTags());
-  for (const [component, rule] of Object.entries(mdxMigration.components)) {
-    assert.ok(usable.has(rule.tag), `${component} → ${rule.tag} is usable`);
-    const attrs = catalog.components[rule.tag].attributes;
-    for (const target of Object.values(rule.rename ?? {}))
-      assert.ok(attrs[target], `${component}: renamed attribute ${target} exists on ${rule.tag}`);
-    for (const fixed of Object.keys(rule.fixed ?? {}))
-      assert.ok(attrs[fixed], `${component}: fixed attribute ${fixed} exists on ${rule.tag}`);
-  }
-});
-
 // ---------- Fits today's content ----------
 
-const parser = createProcessor({ remarkPlugins: [remarkFrontmatter, remarkGfm] });
-function mdxFiles(dir) {
+function pageFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
     const p = path.join(dir, e.name);
-    return e.isDirectory() ? mdxFiles(p) : p.endsWith('.mdx') ? [p] : [];
+    return e.isDirectory() ? pageFiles(p) : p.endsWith('.md') ? [p] : [];
   });
 }
-// Static evaluation of the JSON-like expressions MDX content uses; anything else is an error.
-function evaluate(node, scope) {
-  switch (node.type) {
-    case 'Literal':
-      return node.value;
-    case 'TemplateLiteral':
-      assert.equal(node.expressions.length, 0, 'template literals must not interpolate');
-      return node.quasis.map((q) => q.value.cooked).join('');
-    case 'ArrayExpression':
-      return node.elements.map((e) => evaluate(e, scope));
-    case 'ObjectExpression':
-      return Object.fromEntries(node.properties.map((p) => [p.key.name ?? p.key.value, evaluate(p.value, scope)]));
-    case 'UnaryExpression':
-      assert.equal(node.operator, '-');
-      return -evaluate(node.argument, scope);
-    case 'Identifier':
-      assert.ok(Object.hasOwn(scope, node.name), `unknown identifier ${node.name}`);
-      return scope[node.name];
-    default:
-      throw new Error(`non-static expression: ${node.type}`);
-  }
-}
-function readPage(file) {
-  const tree = parser.parse(fs.readFileSync(file, 'utf8'));
-  const scope = {};
-  for (const node of tree.children.filter((n) => n.type === 'mdxjsEsm')) {
-    for (const stmt of node.data.estree.body) {
-      assert.equal(stmt.type, 'ExportNamedDeclaration', `${file}: only exported constants are allowed`);
-      for (const d of stmt.declaration.declarations) scope[d.id.name] = evaluate(d.init, scope);
-    }
-  }
-  const elements = [];
-  (function visit(n) {
-    if (n.type === 'mdxJsxFlowElement' || n.type === 'mdxJsxTextElement') {
-      const attrs = {};
-      for (const a of n.attributes) {
-        assert.equal(a.type, 'mdxJsxAttribute', `${file}: spread attributes are not allowed`);
-        attrs[a.name] =
-          a.value === null ? true : typeof a.value === 'string' ? a.value : evaluate(a.value.data.estree.body[0].expression, scope);
-      }
-      elements.push({ name: n.name, attrs });
-    }
-    (n.children ?? []).forEach(visit);
-  })(tree);
-  return { scope, elements };
-}
-const pages = mdxFiles(CONTENT).map((file) => ({ file: path.relative(ROOT, file), ...readPage(file) }));
+const pages = pageFiles(CONTENT).map((file) => ({ file: path.relative(ROOT, file) }));
 
-test('all content is static: every expression evaluates to data', () => {
-  assert.ok(pages.length > 100);
-});
-
-test('every component used in content maps to a catalog tag', () => {
-  const legacy = new Set(catalog.components['legacy-widget'].attributes.name.enum);
-  for (const { file, elements } of pages)
-    for (const { name } of elements) assert.ok(mdxMigration.components[name] || legacy.has(name), `${file}: <${name}> has no catalog tag`);
-});
-
-test('every quiz, practice set and flashcard deck in content fits its data schema', () => {
-  let counts = { quiz: 0, practice: 0, flashcards: 0 };
-  for (const { file, elements } of pages) {
-    for (const { name, attrs } of elements) {
-      if (name === 'Quiz') {
-        (valid(dataSchemaFor('quiz'), { questions: attrs.questions }, file), counts.quiz++);
-      } else if (name === 'ChapterPractice') {
-        const questions = attrs.challenges.map(({ chapter, type, ...q }) => (assert.equal(type, 'choice'), q));
-        (valid(dataSchemaFor('practice'), { questions }, file), counts.practice++);
-      } else if (name === 'Flashcards') {
-        (valid(dataSchemaFor('flashcards'), { cards: attrs.cards }, file), counts.flashcards++);
-      }
+test('content holds no code, markup or style files', () => {
+  (function scan(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) scan(p);
+      else assert.doesNotMatch(e.name, /\.(mdx|jsx?|tsx?|mjs|css|html?)$/, `${path.relative(ROOT, p)} is not data`);
     }
-  }
-  assert.ok(counts.quiz > 40 && counts.practice > 10 && counts.flashcards > 10, JSON.stringify(counts));
-});
-
-test('every catalog attribute used in content is declared with a compatible type', () => {
-  const kinds = { string: 'string', integer: 'number', number: 'number', boolean: 'boolean', 'string[]': 'object' };
-  for (const { file, elements } of pages) {
-    for (const { name, attrs } of elements) {
-      const rule = mdxMigration.components[name];
-      if (!rule) continue;
-      const spec = catalog.components[rule.tag];
-      const skip = new Set([...(rule.dropAttributes ?? []), rule.dataAttribute, ...(rule.dataAttributes ?? [])]);
-      for (const [attr, value] of Object.entries(attrs)) {
-        if (skip.has(attr)) continue;
-        const target = rule.rename?.[attr] ?? attr;
-        const declared = spec.attributes[target];
-        assert.ok(declared, `${file}: <${name} ${attr}> → ${rule.tag}.${target} is declared`);
-        assert.equal(typeof value, kinds[declared.type], `${file}: ${rule.tag}.${target} type`);
-      }
-    }
-  }
+  })(CONTENT);
 });
 
 test('every chapter definition and the objectives map fit their schemas', () => {

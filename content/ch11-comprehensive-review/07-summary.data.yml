@@ -1,0 +1,38 @@
+flashcards:
+  cards:
+    - front: Which ansible.cfg wins?
+      back: ANSIBLE_CONFIG, then ./ansible.cfg, then ~/.ansible.cfg, then /etc/ansible/ansible.cfg. Only one is read.
+    - front: A group made of other groups?
+      back: "`[parent:children]` followed by the child group names."
+    - front: List the groups of the current host?
+      back: "`group_names`, a magic variable."
+    - front: All hosts in a group, from any host?
+      back: "`groups['NAME']`"
+    - front: Another host’s facts?
+      back: "`hostvars['HOST']['ansible_facts']`"
+    - front: Keep a password task idempotent?
+      back: "A fixed salt in `password_hash`, or `update_password: on_create`."
+    - front: Run a task for each item, only where it applies?
+      back: "`loop` plus a `when` that refers to `item`."
+    - front: When does a handler run?
+      back: Once, at the end of the play, if any task notified it and changed.
+    - front: Ignore a failure but still see it?
+      back: "`ignore_errors: true`, or a `block` with `rescue`."
+    - front: Hosts in web and prod?
+      back: "`web,&prod`"
+    - front: Static or dynamic reuse?
+      back: "`import_tasks` is static; `include_tasks` is dynamic and can loop."
+    - front: Role values meant to be overridden?
+      back: "`defaults/main.yml`"
+    - front: Install a role from a local archive?
+      back: "`src: file:///path/to/archive.tar.gz` and a `name`, in roles/requirements.yml."
+    - front: Pin a collection version?
+      back: "`version:` under the entry in collections/requirements.yml."
+    - front: Preview changes without making them?
+      back: "`--check --diff`"
+    - front: The disk exists on this host?
+      back: "`when: \"'sdb' in ansible_facts['devices']\"`"
+    - front: Mount now and at every boot?
+      back: "`ansible.posix.mount` with `state: mounted`"
+    - front: Prove a playbook is idempotent?
+      back: Run it twice; the second recap shows `changed=0`.

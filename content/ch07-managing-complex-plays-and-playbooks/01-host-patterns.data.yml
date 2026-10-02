@@ -1,0 +1,102 @@
+host-pattern-tester:
+  text:
+    widgetLabel: Host pattern tester
+    span: "hosts:"
+    label: Host pattern
+    template: "{value0} of {value1} hosts selected"
+    label2: "No hosts matched: the play would be skipped."
+    em: "nothing: no host or group has this name"
+    span2: " ("
+    span3: )
+    hpWarn: "[WARNING]: "
+    hpQuote: "In a playbook, quote it: "
+    template2: "hosts: '{value0}'"
+    hpQuote2: .
+    hpQuote3: "On the command line, quote it for the shell: "
+    template3: --limit '{value0}'
+    hpQuote4: .
+  data:
+    inventory: |-
+      [web]
+      servera.lab.example.com
+      serverb.lab.example.com
+
+      [db]
+      serverc.lab.example.com
+      serverd.lab.example.com
+
+      [staging]
+      servera.lab.example.com
+      serverc.lab.example.com
+
+      [production]
+      serverb.lab.example.com
+      serverd.lab.example.com
+
+      [site:children]
+      web
+      db
+    presets:
+      - all
+      - web
+      - web,db
+      - web,!staging
+      - web,&production
+      - prod*
+      - "*.lab.example.com"
+      - ~server[ab]
+      - db[0]
+      - site[1:2]
+      - "!staging"
+    ops:
+      "": add
+      "&": keep only hosts also in
+      "!": remove
+    initialSelection1: web,!staging
+check:
+  questions:
+    - id: q-2da1cebfdd2f
+      legacyIndex: 0
+      q: Which pattern selects the hosts that are in both `web` and `production`?
+      options:
+        - "`web,production`"
+        - "`'web,&production'`"
+        - "`'web,!production'`"
+      answer: 1
+      explain: "& keeps only the hosts that are also in that group. A plain comma adds the two groups together."
+    - id: q-0ef94f2fb7bd
+      legacyIndex: 1
+      q: What does `'!staging,web'` select?
+      options:
+        - "Nothing: the exclusion comes first"
+        - The web hosts that are not in staging
+        - Every host except staging and web
+      answer: 1
+      explain: Order does not matter. Plain terms are added first, then intersections, then exclusions.
+    - id: q-feb0be39c42d
+      legacyIndex: 2
+      q: "A play has `hosts: db`. You run it with `--limit web`, and no host is in both groups. What happens?"
+      options:
+        - It runs on the web hosts
+        - It runs on the db hosts
+        - "The play is skipped: no hosts matched"
+      answer: 2
+      explain: --limit narrows the play’s own hosts; it never adds hosts the play did not ask for.
+    - id: q-6737b76fa87c
+      legacyIndex: 3
+      q: "Why must `hosts: *.example.com` be quoted?"
+      options:
+        - Ansible requires quotes around every pattern
+        - In YAML, a value starting with * is an alias reference
+        - Wildcards only work in quotes
+      answer: 1
+      explain: "*, ! and & at the start of a YAML value have special meanings, so the line fails to parse without quotes."
+    - id: q-d0c43b12dbb3
+      legacyIndex: 4
+      q: Which command lists the hosts each play of `site.yml` would run on, without running it?
+      options:
+        - "`ansible-navigator run site.yml --syntax-check`"
+        - "`ansible-navigator run site.yml --list-hosts`"
+        - "`ansible-navigator inventory --graph`"
+      answer: 1
+      explain: --list-hosts resolves each play’s pattern (and any --limit) and prints the result.

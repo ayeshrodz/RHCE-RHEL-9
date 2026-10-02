@@ -1,0 +1,73 @@
+handler-timeline:
+  text:
+    name: Task that fails
+    label: not notified
+    label2: runs once
+    label3: never runs
+    vsubToggle: " a later task fails"
+    label4: " force_handlers: true"
+    widgetLabel: "tasks: click to flip ok / changed"
+    htStatus: failed
+    template: Toggle {value0}
+    label5: would notify
+    widgetLabel2: "handlers: run after all tasks"
+    label6: "The play failed on this host, so notified handlers are dropped. Set force_handlers: true to run them anyway."
+    label7: force_handlers makes already-notified handlers run even though the play failed.
+    label8: Each notified handler runs exactly once, in the order of the handlers section, even if several tasks notified it.
+    label9: Nothing changed, so no handler was notified and none run.
+  data:
+    tasks:
+      - name: nginx and php-fpm are installed
+        notify: []
+      - name: /etc/nginx/nginx.conf is deployed
+        notify:
+          - restart web service
+      - name: /etc/php-fpm.conf is deployed
+        notify:
+          - restart app service
+      - name: nginx.conf copied again (second notify)
+        notify:
+          - restart web service
+    handlers:
+      - restart app service
+      - restart web service
+      - restart database
+check:
+  questions:
+    - id: q-390bacd087df
+      legacyIndex: 0
+      q: Three tasks notify `restart web`. Two report `changed`, one reports `ok`. How many times does the handler run?
+      options:
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+      answer: 1
+      explain: A notified handler runs exactly once, no matter how many tasks notified it.
+    - id: q-d03d4815ca22
+      legacyIndex: 1
+      q: When does a notified handler run?
+      options:
+        - Immediately after the task that notified it
+        - After all tasks in the play have completed
+        - At the very end of the playbook
+      answer: 1
+      explain: Handlers run at the end of the play they belong to, after its tasks.
+    - id: q-b672846b42e6
+      legacyIndex: 2
+      q: The handlers section lists `restart A` then `restart B`. A task notifies B first, then another task notifies A. In which order do they run?
+      options:
+        - B then A
+        - A then B
+        - At the same time
+      answer: 1
+      explain: Handlers run in the order they are defined in the handlers section.
+    - id: q-deb93183b3bf
+      legacyIndex: 3
+      q: Where is the `handlers` keyword placed?
+      options:
+        - Inside a task, under notify
+        - At play level, aligned with tasks
+        - In ansible.cfg
+      answer: 1
+      explain: "`handlers:` is a play keyword, like `tasks:` and `vars:`."

@@ -13,8 +13,8 @@ const EMPTY = [];
  * Hands-on exercise with persisted task checkboxes.
  * <Lab id="inventory" outcomes={[...]} classroom="lab start playbook-inventory" hosts={[...]}>
  *   <HomeSetup>optional extra notes for the home lab</HomeSetup>
- *   <LabNotes>MDX prerequisites, verification, and variation</LabNotes>
- *   <LabChallenge>MDX purpose and independent requirements</LabChallenge>
+ *   <LabNotes>Authored prerequisites, verification, and variation</LabNotes>
+ *   <LabChallenge>Authored purpose and independent requirements</LabChallenge>
  *   <Task id="stable-task-id" title="...">...</Task>
  * </Lab>
  * `starter={false}` for exercises that have no starter project (nothing for `lab start` to create at home).
@@ -170,7 +170,7 @@ export function Task({ id, n, title, children }) {
   );
 }
 
-// Instructional content belongs to the MDX page; these are presentation markers.
+// Instructional content belongs to the content page; these are presentation markers.
 export function LabChallenge({ children }) {
   return (
     <div className="lab-challenge">

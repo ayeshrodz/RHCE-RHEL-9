@@ -1,0 +1,103 @@
+condition-playground:
+  text:
+    expr: ansible_facts['distribution'] == "RedHat"
+    note: String comparison with a fact.
+    expr2: ansible_facts['memtotal_mb'] >= 2048
+    note2: "Numeric comparison: no quotes around the number."
+    expr3: my_service is defined
+    note3: Runs only where the variable exists. Use “is not defined” for the opposite.
+    expr4: ansible_facts['distribution'] in supported_distros
+    vars: "supported_distros: [RedHat, Fedora]"
+    note4: True when the value appears in the list.
+    expr5: ansible_facts['distribution'] == "RedHat" and ansible_facts['memtotal_mb'] > 1024
+    note5: "and: both parts must be true."
+    expr6: (RedHat and major == "9") or (Fedora and major == "34")
+    full: |-
+      >
+        ( ansible_facts['distribution'] == "RedHat" and
+          ansible_facts['distribution_major_version'] == "9" )
+        or
+        ( ansible_facts['distribution'] == "Fedora" and
+          ansible_facts['distribution_major_version'] == "34" )
+    note6: Parentheses group conditions; > lets a long condition span several lines.
+    vars2: 'run_my_task: "false"   # a string!'
+    note7: 'Trap: the value is the string "false", and any non-empty string counts as true on this course’s core 2.14 home lab, so the task RUNS. Core 2.19 requires a boolean condition instead.'
+    expr7: run_my_task | bool
+    vars3: 'run_my_task: "false"'
+    note8: The bool filter converts the string to a real Boolean, so "false" now means false.
+    widgetLabel: Pick a condition
+    template: |+
+      vars:
+        {value0}
+
+    template2: |-
+      - name: Web server is installed
+        ansible.builtin.dnf:
+          name: httpd
+        when: {value0}
+    dt: distribution
+    dt2: memtotal_mb
+    dt3: my_service
+    em: undefined
+    template3: "changed: [{value0}]"
+    template4: "skipping: [{value0}]"
+  data:
+    hosts:
+      - name: servera
+        distribution: RedHat
+        major: "9"
+        version: "9.0"
+        mem: 960
+        vars:
+          my_service: httpd
+      - name: serverb
+        distribution: RedHat
+        major: "9"
+        version: "9.0"
+        mem: 3800
+        vars: {}
+      - name: fedora1
+        distribution: Fedora
+        major: "34"
+        version: "34"
+        mem: 1900
+        vars:
+          my_service: nginx
+check:
+  questions:
+    - id: q-7c2c0abc2e41
+      legacyIndex: 0
+      q: Which `when` line is correct?
+      options:
+        - "`when: \"{{ ansible_facts['distribution'] }}\" == \"RedHat\"`"
+        - "`when: ansible_facts['distribution'] == \"RedHat\"`"
+        - "`when: ansible_facts['distribution'] = RedHat`"
+      answer: 1
+      explain: "`when` is already an expression: no `{{ }}`, use `==`, and quote the string you compare with."
+    - id: q-5995c59b5e84
+      legacyIndex: 1
+      q: 'A variable is set as `enable_web: "false"` (with quotes). With Ansible Core 2.13, does `when: enable_web` run the task?'
+      options:
+        - No, it is false
+        - Yes, because a non-empty string counts as true
+        - It fails with a type error
+      answer: 1
+      explain: "Use `when: enable_web | bool` to treat the string as a Boolean."
+    - id: q-bae47708c4f1
+      legacyIndex: 2
+      q: What does a list of conditions under `when` mean?
+      options:
+        - Any one must be true
+        - All must be true
+        - Only the first is tested
+      answer: 1
+      explain: A list under `when` is combined with `and`.
+    - id: q-5d3b0ddc320e
+      legacyIndex: 3
+      q: A task has `loop` over five items and a `when` condition. How often is the condition evaluated?
+      options:
+        - Once, before the loop
+        - Once for each item
+        - Only for the first item
+      answer: 1
+      explain: The condition is tested per item, so some items can run while others are skipped.

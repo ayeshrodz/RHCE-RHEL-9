@@ -1,0 +1,46 @@
+check:
+  questions:
+    - id: q-a246a8c856f9
+      legacyIndex: 0
+      q: What does `ansible all -m ansible.builtin.ping` test?
+      options:
+        - ICMP reachability only
+        - That Ansible can connect with SSH and run Python on each host
+        - That every service is running
+      answer: 1
+      explain: It uses the same connection a playbook would, and replies pong.
+    - id: q-cdafde949639
+      legacyIndex: 1
+      q: A host is UNREACHABLE with "Permission denied (publickey,…)". Which is the likely cause?
+      options:
+        - The host is switched off
+        - Ansible logged in as a user that has no key there
+        - become is off
+      answer: 1
+      explain: SSH answered, so the host is up; it refused the user.
+    - id: q-56899c8e20d6
+      legacyIndex: 2
+      q: How do you see which ansible_host and ansible_user are in force for one host?
+      options:
+        - "`ansible-navigator inventory -m stdout --host NAME`"
+        - "`ansible-navigator run --syntax-check`"
+        - "`ansible-galaxy list`"
+      answer: 0
+      explain: --host prints the variables that apply to that host after all sources are combined.
+    - id: q-4221eb417da4
+      legacyIndex: 3
+      q: A task fails with "Destination /etc not writable". What is the problem?
+      options:
+        - The host is unreachable
+        - Privilege escalation is off for a task that needs root
+        - The template has a syntax error
+      answer: 1
+      explain: Ansible connected and ran the task as an ordinary user, who cannot write in /etc.
+    - id: q-957ee4955981
+      legacyIndex: 4
+      q: A run with `--check` shows no failures. Is the real run certain to succeed?
+      options:
+        - Yes
+        - "No: some failures, such as permission problems, only happen when changes are really made"
+      answer: 1
+      explain: Check mode simulates; it does not attempt the write that would be refused.

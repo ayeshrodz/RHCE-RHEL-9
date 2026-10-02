@@ -7,7 +7,8 @@
   "additionalProperties": false,
   "required": [
     "title",
-    "kind"
+    "kind",
+    "minutes"
   ],
   "properties": {
     "title": {

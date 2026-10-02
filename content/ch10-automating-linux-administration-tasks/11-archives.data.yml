@@ -1,0 +1,26 @@
+archives-check:
+  questions:
+    - id: q-7d2a0f5c9e31
+      q: The archive `/tmp/site.tar.gz` is already on servera. What must the `unarchive` task include so that Ansible does not look for it on the control node?
+      options:
+        - "`remote_src: true`"
+        - "`creates: /tmp/site.tar.gz`"
+        - "`format: gz`"
+      answer: 0
+      explain: "By default `src` is a file on the control node. `remote_src: true` reads it from the managed host."
+    - id: q-2c8e6b1a4f07
+      q: "You archive `path: /var/www/html/` and extract into `/srv/site`. Where does `index.html` end up?"
+      options:
+        - "`/srv/site/index.html`"
+        - "`/srv/site/html/index.html`"
+        - "`/srv/site/var/www/html/index.html`"
+      answer: 0
+      explain: The trailing slash packs only the directory's contents, so they land directly in `dest`.
+    - id: q-e5b9a3d0c726
+      q: An `unarchive` task fails because `/srv/site` does not exist. What is the fix?
+      options:
+        - Create the directory with `ansible.builtin.file` first
+        - "Add `remote_src: true`"
+        - "Use `format: zip`"
+      answer: 0
+      explain: "`unarchive` extracts into an existing directory; it does not create `dest`."

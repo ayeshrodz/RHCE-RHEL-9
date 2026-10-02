@@ -1,0 +1,100 @@
+git-flow:
+  text:
+    title: Where your work lives in Git
+    label: "workstation: your clone"
+    label2: shared
+    title2: Working tree
+    title3: Staging area
+    title4: Local repository
+    title5: Remote
+    label3: git add
+    label4: git commit
+    label5: git push
+    label6: git clone · git pull
+  data:
+    steps:
+      - title: Clone
+        text: git clone copies the whole history from the remote into a new local repository, then checks out the latest version of every file into your working tree.
+        hot: down
+        subs:
+          - motd.yml, templates/
+          - empty
+          - 2 commits
+          - 2 commits
+      - title: Edit
+        text: "You change templates/motd.j2. Git notices: git status lists it as modified and git diff shows the exact lines. Nothing is saved in the history yet."
+        hot: edit
+        subs:
+          - motd.j2 modified
+          - empty
+          - 2 commits
+          - 2 commits
+      - title: Stage
+        text: git add copies the current version of the file into the staging area. The staging area is the draft of your next commit; git diff --cached shows it.
+        hot: add
+        subs:
+          - clean
+          - motd.j2
+          - 2 commits
+          - 2 commits
+      - title: Commit
+        text: git commit saves the staged draft as a new snapshot, with your name and a message. It exists only in your local repository so far.
+        hot: commit
+        subs:
+          - clean
+          - empty
+          - 3 commits
+          - 2 commits
+      - title: Push
+        text: git push sends your new commits to the remote. Now everyone who clones or pulls the project gets your change.
+        hot: push
+        subs:
+          - clean
+          - empty
+          - 3 commits
+          - 3 commits
+      - title: Pull
+        text: A teammate pushed a commit. git pull fetches it into your local repository and updates your working tree, so you build on the latest version.
+        hot: down
+        subs:
+          - README.md updated
+          - empty
+          - 4 commits
+          - 4 commits
+git-check:
+  questions:
+    - id: q-fbeebb28acb1
+      legacyIndex: 0
+      q: You have committed locally. What sends that commit to origin?
+      options:
+        - "`git add`"
+        - "`git push`"
+        - "`git commit --all`"
+      answer: 1
+      explain: "`git commit` saves the snapshot in your local repository; `git push` sends it to the remote."
+    - id: q-c6d6f4249f1a
+      legacyIndex: 1
+      q: Which command shows exactly what you are about to commit?
+      options:
+        - "`git diff --cached`"
+        - "`git log --oneline`"
+        - "`git status --short`"
+      answer: 0
+      explain: "`git diff --cached` compares the staging area with the last commit, so it shows the content of the next commit."
+    - id: q-2b6f1d0e8a41
+      q: Your project contains `secret.yml`, encrypted with `ansible-vault`, and `vault-pass`, the password file that opens it. Which belong in Git?
+      options:
+        - Both
+        - Only `secret.yml`
+        - Only `vault-pass`
+        - Neither
+      answer: 1
+      explain: The encrypted file is safe to share. The password file would let anyone with a clone decrypt it, so list it in `.gitignore`.
+    - id: q-7c3e5a9d0f12
+      q: '`git push` is rejected with "fetch first". What do you do?'
+      options:
+        - "`git pull`, then push again"
+        - Delete your clone and clone again
+        - "`git push --force`"
+      answer: 0
+      explain: The remote has commits you do not have. Pull them, so your history contains both changes, then push. Forcing would discard your teammate's work.

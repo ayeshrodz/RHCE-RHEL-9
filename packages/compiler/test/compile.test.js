@@ -30,11 +30,11 @@ test('the manifest lists every chapter folder and section file in order', () => 
   for (const [i, dir] of dirs.entries()) {
     const files = fs
       .readdirSync(path.join(CONTENT, dir))
-      .filter((f) => f.endsWith('.mdx'))
+      .filter((f) => f.endsWith('.md'))
       .sort();
     assert.deepEqual(
       manifest.chapters[i].sections.map((s) => s.slug),
-      files.map((f) => f.replace(/^\d+-|\.mdx$/g, '')),
+      files.map((f) => f.replace(/^\d+-|\.md$/g, '')),
       dir,
     );
     assert.equal(manifest.chapters[i].number, Number(dir.slice(2, 4)));
@@ -47,11 +47,10 @@ test('quiz revisions are computed by the shared contract function', () => {
   assert.ok(quizzes.every((q) => /^[a-f0-9]{1,8}$/.test(q.revision) && q.quizId && q.prompt));
 });
 
-test('practice questions match the current registry', async () => {
-  const { readPractice } = await import(path.join(ROOT, 'scripts/read-practice.mjs'));
-  const current = readPractice(CONTENT).map(({ id, objective, title }) => ({ id, objective, title }));
-  const compiled = manifest.chapters.flatMap((c) => c.sections.flatMap((s) => s.activities.practice ?? []));
-  assert.deepEqual(compiled, current);
+test('practice questions are listed with their objective', () => {
+  const practice = manifest.chapters.flatMap((c) => c.sections.flatMap((s) => s.activities.practice ?? []));
+  assert.equal(practice.length, 22);
+  assert.ok(practice.every((p) => p.id && p.objective && p.title));
 });
 
 test('every section and the details page has a compiled page', () => {
@@ -81,8 +80,8 @@ test('output is deterministic: rebuilding gives identical files', async () => {
 
 // ---------- Rejections ----------
 
-/** Compile a one-chapter content tree whose single page has `body`; returns the errors. */
-async function errorsFor(body, { front = 'title: Test\nkind: lesson\nminutes: 5' } = {}) {
+/** Compile a one-chapter content tree whose single page has `body` (and optional `data`); returns the errors. */
+async function compileFixture(body, { front = 'title: Test\nkind: lesson\nminutes: 5', data, extra = {} } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-compile-'));
   try {
     fs.cpSync(path.join(CONTENT, '_course.yml'), path.join(dir, '_course.yml'));
@@ -91,18 +90,23 @@ async function errorsFor(body, { front = 'title: Test\nkind: lesson\nminutes: 5'
     fs.writeFileSync(path.join(dir, '_objectives.yml'), '[]\n');
     fs.mkdirSync(path.join(dir, 'ch01-test'));
     fs.writeFileSync(path.join(dir, 'ch01-test', '_chapter.yml'), 'title: Test chapter\n');
-    fs.writeFileSync(path.join(dir, 'ch01-test', '01-page.mdx'), `---\n${front}\n---\n\n${body}\n`);
+    fs.writeFileSync(path.join(dir, 'ch01-test', '01-page.md'), `---\n${front}\n---\n\n${body}\n`);
+    if (data) fs.writeFileSync(path.join(dir, 'ch01-test', '01-page.data.yml'), data);
+    for (const [name, text] of Object.entries(extra)) fs.writeFileSync(path.join(dir, 'ch01-test', name), text);
     try {
-      await compile(dir, { now: NOW });
-      return [];
+      const out = await compile(dir, { now: NOW });
+      const site = JSON.parse(out.files.get('site.json'));
+      const m = JSON.parse(out.files.get(site.programs[0].manifest));
+      return { errors: [], page: JSON.parse(out.files.get(m.pages['ch01/page'])) };
     } catch (e) {
       if (!(e instanceof CompileError)) throw e;
-      return e.diagnostics.errors.map((x) => `${x.file}:${x.line ?? ''} ${x.message}`);
+      return { errors: e.diagnostics.errors.map((x) => `${x.file}:${x.line ?? ''} ${x.message}`) };
     }
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 }
+const errorsFor = async (body, options) => (await compileFixture(body, options)).errors;
 const rejects = async (body, pattern, options) => {
   const errors = await errorsFor(body, options);
   assert.ok(
@@ -112,38 +116,65 @@ const rejects = async (body, pattern, options) => {
 };
 
 test('a minimal valid page compiles', async () => {
-  assert.deepEqual(await errorsFor('## Hello\n\nSome **text** with `code`.\n\n<Callout type="tip" title="Hi">Body</Callout>'), []);
+  assert.deepEqual(await errorsFor('## Hello\n\nSome **text** with `code`.\n\n{% callout type="tip" title="Hi" %}Body{% /callout %}'), []);
 });
 
-test('unknown components and attributes are rejected with their line', async () => {
-  await rejects('\n\n<Banner />', /01-page\.mdx:\d+ unknown component <Banner>/);
-  await rejects('<Callout type="danger">x</Callout>', /'callout' attribute 'type' must be one of/);
-  await rejects('<Callout colour="red">x</Callout>', /'callout' has no attribute 'colour'/);
-  await rejects('<Card title="x">x</Card>', /'card' must be inside cards/);
-  await rejects('<Tabs>loose text</Tabs>', /'tabs' can only contain tab/);
-  await rejects('<Lab title="x" id="Bad Id"><Task id="t" title="t">x</Task></Lab>', /'lab' attribute 'id' is not a valid id/);
-});
-
-test('code, expressions and raw HTML are rejected', async () => {
-  await rejects('import x from "y"\n\ntext', /only `export const NAME = <data>` is allowed/);
-  await rejects('export const x = fetch("https://evil.example")', /CallExpression is code, not data/);
-  await rejects('export const x = `a${1}b`', /template literals cannot interpolate/);
-  await rejects('Hello {window.alert(1)}', /inline \{expressions\} are code/);
-  await rejects('<Callout title={doSomething()}>x</Callout>', /CallExpression is code, not data/);
-  await rejects('<Callout {...props}>x</Callout>', /spread attributes are not allowed/);
-});
-
-test('unsafe links are rejected', async () => {
-  await rejects('[click](javascript:alert(1))', /link 'javascript:alert\(1\)' is not allowed/);
-  await rejects('[x](http://example.com)', /link 'http:\/\/example.com' is not allowed/);
-  await rejects('[x](data:text/html,hi)', /is not allowed/);
-});
-
-test('malformed data and frontmatter are rejected', async () => {
+test('unknown tags and attributes are rejected with their line', async () => {
+  await rejects('\n\n{% banner /%}', /01-page\.md:\d+ unknown tag 'banner'/);
+  await rejects('{% callout type="danger" %}x{% /callout %}', /'callout' attribute 'type' must be one of/);
+  await rejects('{% callout colour="red" %}x{% /callout %}', /'callout' has no attribute 'colour'/);
+  await rejects('{% card title="x" %}x{% /card %}', /'card' must be inside cards/);
+  await rejects('{% tabs %}\nloose text\n{% /tabs %}', /'tabs' can only contain tab/);
   await rejects(
-    '<Quiz id="q" questions={[{ id: "q-123456", q: "Q?", options: ["a"], answer: 0, explain: "e" }]} />',
-    /quiz data \/questions\/0\/options must NOT have fewer than 2 items/,
+    '{% lab title="x" id="Bad Id" %}\n{% task id="t" title="t" %}x{% /task %}\n{% /lab %}',
+    /'lab' attribute 'id' is not a valid id/,
   );
-  await rejects('text', /frontmatter: \(root\) must have required property 'title'/, { front: 'kind: lesson' });
-  await rejects('text', /frontmatter: \/kind must be equal to one of/, { front: 'title: T\nkind: blog' });
+});
+
+test('variables, functions and annotations are rejected', async () => {
+  await rejects('{% callout title=$secret %}x{% /callout %}', /variables and functions are not allowed/);
+  await rejects('{% callout title=fetch("https://evil.example") %}x{% /callout %}', /variables and functions are not allowed/);
+  await rejects('## Heading {% #custom .red %}', /annotation 'id' is not allowed here/);
+  await rejects('{% callout title="x" %}\nunclosed', /missing closing/);
+});
+
+test('raw HTML is plain text, and code is never scanned for tags', async () => {
+  const { errors, page } = await compileFixture(
+    'Hi <script>alert(1)</script> <img src=x onerror=alert(1)>\n\n```jinja\n{% for x in items %}{{ x }}{% endfor %}\n```',
+  );
+  assert.deepEqual(errors, []);
+  const json = JSON.stringify(page.tree);
+  assert.ok(!json.includes('"tag":"script"') && !json.includes('"tag":"img"'));
+  assert.ok(json.includes('<script>alert(1)</script>'), 'markup stays as text');
+  const code = page.tree.find((n) => n.t === 'code');
+  assert.equal(code.lines.map((line) => line.map((t) => t.v).join('')).join('\n'), '{% for x in items %}{{ x }}{% endfor %}');
+});
+
+test('unsafe links are rejected or left as text', async () => {
+  await rejects('[x](http://example.com)', /link 'http:\/\/example.com' is not allowed/);
+  await rejects('[x](lab/../../etc)', /is not allowed/);
+  for (const body of ['[click](javascript:alert(1))', '[x](data:text/html,hi)', '[x](vbscript:msgbox)']) {
+    const { errors, page } = await compileFixture(body);
+    assert.deepEqual(errors, []);
+    assert.ok(!JSON.stringify(page.tree).includes('"tag":"a"'), `${body} is not a link`);
+  }
+});
+
+test('page data must match its tags', async () => {
+  const quiz = 'q:\n  questions:\n    - { id: q-123456, q: "Q?", options: [a], answer: 0, explain: e }\n';
+  await rejects('{% quiz id="q" ref="q" /%}', /quiz data \/questions\/0\/options must NOT have fewer than 2 items/, { data: quiz });
+  await rejects('{% quiz id="q" ref="q" /%}', /refers to 'q', which is not in the page data file/);
+  await rejects('Text', /'q' is not used by any tag on the page/, { data: quiz });
+  await rejects('Text', /invalid page data/, { data: '- not\n- a map\n' });
+});
+
+test('malformed frontmatter is rejected', async () => {
+  await rejects('text', /frontmatter: \(root\) must have required property 'title'/, { front: 'kind: lesson\nminutes: 5' });
+  await rejects('text', /frontmatter: \/kind must be equal to one of/, { front: 'title: T\nkind: blog\nminutes: 5' });
+  await rejects('text', /frontmatter: \(root\) must have required property 'minutes'/, { front: 'title: T\nkind: lesson' });
+});
+
+test('code, markup and style files in content are rejected', async () => {
+  for (const name of ['widget.jsx', 'old.mdx', 'theme.css', 'page.html', 'hook.js'])
+    await rejects('text', new RegExp(`${name.replace('.', '\\.')}.*only Markdoc, YAML, JSON`), { extra: { [name]: 'x' } });
 });

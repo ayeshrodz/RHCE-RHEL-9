@@ -1,0 +1,38 @@
+check:
+  questions:
+    - id: q-9585a8f6f37c
+      legacyIndex: 0
+      q: Which fact gives the address of the interface used for the default route?
+      options:
+        - "`ansible_facts['default_ipv4']['address']`"
+        - "`ansible_facts['hostname']`"
+        - "`ansible_facts['dns']`"
+      answer: 0
+      explain: default_ipv4 also holds the interface name and the gateway.
+    - id: q-a2eee69992b3
+      legacyIndex: 1
+      q: Why is changing the address of the interface Ansible connects through risky?
+      options:
+        - NetworkManager forbids it
+        - The SSH connection can drop mid-play and leave the host unreachable
+        - Facts stop working
+      answer: 1
+      explain: Practise on another interface, or use the network role or a console for the main one.
+    - id: q-4adc4b7993cb
+      legacyIndex: 2
+      q: Which variable does the network system role read?
+      options:
+        - "`network_connections`"
+        - "`nmcli_connections`"
+        - "`interfaces`"
+      answer: 0
+      explain: It is a list of connection descriptions, applied together.
+    - id: q-7da698dcaa5e
+      legacyIndex: 3
+      q: "A firewalld task has `permanent: true` but no `immediate`. When does the rule take effect?"
+      options:
+        - Immediately
+        - After firewalld is reloaded or the host reboots
+        - Never
+      answer: 1
+      explain: Use both to change the running and the saved configuration.

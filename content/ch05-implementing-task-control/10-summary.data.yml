@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+    - front: Which variable holds the current value in a loop?
+      back: "`item`"
+    - front: Where does `loop:` go in a task?
+      back: At **task level**, aligned with `name` and the module, not under the module.
+    - front: What does a looping task register?
+      back: A dictionary with a **`results` list**, one entry per item.
+    - front: Do you use `{{ }}` in a `when` condition?
+      back: 'No. `when` is already an expression: `when: my_var == "x"`.'
+    - front: How do you test that a variable exists?
+      back: "`when: my_var is defined` (or `is not defined`)."
+    - front: 'Why can `when: flag` be wrong for `flag: "false"`?'
+      back: "A non-empty string is true. Use `when: flag | bool`."
+    - front: When is a handler notified?
+      back: Only when the notifying task reports **changed**.
+    - front: How many times does a handler run if notified by 3 tasks?
+      back: "**Once**, after all tasks, in the handlers-section order."
+    - front: What happens to notified handlers if a later task fails?
+      back: "They do not run, unless the play sets `force_handlers: true`."
+    - front: How do you stop a read-only command from reporting changed?
+      back: "`changed_when: false`"
+    - front: When does `rescue` run? When does `always` run?
+      back: "rescue: only if the block failed. always: every time."
+    - front: Which module fails a play on purpose with your message?
+      back: "`ansible.builtin.fail` with `msg:`"

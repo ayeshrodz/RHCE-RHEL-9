@@ -1,0 +1,38 @@
+check:
+  questions:
+    - id: q-30282ebd78ec
+      legacyIndex: 0
+      q: "A user is in `wheel`. A task sets `groups: webdev` without `append`. What happens?"
+      options:
+        - The user is in both groups
+        - The user is removed from wheel
+        - The task fails
+      answer: 1
+      explain: Without append, groups is the complete list of supplementary groups.
+    - id: q-b55432627468
+      legacyIndex: 1
+      q: What must the `password` argument of the user module contain?
+      options:
+        - The plain password
+        - A password hash
+        - The name of a Vault file
+      answer: 1
+      explain: Create the hash with the password_hash filter.
+    - id: q-82ebbab0099e
+      legacyIndex: 2
+      q: "Why use `validate: /usr/sbin/visudo -cf %s` when copying a sudoers file?"
+      options:
+        - To make the file readable
+        - So a file with a syntax error is never installed
+        - visudo creates the file
+      answer: 1
+      explain: A broken sudoers file can stop sudo, and Ansible, from working at all.
+    - id: q-6d97e75db186
+      legacyIndex: 3
+      q: Where does `lookup('ansible.builtin.file', 'files/jane.pub')` read from?
+      options:
+        - The managed host
+        - The control node
+        - The user’s home directory on each host
+      answer: 1
+      explain: Lookups always run on the control node.

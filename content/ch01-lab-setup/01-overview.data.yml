@@ -1,0 +1,460 @@
+lab-network-map:
+  text:
+    label: Traffic flow
+    lnmVerdictTitle: ": "
+    title: The sealed lab network
+    caption: Traffic may leave the lab for the internet, and flows freely between VMs. Nothing may start a connection into the lab, not even the host.
+    label2: Local network
+    label3: Ubuntu host
+    label4: Sealed lab
+    sub: 172.25.250.0/24
+  data:
+    flows:
+      - id: vm-vm
+        label: VM ↔ VM
+        ok: true
+        text: "Machines inside the lab talk freely: SSH, ping, HTTP, anything. This is how Ansible on workstation reaches the servers."
+        rule: 'chain forward:  iifname "rhcebr0" oifname "rhcebr0" accept'
+        arrows:
+          - points:
+              - - 466
+                - 150
+              - - 456
+                - 150
+              - - 456
+                - 190
+              - - 464
+                - 190
+            variant: ok
+            both: true
+            label: ssh
+            labelAt: 0.5
+            labelDx: -14
+            labelDy: 4
+        nodes:
+          - ws
+          - sa
+      - id: vm-internet
+        label: VM → internet
+        ok: true
+        text: VMs reach the internet through the gateway, which translates their addresses (NAT) and sends the traffic out of the host’s LAN interface. This is what makes dnf install work.
+        rule: "chain forward:  everything else from the lab is allowed (after the private-range drop)"
+        arrows:
+          - points:
+              - - 450
+                - 298
+              - - 412
+                - 298
+            variant: ok
+          - points:
+              - - 272
+                - 258
+              - - 272
+                - 240
+            variant: ok
+          - points:
+              - - 272
+                - 188
+              - - 272
+                - 170
+            variant: ok
+            label: NAT
+            labelAnchor: end
+            labelDx: -8
+            labelDy: 4
+          - points:
+              - - 210
+                - 128
+              - - 158
+                - 128
+            variant: ok
+          - points:
+              - - 140
+                - 114
+              - - 140
+                - 58
+            variant: ok
+        nodes:
+          - sa
+          - gw
+          - seal
+          - nic
+          - router
+          - net
+      - id: lxc
+        label: You → VM (lxc exec)
+        ok: true
+        text: lxc exec and the LXD UI Terminal tab reach VMs through the lxd-agent console channel, not the network, so the firewall never sees them. This is how you get in.
+        rule: "no rule involved: not network traffic"
+        arrows:
+          - points:
+              - - 410
+                - 360
+              - - 440
+                - 360
+              - - 440
+                - 138
+              - - 464
+                - 138
+            variant: ok
+            label: console channel
+            labelAt: 0.12
+        nodes:
+          - lxc
+          - ws
+      - id: dhcp
+        label: VM → DHCP / DNS
+        ok: true
+        text: VMs may ask the gateway for their IP address (DHCP) and look up names such as servera.lab.example.com (DNS). Nothing else on the host is open to them.
+        rule: 'chain input:  iifname "rhcebr0" udp dport { 53, 67 } accept'
+        arrows:
+          - points:
+              - - 450
+                - 290
+              - - 412
+                - 290
+            variant: ok
+            label: 53 · 67
+            labelDy: -6
+        nodes:
+          - sd
+          - gw
+      - id: lan-lab
+        label: LAN device → lab
+        ok: false
+        text: A laptop on your network cannot open a connection into the lab. Your router has no route to 172.25.250.0/24 anyway, and even if it did, the host drops it.
+        rule: 'chain forward:  oifname "rhcebr0" drop   # anything new INTO the lab'
+        arrows:
+          - points:
+              - - 158
+                - 214
+              - - 182
+                - 214
+              - - 182
+                - 150
+              - - 208
+                - 150
+            hot: true
+          - points:
+              - - 300
+                - 168
+              - - 300
+                - 186
+            variant: bad
+        nodes:
+          - laptop
+          - nic
+          - seal
+      - id: host-lab
+        label: Host → lab
+        ok: false
+        text: Even the host itself cannot ssh or ping the VMs. It only hands out addresses and answers DNS. That is why you use lxc exec, which does not use the network.
+        rule: 'chain output:  oifname "rhcebr0" drop   # host can’t start connections'
+        arrows:
+          - points:
+              - - 412
+                - 274
+              - - 448
+                - 274
+            variant: bad
+            label: ssh / ping
+            labelDy: -7
+        nodes:
+          - gw
+      - id: lab-lan
+        label: Lab → your LAN
+        ok: false
+        text: VMs cannot reach devices on your local network, your router’s admin page, or VPN ranges. Everything private is dropped; only the public internet is allowed.
+        rule: 'chain forward:  iifname "rhcebr0" ip daddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10 } drop'
+        arrows:
+          - points:
+              - - 450
+                - 306
+              - - 412
+                - 306
+            hot: true
+          - points:
+              - - 250
+                - 258
+              - - 250
+                - 242
+            variant: bad
+        nodes:
+          - sb
+          - gw
+          - seal
+      - id: lab-host
+        label: Lab → host services
+        ok: false
+        text: VMs cannot reach the host’s SSH, the LXD UI on :8443, or any other service on it. Only DHCP and DNS are answered.
+        rule: 'chain input:  iifname "rhcebr0" drop   # nothing else on the host'
+        arrows:
+          - points:
+              - - 450
+                - 282
+              - - 414
+                - 282
+            variant: bad
+            label: :22 :8443
+            labelDy: -6
+        nodes:
+          - sc
+          - gw
+    n:
+      net:
+        x: 10
+        y: 10
+        w: 150
+        h: 46
+        tone: blue
+        title: Internet
+      router:
+        x: 20
+        y: 114
+        w: 138
+        h: 48
+        tone: gray
+        title: Router
+        sub: <ROUTER_IP>
+      laptop:
+        x: 20
+        y: 190
+        w: 138
+        h: 48
+        tone: gray
+        title: Laptops, phones
+      nic:
+        x: 210
+        y: 116
+        w: 200
+        h: 52
+        tone: purple
+        title: LAN interface
+        sub: <HOST_LAN_IP>
+      seal:
+        x: 210
+        y: 188
+        w: 200
+        h: 52
+        tone: red
+        title: nftables seal
+        sub: table inet rhce_isolate
+      gw:
+        x: 210
+        y: 258
+        w: 200
+        h: 58
+        tone: teal
+        title: rhcebr0 · 172.25.250.254
+        sub: gateway · DHCP · DNS · NAT
+        titleSize: 12.5
+      lxc:
+        x: 210
+        y: 336
+        w: 200
+        h: 50
+        tone: amber
+        title: lxc exec / LXD UI
+        sub: lxd-agent console channel
+      ws:
+        x: 466
+        y: 116
+        w: 192
+        h: 42
+        tone: green
+        title: workstation  .9
+        mono: true
+      sa:
+        x: 466
+        y: 168
+        w: 94
+        h: 42
+        tone: green
+        title: servera
+        sub: ".10"
+      sb:
+        x: 564
+        y: 168
+        w: 94
+        h: 42
+        tone: green
+        title: serverb
+        sub: ".11"
+      sc:
+        x: 466
+        y: 218
+        w: 94
+        h: 42
+        tone: green
+        title: serverc
+        sub: ".12"
+      sd:
+        x: 564
+        y: 218
+        w: 94
+        h: 42
+        tone: green
+        title: serverd
+        sub: ".13"
+      ut:
+        x: 466
+        y: 268
+        w: 192
+        h: 42
+        tone: gray
+        title: utility  .8
+        sub: optional
+        mono: true
+    initialSelection1: vm-internet
+  dependencies:
+    LabValues:
+      text:
+        widgetTitle: Your lab values
+        widgetSub: Fill these in once. Every command in this guide then shows your own values, and the copy buttons copy them. Saved only in this browser.
+        span: /
+        span2: " set"
+        labvalsHint: "find it with "
+        label: Save values
+        btn: " Clear"
+      data: {}
+two-addresses:
+  text:
+    title: Why the host has two IP addresses
+    caption: The host keeps its normal LAN address (wired or Wi-Fi) and gains a second one, 172.25.250.254, on the lab's virtual switch. The VMs use that second address as their gateway.
+    title2: Internet
+    title3: Your router
+    sub: LAN gateway
+    label: Ubuntu host
+    title4: LAN card
+    title5: rhcebr0
+    sub2: 172.25.250.254
+    label2: faces your network
+    label3: faces the lab only
+    label4: the host forwards (NAT) between the two
+    label5: Lab VMs
+    title6: workstation
+    title7: servera…d
+    title8: utility
+    label6: gateway
+  data: {}
+  dependencies:
+    LabValues:
+      text:
+        widgetTitle: Your lab values
+        widgetSub: Fill these in once. Every command in this guide then shows your own values, and the copy buttons copy them. Saved only in this browser.
+        span: /
+        span2: " set"
+        labvalsHint: "find it with "
+        label: Save values
+        btn: " Clear"
+      data: {}
+build-roadmap:
+  text:
+    label: LXD UI
+    label2: Your PC
+    widgetTitle: The build, phase by phase
+    pill: "about "
+    pill2: " minutes in total"
+    template: ~{value0} min
+  data:
+    phases:
+      - n: "01"
+        title: Prepare the Ubuntu host
+        min: 15
+        where:
+          - host
+        slug: prepare-host
+      - n: "02"
+        title: Open the LXD UI
+        min: 5
+        where:
+          - ui
+          - host
+        slug: prepare-host
+      - n: "03"
+        title: Create the lab network
+        min: 5
+        where:
+          - ui
+        slug: network-and-seal
+      - n: "04"
+        title: Seal the lab network
+        min: 10
+        where:
+          - host
+        slug: network-and-seal
+      - n: "05"
+        title: Create the rhce project
+        min: 2
+        where:
+          - ui
+          - host
+        slug: project-profile-disks
+      - n: "06"
+        title: Set up the lab profile
+        min: 10
+        where:
+          - ui
+        slug: project-profile-disks
+      - n: "07"
+        title: Create the extra disks
+        min: 5
+        where:
+          - ui
+        slug: project-profile-disks
+      - n: "08"
+        title: Create the VMs
+        min: 20
+        where:
+          - ui
+        slug: create-and-verify-vms
+      - n: "09"
+        title: Get inside and check
+        min: 10
+        where:
+          - host
+          - vm
+        slug: create-and-verify-vms
+      - n: "10"
+        title: Prepare the control node
+        min: 15
+        where:
+          - vm
+        slug: control-node
+      - n: "11"
+        title: Utility server (optional)
+        min: 10
+        where:
+          - host
+          - vm
+        slug: control-node
+      - n: "12"
+        title: Snapshots and rht-vmctl
+        min: 10
+        where:
+          - host
+        slug: snapshots-and-rht-vmctl
+      - n: "13"
+        title: Your first Ansible project
+        min: 10
+        where:
+          - vm
+        slug: first-project-and-daily-use
+      - n: "14"
+        title: Daily use
+        min: 0
+        where:
+          - you
+          - host
+        slug: first-project-and-daily-use
+  dependencies:
+    LabValues:
+      text:
+        widgetTitle: Your lab values
+        widgetSub: Fill these in once. Every command in this guide then shows your own values, and the copy buttons copy them. Saved only in this browser.
+        span: /
+        span2: " set"
+        labvalsHint: "find it with "
+        label: Save values
+        btn: " Clear"
+      data: {}

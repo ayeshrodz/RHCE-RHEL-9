@@ -4,7 +4,7 @@ import { useHeadingNavigation } from '@/hooks/useHeadingNavigation';
 import LearningPageLayout from '@/components/layout/LearningPageLayout';
 import PageTree from '@/components/content/PageTree';
 
-/** Informational MDX page: metadata supplies the header; content supplies the body. */
+/** Informational content page: metadata supplies the header; content supplies the body. */
 export default function ReferencePage({ page }) {
   const [Content, setContent] = useState(null);
   const [error, setError] = useState(null);

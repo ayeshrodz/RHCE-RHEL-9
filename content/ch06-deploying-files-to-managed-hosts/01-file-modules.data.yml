@@ -1,0 +1,412 @@
+file-module-chooser:
+  text:
+    text: control node → managed host
+    text2: managed host → control node
+    text3: changes a file in place on the managed host
+    text4: reads only; nothing changes
+    widgetLabel: Which module do I need?
+    label: What do you want to do?
+    span: " control node"
+    span2: " managed host"
+  data:
+    goals:
+      - id: copy
+        goal: Copy a file from the control node
+        module: ansible.builtin.copy
+        dir: push
+        yaml: |-
+          - name: Copy a file to managed hosts
+            ansible.builtin.copy:
+              src: files/users.txt
+              dest: /home/devops/users.txt
+              owner: devops
+              group: devops
+              mode: '0640'
+        note: "Overwrites the remote file when its content differs (force: true is the default). With force: false it only copies when the file is missing."
+      - id: content
+        goal: Create a small file from text in the playbook
+        module: ansible.builtin.copy
+        dir: push
+        yaml: |-
+          - name: Banner text is in place
+            ansible.builtin.copy:
+              content: "Authorised users only.\n"
+              dest: /etc/issue
+        note: content replaces src. Good for one or two lines; use a template for anything longer or host-specific.
+      - id: template
+        goal: Deploy a file customised for each host
+        module: ansible.builtin.template
+        dir: push
+        yaml: |-
+          - name: Deploy a custom message of the day
+            ansible.builtin.template:
+              src: templates/motd.j2
+              dest: /etc/motd
+              owner: root
+              group: root
+              mode: '0644'
+        note: The Jinja2 template is rendered on the control node with that host’s variables and facts, then copied. Covered in the next lesson.
+      - id: attrs
+        goal: Set owner, permissions or SELinux type
+        module: ansible.builtin.file
+        dir: edit
+        yaml: |-
+          - name: SELinux type is set to samba_share_t
+            ansible.builtin.file:
+              path: /srv/share/report.txt
+              owner: devops
+              mode: '0644'
+              setype: samba_share_t
+        note: Works like chown, chmod and chcon on a file that already exists. copy and template accept the same attribute arguments.
+      - id: touch
+        goal: Create an empty file or a directory
+        module: ansible.builtin.file
+        dir: edit
+        yaml: |-
+          - name: The secrets directory exists
+            ansible.builtin.file:
+              path: /etc/httpd/secrets
+              state: directory      # or: touch, for an empty file
+              owner: apache
+              mode: '0500'
+        note: "state: directory creates missing parent directories too. state: touch behaves like the touch command and updates the timestamp."
+      - id: link
+        goal: Create a symbolic link
+        module: ansible.builtin.file
+        dir: edit
+        yaml: |-
+          - name: /etc/issue.net points at /etc/issue
+            ansible.builtin.file:
+              src: /etc/issue
+              dest: /etc/issue.net
+              state: link
+              force: true
+        note: "src is what the link points to, dest is the link itself. force: true replaces a regular file that is already at dest."
+      - id: absent
+        goal: Remove a file or directory
+        module: ansible.builtin.file
+        dir: edit
+        yaml: |-
+          - name: The file does not exist
+            ansible.builtin.file:
+              path: /home/devops/users.txt
+              state: absent
+        note: Always write state explicitly, present or absent, so the intent is obvious to the next reader. On a directory, absent removes it and everything inside.
+      - id: line
+        goal: Make sure one line is in a file
+        module: ansible.builtin.lineinfile
+        dir: edit
+        yaml: |-
+          - name: Root login over SSH is disabled
+            ansible.builtin.lineinfile:
+              path: /etc/ssh/sshd_config
+              regexp: '^#?PermitRootLogin'
+              line: PermitRootLogin no
+              state: present
+        note: With regexp, the last matching line is replaced; without it, the line is appended if it is not already there.
+      - id: block
+        goal: Insert several lines as one block
+        module: ansible.builtin.blockinfile
+        dir: edit
+        yaml: |-
+          - name: Lab hosts are listed
+            ansible.builtin.blockinfile:
+              path: /etc/hosts
+              block: |
+                172.25.250.10 servera.lab.example.com
+                172.25.250.11 serverb.lab.example.com
+              state: present
+        note: The block is wrapped in marker comments so Ansible can find and update it on later runs.
+      - id: fetch
+        goal: Pull a file back to the control node
+        module: ansible.builtin.fetch
+        dir: pull
+        yaml: |-
+          - name: Collect the secure log
+            ansible.builtin.fetch:
+              src: /var/log/secure
+              dest: secure-backups
+              flat: false
+        note: copy in reverse. By default each host’s file is stored under dest/HOSTNAME/full/path, so files from different hosts never collide.
+      - id: stat
+        goal: Check whether a file exists, or its checksum
+        module: ansible.builtin.stat
+        dir: read
+        yaml: |-
+          - name: Look at /etc/motd
+            ansible.builtin.stat:
+              path: /etc/motd
+            register: motd
+
+          - ansible.builtin.debug:
+              msg: "exists: {{ motd.stat.exists }}"
+        note: Changes nothing. Register the result and read values such as stat.exists, stat.mode, stat.pw_name and stat.checksum.
+      - id: sync
+        goal: Synchronise a whole directory tree
+        module: ansible.posix.synchronize
+        dir: push
+        yaml: |-
+          - name: Web content is synchronised
+            ansible.posix.synchronize:
+              src: web/
+              dest: /var/www/html
+        note: A wrapper around rsync, which must be installed on both ends. From the ansible.posix collection, not ansible.builtin.
+    initialSelection1: copy
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+mode-calculator:
+  text:
+    widgetLabel: Permission calculator
+    label: Common modes
+    th: read
+    th2: write
+    th3: execute
+    th4: digit
+    template: "{value0} {value1}"
+    template2: |-
+      mode: '{value0}'        # octal, quoted
+      mode: {value1}   # symbolic
+    modeHint: "Both lines mean the same. Symbolic modes can also be relative, for example "
+    code: u+rw,g-wx,o-rwx
+    modeHint2: .
+    p: "Write "
+    code2: "mode: "
+    p2: " without the leading zero and quotes, and YAML reads the "
+    strong: decimal
+    p3: " number"
+    p4: ", which is octal "
+    p5: ": the file ends up as "
+    p6: ". Always quote the mode:"
+    code3: "'"
+    code4: "'"
+    p7: .
+  data:
+    who:
+      - - u
+        - user (owner)
+      - - g
+        - group
+      - - o
+        - others
+    presets:
+      - "0644"
+      - "0600"
+      - "0640"
+      - "0755"
+      - "0750"
+      - "0440"
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+fetch-layout:
+  text:
+    template: |-
+      secure-backups/
+      └── secure          ← {value0} hosts wrote this one file
+    template2: |-
+      secure-backups/
+      {value0}
+    widgetLabel: Where fetched files land
+    label: flat option
+    button: "flat: false"
+    button2: "flat: true"
+    template3: |-
+      - name: Fetch the secure log
+        ansible.builtin.fetch:
+          src: /var/log/secure
+          dest: secure-backups{value0}
+          flat: {value1}
+    span: "With "
+    code: "flat: true"
+    span2: " every host's file is saved under the same name, so each one overwrites the last. Put the host name in "
+    code2: dest
+    span3: " yourself, for example "
+    label2: 'dest: "secure-backups/{{ inventory_hostname }}-secure"'
+    span4: .
+    span5: "The default adds the host name and the file's full path under "
+    code3: dest
+    span6: ", so files from different hosts never collide."
+  data:
+    hosts:
+      - servera.lab.example.com
+      - serverb.lab.example.com
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+file-edit-simulator:
+  text:
+    error: That regular expression is not valid.
+    template: |-
+      ansible.builtin.blockinfile:
+        path: /etc/example.conf
+        block: |
+      {value0}
+        state: present
+    template2: |-
+      ansible.builtin.lineinfile:
+        path: /etc/example.conf{value0}
+        line: {value1}
+        state: present
+    widgetLabel: Edit a file in place
+    label: Module
+    span: regexp
+    btn: " Run the task"
+    btn2: " Reset the file"
+    fesPath: /etc/example.conf on the managed host
+    termMuted: Run the task, then run it again.
+    template3: "failed: {value0}"
+    template4: "{value0}: [servera]  {value1}{value2}"
+  data:
+    start:
+      - "# Example service settings"
+      - PermitRootLogin yes
+      - MaxAuthTries 6
+      - Banner none
+    begin: "# BEGIN ANSIBLE MANAGED BLOCK"
+    end: "# END ANSIBLE MANAGED BLOCK"
+    modes:
+      append:
+        label: lineinfile
+        hint: "No regexp: the line is appended unless that exact line is already in the file."
+        line: AllowGroups wheel
+        regexp: null
+      replace:
+        label: lineinfile + regexp
+        hint: "With regexp: the last line that matches is replaced by line. If nothing matches, the line is appended."
+        line: PermitRootLogin no
+        regexp: ^PermitRootLogin
+      block:
+        label: blockinfile
+        hint: The block is wrapped in marker comments. On later runs Ansible finds the markers and updates what is between them.
+        line: |-
+          Match Group admins
+            X11Forwarding no
+        regexp: null
+    initialSelection1: replace
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+stat-explorer:
+  text:
+    template: "register: {value0}"
+  data:
+    statSample:
+      changed: false
+      failed: false
+      stat:
+        exists: true
+        path: /etc/motd
+        isreg: true
+        isdir: false
+        islnk: false
+        mode: "0644"
+        uid: 0
+        gid: 0
+        pw_name: root
+        gr_name: root
+        size: 94
+        mtime: 1664498160.12
+        checksum: 5f76590425303022e933c43a7f2092a3d4b5c8f1
+        mimetype: text/plain
+        readable: true
+        writeable: true
+        executable: false
+  props:
+    name: result
+  dependencies:
+    DataExplorer:
+      text:
+        widgetLabel: ": click to explore"
+        widgetLabel2: Reference it as
+        template: "{{ {value0} }}"
+        template2: "{{ {value0} }}"
+        dxWarn: " is also the name of a Python dictionary method, so dot notation may return the method instead of your data. Use brackets here."
+        widgetLabel3: Old injected name
+        template3: "{{ {value0} }}"
+        widgetLabel4: Value
+      data: {}
+check:
+  questions:
+    - id: q-b63a46cc4d3a
+      legacyIndex: 0
+      q: Which module copies `/var/log/secure` from each managed host to the control node?
+      options:
+        - "`ansible.builtin.copy`"
+        - "`ansible.builtin.fetch`"
+        - "`ansible.builtin.stat`"
+        - "`ansible.posix.synchronize`"
+      answer: 1
+      explain: "fetch is copy in reverse: managed host to control node."
+    - id: q-8d269d4d2ba6
+      legacyIndex: 1
+      q: "A task sets `mode: 644` on a file. What goes wrong?"
+      options:
+        - Nothing, it is the same as 0644
+        - YAML reads it as the decimal number 644, giving unexpected permissions
+        - Ansible refuses to run
+      answer: 1
+      explain: "Quote the mode with its leading zero: `mode: '0644'`, or use the symbolic form."
+    - id: q-6b931b703ed1
+      legacyIndex: 2
+      q: You run a `blockinfile` task a second time with the same block. What happens?
+      options:
+        - The block is added again
+        - "Nothing changes: the markers identify the existing block"
+        - The file is emptied first
+      answer: 1
+      explain: The BEGIN and END marker lines let Ansible find its own block and compare it.
+    - id: q-c64f5e3fa07c
+      legacyIndex: 3
+      q: "A file has `setype: samba_share_t` set by `ansible.builtin.file`. Someone runs `restorecon` on it. What is its type now?"
+      options:
+        - Still `samba_share_t`
+        - The default type from the SELinux policy for that path
+        - It has no type
+      answer: 1
+      explain: Like chcon, the file module changes the label only. Make it permanent with a file-context rule (sefcontext).
+    - id: q-7730105a923f
+      legacyIndex: 4
+      q: "With `force: false`, when does `copy` write the file?"
+      options:
+        - Every run
+        - Only if the destination does not exist yet
+        - Only if the content differs
+      answer: 1
+      explain: "force: false never overwrites an existing file."

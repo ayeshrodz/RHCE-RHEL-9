@@ -1,0 +1,39 @@
+manual-vs-code:
+  text:
+    title: Manual administration versus Infrastructure as Code
+    caption: Hand-applied changes slowly drift apart. Changes made through code are reviewed once and applied identically everywhere.
+    label: Manual administration
+    title2: Administrator
+    sub: checklist + SSH
+    label2: by hand, one by one
+    title3: web1
+    sub2: httpd 2.4.57
+    title4: web2
+    sub3: httpd 2.4.53
+    title5: web3
+    sub4: httpd 2.4.57
+    label3: web2 missed a step. Nobody noticed.
+    label4: Infrastructure as Code
+    title6: Git repository
+    sub5: site.yml
+    title7: Ansible
+    sub6: control node
+    title8: web1
+    sub7: httpd 2.4.57
+    title9: web2
+    sub8: httpd 2.4.57
+    title10: web3
+    sub9: httpd 2.4.57
+    label5: Same code, same result, every run.
+  data: {}
+check:
+  questions:
+    - id: q-f9250bf18f92
+      legacyIndex: 0
+      q: A server managed by Ansible needs a new kernel parameter. What is the right way to add it?
+      options:
+        - SSH in, edit `/etc/sysctl.conf`, and note the change in the wiki
+        - Add the setting to the automation code, get it reviewed, and re-run the automation
+        - Change it by hand now, and update the automation later if there is time
+      answer: 1
+      explain: Manual changes are invisible to the automation and are likely to be overwritten or lost. Changing the code keeps every server consistent and the change documented.

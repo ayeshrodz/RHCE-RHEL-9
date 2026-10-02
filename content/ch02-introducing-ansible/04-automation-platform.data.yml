@@ -1,0 +1,67 @@
+platform-components:
+  text:
+    title: Red Hat Ansible Automation Platform 2 components
+    caption: "Execution environments sit at the centre: the same container image is used by developers and by production."
+    title2: Automation hub
+    sub: certified content, images
+    label: pull
+    label2: Execution environment
+    sub2: container
+    title3: Ansible Core 2.13
+    title4: Content collections
+    title5: ansible-navigator
+    sub3: develop and test
+    title6: Automation controller
+    sub4: run at scale
+    title7: ansible-builder
+    sub5: build custom images
+  data:
+    info:
+      core:
+        tone: teal
+        title: Ansible Core
+        text: "The engine: the YAML automation language, loops and conditionals, the command-line tools, and the small ansible.builtin collection. AAP 2.2 ships Ansible Core 2.13."
+      collections:
+        tone: purple
+        title: Ansible Content Collections
+        text: Bundles of related modules, roles and plug-ins that ship separately from the core, so they can be updated on their own schedule. AAP includes more than 120 Red Hat certified collections; many community ones live on Ansible Galaxy.
+      ee:
+        tone: teal
+        title: Automation execution environment
+        text: "A container image holding Ansible Core, collections, Python libraries and any other dependencies. The same image runs your playbook on your laptop and in production, so “works on my machine” stops being a problem. Examples: ee-supported-rhel8, ee-minimal-rhel8."
+      navigator:
+        tone: amber
+        title: Automation content navigator
+        text: The ansible-navigator command. It replaces ansible-playbook, ansible-inventory, ansible-config and ansible-doc with one tool, and runs your playbooks inside an execution environment. This is the tool you use throughout the course.
+      controller:
+        tone: coral
+        title: Automation controller
+        text: Formerly Red Hat Ansible Tower. A web UI and REST API to run automation centrally, share SSH credentials without revealing them, schedule jobs, control who may run what, and log every run. Installing it is outside the scope of this course.
+      hub:
+        tone: blue
+        title: Automation hub
+        text: Red Hat’s content service at console.redhat.com, and optionally a private hub in your organisation. It serves certified collections and execution environment images to ansible-galaxy, ansible-navigator and controller.
+      builder:
+        tone: gray
+        title: ansible-builder
+        text: Builds custom execution environment images when the supported ones do not contain a collection or Python library you need.
+check:
+  questions:
+    - id: q-e809ef1927c0
+      legacyIndex: 0
+      q: What is an automation execution environment?
+      options:
+        - A Python virtual environment on each managed host
+        - A container image containing Ansible Core, collections and dependencies, used to run playbooks
+        - The directory on the control node where playbooks are stored
+      answer: 1
+      explain: EEs are container images. ansible-navigator and automation controller both run playbooks inside them, so the runtime is identical in development and production.
+    - id: q-b68905239394
+      legacyIndex: 1
+      q: Which collection is always part of Ansible Core?
+      options:
+        - "`community.general`"
+        - "`ansible.posix`"
+        - "`ansible.builtin`"
+      answer: 2
+      explain: "`ansible.builtin` ships with Ansible Core. Others, such as `ansible.posix` (which contains `firewalld`), come from separate collections."

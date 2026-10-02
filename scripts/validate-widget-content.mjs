@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import { readBundle, walk } from './read-bundle.mjs';
 
 function files(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -35,16 +36,22 @@ function validate(catalog, file) {
 }
 const shared = { ...JSON.parse(fs.readFileSync('content/_interface.json')), HomePage: JSON.parse(fs.readFileSync('content/home.json')), ProgressPage: JSON.parse(fs.readFileSync('content/progress.json')) };
 validate(shared, 'content/_interface.json + home.json');
+const { pages } = await readBundle();
 let count = 0;
-for (const file of files('content').filter((file) => file.endsWith('.mdx'))) {
-  const source = fs.readFileSync(file, 'utf8');
-  const declaration = source.match(/^export const widgetContent = (\{[\s\S]*?^\});/m);
-  const catalog = declaration ? JSON.parse(declaration[1]) : {};
-  validate(catalog, file);
-  const prose = source.replace(/^export const widgetContent = \{[\s\S]*?^\};/m, '');
-  for (const name of new Set([...prose.matchAll(/<([A-Z]\w*)\b/g)].map((match) => match[1]))) {
-    if (contracts.has(name)) assert(catalog[name] || shared[name], `${file}: missing ${name} content`);
-  }
+for (const [key, page] of Object.entries(pages)) {
+  // Each legacy widget's copy lives in the page data under its ref, plus copy for widgets it renders inside itself.
+  const catalog = {};
+  walk(page.tree, (node) => {
+    if (node.t !== 'tag' || node.name !== 'legacy-widget') return;
+    const { text, data, dependencies } = page.data[node.attrs.ref];
+    if (text || data) catalog[node.attrs.name] = { ...(text ? { text } : {}), ...(data ? { data } : {}) };
+    Object.assign(catalog, dependencies);
+  });
+  validate(catalog, key);
+  walk(page.tree, (node) => {
+    if (node.t === 'tag' && node.name === 'legacy-widget' && contracts.has(node.attrs.name))
+      assert(catalog[node.attrs.name] || shared[node.attrs.name], `${key}: missing ${node.attrs.name} content`);
+  });
   count += Object.keys(catalog).length;
 }
 console.log(`Validated ${count} page-owned widget catalogs and ${Object.keys(shared).length} shared catalogs.`);

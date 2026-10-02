@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-/** Shared heading navigation for lazy MDX lessons and reference pages. */
+/** Shared heading navigation for lazy lessons and reference pages. */
 export function useHeadingNavigation(ready) {
   const location = useLocation();
   let target;

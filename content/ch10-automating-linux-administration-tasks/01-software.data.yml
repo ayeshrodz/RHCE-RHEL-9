@@ -1,0 +1,229 @@
+admin-module-finder:
+  text:
+    widgetLabel: Which module does it?
+    label: Area
+    label2: Job
+    amfHint: "Full reference: "
+    code: "ansible-navigator doc "
+    code2: " -m stdout"
+  data:
+    areas:
+      Software:
+        - - Install, update or remove packages
+          - ansible.builtin.dnf
+          - |-
+            - ansible.builtin.dnf:
+                name:
+                  - httpd
+                  - mod_ssl
+                state: present          # latest | absent
+        - - Install a package group
+          - ansible.builtin.dnf
+          - |-
+            - ansible.builtin.dnf:
+                name: "@Development Tools"
+                state: present
+        - - Add a repository
+          - ansible.builtin.yum_repository
+          - |-
+            - ansible.builtin.yum_repository:
+                name: lab-crb
+                description: Rocky Linux 9 CRB (lab)
+                mirrorlist: https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever
+                gpgcheck: true
+                gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+        - - Trust a package signing key
+          - ansible.builtin.rpm_key
+          - |-
+            - ansible.builtin.rpm_key:
+                key: /etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-9
+                state: present
+        - - Find out what is installed
+          - ansible.builtin.package_facts
+          - |-
+            - ansible.builtin.package_facts:
+                manager: auto
+            - ansible.builtin.debug:
+                var: ansible_facts['packages']['httpd']
+      Users:
+        - - Create a user with a password
+          - ansible.builtin.user
+          - |-
+            - ansible.builtin.user:
+                name: jane
+                groups: webdev
+                append: true
+                password: "{{ 'redhat' | password_hash('sha512') }}"
+        - - Create a group
+          - ansible.builtin.group
+          - |-
+            - ansible.builtin.group:
+                name: webdev
+                gid: 5000
+        - - Let a key log in
+          - ansible.posix.authorized_key
+          - |-
+            - ansible.posix.authorized_key:
+                user: jane
+                key: "{{ lookup('ansible.builtin.file', 'files/jane.pub') }}"
+        - - Give sudo rights
+          - ansible.builtin.copy
+          - |-
+            - ansible.builtin.copy:
+                content: "%webdev ALL=(ALL) NOPASSWD: ALL\n"
+                dest: /etc/sudoers.d/webdev
+                mode: "0440"
+                validate: /usr/sbin/visudo -cf %s
+      Boot and schedule:
+        - - Run a command on a schedule
+          - ansible.builtin.cron
+          - |-
+            - ansible.builtin.cron:
+                name: Log uptime
+                user: devops
+                minute: "*/5"
+                job: uptime >> /home/devops/uptime.log
+        - - Run a command once, later
+          - ansible.posix.at
+          - |-
+            - ansible.posix.at:
+                command: date > /tmp/at-was-here
+                count: 20
+                units: minutes
+        - - Start or enable a service
+          - ansible.builtin.service
+          - |-
+            - ansible.builtin.service:
+                name: httpd
+                state: started
+                enabled: true
+        - - Choose the boot target
+          - ansible.builtin.file
+          - |-
+            - ansible.builtin.file:
+                src: /usr/lib/systemd/system/multi-user.target
+                dest: /etc/systemd/system/default.target
+                state: link
+        - - Reboot and wait for it
+          - ansible.builtin.reboot
+          - |-
+            - ansible.builtin.reboot:
+                reboot_timeout: 300
+      Storage:
+        - - Partition a disk
+          - community.general.parted
+          - |-
+            - community.general.parted:
+                device: /dev/sdb
+                number: 1
+                part_end: 1GiB
+                flags: [lvm]
+                state: present
+        - - Create a volume group
+          - community.general.lvg
+          - |-
+            - community.general.lvg:
+                vg: apps
+                pvs: /dev/sdb1
+        - - Create or grow a logical volume
+          - community.general.lvol
+          - |-
+            - community.general.lvol:
+                vg: apps
+                lv: data
+                size: 500m
+                resizefs: true
+        - - Make a file system
+          - community.general.filesystem
+          - |-
+            - community.general.filesystem:
+                dev: /dev/apps/data
+                fstype: xfs
+        - - Mount it, now and at boot
+          - ansible.posix.mount
+          - |-
+            - ansible.posix.mount:
+                path: /srv/data
+                src: /dev/apps/data
+                fstype: xfs
+                state: mounted
+      Network:
+        - - Add or change a connection
+          - community.general.nmcli
+          - |-
+            - community.general.nmcli:
+                conn_name: lab-dummy0
+                type: dummy
+                ifname: dummy0
+                ip4: 192.0.2.10/24
+                state: present
+        - - Configure networking the supported way
+          - redhat.rhel_system_roles.network
+          - |-
+            roles:
+              - redhat.rhel_system_roles.network
+            vars:
+              network_connections:
+                - name: eth1
+                  type: ethernet
+                  ip:
+                    address: [192.0.2.20/24]
+        - - Set the host name
+          - ansible.builtin.hostname
+          - |-
+            - ansible.builtin.hostname:
+                name: web01.lab.example.com
+        - - Open a firewall service
+          - ansible.posix.firewalld
+          - |-
+            - ansible.posix.firewalld:
+                service: https
+                permanent: true
+                immediate: true
+                state: enabled
+        - - Read the network configuration
+          - ansible.builtin.setup
+          - |-
+            - ansible.builtin.setup:
+                gather_subset: network
+            - ansible.builtin.debug:
+                var: ansible_facts['default_ipv4']
+    initialSelection1: Software
+check:
+  questions:
+    - id: q-67e2effaf1a5
+      legacyIndex: 0
+      q: Which `state` makes sure a package is installed and updated to the newest version?
+      options:
+        - "`present`"
+        - "`latest`"
+        - "`installed`"
+      answer: 1
+      explain: present leaves an installed package alone; latest updates it.
+    - id: q-02c7a6dab640
+      legacyIndex: 1
+      q: How do you install a package group with the dnf module?
+      options:
+        - "`name: Development Tools`"
+        - '`name: "@Development Tools"`'
+        - "`group: Development Tools`"
+      answer: 1
+      explain: Groups start with @, and the value must be quoted.
+    - id: q-24017d26dcc0
+      legacyIndex: 2
+      q: "What does `gpgcheck: true` on a repository do?"
+      options:
+        - Downloads the key
+        - Makes dnf refuse packages that are not signed by a trusted key
+        - Encrypts the repository
+      answer: 1
+      explain: The key itself is imported with rpm_key or listed with gpgkey.
+    - id: q-c30585cf1a18
+      legacyIndex: 3
+      q: After `package_facts`, where is the information about httpd?
+      options:
+        - "`ansible_facts['packages']['httpd']`"
+        - "`ansible_facts['httpd']`"
+        - "`packages.httpd.version`"
+      answer: 0
+      explain: "It is a list: [0] is the first installed version."

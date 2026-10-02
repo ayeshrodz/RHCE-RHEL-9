@@ -1,0 +1,95 @@
+inventory-explorer:
+  text:
+    widgetLabel: inventory (editable)
+    btn: " Reset"
+    label: Inventory file
+    widgetLabel2: "Groups: pick one"
+    widgetLabel3: "Hosts: pick one to see its groups"
+    termMuted: No hosts yet.
+    label2: Member of
+    termMuted2: " is in:"
+    label3: all  (every host is)
+    template: "{value0}  (via a child group)"
+    termMuted3: "$ ansible-navigator inventory -i inventory -m stdout --graph "
+  data:
+    sample: |
+      [webservers]
+      server[a:d].lab.example.com
+
+      [raleigh]
+      servera.lab.example.com
+      serverb.lab.example.com
+
+      [mountainview]
+      serverc.lab.example.com
+
+      [london]
+      serverd.lab.example.com
+
+      [development]
+      servera.lab.example.com
+
+      [testing]
+      serverb.lab.example.com
+
+      [production]
+      serverc.lab.example.com
+      serverd.lab.example.com
+
+      [us:children]
+      raleigh
+      mountainview
+    initialSelection1: us
+range-expander:
+  text:
+    widgetTitle: Try a host range
+    widgetSub: "Ranges are written "
+    code: "[START:END]"
+    widgetSub2: " and are inclusive. Numbers or single letters work, and you can use more than one range in a pattern."
+    label: Host pattern
+    rangesCount: "Matches "
+    label2: " (stopped counting at 5,000)"
+    template: ", first {value0} shown"
+    termMuted: "…and "
+    termMuted2: " more, ending with "
+  data:
+    presets:
+      - server[01:20].example.com
+      - server[1:20].example.com
+      - "[a:c].dns.example.com"
+      - washington[1:2].example.com
+      - 192.168.[4:7].[0:255]
+      - node[0:30:10].example.com
+check:
+  questions:
+    - id: q-95b0eba90bbd
+      legacyIndex: 0
+      q: Which hosts does `db[08:10].example.com` match?
+      options:
+        - db8, db9 and db10
+        - db08, db09 and db10
+        - db08 and db10 only
+      answer: 1
+      explain: The range is inclusive and the leading zero is kept, so it expands to db08, db09 and db10.
+    - id: q-6c50e1a9a9dc
+      legacyIndex: 1
+      q: How do you make group `europe` contain the groups `uk` and `france`?
+      code: |-
+        [europe:children]
+        uk
+        france
+      options:
+        - Exactly as shown
+        - Replace `:children` with `:groups`
+        - List every host of uk and france under `[europe]`
+      answer: 0
+      explain: The `:children` suffix tells Ansible the lines below are group names, not host names.
+    - id: q-51393bb252c5
+      legacyIndex: 2
+      q: A host is listed only under `[webservers]`. Which groups is it in?
+      options:
+        - "`webservers` only"
+        - "`webservers` and `ungrouped`"
+        - "`all` and `webservers`"
+      answer: 2
+      explain: Every host is in `all`. `ungrouped` only holds hosts that belong to no other group.

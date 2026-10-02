@@ -66,8 +66,6 @@ The render tree has exactly four node types:
 
 There is no node type for raw HTML, script, style or event handlers, so they cannot be expressed.
 
-`catalog/mdx-v0-map.json` records how each MDX component used before `apiVersion` 1 becomes a tag. The migration uses it, and the contract tests use it to prove the catalog covers today's content.
-
 ### Versioning
 
 `apiVersion` is part of every source and bundle file.
@@ -151,7 +149,7 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 1. **Contract:** `packages/schema`. Done.
 2. **Compiler foundations** (done): `kernel validate|build` compiles today's content into the bundle, with parity tests against the current site and a route-by-route rendering snapshot tool.
 3. **Engine renders from the compiled bundle**, and moves into `packages/engine` (done). Rendering is identical on 129 of 130 routes; the remaining one replaces a raw-HTML box with a callout.
-4. **Markdoc migration:** MDX becomes `.md` files plus `.data.yml`.
+4. **Markdoc migration** (done): MDX becomes `.md` files plus `.data.yml`. The compiled bundle is identical, and all 130 routes render identically.
 5. **Programs:** routing, scoped progress and search, variants, reader variables, UI strings.
 6. **Platform home and program selector.**
 7. **Generic components replace the bespoke widgets.**

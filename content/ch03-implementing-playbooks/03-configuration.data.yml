@@ -1,0 +1,94 @@
+privilege-escalation:
+  text:
+    title: Connecting and escalating privileges
+    caption: Ansible logs in as the remote user with an SSH key, then uses sudo to become root before running the task.
+    title2: student
+    sub: on workstation
+    label: SSH key
+    title3: someuser
+    sub2: on servera
+    label2: sudo
+    title4: root
+    sub3: on servera
+    title5: task
+    sub4: runs as root
+    label3: ask_pass = false
+    label4: remote_user = someuser
+    label5: become_user = root
+    label6: become = true · become_method = sudo · become_ask_pass = false
+    label7: "[defaults] controls the connection · [privilege_escalation] controls sudo"
+  data: {}
+precedence-resolver:
+  text:
+    template: "{value0}: {value1}"
+    label: Not set
+    precRank: ·
+  data: {}
+  props:
+    title: ansible.cfg lookup order
+    sub: Highest priority first. Only one file is ever used.
+    items:
+      - label: ANSIBLE_CONFIG=/path/to/file
+        detail: Environment variable pointing at a specific file.
+      - label: ./ansible.cfg
+        detail: "In the current directory: your **project** file. This is the one you normally use."
+        on: true
+      - label: ~/.ansible.cfg
+        detail: In the home directory of the user running Ansible.
+        on: true
+      - label: /etc/ansible/ansible.cfg
+        detail: System-wide default file.
+        on: true
+    fallback:
+      label: built-in defaults
+      detail: "No file found: Ansible uses its compiled-in defaults."
+    note: With **ansible-navigator**, Ansible runs **inside the execution environment**, so it looks for these files inside the container. Your project directory is mounted as the working directory, so `./ansible.cfg` works. The home-directory and `/etc` files are the container's, and in Red Hat's supported EEs they are empty or missing. With `ansible-playbook`, the files on your workstation are used.
+precedence-resolver-2:
+  text:
+    template: "{value0}: {value1}"
+    label: Not set
+    precRank: ·
+  data: {}
+  props:
+    title: ansible-navigator settings lookup order
+    items:
+      - label: ANSIBLE_NAVIGATOR_CONFIG=/path/to/file
+        detail: Environment variable pointing at a specific settings file.
+      - label: ./ansible-navigator.yml
+        detail: In the current Ansible project directory.
+        on: true
+      - label: ~/.ansible-navigator.yml
+        detail: In your home directory. Note the leading dot.
+        on: true
+    fallback:
+      label: built-in defaults
+      detail: Navigator’s own defaults, including its default EE image.
+check:
+  questions:
+    - id: q-8efac24357d8
+      legacyIndex: 0
+      q: Your project has `./ansible.cfg` and you also have `~/.ansible.cfg`. `ANSIBLE_CONFIG` is not set. Which settings apply?
+      options:
+        - Both files, merged
+        - Only `./ansible.cfg`
+        - Only `~/.ansible.cfg`
+      answer: 1
+      explain: Ansible uses the first file found and ignores the others completely. Nothing is merged.
+    - id: q-f232e3b58583
+      legacyIndex: 1
+      q: You set `become_ask_pass = true`, and `ansible-navigator run site.yml` hangs. What is most likely missing?
+      options:
+        - "`become = true`"
+        - Playbook artifacts disabled in `ansible-navigator.yml` and the `-m stdout` option
+        - A `[defaults]` section
+      answer: 1
+      explain: Navigator can only prompt for passwords in stdout mode with playbook artifacts disabled.
+    - id: q-5f23aab3ad94
+      legacyIndex: 2
+      q: Which `ansible.cfg` directive names the user Ansible logs in as on managed hosts?
+      options:
+        - "`become_user`"
+        - "`remote_user`"
+        - "`ansible_user`"
+      answer: 1
+      explain: "`remote_user` is the login user. `become_user` is who Ansible switches to *after* logging in. (`ansible_user` is an inventory variable, not an ansible.cfg directive.)"

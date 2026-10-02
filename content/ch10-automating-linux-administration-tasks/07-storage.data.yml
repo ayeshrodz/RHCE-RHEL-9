@@ -1,0 +1,68 @@
+storage-stack:
+  text:
+    title: From a blank disk to a mounted file system
+    title2: /dev/sdb
+    sub: 5 GiB disk
+    title3: /dev/sdb1
+    sub2: 1 GiB, LVM
+    title4: "volume group: apps"
+    title5: /dev/apps/data
+    sub3: 500 MiB
+    title6: XFS
+    title7: /srv/data
+    sub4: mounted, in /etc/fstab
+    label: disk
+    label2: LVM
+    label3: what users see
+  data:
+    steps:
+      - title: A blank disk
+        text: "/dev/sdb: 5 GiB, no partition table. On the home lab it is sdb; on many other systems vdb or nvme1n1."
+      - title: Partition
+        text: community.general.parted creates /dev/sdb1 and marks it for LVM. part_end sets its size.
+      - title: Volume group
+        text: community.general.lvg turns sdb1 into a physical volume and builds the volume group apps from it.
+      - title: Logical volume
+        text: community.general.lvol carves the logical volume data (500 MiB) out of the group. Later you can grow it.
+      - title: File system
+        text: community.general.filesystem puts XFS on /dev/apps/data. It never reformats a device that already has a file system.
+      - title: Mount
+        text: "ansible.posix.mount with state: mounted mounts it on /srv/data now and writes the line to /etc/fstab for every boot."
+check:
+  questions:
+    - id: q-1ca6ff291e9e
+      legacyIndex: 0
+      q: Which module creates a volume group?
+      options:
+        - "`community.general.lvol`"
+        - "`community.general.lvg`"
+        - "`community.general.parted`"
+      answer: 1
+      explain: "lvg: volume group. lvol: logical volume."
+    - id: q-e96907a3d61f
+      legacyIndex: 1
+      q: "What does `resizefs: true` add to an lvol task that makes a volume bigger?"
+      options:
+        - Nothing
+        - It grows the file system on the volume as well
+        - It reformats the volume
+      answer: 1
+      explain: Without it the volume grows but the file system keeps its old size.
+    - id: q-abeb1ba85727
+      legacyIndex: 2
+      q: Which mount state mounts now and adds the line to /etc/fstab?
+      options:
+        - "`present`"
+        - "`mounted`"
+        - "`absent`"
+      answer: 1
+      explain: present only writes fstab; mounted does both.
+    - id: q-3d4dfaa7b718
+      legacyIndex: 3
+      q: The filesystem module runs against a device that already has XFS. What happens?
+      options:
+        - It is reformatted
+        - "Nothing: it reports ok"
+        - It fails
+      answer: 1
+      explain: "It creates a file system only where there is none, unless force: true is set."
