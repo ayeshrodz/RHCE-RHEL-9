@@ -133,5 +133,36 @@
       "label3": "View the source on GitHub",
       "title2": "View the source on GitHub"
     }
+  },
+  "Sidebar": {
+    "data": {},
+    "text": {
+      "label": "Course navigation",
+      "map": "Course map",
+      "overview": "Course overview",
+      "setupStage": "Get started",
+      "progress": "{value0} of {value1} sections complete",
+      "progressLink": "Open your learning dashboard",
+      "upNext": "Up next",
+      "allDone": "Every section is complete",
+      "filter": "Find a section",
+      "filterLabel": "Filter sections by title or number",
+      "clear": "Clear the filter",
+      "matches": "{value0} matching sections",
+      "noMatches": "No section matches \u201c{value0}\u201d.",
+      "expand": "Expand chapter {value0}",
+      "collapse": "Collapse chapter {value0}",
+      "chapterProgress": "{value0} of {value1} complete",
+      "soon": "Soon",
+      "collapseSidebar": "Collapse sidebar",
+      "expandSidebar": "Expand sidebar",
+      "close": "Close navigation",
+      "shortcut": "Press [ to toggle the sidebar",
+      "open": "Open chapter",
+      "kindLab": "Exercise",
+      "kindQuiz": "Quiz",
+      "kindSummary": "Summary",
+      "done": "complete"
+    }
   }
 }

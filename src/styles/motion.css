@@ -88,7 +88,6 @@
   .brand-pill,
   .header-progress,
   .reveal-toggle,
-  .nav-expand,
   .lu-chip button
 ) {
   transition:
@@ -278,8 +277,7 @@
 .lab-notes details[open] > :not(summary),
 .lab-walkthrough[open] > :not(summary),
 .dashboard-card details[open] > :not(summary),
-.page-outline[open] > .toc,
-.nav-sections {
+.page-outline[open] > .toc {
   animation: km-drop 0.22s var(--ease-out);
 }
 

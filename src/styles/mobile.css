@@ -88,10 +88,6 @@
 }
 
 @media (max-width: 960px) {
-  .sidebar {
-    overscroll-behavior: contain;
-    max-height: calc(var(--overlay-height, 100dvh) - var(--header-h));
-  }
   .progress-backdrop {
     position: fixed;
     inset: 0;
@@ -344,9 +340,6 @@
 }
 
 @media (max-width: 760px), (pointer: coarse) {
-  .nav-section,
-  .nav-chapter-title,
-  .sidebar-home,
   summary {
     min-height: 2rem;
   }

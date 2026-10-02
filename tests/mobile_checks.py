@@ -106,6 +106,16 @@ with preview_server(BASE, ROOT):
         heading_button.click()
         assert not outline.evaluate('(e) => e.open')
         assert page.evaluate("document.activeElement.matches('h2, h3')")
+        # The drawer opens with focus on Close (no keyboard pops up), shows the open page, and swipes closed.
+        page.get_by_role('button', name='Open navigation', exact=True).click()
+        drawer = page.get_by_role('dialog', name='Course navigation', exact=True); drawer.wait_for()
+        assert page.evaluate("document.activeElement.getAttribute('aria-label')") == 'Close navigation'
+        swipe = """(n, path) => { const ev = (type, [x, y]) => n.dispatchEvent(new PointerEvent(type, {pointerType: 'touch', clientX: x, clientY: y, bubbles: true}));
+            ev('pointerdown', path[0]); for (const point of path.slice(1)) ev('pointermove', point); ev('pointerup', path.at(-1)); }"""
+        drawer.evaluate(swipe, [[300, 400], [295, 300], [290, 200]])
+        assert drawer.count(), 'a vertical drag must not close the drawer'
+        drawer.evaluate(swipe, [[300, 400], [260, 402], [160, 404], [90, 405]])
+        page.wait_for_function("!document.querySelector('[role=dialog][aria-label=\"Course navigation\"]')")
         # Header overlays share one controller: switching never stacks focus traps.
         page.get_by_role('button', name='Open navigation', exact=True).click()
         page.get_by_role('button', name='Your progress', exact=True).click()
