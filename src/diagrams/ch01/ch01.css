@@ -1,0 +1,323 @@
+/* Chapter 1 (lab setup) widgets. */
+
+/* ---------- Network map ---------- */
+
+.lnm-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 16px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.lnm-flows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lnm-flow-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.lnm-flow-head {
+  width: 100%;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lnm-flow-head.is-ok {
+  color: var(--ok);
+}
+.lnm-flow-head.is-bad {
+  color: var(--fail);
+}
+.lnm-flows .chip {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+}
+.lnm-verdict {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border-left: 3px solid;
+}
+.lnm-verdict.is-ok {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.lnm-verdict.is-bad {
+  border-color: var(--fail);
+  background: var(--fail-soft);
+}
+.lnm-verdict-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.lnm-verdict.is-ok .lnm-verdict-title {
+  color: var(--ok);
+}
+.lnm-verdict.is-bad .lnm-verdict-title {
+  color: var(--fail);
+}
+.lnm-verdict-text {
+  margin: 0 0 10px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.lnm-rule {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: var(--code-bg);
+  font-size: 11.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- Snapshot chain ---------- */
+
+.snapc-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.snapc-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  list-style: none;
+}
+.snapc-snap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.snapc-snap + .snapc-snap::before {
+  content: '→';
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  font-size: 12px;
+}
+.snapc-snap.is-newest {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.snapc-snap.is-clean .snapc-name {
+  color: var(--accent-text);
+}
+.snapc-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.snapc-tag {
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+.snapc-snap.is-newest .snapc-tag {
+  color: var(--ok);
+}
+.snapc-actions {
+  display: flex;
+  gap: 4px;
+}
+.terminal.snapc-log {
+  min-height: 92px;
+  white-space: pre-wrap;
+}
+
+/* ---------- Lab values form ---------- */
+
+.labvals {
+  border-color: var(--accent);
+  border-width: 1px;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.labvals-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.labvals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.labvals-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.labvals-key {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.labvals-field input {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+}
+.labvals-field input:focus {
+  border-color: var(--accent);
+}
+.labvals-hint {
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+.labvals-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+/* ---------- Build roadmap ---------- */
+
+.roadmap-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.roadmap-head .widget-title {
+  margin: 0 !important;
+}
+.roadmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.roadmap-where {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 7px;
+  border: 0.75px solid var(--s);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--f) 60%, var(--bg-elev));
+  color: var(--tt);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.roadmap-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none;
+}
+.roadmap-list li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.roadmap-item {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13.5px;
+  text-decoration: none !important;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.roadmap-item:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+.roadmap-n {
+  color: var(--accent-text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+.roadmap-tags {
+  display: flex;
+  gap: 3px;
+}
+.roadmap-tags .roadmap-where {
+  padding: 0 5px;
+}
+.roadmap-min {
+  min-width: 56px;
+  color: var(--text-3);
+  font-size: 12px;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .lnm-panel,
+  .labvals-grid,
+  .roadmap-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The prose inline-code style would otherwise enlarge the rule text. */
+.prose .lnm-rule {
+  padding: 7px 10px;
+  background: var(--code-bg);
+  font-size: 11.5px;
+  font-weight: 400;
+}
+.prose a.roadmap-item {
+  color: var(--text);
+}
+
+/* Phones: the place tags move under the title so long titles keep one or two lines. */
+@media (max-width: 480px) {
+  .roadmap-item {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+  .roadmap-title {
+    grid-column: 2;
+  }
+  .roadmap-tags {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .roadmap-min {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+  }
+}

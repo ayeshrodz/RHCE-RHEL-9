@@ -1,0 +1,14 @@
+title: Simplifying Playbooks with Roles and Collections
+goal: Use roles and content collections to develop playbooks more quickly and reuse code.
+objectives:
+  - Describe the purpose of a role, its structure, and how roles are used in playbooks.
+  - Create a role in a playbook's project directory and run it as part of a play.
+  - Select and retrieve roles from external sources such as Git repositories or Ansible Galaxy, and use them in playbooks.
+  - Obtain a set of related roles, modules and other content from a content collection, and use them in a playbook.
+  - Write playbooks that use the system roles to perform standard operations.
+objectiveIds:
+  - ch08.role-structure
+  - ch08.role-create
+  - ch08.role-install
+  - ch08.collections
+  - ch08.system-roles

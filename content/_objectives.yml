@@ -1,518 +1,518 @@
 [
   {
-    "id": "ch00.lab-network",
-    "chapter": "ch00",
-    "lessons": [
-      "ch00/network-and-seal"
-    ],
-    "labs": [
-      "ch00/network-and-seal"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch00.lab-machines",
-    "chapter": "ch00",
-    "lessons": [
-      "ch00/create-and-verify-vms"
-    ],
-    "labs": [
-      "ch00/create-and-verify-vms"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch00.lab-tools",
-    "chapter": "ch00",
-    "lessons": [
-      "ch00/control-node"
-    ],
-    "labs": [
-      "ch00/control-node"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch00.lab-reset",
-    "chapter": "ch00",
-    "lessons": [
-      "ch00/snapshots-and-rht-vmctl"
-    ],
-    "labs": [
-      "ch00/snapshots-and-rht-vmctl"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch01.automation",
+    "id": "ch01.lab-network",
     "chapter": "ch01",
     "lessons": [
-      "ch01/why-automate"
+      "ch01/network-and-seal"
     ],
     "labs": [
-      "ch01/lab-installing-ansible"
+      "ch01/network-and-seal"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-machines",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/create-and-verify-vms"
+    ],
+    "labs": [
+      "ch01/create-and-verify-vms"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-tools",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/control-node"
+    ],
+    "labs": [
+      "ch01/control-node"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-reset",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/snapshots-and-rht-vmctl"
+    ],
+    "labs": [
+      "ch01/snapshots-and-rht-vmctl"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch02.automation",
+    "chapter": "ch02",
+    "lessons": [
+      "ch02/why-automate"
+    ],
+    "labs": [
+      "ch02/lab-installing-ansible"
     ],
     "challenges": [
       "desired-state"
     ]
   },
   {
-    "id": "ch01.architecture",
-    "chapter": "ch01",
+    "id": "ch02.architecture",
+    "chapter": "ch02",
     "lessons": [
-      "ch01/architecture"
+      "ch02/architecture"
     ],
     "labs": [
-      "ch01/lab-installing-ansible"
+      "ch02/lab-installing-ansible"
     ],
     "challenges": [
       "control-location"
     ]
   },
   {
-    "id": "ch01.distributions",
-    "chapter": "ch01",
-    "lessons": [
-      "ch01/automation-platform"
-    ],
-    "labs": [
-      "ch01/lab-installing-ansible"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch01.runtime",
-    "chapter": "ch01",
-    "lessons": [
-      "ch01/control-node-and-hosts"
-    ],
-    "labs": [
-      "ch01/lab-installing-ansible"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch02.inventory",
+    "id": "ch02.distributions",
     "chapter": "ch02",
     "lessons": [
-      "ch02/inventory"
+      "ch02/automation-platform"
     ],
     "labs": [
-      "ch02/lab-inventory"
+      "ch02/lab-installing-ansible"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch02.runtime",
+    "chapter": "ch02",
+    "lessons": [
+      "ch02/control-node-and-hosts"
+    ],
+    "labs": [
+      "ch02/lab-installing-ansible"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch03.inventory",
+    "chapter": "ch03",
+    "lessons": [
+      "ch03/inventory"
+    ],
+    "labs": [
+      "ch03/lab-inventory"
     ],
     "challenges": [
       "inventory-selection"
     ]
   },
   {
-    "id": "ch02.configuration",
-    "chapter": "ch02",
+    "id": "ch03.configuration",
+    "chapter": "ch03",
     "lessons": [
-      "ch02/configuration"
+      "ch03/configuration"
     ],
     "labs": [
-      "ch02/lab-configuration"
+      "ch03/lab-configuration"
     ],
     "challenges": []
   },
   {
-    "id": "ch02.playbooks",
-    "chapter": "ch02",
+    "id": "ch03.playbooks",
+    "chapter": "ch03",
     "lessons": [
-      "ch02/writing-playbooks"
+      "ch03/writing-playbooks"
     ],
     "labs": [
-      "ch02/lab-playbooks"
+      "ch03/lab-playbooks"
     ],
     "challenges": [
       "repair-play"
     ]
   },
   {
-    "id": "ch02.modules",
-    "chapter": "ch02",
+    "id": "ch03.modules",
+    "chapter": "ch03",
     "lessons": [
-      "ch02/modules-and-yaml"
+      "ch03/modules-and-yaml"
     ],
     "labs": [
-      "ch02/lab-multiple-plays"
+      "ch03/lab-multiple-plays"
     ],
     "challenges": []
   },
   {
-    "id": "ch03.variables",
-    "chapter": "ch03",
+    "id": "ch04.variables",
+    "chapter": "ch04",
     "lessons": [
-      "ch03/variables"
+      "ch04/variables"
     ],
     "labs": [
-      "ch03/lab-variables"
+      "ch04/lab-variables"
     ],
     "challenges": [
       "variable-winner"
     ]
   },
   {
-    "id": "ch03.vault",
-    "chapter": "ch03",
+    "id": "ch04.vault",
+    "chapter": "ch04",
     "lessons": [
-      "ch03/ansible-vault"
+      "ch04/ansible-vault"
     ],
     "labs": [
-      "ch03/lab-vault",
-      "ch10/assessment-release"
+      "ch04/lab-vault",
+      "ch11/assessment-release"
     ],
     "challenges": [
       "vault-runtime"
     ]
   },
   {
-    "id": "ch03.facts",
-    "chapter": "ch03",
+    "id": "ch04.facts",
+    "chapter": "ch04",
     "lessons": [
-      "ch03/facts"
+      "ch04/facts"
     ],
     "labs": [
-      "ch03/lab-facts"
+      "ch04/lab-facts"
     ],
     "challenges": []
   },
   {
-    "id": "ch04.loops-conditions",
-    "chapter": "ch04",
+    "id": "ch05.loops-conditions",
+    "chapter": "ch05",
     "lessons": [
-      "ch04/loops"
+      "ch05/loops"
     ],
     "labs": [
-      "ch04/lab-loops-conditionals"
+      "ch05/lab-loops-conditionals"
     ],
     "challenges": [
       "conditional-task"
     ]
   },
   {
-    "id": "ch04.handlers",
-    "chapter": "ch04",
+    "id": "ch05.handlers",
+    "chapter": "ch05",
     "lessons": [
-      "ch04/handlers"
+      "ch05/handlers"
     ],
     "labs": [
-      "ch04/lab-handlers"
+      "ch05/lab-handlers"
     ],
     "challenges": [
       "handler-count"
     ]
   },
   {
-    "id": "ch04.failure",
-    "chapter": "ch04",
+    "id": "ch05.failure",
+    "chapter": "ch05",
     "lessons": [
-      "ch04/task-failure"
+      "ch05/task-failure"
     ],
     "labs": [
-      "ch04/lab-task-failure"
+      "ch05/lab-task-failure"
     ],
     "challenges": []
   },
   {
-    "id": "ch05.files",
-    "chapter": "ch05",
+    "id": "ch06.files",
+    "chapter": "ch06",
     "lessons": [
-      "ch05/file-modules"
+      "ch06/file-modules"
     ],
     "labs": [
-      "ch05/lab-file-modules"
+      "ch06/lab-file-modules"
     ],
     "challenges": [
       "file-permissions"
     ]
   },
   {
-    "id": "ch05.templates",
-    "chapter": "ch05",
+    "id": "ch06.templates",
+    "chapter": "ch06",
     "lessons": [
-      "ch05/jinja2-templates"
+      "ch06/jinja2-templates"
     ],
     "labs": [
-      "ch05/lab-templates",
-      "ch10/assessment-release"
+      "ch06/lab-templates",
+      "ch11/assessment-release"
     ],
     "challenges": [
       "render-banner"
     ]
   },
   {
-    "id": "ch06.patterns",
-    "chapter": "ch06",
+    "id": "ch07.patterns",
+    "chapter": "ch07",
     "lessons": [
-      "ch06/host-patterns"
+      "ch07/host-patterns"
     ],
     "labs": [
-      "ch06/lab-host-patterns"
+      "ch07/lab-host-patterns"
     ],
     "challenges": [
       "exclude-staging"
     ]
   },
   {
-    "id": "ch06.reuse",
-    "chapter": "ch06",
+    "id": "ch07.reuse",
+    "chapter": "ch07",
     "lessons": [
-      "ch06/reusing-content"
+      "ch07/reusing-content"
     ],
     "labs": [
-      "ch06/lab-reuse"
+      "ch07/lab-reuse"
     ],
     "challenges": [
       "reuse-condition"
     ]
   },
   {
-    "id": "ch07.role-structure",
-    "chapter": "ch07",
+    "id": "ch08.role-structure",
+    "chapter": "ch08",
     "lessons": [
-      "ch07/role-structure"
+      "ch08/role-structure"
     ],
     "labs": [
-      "ch07/lab-role-create"
+      "ch08/lab-role-create"
     ],
     "challenges": [
       "role-layout"
     ]
   },
   {
-    "id": "ch07.role-create",
-    "chapter": "ch07",
+    "id": "ch08.role-create",
+    "chapter": "ch08",
     "lessons": [
-      "ch07/creating-roles"
+      "ch08/creating-roles"
     ],
     "labs": [
-      "ch07/lab-role-create",
-      "ch10/assessment-release"
+      "ch08/lab-role-create",
+      "ch11/assessment-release"
     ],
     "challenges": []
   },
   {
-    "id": "ch07.role-install",
-    "chapter": "ch07",
+    "id": "ch08.role-install",
+    "chapter": "ch08",
     "lessons": [
-      "ch07/external-roles"
+      "ch08/external-roles"
     ],
     "labs": [
-      "ch07/lab-role-galaxy"
+      "ch08/lab-role-galaxy"
     ],
     "challenges": []
   },
   {
-    "id": "ch07.collections",
-    "chapter": "ch07",
+    "id": "ch08.collections",
+    "chapter": "ch08",
     "lessons": [
-      "ch07/collections"
+      "ch08/collections"
     ],
     "labs": [
-      "ch07/lab-role-collections"
+      "ch08/lab-role-collections"
     ],
     "challenges": [
       "collection-location"
     ]
   },
   {
-    "id": "ch07.system-roles",
-    "chapter": "ch07",
+    "id": "ch08.system-roles",
+    "chapter": "ch08",
     "lessons": [
-      "ch07/system-roles"
+      "ch08/system-roles"
     ],
     "labs": [
-      "ch07/lab-role-system"
+      "ch08/lab-role-system"
     ],
     "challenges": []
   },
   {
-    "id": "ch08.playbook-errors",
-    "chapter": "ch08",
+    "id": "ch09.playbook-errors",
+    "chapter": "ch09",
     "lessons": [
-      "ch08/troubleshooting-playbooks"
+      "ch09/troubleshooting-playbooks"
     ],
     "labs": [
-      "ch08/lab-troubleshoot-playbook"
+      "ch09/lab-troubleshoot-playbook"
     ],
     "challenges": [
       "verify-success"
     ]
   },
   {
-    "id": "ch08.host-errors",
-    "chapter": "ch08",
+    "id": "ch09.host-errors",
+    "chapter": "ch09",
     "lessons": [
-      "ch08/troubleshooting-hosts"
+      "ch09/troubleshooting-hosts"
     ],
     "labs": [
-      "ch08/lab-troubleshoot-host"
+      "ch09/lab-troubleshoot-host"
     ],
     "challenges": [
       "diagnose-unreachable"
     ]
   },
   {
-    "id": "ch09.software",
-    "chapter": "ch09",
+    "id": "ch10.software",
+    "chapter": "ch10",
     "lessons": [
-      "ch09/software"
+      "ch10/software"
     ],
     "labs": [
-      "ch09/lab-software"
+      "ch10/lab-software"
     ],
     "challenges": []
   },
   {
-    "id": "ch09.users",
-    "chapter": "ch09",
+    "id": "ch10.users",
+    "chapter": "ch10",
     "lessons": [
-      "ch09/users"
+      "ch10/users"
     ],
     "labs": [
-      "ch09/lab-users",
-      "ch10/assessment-operations"
+      "ch10/lab-users",
+      "ch11/assessment-operations"
     ],
     "challenges": [
       "validate-sudo"
     ]
   },
   {
-    "id": "ch09.scheduling",
-    "chapter": "ch09",
+    "id": "ch10.scheduling",
+    "chapter": "ch10",
     "lessons": [
-      "ch09/boot-and-scheduling"
+      "ch10/boot-and-scheduling"
     ],
     "labs": [
-      "ch09/lab-boot-and-scheduling",
-      "ch10/assessment-operations"
+      "ch10/lab-boot-and-scheduling",
+      "ch11/assessment-operations"
     ],
     "challenges": []
   },
   {
-    "id": "ch09.storage",
-    "chapter": "ch09",
+    "id": "ch10.storage",
+    "chapter": "ch10",
     "lessons": [
-      "ch09/storage"
+      "ch10/storage"
     ],
     "labs": [
-      "ch09/lab-storage",
-      "ch10/assessment-operations"
+      "ch10/lab-storage",
+      "ch11/assessment-operations"
     ],
     "challenges": [
       "persistent-mount"
     ]
   },
   {
-    "id": "ch09.network",
-    "chapter": "ch09",
-    "lessons": [
-      "ch09/network"
-    ],
-    "labs": [
-      "ch09/lab-network",
-      "ch10/assessment-operations"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch09.archives",
-    "chapter": "ch09",
-    "lessons": [
-      "ch09/archives"
-    ],
-    "labs": [
-      "ch09/lab-archives",
-      "ch10/assessment-release"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch10.review",
+    "id": "ch10.network",
     "chapter": "ch10",
     "lessons": [
-      "ch10/how-to-review"
+      "ch10/network"
     ],
     "labs": [
-      "ch10/lab-review-deploy"
+      "ch10/lab-network",
+      "ch11/assessment-operations"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch10.archives",
+    "chapter": "ch10",
+    "lessons": [
+      "ch10/archives"
+    ],
+    "labs": [
+      "ch10/lab-archives",
+      "ch11/assessment-release"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch11.review",
+    "chapter": "ch11",
+    "lessons": [
+      "ch11/how-to-review"
+    ],
+    "labs": [
+      "ch11/lab-review-deploy"
     ],
     "challenges": [
       "review-sequence"
     ]
   },
   {
-    "id": "ch10.deployment",
-    "chapter": "ch10",
+    "id": "ch11.deployment",
+    "chapter": "ch11",
     "lessons": [
-      "ch10/how-to-review"
+      "ch11/how-to-review"
     ],
     "labs": [
-      "ch10/lab-review-deploy"
+      "ch11/lab-review-deploy"
     ],
     "challenges": []
   },
   {
-    "id": "ch10.composition",
-    "chapter": "ch10",
+    "id": "ch11.composition",
+    "chapter": "ch11",
     "lessons": [
-      "ch10/how-to-review"
+      "ch11/how-to-review"
     ],
     "labs": [
-      "ch10/lab-review-playbooks",
-      "ch10/assessment-release"
+      "ch11/lab-review-playbooks",
+      "ch11/assessment-release"
     ],
     "challenges": [
       "review-recovery"
     ]
   },
   {
-    "id": "ch10.administration",
-    "chapter": "ch10",
-    "lessons": [
-      "ch10/how-to-review"
-    ],
-    "labs": [
-      "ch10/lab-review-admin",
-      "ch10/assessment-operations"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch10.reusable-roles",
-    "chapter": "ch10",
-    "lessons": [
-      "ch10/how-to-review"
-    ],
-    "labs": [
-      "ch10/lab-review-roles",
-      "ch10/assessment-release"
-    ],
-    "challenges": []
-  },
-  {
-    "id": "ch11.git",
+    "id": "ch11.administration",
     "chapter": "ch11",
     "lessons": [
-      "ch11/git-for-automation"
+      "ch11/how-to-review"
     ],
     "labs": [
-      "ch11/lab-git",
-      "ch11/chapter-lab"
+      "ch11/lab-review-admin",
+      "ch11/assessment-operations"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch11.reusable-roles",
+    "chapter": "ch11",
+    "lessons": [
+      "ch11/how-to-review"
+    ],
+    "labs": [
+      "ch11/lab-review-roles",
+      "ch11/assessment-release"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch12.git",
+    "chapter": "ch12",
+    "lessons": [
+      "ch12/git-for-automation"
+    ],
+    "labs": [
+      "ch12/lab-git",
+      "ch12/chapter-lab"
     ],
     "challenges": [
       "git-review-stage"
     ]
   },
   {
-    "id": "ch11.development",
-    "chapter": "ch11",
+    "id": "ch12.development",
+    "chapter": "ch12",
     "lessons": [
-      "ch11/development-containers"
+      "ch12/development-containers"
     ],
     "labs": [
-      "ch11/lab-development-containers",
-      "ch11/chapter-lab"
+      "ch12/lab-development-containers",
+      "ch12/chapter-lab"
     ],
     "challenges": [
       "runtime-versions"

@@ -4,7 +4,7 @@ import { pages } from '@/lib/course';
 
 const EMPTY = [];
 
-/** Pages the reader has marked complete, stored as "ch01/why-automate" keys. */
+/** Pages the reader has marked complete, stored as "ch02/why-automate" keys. */
 export function useProgress() {
   const [done, setDone] = useStored('completed', EMPTY);
 

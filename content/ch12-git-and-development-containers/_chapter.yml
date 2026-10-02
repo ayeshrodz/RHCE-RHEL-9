@@ -1,0 +1,8 @@
+title: Git and Development Containers
+goal: Keep automation projects in Git, and develop and run them with consistent tools from an Ansible development container and an execution environment.
+objectives:
+  - Clone a project, review and commit changes, push them to a shared remote and pull a teammate's work with Git.
+  - Run and check playbooks with an Ansible development container, configure ansible-navigator for a project, and open the same container in VS Code.
+objectiveIds:
+  - ch12.git
+  - ch12.development

@@ -1,0 +1,363 @@
+---
+title: Describing role structure
+kind: lesson
+minutes: 12
+---
+
+export const widgetContent = {
+  "RoleAnatomy": {
+    "data": {
+      "files": {
+        "tasks/main.yml": {
+          "what": "The work the role does: a plain list of tasks, like a task file. This is the default task entry point. A role may instead supply only variables or files.",
+          "code": "---\n- name: Web packages are installed\n  ansible.builtin.dnf:\n    name: httpd\n    state: present\n\n- name: Site configuration is in place\n  ansible.builtin.template:\n    src: site.conf.j2   # from templates/\n    dest: /etc/httpd/conf.d/site.conf\n  notify: restart httpd"
+        },
+        "defaults/main.yml": {
+          "what": "Default values for the role’s variables. They have the lowest precedence of all, so anyone using the role can override them. Put every setting a user might want to change here.",
+          "code": "---\nweb_site_title: Welcome\nweb_site_admin: root@localhost"
+        },
+        "vars/main.yml": {
+          "what": "Variables the role uses internally. They have high precedence and are not meant to be changed by whoever uses the role: inventory and play variables do not override them.",
+          "code": "---\nweb_site_conf_dir: /etc/httpd/conf.d"
+        },
+        "handlers/main.yml": {
+          "what": "Handlers that the role’s tasks can notify. They are available to the whole play once the role is loaded.",
+          "code": "---\n- name: restart httpd\n  ansible.builtin.service:\n    name: httpd\n    state: restarted"
+        },
+        "templates/site.conf.j2": {
+          "what": "Jinja2 templates. A template task in the role finds them by file name alone, with no path.",
+          "code": "# {{ ansible_managed }}\nServerAdmin {{ web_site_admin }}\nServerName {{ ansible_facts['fqdn'] }}"
+        },
+        "files/robots.txt": {
+          "what": "Static files. copy and similar modules in the role find them by file name alone.",
+          "code": "User-agent: *\nDisallow: /private/"
+        },
+        "meta/main.yml": {
+          "what": "Information about the role: author, licence, supported platforms, and the other roles it depends on. Dependencies listed here run before this role.",
+          "code": "---\ngalaxy_info:\n  author: your name\n  description: Configures a simple web site\n  license: MIT\n  min_ansible_version: \"2.14\"\ndependencies: []"
+        },
+        "README.md": {
+          "what": "What the role does, its variables and an example play. The first thing someone who wants to reuse the role will read.",
+          "code": "# web_site\nInstalls Apache and publishes a one-page site.\n\n## Role variables\n- web_site_title: page heading (default: Welcome)"
+        },
+        "tests/test.yml": {
+          "what": "A small inventory and playbook for trying the role by itself. Optional; many people delete this directory.",
+          "code": "---\n- hosts: localhost\n  roles:\n    - web_site"
+        }
+      },
+      "initialSelection1": "tasks/main.yml"
+    },
+    "text": {
+      "widgetLabel": "Anatomy of a role"
+    }
+  },
+  "PlayOrder": {
+    "data": {
+      "written": [
+        {
+          "id": "tasks",
+          "label": "tasks:",
+          "lines": [
+            "    - name: a normal task",
+            "      notify: h2"
+          ]
+        },
+        {
+          "id": "post",
+          "label": "post_tasks:",
+          "lines": [
+            "    - name: a post task"
+          ]
+        },
+        {
+          "id": "pre",
+          "label": "pre_tasks:",
+          "lines": [
+            "    - name: a pre task",
+            "      notify: h2"
+          ]
+        },
+        {
+          "id": "roles",
+          "label": "roles:",
+          "lines": [
+            "    - role: r1   # notifies h1"
+          ]
+        },
+        {
+          "id": "handlers",
+          "label": "handlers:",
+          "lines": [
+            "    - name: h2"
+          ]
+        }
+      ],
+      "run": [
+        {
+          "src": "pre",
+          "text": "TASK [a pre task]",
+          "note": "pre_tasks always run first, wherever they are written."
+        },
+        {
+          "src": "handlers",
+          "text": "RUNNING HANDLER [h2]",
+          "note": "Handlers notified by pre_tasks run now, before any role starts.",
+          "handler": true
+        },
+        {
+          "src": "roles",
+          "text": "TASK [r1 : role task]",
+          "note": "Roles run next, in the order they are listed. Task names are prefixed with the role name."
+        },
+        {
+          "src": "tasks",
+          "text": "TASK [a normal task]",
+          "note": "Then the play’s own tasks."
+        },
+        {
+          "src": "roles",
+          "text": "RUNNING HANDLER [r1 : h1]",
+          "note": "Handlers notified by roles and tasks run together, after tasks.",
+          "handler": true
+        },
+        {
+          "src": "handlers",
+          "text": "RUNNING HANDLER [h2]",
+          "note": "h2 was notified again by the normal task, so it runs a second time here.",
+          "handler": true
+        },
+        {
+          "src": "post",
+          "text": "TASK [a post task]",
+          "note": "post_tasks run last. Handlers they notify would run after them."
+        }
+      ]
+    },
+    "text": {
+      "widgetLabel": "Written order and running order",
+      "poCap": "The play, as written",
+      "label": "- hosts: web\n",
+      "template": "  {value0}\n{value1}\n",
+      "poCap2": "What runs, in order"
+    }
+  },
+  "RoleVarResolver": {
+    "data": {
+      "sources": [
+        {
+          "id": "defaults",
+          "where": "the role's defaults/main.yml",
+          "code": "roles/web_site/defaults/main.yml",
+          "value": "Welcome",
+          "note": "Meant to be overridden."
+        },
+        {
+          "id": "inventory",
+          "where": "inventory (group_vars or host_vars)",
+          "code": "group_vars/web.yml",
+          "value": "Team site"
+        },
+        {
+          "id": "play",
+          "where": "vars in the play",
+          "code": "vars: in site.yml",
+          "value": "Staff intranet"
+        },
+        {
+          "id": "entry",
+          "where": "vars on the role entry",
+          "code": "- role: web_site\n  vars:",
+          "value": "Intranet (role entry)"
+        },
+        {
+          "id": "rolevars",
+          "where": "the role's vars/main.yml",
+          "code": "roles/web_site/vars/main.yml",
+          "value": "Fixed by the role",
+          "note": "Beats everything above: inventory and play variables cannot change it."
+        },
+        {
+          "id": "param",
+          "where": "an inline role parameter",
+          "code": "- role: web_site\n  web_site_title: …",
+          "value": "Inline parameter"
+        },
+        {
+          "id": "extra",
+          "where": "-e on the command line",
+          "code": "-e web_site_title=…",
+          "value": "From the command line",
+          "note": "Always wins."
+        }
+      ]
+    },
+    "text": {
+      "widgetLabel": "Which value does the role use?",
+      "widgetSub": "Tick every place where ",
+      "code": "web_site_title",
+      "widgetSub2": " is set. The list runs from lowest precedence to highest.",
+      "rvrResult": "The role uses ",
+      "rvrResult2": ", from ",
+      "rvrResult3": ". ",
+      "rvrResult4": "The variable is not set anywhere: the first task that uses it fails with ",
+      "code2": "'web_site_title' is undefined",
+      "rvrResult5": "."
+    }
+  }
+};
+
+<Lead>
+Task files let you reuse a list of tasks. A role goes further: it bundles tasks with the variables, templates, files and handlers they need, in a standard layout that Ansible understands. A well-made role can be dropped into any project and used with one line.
+</Lead>
+
+<Objectives>
+- Explain what a role is and why roles make playbooks easier to maintain.
+- Name the directories of a role and what belongs in each.
+- Use a role in a play, and predict the order in which roles, tasks and handlers run.
+- Predict which value a role variable gets when it is set in several places.
+</Objectives>
+
+## What a role is
+
+A **role** is a directory with a fixed structure. Each subdirectory has one job, and Ansible loads `main.yml` from each automatically. Because the layout is always the same, anyone who has seen one role can find their way around another.
+
+Roles pay off in three ways:
+
+- **Reuse.** Write "set up a web server" once; use it in every project that needs one.
+- **Sharing.** A role is a self-contained folder, so it can be handed to a colleague, stored in its own repository, or published.
+- **Shorter playbooks.** A play that uses roles reads like a summary: which hosts, which roles.
+
+## The role layout
+
+Select a file to see what it is for:
+
+<RoleAnatomy />
+
+No individual file is mandatory: a role may provide tasks, variables, handlers, or files. A role that runs tasks normally uses `tasks/main.yml`. Leave out, or delete, any directory a role does not use.
+
+| Directory | Holds |
+| --- | --- |
+| `tasks` | The tasks the role runs |
+| `defaults` | Default variable values, meant to be overridden |
+| `vars` | Variables internal to the role, not meant to be overridden |
+| `handlers` | Handlers the role's tasks notify |
+| `templates` | Jinja2 templates used by the role's tasks |
+| `files` | Static files used by the role's tasks |
+| `meta` | Information about the role, including its dependencies |
+
+Inside a role, `template` and `copy` tasks refer to their source by file name alone. Ansible looks in the role's own `templates/` and `files/` directories first.
+
+## Using a role in a play
+
+List roles under the **`roles`** keyword of a play:
+
+```yaml
+- name: Web servers run the site
+  hosts: web
+  roles:
+    - web_site
+    - monitoring_agent
+```
+
+Ansible looks for each role in a `roles/` directory next to the playbook, then in the directories of the `roles_path` setting (by default `~/.ansible/roles`, `/usr/share/ansible/roles` and `/etc/ansible/roles`).
+
+To set a role's variables for one play, give the role entry a `vars` section:
+
+```yaml
+  roles:
+    - role: web_site
+      vars:
+        web_site_title: Staff intranet
+```
+
+## The order things run in
+
+A play can contain roles and its own tasks. Ansible does not run them in the order they are written. It runs **`pre_tasks`**, then **`roles`**, then **`tasks`**, then **`post_tasks`**, with handler flushes after `pre_tasks`, after `roles` and `tasks` together, and after `post_tasks`. Select a step to see where it comes from:
+
+<PlayOrder />
+
+Use `pre_tasks` for something that must happen before any role, such as taking a host out of a load balancer, and `post_tasks` for the matching step afterwards.
+
+<Callout type="note" title="Roles as tasks">
+You can also start a role from the task list, with `ansible.builtin.import_role` (static) or `ansible.builtin.include_role` (dynamic). They follow the same rules as `import_tasks` and `include_tasks` in chapter 7, and they run at that point in the task list rather than before it.
+
+```yaml
+  tasks:
+    - name: Set up the site
+      ansible.builtin.include_role:
+        name: web_site
+      when: deploy_site | bool
+```
+</Callout>
+
+## Variables in a role
+
+A role has two places for variables, and they behave very differently:
+
+<Columns>
+<Column title="defaults/main.yml" tone="green">
+
+The role's settings, with sensible starting values. They have the **lowest** precedence of anything in Ansible, so inventory, play variables and the command line can all override them.
+
+</Column>
+<Column title="vars/main.yml" tone="amber">
+
+Values the role needs internally, such as a path that must not change. They have **high** precedence: inventory and play variables do not override them.
+
+</Column>
+</Columns>
+
+Tick the places where a variable is set and see which value the role ends up with:
+
+<RoleVarResolver />
+
+<Callout type="tip" title="Two habits for role variables">
+**Put anything a user might change in `defaults`**, and keep `vars` for values that really are fixed.
+
+**Prefix every variable with the role's name** (`web_site_title`, not `title`). All variables of a play share one namespace, so a generic name in one role can collide with the same name in another.
+</Callout>
+
+<Callout type="warning" title="Secrets do not belong in a role">
+Pass passwords and keys into a role as variables from a Vault-encrypted file (chapter 4). A role with a secret inside it cannot be shared.
+</Callout>
+
+<Quiz objectives={["ch08.role-structure"]}
+  id="check"
+  title="Check your understanding"
+  questions={[
+    { id: 'q-7f557f9f4526', legacyIndex: 0,
+      q: 'Which file normally contains the tasks that a role runs?',
+      options: ['`meta/main.yml`', '`tasks/main.yml`', '`defaults/main.yml`', '`README.md`'],
+      answer: 1,
+      explain: 'tasks/main.yml is the default task entry point; roles can also supply only variables or files.',
+    },
+    { id: 'q-f6a90bb6c6fc', legacyIndex: 1,
+      q: 'A play has `tasks`, `roles` and `pre_tasks`, written in that order. What runs first?',
+      options: ['The tasks, because they are written first', 'The pre_tasks', 'The roles'],
+      answer: 1,
+      explain: 'The order is always pre_tasks, roles, tasks, post_tasks, whatever order they are written in.',
+    },
+    { id: 'q-bc42ceb2f7f1', legacyIndex: 2,
+      q: 'Where should a role keep a setting that users are expected to change?',
+      options: ['`vars/main.yml`', '`defaults/main.yml`', '`meta/main.yml`'],
+      answer: 1,
+      explain: 'Defaults have the lowest precedence, so anything can override them.',
+    },
+    { id: 'q-028cd2773de7', legacyIndex: 3,
+      q: 'A role sets `web_site_title` in `vars/main.yml`. The play sets it too, under `vars:`. Which value is used?',
+      options: ['The play’s value', 'The role’s `vars/main.yml` value', 'Ansible reports a conflict'],
+      answer: 1,
+      explain: 'Role vars outrank play variables. That is why user-facing settings belong in defaults.',
+    },
+    { id: 'q-c09bc2344e1a', legacyIndex: 4,
+      q: 'A role task has `src: site.conf.j2` with no path. Where does Ansible look first?',
+      options: ['Next to the playbook', 'In the role’s `templates/` directory', 'In `/etc/ansible`'],
+      answer: 1,
+      explain: 'Roles find their own templates and files by name.',
+    },
+  ]}
+/>
+
+## Takeaway
+
+Explain what a role is and why roles make playbooks easier to maintain. Use the chapter lab to check this on a real host.

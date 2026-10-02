@@ -55,7 +55,7 @@ for (const dir of fs.readdirSync('content').filter((d) => /^ch\d+/.test(d)).sort
     assert(data.title && ['lesson', 'quiz', 'lab', 'summary'].includes(data.kind), `${file}: invalid title or kind`);
     assert(Number.isInteger(data.minutes) && data.minutes > 0 && data.minutes <= 180, `${file}: invalid duration`);
     if (data.draft) continue;
-    if (data.kind === 'lab' && !chapter.startsWith('ch00')) {
+    if (data.kind === 'lab' && !chapter.startsWith('ch01')) {
       assert.match(data.title, /^(Exercise|Assessment): [A-Z]/, `${file}: use Exercise: or Assessment: with sentence case`);
     }
     const slug = data.slug ?? file.replace(/^\d+-/, '').replace(/\.mdx$/, '');

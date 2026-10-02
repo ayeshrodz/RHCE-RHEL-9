@@ -28,7 +28,7 @@ export default defineWidget('Footer', (copy) => {
                 <Link to="/">{copy.text.link}</Link>
               </li>
               <li>
-                <Link to="/ch00">{copy.text.link2}</Link>
+                <Link to="/ch01">{copy.text.link2}</Link>
               </li>
               {repo && (
                 <>

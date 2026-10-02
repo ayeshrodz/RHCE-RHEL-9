@@ -1,0 +1,114 @@
+---
+title: Summary and cheat sheet
+kind: summary
+minutes: 6
+---
+
+<Lead>
+The chapter on one page: the Git cycle, the container commands and settings files, and flashcards for quick revision.
+</Lead>
+
+## The chapter in six sentences
+
+- **Git** keeps every version of a project; the **working tree**, **staging area**, **local repository** and **remote** are the four places your work moves through.
+- Every change follows the same cycle: **edit, check** (`status`, `diff`), **stage** (`add`), **commit**, **push**.
+- **Pull** before you start and whenever a push is rejected, so your commits build on your teammates' work.
+- A committed **`.gitignore`** keeps vault password files and generated files such as `ansible-navigator.log` out of the history; a secret that was pushed must be changed.
+- A **development container** gives everyone the same tools for writing and checking a project; `.devcontainer/devcontainer.json` tells VS Code which image to open.
+- A project **`ansible-navigator.yml`** chooses the **execution environment** that runs its playbooks, for everyone who clones it.
+
+## Cheat sheet
+
+<Tabs>
+  <Tab label="Git">
+
+```bash
+git config --global user.name 'Student'      # once per account
+git config --global user.email 'student@example.com'
+git config --global pull.rebase false        # pull merges
+
+git clone REMOTE DIR        # copy a project and its history
+git status --short          # what changed (?? = untracked)
+git diff                    # unstaged changes
+git add FILE                # stage
+git diff --cached           # what the next commit contains
+git commit -m 'Message'     # save the staged draft
+git push                    # send commits to origin
+git pull --no-edit          # bring in teammates' commits
+git log --oneline --graph   # history
+git restore FILE            # discard uncommitted edits
+```
+
+  </Tab>
+  <Tab label=".gitignore">
+
+```text
+vault-pass
+ansible-navigator.log
+*-artifact-*.json
+```
+
+Encrypted vault files are safe to commit; their password file is not.
+
+  </Tab>
+  <Tab label="Dev container">
+
+```bash
+IMAGE=ghcr.io/ansible/community-ansible-dev-tools:latest
+podman run --rm --security-opt label=disable \
+  -v "$PWD:/workdir" -w /workdir $IMAGE ansible-lint site.yml
+
+podman run --rm --security-opt label=disable \
+  -v "$HOME/.ssh:/root/.ssh:ro" \
+  -v "$PWD:/workdir" -w /workdir $IMAGE ansible-playbook site.yml
+```
+
+```json
+{
+  "name": "Ansible development",
+  "image": "ghcr.io/ansible/community-ansible-dev-tools:latest",
+  "runArgs": ["--security-opt", "label=disable"],
+  "customizations": { "vscode": { "extensions": ["redhat.ansible"] } }
+}
+```
+
+  </Tab>
+  <Tab label="Navigator">
+
+```yaml
+# ansible-navigator.yml, in the project directory
+---
+ansible-navigator:
+  mode: stdout
+  execution-environment:
+    enabled: true
+    image: ghcr.io/ansible-community/community-ee-minimal:latest
+    pull:
+      policy: missing
+  playbook-artifact:
+    enable: false
+```
+
+```bash
+ansible-navigator run site.yml                  # runs in the EE
+ansible-navigator exec -- ansible --version     # any command in the EE
+```
+
+  </Tab>
+</Tabs>
+
+<Flashcards
+  title="Chapter 12 flashcards"
+  cards={[
+    { front: 'What are the four places your work lives in Git?', back: 'Working tree, staging area, local repository, remote.' },
+    { front: 'What does `git add` do?', back: 'Copies the current version of a file into the **staging area**, the draft of the next commit.' },
+    { front: 'Which command shows what the next commit contains?', back: '`git diff --cached`' },
+    { front: 'What is `origin`?', back: 'The name Git gives the remote you cloned from. `push` and `pull` use it by default.' },
+    { front: 'A push is rejected with "fetch first". Why, and what next?', back: 'The remote has commits you do not have. Run `git pull`, then push again.' },
+    { front: 'Which files belong in `.gitignore` for an Ansible project?', back: 'Vault password files, keys, `ansible-navigator.log` and `*-artifact-*.json`.' },
+    { front: 'Development container or execution environment: which runs your editor\'s tools?', back: 'The **development container**. The execution environment runs playbooks for `ansible-navigator`.' },
+    { front: 'Which file tells VS Code which container to open?', back: '`.devcontainer/devcontainer.json`' },
+    { front: 'Why does the container need `-v "$HOME/.ssh:/root/.ssh:ro"`?', back: 'To log in to the managed hosts with your SSH key, without being able to change it.' },
+    { front: 'Which navigator settings file wins: project or home?', back: 'The project\'s `ansible-navigator.yml`.' },
+  ]}
+/>

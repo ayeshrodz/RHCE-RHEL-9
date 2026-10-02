@@ -69,7 +69,7 @@ with preview_server(BASE, ROOT):
                 }).map(e => e.className)""")
                 assert not tiny_editors, (width, route, tiny_editors)
         # Resize the same mounted page between breakpoints, including intermediate widths.
-        for route in ['/', '/ch00/create-and-verify-vms', '/ch01/architecture', '/ch02/writing-playbooks', '/ch04/task-failure']:
+        for route in ['/', '/ch01/create-and-verify-vms', '/ch02/architecture', '/ch03/writing-playbooks', '/ch05/task-failure']:
             go(page, route)
             for width in [320, 360, 412, 480, 540, 640, 700, 820, 960, 1200, 1440]:
                 page.set_viewport_size({'width': width, 'height': 900})
@@ -85,7 +85,7 @@ with preview_server(BASE, ROOT):
         for theme in ['light', 'dark']:
             for width, height in [(320, 740), (390, 844), (844, 390)]:
                 page.set_viewport_size({'width': width, 'height': height})
-                go(page, '/ch02/inventory')
+                go(page, '/ch03/inventory')
                 page.evaluate('(theme) => document.documentElement.dataset.theme = theme', theme)
                 for name, dialog_name, close in [('Open navigation', 'Course navigation', 'Escape'), ('Search', 'Search', 'Escape'), ('Your progress', 'Your progress', 'Escape')]:
                     opener = page.locator('.search-icon-only:visible, .search-trigger:visible') if name == 'Search' else page.get_by_role('button', name=name, exact=True)
@@ -99,7 +99,7 @@ with preview_server(BASE, ROOT):
                     assert opener.evaluate('(e) => e === document.activeElement')
                     assert page.evaluate("document.body.style.overflow !== 'hidden'")
         page.set_viewport_size({'width': 390, 'height': 844})
-        go(page, '/ch02/inventory')
+        go(page, '/ch03/inventory')
         outline = page.locator('.page-outline'); outline.locator('summary').click()
         heading_button = outline.locator('button').first
         heading_text = heading_button.inner_text()
@@ -145,7 +145,7 @@ with preview_server(BASE, ROOT):
         area.focus(); page.keyboard.press('Tab')
         assert not area.evaluate('(e) => e === document.activeElement')
         # Diagrams fit by default. Extra zoom is an explicit, reversible choice.
-        go(page, '/ch02/writing-playbooks')
+        go(page, '/ch03/writing-playbooks')
         diagram = page.locator('.diagram').first
         assert diagram.locator('.diagram-viewport').evaluate('(e) => e.scrollWidth <= e.clientWidth + 1')
         opener = diagram.get_by_role('button', name='Enlarge diagram')
@@ -159,7 +159,7 @@ with preview_server(BASE, ROOT):
         dialog.get_by_role('button', name='Close diagram').click()
         assert opener.evaluate('(e) => e === document.activeElement')
         # Visual wrapping preserves exact source text and copied code.
-        go(page, '/ch02/writing-playbooks')
+        go(page, '/ch03/writing-playbooks')
         block = page.locator('.code-block').first
         source = block.locator('pre').text_content()
         block.get_by_role('button', name='Wrap lines').click()
@@ -168,7 +168,7 @@ with preview_server(BASE, ROOT):
         block.get_by_role('button', name='Copy code', exact=True).click()
         assert page.evaluate('window.copiedCode') == source
         # Repeated activity runs retain state after a shell/theme render.
-        go(page, '/ch02/modules-and-yaml')
+        go(page, '/ch03/modules-and-yaml')
         activity = page.locator('.cvm')
         activity.get_by_role('button', name='Run playbook').click()
         page.get_by_role('button', name='Theme:', exact=False).click()

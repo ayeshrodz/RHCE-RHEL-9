@@ -2,8 +2,8 @@ import { lessonProse } from '../src/lib/contentSource.js';
 // Vite plugin: builds the course structure from the content/ folder.
 //
 //   content/_course.yml                      site-level metadata
-//   content/ch01-some-name/_chapter.yml      chapter title, goal, objectives (or status: planned + topics)
-//   content/ch01-some-name/03-slug.mdx       a section; frontmatter gives title, kind, minutes
+//   content/ch02-some-name/_chapter.yml      chapter title, goal, objectives (or status: planned + topics)
+//   content/ch02-some-name/03-slug.mdx       a section; frontmatter gives title, kind, minutes
 //
 // The result is exposed to the app as `virtual:course`. In dev, adding,
 // removing or renaming a file, or editing frontmatter / _chapter.yml,
@@ -114,6 +114,8 @@ export default function contentManifest({ dir = 'content' } = {}) {
           topics: meta.topics ?? [],
           sections,
           comingSoon: meta.status === 'planned' || sections.length === 0,
+          // The lab-building chapter comes first but is not part of the course stages or reviews.
+          setup: meta.setup === true,
         };
       });
     const interfaceContent = {

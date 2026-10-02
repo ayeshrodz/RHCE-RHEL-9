@@ -23,7 +23,7 @@ function Code({ children, ...props }) {
 }
 
 // The router owns the URL hash, so heading links carry the heading after a
-// second "#": "#/ch00/page#heading" opens a page at a heading, "#heading"
+// second "#": "#/ch01/page#heading" opens a page at a heading, "#heading"
 // scrolls this one. Page renderers share heading navigation.
 function Anchor({ href = '', onClick, ...props }) {
   const navigate = useNavigate();

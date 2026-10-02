@@ -34,7 +34,7 @@ with preview_server(BASE, ROOT):
             overflowing_tables = page.locator('.table-wrap').evaluate_all('(tables) => tables.filter(t => t.clientWidth && t.scrollWidth > t.clientWidth + 1).map(t => t.querySelector("thead")?.textContent)')
             assert not overflowing_tables, f'tables overflow on {route}: {overflowing_tables}'
         # Shared tables fit their containers, retain header associations and never alter commands.
-        table_routes = ['/ch00/troubleshooting', '/ch00/overview', '/ch00/create-and-verify-vms', '/ch02/lab-inventory', '/ch05/file-modules', '/ch09/storage', '/platform']
+        table_routes = ['/ch01/troubleshooting', '/ch01/overview', '/ch01/create-and-verify-vms', '/ch03/lab-inventory', '/ch06/file-modules', '/ch10/storage', '/platform']
         for theme in ['light', 'dark']:
             for width in [390, 768, 1024, 1440]:
                 page.set_viewport_size({'width': width, 'height': 1000})
@@ -62,7 +62,7 @@ with preview_server(BASE, ROOT):
                     })""")
                     assert not errors_in_tables, f'{route} {theme} {width}: {errors_in_tables}'
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
-        page.set_viewport_size({'width': 1440, 'height': 1000}); go(page, '/ch00/troubleshooting#general-problems')
+        page.set_viewport_size({'width': 1440, 'height': 1000}); go(page, '/ch01/troubleshooting#general-problems')
         command = page.locator('.content-table code').filter(has_text='sudo iptables -I DOCKER-USER -i rhcebr0 -j ACCEPT').first
         assert command.inner_text() == 'sudo iptables -I DOCKER-USER -i rhcebr0 -j ACCEPT'
         selected_command = command.evaluate("""(e) => {
@@ -133,15 +133,15 @@ with preview_server(BASE, ROOT):
             assert not page.locator('.lab-challenge').count(), route
             assert page.locator('.lab-task').first.is_visible(), route
         # Setup instructions remain a walkthrough; task checks survive mode changes/reload.
-        go(page, '/ch00/prepare-host')
+        go(page, '/ch01/prepare-host')
         assert not page.locator('.lab-mode').count()
-        go(page, '/ch09/lab-archives')
+        go(page, '/ch10/lab-archives')
         task = page.locator('.lab-task').first
         task.get_by_role('checkbox').click()
         page.get_by_role('button', name='Challenge', exact=True).click()
         page.reload(); page.locator('.lab-walkthrough > summary').click()
         assert page.locator('.lab-task').first.get_by_role('checkbox').get_attribute('aria-checked') == 'true'
-        go(page, '/ch09/lab-archives#task-56ef7e8d45cf')
+        go(page, '/ch10/lab-archives#task-56ef7e8d45cf')
         page.wait_for_function("document.querySelector('.lab-walkthrough').open")
         assert page.locator('#task-56ef7e8d45cf').is_visible()
         page.get_by_role('button', name='Guided', exact=True).click()
@@ -159,7 +159,7 @@ with preview_server(BASE, ROOT):
                 assert page.get_by_role('link', name='Continue lesson').evaluate('(e) => e.getBoundingClientRect().height') == page.locator('.dashboard-actions .btn').evaluate('(e) => e.getBoundingClientRect().height')
                 assert page.locator('.dashboard-actions').evaluate('(e) => parseFloat(getComputedStyle(e).marginBottom)') >= 16
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
-        for route in ['/platform', '/progress', '/ch01/quiz', '/ch02/inventory', '/ch05/jinja2-templates', '/ch10/assessment-release', '/ch10/assessment-operations']:
+        for route in ['/platform', '/progress', '/ch02/quiz', '/ch03/inventory', '/ch06/jinja2-templates', '/ch11/assessment-release', '/ch11/assessment-operations']:
             page.set_viewport_size({'width': 390, 'height': 844}); go(page, route)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'mobile {route}'
         # Mobile drawer focus and Escape return.
@@ -170,15 +170,15 @@ with preview_server(BASE, ROOT):
         page.keyboard.press('Escape'); assert opener.evaluate('(e) => e === document.activeElement')
         page.set_viewport_size({'width': 1440, 'height': 1000})
         # Course map: filter, sliding highlight, one open chapter, rail flyouts.
-        go(page, '/ch03/variables')
+        go(page, '/ch04/variables')
         nav = page.locator('#course-navigation')
         mark = "() => { const m = document.querySelector('.map-chapter.is-open .map-marker'), a = document.querySelector('.map-chapter.is-open a[aria-current=page]'); return Math.abs(m.getBoundingClientRect().top - a.getBoundingClientRect().top) }"
         assert page.evaluate(mark) < 1
-        nav.locator('a[href$="/ch03/facts"]').click(); page.wait_for_timeout(700)
+        nav.locator('a[href$="/ch04/facts"]').click(); page.wait_for_timeout(700)
         assert page.evaluate(mark) < 1
-        nav.get_by_role('button', name='Expand chapter 4').click()
-        assert nav.get_by_role('button', name='Collapse chapter 4').count() and not nav.get_by_role('button', name='Collapse chapter 3').count()
-        assert nav.locator('#map-ch03').get_attribute('inert') is not None
+        nav.get_by_role('button', name='Expand chapter 5').click()
+        assert nav.get_by_role('button', name='Collapse chapter 5').count() and not nav.get_by_role('button', name='Collapse chapter 4').count()
+        assert nav.locator('#map-ch04').get_attribute('inert') is not None
         box = nav.get_by_role('searchbox', name='Filter sections by title or number')
         box.fill('vault')
         visible = nav.locator('.map-section-link').evaluate_all('(ls) => ls.filter((l) => !l.closest("[inert]")).length')
@@ -189,7 +189,7 @@ with preview_server(BASE, ROOT):
         nav.get_by_role('button', name='Collapse sidebar').click(); entry = page.locator('.rail-entry').nth(3); entry.hover()
         flyout = entry.locator('.rail-flyout'); flyout.wait_for(state='visible')
         assert page.evaluate('(e) => e.getBoundingClientRect().right <= innerWidth', flyout.element_handle())
-        flyout.locator('a').first.click(); page.locator('h1').filter(has_text='3.1').wait_for()
+        flyout.locator('a').first.click(); page.locator('h1').filter(has_text='4.1').wait_for()
         nav.get_by_role('button', name='Expand sidebar').click()
         # Keyboard dialog containment and focus return.
         search = page.get_by_role('button', name='Search the course')
@@ -197,22 +197,22 @@ with preview_server(BASE, ROOT):
         page.keyboard.press('Shift+Tab'); assert dialog.evaluate('(e) => e.contains(document.activeElement)')
         page.keyboard.press('Escape'); assert search.evaluate('(e) => e === document.activeElement')
         # Links into optional detail still open the containing reveal.
-        go(page, '/ch02/configuration')
+        go(page, '/ch03/configuration')
         heading = page.locator('details .quiz-item[id]').first
         assert heading.count(), 'Optional details must preserve heading targets'
         if heading.count():
             target = heading.get_attribute('id')
-            go(page, '/ch02/configuration#' + target)
+            go(page, '/ch03/configuration#' + target)
             page.wait_for_function('(id) => { const e = document.getElementById(id); return e && e.closest("details").open }', arg=target)
         # Quiz attempt, reload, and review queue.
-        go(page, '/ch01/quiz')
+        go(page, '/ch02/quiz')
         first = page.locator('.quiz-item').first
         first.locator('.quiz-option').nth(1).click()
         page.reload(); first.wait_for(); assert 'Not quite.' in first.inner_text()
         go(page, '/progress'); assert page.get_by_role('link', name='Which term best describes the Ansible architecture?').count()
         # Chapter practice uses the same multiple-choice quiz as every other question,
         # logs attempts for the dashboard, and stays independent of reading completion.
-        go(page, '/ch01/quiz'); activity = page.locator('.quiz').nth(1)
+        go(page, '/ch02/quiz'); activity = page.locator('.quiz').nth(1)
         assert activity.locator('#challenge-desired-state').count()
         assert not activity.get_by_role('button', name='Check answer').count()
         assert not activity.locator('textarea').count()
@@ -225,7 +225,7 @@ with preview_server(BASE, ROOT):
         page.reload(); activity.wait_for(); assert activity.locator('.quiz-explain.is-correct').count() == 1
         assert page.evaluate("JSON.parse(localStorage.getItem('rhce:completed') || '[]').length") == 0
         # Optional timer survives reload.
-        go(page, '/ch10/assessment-release'); page.get_by_role('button', name='Start 90-minute timer').click()
+        go(page, '/ch11/assessment-release'); page.get_by_role('button', name='Start 90-minute timer').click()
         page.reload(); page.locator('[role=timer]').wait_for(); assert 'remaining' in page.locator('[role=timer]').inner_text()
         # Backups through the actual UI, malformed rejection, and valid restoration.
         page.locator('.header-progress').click()
@@ -260,7 +260,7 @@ with preview_server(BASE, ROOT):
             assert page.evaluate("JSON.parse(localStorage.getItem('rhce:labReports')).length") == 1
         # Cross-tab updates.
         go(page, '/progress'); other = context.new_page(); go(other, '/')
-        other.evaluate("localStorage.setItem('rhce:completed', JSON.stringify(['ch01/why-automate']))")
+        other.evaluate("localStorage.setItem('rhce:completed', JSON.stringify(['ch02/why-automate']))")
         page.wait_for_function("document.querySelector('.dashboard-stats dd').innerText.trim().split(/\\s+/)[0] === '1'")
         # Readiness migration and preference updates should stay independent.
         other.close()

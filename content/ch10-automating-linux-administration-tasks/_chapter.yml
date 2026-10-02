@@ -1,0 +1,16 @@
+title: Automating Linux Administration Tasks
+goal: Automate common Linux system administration tasks with Ansible.
+objectives:
+  - Subscribe systems, configure software channels and repositories, enable module streams, and manage RPM packages on managed hosts.
+  - Manage Linux users and groups, configure SSH, and modify the sudo configuration on managed hosts.
+  - Manage service startup, schedule processes with at, cron and systemd, reboot managed hosts, and control the default boot target.
+  - Partition storage devices, configure LVM, format partitions or logical volumes, mount file systems, and add swap spaces.
+  - Configure network settings and name resolution on managed hosts, and collect network-related facts.
+  - Archive files on managed hosts and restore them with the right content, ownership and permissions.
+objectiveIds:
+  - ch10.software
+  - ch10.users
+  - ch10.scheduling
+  - ch10.storage
+  - ch10.network
+  - ch10.archives

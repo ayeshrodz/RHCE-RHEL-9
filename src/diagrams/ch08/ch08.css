@@ -1,111 +1,257 @@
-/* Chapter 8 widgets: troubleshooting. */
+/* Chapter 8 widgets: roles and collections. */
 
-.rs-tools {
-  margin: 6px 0 0;
-  padding-left: 18px;
-  font-size: 13px;
-  line-height: 1.6;
-}
-.rs-tools li {
-  margin: 0;
-}
-
-.ed-list {
+.ra-grid {
   display: grid;
-  gap: 6px;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
+  align-items: start;
+}
+.ra-grid .ptree-figure {
   margin: 0;
-  padding: 0;
-  list-style: none;
 }
-.ed-list li {
-  margin: 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-}
-.ed-list li.is-open {
-  border-color: var(--border-strong);
-}
-.ed-list button {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-  padding: 8px 10px;
-  border: 0;
-  background: none;
-  color: var(--text);
-  text-align: left;
-  cursor: pointer;
-}
-.ed-stage {
-  flex: 0 0 64px;
-  padding: 1px 0;
-  border-radius: 5px;
-  background: var(--bg-sunken);
-  color: var(--text-3);
-  font-size: 11px;
+.ra-path {
+  margin: 0 0 6px !important;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
   font-weight: 600;
-  text-align: center;
-  text-transform: uppercase;
 }
-.ed-msg {
-  min-width: 0;
-  padding: 0 !important;
-  background: none !important;
-  font-size: 12.5px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-.ed-body {
-  padding: 0 12px 10px 84px;
+.ra-what {
+  margin: 0 0 10px !important;
   color: var(--text-2);
   font-size: 13.5px;
   line-height: 1.55;
 }
-.ed-body p {
-  margin: 0 0 4px !important;
+.ra-detail .terminal {
+  margin: 0;
 }
 
-.cms-toggles {
-  display: flex;
-  gap: 14px;
+.po-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
 }
-.cms-toggles label {
-  display: inline-flex;
+.po-cap {
+  margin: 0 0 5px !important;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+.po-yaml {
+  margin: 0;
+}
+.po-yaml span {
+  display: block;
+  margin: 0 -14px;
+  padding: 0 14px;
+}
+.po-yaml span.is-hot {
+  background: var(--changed-soft);
+  box-shadow: inset 2px 0 0 var(--changed);
+}
+.po-run {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.po-run li {
+  margin: 0;
+}
+.po-run button {
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-align: left;
   cursor: pointer;
 }
-.terminal.cms-cmd {
-  margin: 0 0 8px;
+.po-run button.is-handler {
+  border-style: dashed;
 }
-.terminal.cms-out {
-  margin: 0;
-  white-space: pre;
+.po-run button:hover {
+  color: var(--text);
 }
-.cms-notes {
-  margin: 10px 0 0;
-  padding-left: 20px;
+.po-run button.is-active {
+  border-color: var(--changed);
+  background: var(--changed-soft);
+  color: var(--text);
+}
+.po-n {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.po-note {
+  margin: 12px 0 0 !important;
   color: var(--text-2);
   font-size: 13.5px;
-  line-height: 1.6;
+  line-height: 1.55;
 }
-.cms-notes li {
+
+.rvr-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rvr-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 84px;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-3);
+  font-size: 13.5px;
+}
+.rvr-list label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  cursor: pointer;
+}
+.rvr-list li.is-on {
+  color: var(--text-2);
+}
+.rvr-list li.is-winner {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+  color: var(--text);
+}
+.rvr-value {
+  overflow-wrap: anywhere;
+  opacity: 0.45;
+}
+.rvr-list li.is-on .rvr-value {
+  opacity: 1;
+}
+.rvr-list li.is-on:not(.is-winner) .rvr-value {
+  text-decoration: line-through;
+}
+.rvr-status {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+.rvr-list li.is-winner .rvr-status {
+  color: var(--ok);
+}
+.rvr-result {
+  margin: 12px 0 0 !important;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.fq-input {
+  width: 100%;
+  margin: 10px 0 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--code-size);
+}
+.fq-input:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+.fq-parts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.fq-parts > div {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.fq-part {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.fq-parts em {
+  color: var(--text-3);
+  font-size: 11.5px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.fq-parts p {
+  margin: 4px 0 0 !important;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.fq-part.t-ns {
+  color: var(--purple-600);
+}
+.fq-part.t-coll {
+  color: var(--teal-600);
+}
+.fq-part.t-item {
+  color: var(--blue-600);
+}
+:root[data-theme='dark'] .fq-part.t-ns {
+  color: var(--purple-100);
+}
+:root[data-theme='dark'] .fq-part.t-coll {
+  color: var(--teal-100);
+}
+:root[data-theme='dark'] .fq-part.t-item {
+  color: var(--blue-100);
+}
+.fq-note {
+  margin: 12px 0 6px !important;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.fq-note.is-bad {
+  color: var(--fail);
+}
+.fq-paths {
   margin: 0;
 }
 
-@media (max-width: 640px) {
-  .ed-list button {
-    flex-direction: column;
-    gap: 4px;
+@media (max-width: 760px) {
+  .ra-grid,
+  .po-grid,
+  .fq-parts {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .ed-stage {
-    flex: none;
-    padding: 1px 6px;
+  .rvr-list li {
+    grid-template-columns: minmax(0, 1fr) 84px;
   }
-  .ed-body {
-    padding-left: 12px;
+  .rvr-value {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }

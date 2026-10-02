@@ -1,5 +1,6 @@
 import './ch08.css';
 
-export { default as RunStages } from './RunStages';
-export { default as ErrorDecoder } from './ErrorDecoder';
-export { default as CheckModeSim } from './CheckModeSim';
+export { default as RoleAnatomy } from './RoleAnatomy';
+export { default as PlayOrder } from './PlayOrder';
+export { default as RoleVarResolver } from './RoleVarResolver';
+export { default as FqcnExplorer } from './FqcnExplorer';

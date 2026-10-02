@@ -15,7 +15,7 @@ export default defineWidget('ProgressPage', (copy) => {
     const [message, setMessage] = useState('');
     const input = useRef(null);
     const done = data.completed ?? [];
-    const next = pages.find((p) => !done.includes(p.key) && p.chapter.number >= 1 && p.section.kind === 'lesson');
+    const next = pages.find((p) => !done.includes(p.key) && !p.chapter.setup && p.section.kind === 'lesson');
     const missed = pages.flatMap((p) =>
       (p.section.activities?.quizzes ?? []).flatMap((question) => {
         const item = data[`quiz:${p.key}:${question.quizId}`]?.items?.[question.id];
@@ -167,11 +167,11 @@ export default defineWidget('ProgressPage', (copy) => {
             <p>{copy.text.p2}</p>
             <ul className="dashboard-list">
               <li>
-                <Link to="/ch10/assessment-release">{copy.text.link}</Link>
+                <Link to="/ch11/assessment-release">{copy.text.link}</Link>
                 <small>{copy.text.small9}</small>
               </li>
               <li>
-                <Link to="/ch10/assessment-operations">{copy.text.link2}</Link>
+                <Link to="/ch11/assessment-operations">{copy.text.link2}</Link>
                 <small>{copy.text.small10}</small>
               </li>
             </ul>
@@ -235,7 +235,7 @@ export default defineWidget('ProgressPage', (copy) => {
         <section className="dashboard-card" aria-labelledby="dashboard-skills-title">
           <h2 id="dashboard-skills-title">{copy.text.h24}</h2>
           <p>
-            {copy.text.p5} <Link to="/ch10/how-to-review#where-do-you-stand">{copy.text.link4}</Link>
+            {copy.text.p5} <Link to="/ch11/how-to-review#where-do-you-stand">{copy.text.link4}</Link>
             {copy.text.p6}
           </p>
           <details>

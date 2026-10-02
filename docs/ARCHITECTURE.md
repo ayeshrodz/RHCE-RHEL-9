@@ -8,7 +8,7 @@ The public site is `https://kernelpath.dev/`; `public/CNAME` records the configu
 
 `plugins/content-manifest.js` builds `virtual:course` from chapter metadata and MDX frontmatter. `src/lib/course.js` exposes navigation and page lookup. MDX pages load on demand through Vite imports.
 
-Published URLs use hash routing, for example `#/ch02/inventory`. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
+Published URLs use hash routing, for example `#/ch03/inventory`. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
 
 `content/_objectives.yml` maps stable skill IDs to lessons, challenges, and labs. Each chapter lists its objective IDs; quizzes and labs reference the skills they practise.
 

@@ -1,204 +1,126 @@
-/* Chapter 10 widgets: comprehensive review. */
+/* Chapter 10 widgets: administration tasks. */
 
-.ready-score {
-  color: var(--text-3);
-  font-size: 13px;
+.amf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
 }
-
-.ready-bar {
-  display: flex;
+.amf-goals {
+  display: grid;
   gap: 2px;
-  height: 8px;
-  margin-bottom: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.ready-bar span {
-  flex: 1;
-  border-radius: 2px;
-  background: var(--bg-sunken);
+.amf-goals li {
+  margin: 0;
 }
-.ready-bar .is-no,
-.ready-list .segmented button.ready-no {
-  background: var(--fail-soft);
-  color: var(--fail);
-}
-.ready-bar .is-shaky,
-.ready-list .segmented button.ready-shaky {
-  background: var(--changed-soft);
-  color: var(--changed);
-}
-.ready-bar .is-yes,
-.ready-list .segmented button.ready-yes {
-  background: var(--ok-soft);
-  color: var(--ok);
-}
-.ready-bar .is-no {
-  background: var(--fail);
-}
-.ready-bar .is-shaky {
-  background: var(--changed);
-}
-.ready-bar .is-yes {
-  background: var(--ok);
-}
-
-.ready-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-}
-.ready-tile {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border-strong);
-  border-radius: 8px;
-  background: var(--bg-elev);
+.amf-goals button {
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 0 7px 7px 0;
+  background: none;
   color: var(--text-2);
   font: inherit;
-  font-size: 12.5px;
-  line-height: 1.3;
+  font-size: 13.5px;
+  line-height: 1.35;
   text-align: left;
   cursor: pointer;
 }
-.ready-tile:hover {
+.amf-goals button:hover {
   background: var(--bg-hover);
+  color: var(--text);
 }
-.ready-tile.is-active {
-  border-color: var(--border-strong);
+.amf-goals button.is-active {
+  border-left-color: var(--accent);
   background: var(--bg-active);
   color: var(--text);
-}
-.ready-tile.is-yes {
-  border-left-color: var(--ok);
-}
-.ready-tile.is-shaky,
-.ready-tile.is-partial {
-  border-left-color: var(--changed);
-}
-.ready-tile.is-no {
-  border-left-color: var(--fail);
-}
-.ready-num {
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
-.ready-count {
-  color: var(--text-3);
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-}
-
-.ready-panel {
-  margin-top: 14px;
-  padding: 14px;
-  border-radius: var(--radius);
-  background: var(--bg-sunken);
-}
-.ready-chapter {
-  margin: 0 0 10px !important;
-  font-weight: 600;
-}
-.ready .ready-list {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ready .ready-list li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-}
-.ready-obj {
-  margin: 0 !important;
-  color: var(--text-2);
-  font-size: 14px;
-  line-height: 1.45;
-}
-.ready-list .segmented button.is-active {
-  box-shadow: none;
   font-weight: 500;
 }
-
-.ready-advice {
-  margin-top: 14px;
-  color: var(--text-2);
-  font-size: 14px;
-}
-.ready-advice p {
+.amf-module {
   margin: 0 0 8px !important;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
-.ready .ready-revisit {
+.amf-yaml {
+  margin: 0;
+}
+.amf-hint {
+  margin: 8px 0 0 !important;
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.cron-fields {
   display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  margin-top: 12px;
 }
-.ready .ready-revisit li {
+.cron-fields label,
+.cron-job {
   display: grid;
-  gap: 5px;
-  margin: 0;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  gap: 3px;
 }
-.ready-weak {
-  margin-left: 8px;
-  color: var(--changed);
-  font-size: 12.5px;
-}
-.ready-labs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.ready-labs > span {
+.cron-fields span,
+.cron-job span {
   color: var(--text-3);
-  font-size: 12.5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
 }
-.ready-labs .chip {
-  height: 24px;
-  font-family: var(--font-sans);
-  text-decoration: none;
-}
-.ready-reset {
-  margin-top: 10px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--text-3);
-  font: inherit;
-  font-size: 12.5px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.ready-reset:hover {
+.cron-fields input,
+.cron-job input {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--bg);
   color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--code-size-sm);
+}
+.cron-fields small {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.cron-job {
+  margin-top: 8px;
+}
+.cron-say {
+  margin: 12px 0 !important;
+  font-size: 14.5px;
+}
+.cron-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+.cron-grid .terminal {
+  margin: 0;
+}
+.cron-cap {
+  margin: 0 0 5px !important;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+.cron-note {
+  margin: 8px 0 0 !important;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 @media (max-width: 760px) {
-  .ready-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .ready-tile {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-  }
-  .ready-name {
-    display: none;
-  }
-  .ready .ready-list li {
+  .amf-grid,
+  .cron-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+  }
+  .cron-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

@@ -12,17 +12,17 @@ content/
   tracks/rhel9/
     _track.yml                     track identity, versions, reference filename
     platform.mdx                   platform page metadata, explanations, diagrams
-  ch02-implementing-playbooks/
+  ch03-implementing-playbooks/
     _chapter.yml                   title, goal, objectives
-    01-inventory.mdx               section 2.1
-    02-lab-inventory.mdx           section 2.2
-  ch03-managing-variables-and-facts/
+    01-inventory.mdx               section 3.1
+    02-lab-inventory.mdx           section 3.2
+  ch04-managing-variables-and-facts/
     _chapter.yml                   status: planned + topics → shown as "coming soon"
 ```
 
 - **Order** comes from the numeric filename prefix (`01-`, `02-`…).
-- **URL slug** is the filename without its prefix: `03-configuration.mdx` → `#/ch02/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
-- **Section links** add the heading's id after a second `#`: `#/ch07/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading from MDX with `[text](#/ch00/page#heading-id)`.
+- **URL slug** is the filename without its prefix: `03-configuration.mdx` → `#/ch03/configuration`. Renaming a file changes its URL and resets anyone's progress for that page, so avoid renaming published sections.
+- **Section links** add the heading's id after a second `#`: `#/ch08/collections#where-collections-come-from`. Ids come from the heading text (lowercased, spaces to hyphens), so renaming an `##` or `###` heading breaks links people have shared to it. Every `##` and `###` heading gets a copy-link button automatically; link to another page's heading from MDX with `[text](#/ch01/page#heading-id)`.
 - **Frontmatter** at the top of each `.mdx`:
 
   ```yaml
@@ -72,7 +72,7 @@ Aim for 5–12 minutes: purpose, a small example, an activity, an explanation, a
 ## First topic
 ...prose, a diagram, a code block...
 
-<Quiz id="check" objectives={["ch02.playbooks"]} questions={[ ... ]} />
+<Quiz id="check" objectives={["ch03.playbooks"]} questions={[ ... ]} />
 ```
 
 Use `##` for topics and `###` for sub-topics; both appear in the table of contents.
@@ -155,15 +155,15 @@ Colours come from CSS variables, so every diagram switches to dark mode automati
 
 Export new diagrams from `src/diagrams/chNN/index.js`, and they become available in MDX automatically (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Put a chapter's widget styles in `src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
-Reusable pieces from chapter 3 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
+Reusable pieces from chapter 4 that later chapters can use directly in MDX: `<ProjectTree paths={[...]} locked={[...]} notes={{...}} />` for directory layouts, and `<DataExplorer name="x" data={...} />` for any nested variable or JSON result.
 
 ### Lab placeholders
 
-Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (chapter 0.1), including in copied text. Add new placeholder keys in `src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
+Write per-reader values as `<HOST_LAN_IP>`, `<HOST_USER>` or `<ROUTER_IP>` inside code blocks or inline code. They are highlighted, and replaced with the reader's own values once entered in the `<LabValues />` form (section 1.1), including in copied text. Add new placeholder keys in `src/lib/placeholders.jsx`. Outside code, escape them (`\<HOST_LAN_IP\>`), because `<` starts JSX in MDX.
 
 ### Classroom and home lab
 
-Readers follow the guide either in the Red Hat classroom or on the home lab from Chapter 0. Where the two differ, show both. The reader's choice is one site-wide preference.
+Readers follow the guide either in the Red Hat classroom or on the home lab from Chapter 1. Where the two differ, show both. The reader's choice is one site-wide preference.
 
 | Component | Use |
 | --- | --- |
@@ -187,7 +187,7 @@ public/lab/NAME/
   setup.sh        optional: generates files on the reader's workstation (certificates, Vault files)
 ```
 
-Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/lab`, installed in section 0.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/public/lab bash public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
+Add the exercise to `public/lab/INDEX`. The home-lab `lab` command (`public/lab/lab`, installed in section 1.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/public/lab bash public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
 
 ## 6. Code font
 
@@ -209,11 +209,11 @@ Use `Exercise: Topic` for practical exercise titles, whether they offer Guided o
 
 ## 7. Stable activities and skills
 
-Give each question and task a unique, descriptive ID, such as `ch02-inventory-child-groups` or `ch02-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.
+Give each question and task a unique, descriptive ID, such as `ch03-inventory-child-groups` or `ch03-inventory-verify`. Keep it when moving or improving the activity. New activities do not need `legacyIndex`; preserve the existing indices and frozen `src/data/legacyActivityMap.json` for earlier learners.
 
 ```mdx
-<Quiz id="check" objectives={["ch02.inventory"]} questions={[{
-  id: "ch02-example-group-membership",
+<Quiz id="check" objectives={["ch03.inventory"]} questions={[{
+  id: "ch03-example-group-membership",
   q: "Which group contains the child group's hosts?",
   options: ["The parent", "Only the child"],
   answer: 0,
@@ -228,7 +228,7 @@ Practice questions are authored in their chapter's quiz MDX, as a JSON-compatibl
 Lab wording belongs in MDX. A graded `<Lab>` contains exactly one `<LabNotes>` and one `<LabChallenge>`, alongside its existing `<Task>` children. `LabNotes` holds prerequisites and optional verification/variation reveals. `LabChallenge` holds a short purpose and a list of outcomes, target values, and constraints. Write these as requirements a learner can solve independently: avoid prescribing each module, YAML key, and task order unless that technique is itself the skill being assessed.
 
 ```mdx
-<Lab id="site" classroom="lab start example-site" objectives={["ch02.playbooks"]}>
+<Lab id="site" classroom="lab start example-site" objectives={["ch03.playbooks"]}>
   <LabNotes>
     **Prerequisites:** working SSH and sudo access to the target.
 
