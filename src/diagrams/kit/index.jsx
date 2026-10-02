@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Maximize2, RotateCcw, X } from 'lucide-react
 
 import { useOverlay } from '@/hooks/useOverlay';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { formatCopy } from '@/components/interactive/TeachingContent';
 import { interfaceContent } from '@/lib/course';
 
 const MarkerContext = createContext('dg');
@@ -233,41 +234,46 @@ export function useStepper(count, initial = 0) {
   };
 }
 
+export function StepDots({ steps, active, onSelect, className = '' }) {
+  const text = interfaceContent.Diagram.text;
+  return (
+    <div className={`step-dots ${className}`} role="group" aria-label={text.steps}>
+      {steps.map((item, index) => (
+        <button
+          key={index}
+          aria-pressed={index === active}
+          aria-label={formatCopy(text.stepLabel, [index + 1, item.title])}
+          className={index === active ? 'is-active' : index < active ? 'is-past' : ''}
+          onClick={() => onSelect(index)}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function StepControls({ stepper, steps }) {
   const { step, next, prev, reset, count, setStep } = stepper;
   const current = steps[step];
+  const text = interfaceContent.Diagram.text;
   return (
     <div className="step-controls">
       <div className="step-text" aria-live="polite">
-        <span className="step-index">
-          Step {step + 1} of {count}
-        </span>
+        <span className="step-index">{formatCopy(text.position, [step + 1, count])}</span>
         <strong>{current.title}</strong>
         {current.text && <span>{current.text}</span>}
       </div>
       <div className="step-buttons">
-        <div className="step-dots" role="tablist" aria-label="Steps">
-          {steps.map((s, i) => (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === step}
-              aria-label={`Step ${i + 1}: ${s.title}`}
-              className={i === step ? 'is-active' : i < step ? 'is-past' : ''}
-              onClick={() => setStep(i)}
-            />
-          ))}
-        </div>
-        <button className="btn btn-sm" onClick={prev} disabled={step === 0} aria-label="Previous step">
+        <StepDots steps={steps} active={step} onSelect={setStep} />
+        <button className="btn btn-sm" onClick={prev} disabled={step === 0} aria-label={text.previous}>
           <ChevronLeft size={14} />
         </button>
         {step < count - 1 ? (
           <button className="btn btn-sm btn-primary" onClick={next}>
-            Next <ChevronRight size={14} />
+            {text.next} <ChevronRight size={14} />
           </button>
         ) : (
           <button className="btn btn-sm" onClick={reset}>
-            <RotateCcw size={13} /> Replay
+            <RotateCcw size={13} /> {text.replay}
           </button>
         )}
       </div>

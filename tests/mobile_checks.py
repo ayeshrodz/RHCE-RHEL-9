@@ -38,10 +38,10 @@ with preview_server(BASE, ROOT):
             page.set_viewport_size({'width': width, 'height': height})
             for route in ROUTES:
                 go(page, route)
-                assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (width, route)
+                assert page.evaluate('(width) => document.documentElement.scrollWidth <= width && innerWidth <= width', width), (width, route)
                 too_small = page.locator('button, a.btn').evaluate_all("""elements => elements.filter(e => {
                     const r = e.getBoundingClientRect();
-                    return r.width && r.height && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[inert]') && r.height < 43.5;
+                    return r.width && r.height && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[inert]') && (r.height < 43.5 || r.width < 43.5);
                 }).map(e => ({class: e.className, text: e.textContent.trim(), height: e.getBoundingClientRect().height}))""")
                 assert not too_small, (width, route, too_small)
                 tiny_editors = page.locator('textarea, input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), select').evaluate_all("""elements => elements.filter(e => {

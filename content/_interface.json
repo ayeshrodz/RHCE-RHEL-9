@@ -69,7 +69,13 @@
       "fit": "Fit to screen",
       "actual": "Actual size",
       "enlarge": "Enlarge diagram",
-      "close": "Close diagram"
+      "close": "Close diagram",
+      "steps": "Steps",
+      "stepLabel": "Step {value0}: {value1}",
+      "position": "Step {value0} of {value1}",
+      "previous": "Previous step",
+      "next": "Next",
+      "replay": "Replay"
     }
   },
   "Outline": {

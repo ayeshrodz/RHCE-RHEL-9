@@ -1,3 +1,4 @@
+import { StepDots } from '../kit';
 import { useState } from 'react';
 import { defineWidget } from '@/components/interactive/TeachingContent';
 
@@ -87,11 +88,7 @@ export default defineWidget('AnnotatedYaml', (copy) => {
             </p>
             <p className="ayaml-note-title">{note.title}</p>
             <p className="ayaml-note-text">{note.text}</p>
-            <div className="ayaml-steps">
-              {notes.map((x, i) => (
-                <button key={i} className={i === active ? 'is-active' : ''} onClick={() => setActive(i)} aria-label={x.title} />
-              ))}
-            </div>
+            <StepDots steps={notes} active={active} onSelect={setActive} className="ayaml-steps" />
           </div>
         </div>
       </div>

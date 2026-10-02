@@ -127,7 +127,7 @@
 }
 
 @media (max-width: 760px), (pointer: coarse) {
-  button,
+  .shell button,
   .btn,
   .icon-btn,
   .code-copy,
@@ -135,6 +135,7 @@
   .option-switch button,
   .nav-toggle {
     min-height: 44px;
+    min-width: 44px;
   }
   .icon-btn,
   .lab-check,
@@ -386,6 +387,8 @@
     font-size: 16px;
   }
   .shell .shell-main select {
+    min-width: 0;
+    max-width: 100%;
     min-height: 44px;
   }
   label:has(> input[type='checkbox']),
@@ -418,5 +421,69 @@
   }
   .diagram-zoom {
     opacity: 1;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .step-dots {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .step-dots button,
+  .step-dots button.is-active,
+  .step-dots button.is-past {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border-radius: 8px;
+  }
+  .step-dots button::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border-strong);
+  }
+  .step-dots button.is-past::after {
+    background: var(--text-3);
+  }
+  .step-dots button.is-active::after {
+    width: 18px;
+    border-radius: 4px;
+    background: var(--accent);
+  }
+}
+.lightbox {
+  grid-template-columns: minmax(0, 1fr);
+}
+.lightbox-body {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .prec-toggle,
+  .prec-toggle[aria-checked='true'] {
+    background: transparent;
+  }
+  .prec-toggle::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    width: 34px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--border-strong);
+  }
+  .prec-toggle[aria-checked='true']::before {
+    background: var(--accent);
+  }
+  .prec-toggle span {
+    left: 8px;
+    top: 15px;
   }
 }
