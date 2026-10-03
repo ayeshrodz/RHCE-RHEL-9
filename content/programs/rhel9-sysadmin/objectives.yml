@@ -74,3 +74,19 @@
   labs:
   - ch04/lab
   challenges: []
+- id: ch05.operations
+  chapter: ch05
+  lessons:
+  - ch05/editing-files
+  - ch05/text-pipelines
+  labs:
+  - ch05/lab
+  challenges: []
+- id: ch05.verification
+  chapter: ch05
+  lessons:
+  - ch05/editing-files
+  - ch05/text-pipelines
+  labs:
+  - ch05/lab
+  challenges: []

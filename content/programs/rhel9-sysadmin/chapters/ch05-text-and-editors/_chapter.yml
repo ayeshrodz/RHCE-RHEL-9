@@ -1,9 +1,8 @@
-title: "Working with text"
-goal: "View, edit and reshape text files from the command line."
-status: planned
-topics:
-  - "Viewing files with less, head and tail"
-  - "Editing with vim: the essential commands"
-  - "Filtering and reshaping with cut, sort, uniq, sed and awk"
-  - "Comparing files with diff"
-  - "Here documents and writing files from scripts"
+title: Working with text
+goal: View, edit and reshape text files from the command line.
+objectives:
+- Edit and compare text without accidentally changing unrelated lines.
+- Extract reliable reports using fields, sorting and regular expressions.
+objectiveIds:
+- ch05.operations
+- ch05.verification
