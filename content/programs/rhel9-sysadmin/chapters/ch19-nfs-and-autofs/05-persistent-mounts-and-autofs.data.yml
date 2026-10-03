@@ -1,0 +1,299 @@
+fstab-nfs:
+  title: An NFS line in /etc/fstab
+  caption: Select a field.
+  height: 250
+  mode: select
+  initial: src
+  info:
+    src:
+      tone: purple
+      title: serverb:/srv/shared
+      text: SERVER:DIRECTORY, instead of a device. Prefer a name that DNS resolves.
+    mp:
+      tone: blue
+      title: /mnt/shared
+      text: The local mount point. It must exist.
+    type:
+      tone: green
+      title: nfs
+      text: The file system type. nfs negotiates the best version (4.2 here); nfs4 forces version 4.
+    opts:
+      tone: amber
+      title: defaults,_netdev
+      text: '_netdev tells the system this mount needs the network, so it is attempted after the network is up. Other options: ro, soft, vers=4.2, sec=sys, nofail (do not stop the boot if the server is down), x-systemd.automount (mount on first use).'
+    zeros:
+      tone: gray
+      title: 0 0
+      text: Backup and check fields. Always 0 0 for NFS.
+  elements:
+  - kind: node
+    x: 6
+    y: 28
+    w: 210
+    h: 56
+    tone: purple
+    title: serverb:/srv/shared
+    sub: server:directory
+    mono: true
+    titleSize: 12.5
+    select: src
+    active:
+    - src
+  - kind: node
+    x: 222
+    y: 28
+    w: 120
+    h: 56
+    tone: blue
+    title: /mnt/shared
+    sub: mount point
+    mono: true
+    titleSize: 12.5
+    select: mp
+    active:
+    - mp
+  - kind: node
+    x: 348
+    y: 28
+    w: 60
+    h: 56
+    tone: green
+    title: nfs
+    sub: type
+    mono: true
+    titleSize: 14
+    select: type
+    active:
+    - type
+  - kind: node
+    x: 414
+    y: 28
+    w: 180
+    h: 56
+    tone: amber
+    title: defaults,_netdev
+    sub: options
+    mono: true
+    titleSize: 12.5
+    select: opts
+    active:
+    - opts
+  - kind: node
+    x: 600
+    y: 28
+    w: 70
+    h: 56
+    tone: gray
+    title: 0 0
+    sub: ''
+    mono: true
+    titleSize: 14
+    select: zeros
+    active:
+    - zeros
+autofs-flow:
+  title: How autofs works
+  caption: Step through an on-demand mount.
+  height: 260
+  mode: steps
+  steps:
+  - title: The master map
+    text: 'A file in /etc/auto.master.d/ (ending .autofs) names a directory and the map that rules it: /mnt/auto /etc/auto.shared --timeout=20.'
+  - title: The map
+    text: 'The map lists keys and what to mount: data -rw,sync serverb:/srv/shared. Nothing is mounted yet; /mnt/auto is empty.'
+  - title: Access triggers the mount
+    text: ls /mnt/auto/data (or any access to that path) makes autofs mount serverb:/srv/shared there, on the spot.
+  - title: Idle means unmounted
+    text: After 20 idle seconds (the timeout) autofs unmounts it again. No stale mounts, no boot dependency on the server.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: master map
+    sub: /etc/auto.master.d
+    mono: true
+    titleSize: 11.5
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: map file
+    sub: /etc/auto.shared
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: access
+    sub: ls /mnt/auto/data
+    mono: true
+    titleSize: 11.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: mounted
+    sub: 'then idle: gone'
+    titleSize: 12
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 2
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: fstab and autofs'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: echo "serverb:/srv/shared  /mnt/shared  nfs  defaults,_netdev  0 0" >> /etc/fstab
+      out: ''
+    - cmd: systemctl daemon-reload; mount -a; df -hT /mnt/shared | tail -1
+      out: serverb:/srv/shared nfs4   20G  1.7G   18G   9% /mnt/shared
+    - cmd: dnf install -y autofs
+      out: "Installed:\n  autofs-1:5.1.7-65.el9_8.3.x86_64\n\nComplete!"
+    - cmd: echo '/mnt/auto  /etc/auto.shared  --timeout=20' > /etc/auto.master.d/shared.autofs
+      out: ''
+    - cmd: echo 'data  -rw,sync  serverb:/srv/shared' > /etc/auto.shared
+      out: ''
+    - cmd: systemctl enable --now autofs
+      out: Created symlink /etc/systemd/system/multi-user.target.wants/autofs.service → /usr/lib/systemd/system/autofs.service.
+    - cmd: mount | grep -c /mnt/auto/data
+      out: '0'
+    - cmd: ls /mnt/auto/data
+      out: alice  hello.txt
+    - cmd: findmnt -t autofs,nfs4 -o TARGET,SOURCE,FSTYPE | tail -2
+      out: '/mnt/auto              /etc/auto.shared    autofs
+
+        └─/mnt/auto/data         serverb:/srv/shared nfs4'
+    tasks:
+    - text: Add the NFS share to /etc/fstab with _netdev and mount everything.
+      commands:
+      - echo "serverb:/srv/shared  /mnt/shared  nfs  defaults,_netdev  0 0" >> /etc/fstab
+      - systemctl daemon-reload; mount -a; df -hT /mnt/shared | tail -1
+    - text: Create the autofs master entry and the map.
+      commands:
+      - echo '/mnt/auto  /etc/auto.shared  --timeout=20' > /etc/auto.master.d/shared.autofs
+      - echo 'data  -rw,sync  serverb:/srv/shared' > /etc/auto.shared
+    - text: Start autofs and show that nothing is mounted yet.
+      commands:
+      - systemctl enable --now autofs
+      - mount | grep -c /mnt/auto/data
+    - text: Touch the path to trigger the mount.
+      commands:
+      - ls /mnt/auto/data
+      - findmnt -t autofs,nfs4 -o TARGET,SOURCE,FSTYPE | tail -2
+quick:
+  questions:
+  - id: q-267efb5297c0
+    q: Why add _netdev to an NFS line in fstab?
+    options:
+    - The mount needs the network, so it waits until it is up
+    - It makes NFS faster
+    - It enables NFSv4
+    answer: 0
+    explain: Without it, a boot-time mount can be tried too early.
+  - id: q-60187d249bac
+    q: What does autofs do that fstab does not?
+    options:
+    - Mounts on first access and unmounts when idle
+    - Encrypts NFS
+    - Exports directories
+    answer: 0
+    explain: No boot dependency on the server, fewer stale mounts.
+  - id: q-93548722e4e8
+    q: Where do autofs master map entries go?
+    options:
+    - A file ending in .autofs in /etc/auto.master.d/
+    - /etc/exports
+    - /etc/fstab
+    answer: 0
+    explain: One file per mount tree keeps things tidy.
+  - id: q-93225f4fb6df
+    q: ls /mnt/auto is empty, but ls /mnt/auto/data works. Why?
+    options:
+    - An indirect map creates the mount point only when the key is accessed
+    - autofs is broken
+    - The share is hidden
+    answer: 0
+    explain: Keys are not listed until used.
+  - id: q-dee56adef162
+    q: Which command makes autofs read changed maps?
+    options:
+    - systemctl reload autofs
+    - exportfs -r
+    - mount -a
+    answer: 0
+    explain: Reload after editing master or map files.
+  - id: q-2ebc152b4986
+    q: Which option stops a down server from blocking boot?
+    options:
+    - nofail (or use autofs)
+    - noexec
+    - sync
+    answer: 0
+    explain: Or x-systemd.automount.

@@ -553,20 +553,36 @@
   - ch18/exercise-troubleshooting
   - ch18/lab
   challenges: []
-- id: ch19.operations
+- id: ch19.nfs
   chapter: ch19
   lessons:
-  - ch19/nfs-access
-  - ch19/automounts
+  - ch19/nfs-basics
   labs:
+  - ch19/exercise-share
   - ch19/lab
   challenges: []
-- id: ch19.verification
+- id: ch19.access
   chapter: ch19
   lessons:
-  - ch19/nfs-access
-  - ch19/automounts
+  - ch19/access-and-permissions
   labs:
+  - ch19/exercise-permissions
+  - ch19/lab
+  challenges: []
+- id: ch19.persistent
+  chapter: ch19
+  lessons:
+  - ch19/persistent-mounts-and-autofs
+  labs:
+  - ch19/exercise-persistent
+  - ch19/lab
+  challenges: []
+- id: ch19.maps
+  chapter: ch19
+  lessons:
+  - ch19/autofs-maps
+  labs:
+  - ch19/exercise-maps
   - ch19/lab
   challenges: []
 - id: ch20.operations

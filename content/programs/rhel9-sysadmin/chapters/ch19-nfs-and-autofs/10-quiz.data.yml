@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-05a2e5856cf9
+    q: Which package provides the NFS server and client tools?
+    options:
+    - nfs-utils
+    - nfsd
+    - rpcbind-server
+    answer: 0
+    explain: It is installed on the lab image.
+  - id: q-a389d9cbd22a
+    q: Which command applies changes to /etc/exports?
+    options:
+    - exportfs -rav
+    - systemctl reload nfs
+    - mount -a
+    answer: 0
+    explain: Then check exportfs -v.
+  - id: q-cf88e95351c2
+    q: Which firewalld service does NFSv4 need?
+    options:
+    - nfs
+    - mountd
+    - samba
+    answer: 0
+    explain: firewall-cmd --permanent --add-service=nfs; --reload.
+  - id: q-267264cf07c7
+    q: How do you mount a share by hand?
+    options:
+    - mount -t nfs server:/dir /mnt
+    - nfs mount /dir
+    - exportfs /dir
+    answer: 0
+    explain: Create /mnt first.
+  - id: q-10fe4037c77d
+    q: A user can read but not write a file on the share. First check?
+    options:
+    - Permissions and UIDs on the server (ls -ln), and ro/rw
+    - The cable
+    - autofs
+    answer: 0
+    explain: Compare numbers on both sides.
+  - id: q-55cffd90ceac
+    q: Which fstab option waits for the network?
+    options:
+    - _netdev
+    - noauto
+    - sync
+    answer: 0
+    explain: Add nofail if the server is optional.
+  - id: q-15d744104550
+    q: What is the main advantage of autofs?
+    options:
+    - Mounts only when used, unmounts when idle
+    - Faster than fstab
+    - Needs no server
+    answer: 0
+    explain: No hung boots on a missing server.
+  - id: q-7ec910c11ef2
+    q: Where does an autofs map entry for /mnt/auto live?
+    options:
+    - /etc/auto.master.d/NAME.autofs plus a map file
+    - /etc/exports
+    - /etc/auto.conf only
+    answer: 0
+    explain: Reload after editing.
+  - id: q-47cf2cb7e1f9
+    q: root on the client is refused writing to a root-owned export. Why?
+    options:
+    - root_squash
+    - A full disk
+    - An ro mount
+    answer: 0
+    explain: Change ownership on the server.
+  - id: q-3bd0e86ef06a
+    q: '"No route to host" but ping works. Which side do you fix?'
+    options:
+    - The server's firewall
+    - The client's fstab
+    - The exports file
+    answer: 0
+    explain: Open the nfs service.

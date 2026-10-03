@@ -1,0 +1,305 @@
+nfs-flow:
+  title: Sharing a directory over NFS
+  caption: Step through a client reading a file from a server.
+  height: 260
+  mode: steps
+  steps:
+  - title: The server exports a directory
+    text: '/etc/exports on serverb says: share /srv/shared with the lab network, read-write. exportfs -rav publishes the list, and the nfs-server service answers requests.'
+  - title: The firewall lets NFS in
+    text: NFS version 4 needs only TCP port 2049. In firewalld that is the service nfs. Without it, the client sees "No route to host".
+  - title: The client mounts it
+    text: mount -t nfs serverb:/srv/shared /mnt/shared. The remote directory now appears at /mnt/shared as an ordinary directory, with type nfs4.
+  - title: Access checks happen on the server
+    text: Each read or write carries the user ID of the client user. The server checks it against the file permissions (and squashes root). Same numbers on both sides give the expected result.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 170
+    h: 60
+    tone: blue
+    title: servera (client)
+    sub: /mnt/shared
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    - 3
+  - kind: node
+    x: 500
+    y: 20
+    w: 170
+    h: 60
+    tone: green
+    title: serverb (server)
+    sub: /srv/shared
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+    - 3
+  - kind: node
+    x: 250
+    y: 20
+    w: 200
+    h: 60
+    tone: amber
+    title: TCP 2049
+    sub: 'firewalld: nfs'
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 180
+      - 50
+    - - 250
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 450
+      - 50
+    - - 500
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 150
+    y: 120
+    w: 380
+    h: 44
+    tone: gray
+    title: /etc/exports · exportfs -rav · nfs-server
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+export-options:
+  title: Export options
+  caption: Select an option of a line in /etc/exports.
+  height: 270
+  mode: select
+  initial: rw
+  info:
+    path:
+      tone: gray
+      title: /srv/shared
+      text: The directory on the server to export. Subdirectories are included, but not other file systems mounted below it.
+    host:
+      tone: blue
+      title: 172.25.250.0/24
+      text: 'Who may mount it: one host (servera), a name pattern (*.lab.example.com), or a network (192.168.0.0/24). Without a host, everyone may. List several, each with its own options.'
+    rw:
+      tone: green
+      title: rw or ro
+      text: Read-write or read-only for that client. ro is the safer default for data that does not need changing.
+    sync:
+      tone: amber
+      title: sync
+      text: The server confirms a write only after it is on disk. Safer than async, slightly slower.
+    squash:
+      tone: coral
+      title: root_squash (default)
+      text: Requests from root on the client are treated as the unprivileged user nobody on the server, so a client cannot act as root there. no_root_squash disables it (needed rarely, and dangerous); all_squash maps everybody to nobody.
+  elements:
+  - kind: node
+    x: 6
+    y: 34
+    w: 130
+    h: 56
+    tone: gray
+    title: /srv/shared
+    sub: path
+    mono: true
+    titleSize: 13
+    select: path
+    active:
+    - path
+  - kind: node
+    x: 144
+    y: 34
+    w: 170
+    h: 56
+    tone: blue
+    title: 172.25.250.0/24
+    sub: who
+    mono: true
+    titleSize: 12.5
+    select: host
+    active:
+    - host
+  - kind: node
+    x: 322
+    y: 34
+    w: 70
+    h: 56
+    tone: green
+    title: rw
+    sub: access
+    mono: true
+    titleSize: 16
+    select: rw
+    active:
+    - rw
+  - kind: node
+    x: 398
+    y: 34
+    w: 80
+    h: 56
+    tone: amber
+    title: sync
+    sub: writes
+    mono: true
+    titleSize: 14
+    select: sync
+    active:
+    - sync
+  - kind: node
+    x: 484
+    y: 34
+    w: 186
+    h: 56
+    tone: coral
+    title: root_squash
+    sub: default
+    mono: true
+    titleSize: 13
+    select: squash
+    active:
+    - squash
+  - kind: label
+    x: 340
+    y: 116
+    text: /srv/shared  172.25.250.0/24(rw,sync)
+    mono: true
+    size: 12.5
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: server and client'
+    prompt: '[root@serverb ~]#'
+    commands:
+    - cmd: dnf install -y nfs-utils
+      out: 'Package nfs-utils-1:2.5.4-42.el9.x86_64 is already installed.
+
+        Nothing to do.
+
+        Complete!'
+    - cmd: mkdir -p /srv/shared; echo "shared file" > /srv/shared/hello.txt
+      out: ''
+    - cmd: echo '/srv/shared  172.25.250.0/24(rw,sync)' > /etc/exports
+      out: ''
+    - cmd: systemctl enable --now nfs-server
+      out: Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service → /usr/lib/systemd/system/nfs-server.service.
+    - cmd: exportfs -rav
+      out: exporting 172.25.250.0/24:/srv/shared
+    - cmd: exportfs -v
+      out: "/srv/shared   \t172.25.250.0/24(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)"
+    - cmd: firewall-cmd --permanent --add-service=nfs; firewall-cmd --reload
+      out: 'success
+
+        success'
+    - cmd: firewall-cmd --list-services
+      out: cockpit dhcpv6-client nfs ssh
+    - cmd: mkdir -p /mnt/shared; mount -t nfs serverb:/srv/shared /mnt/shared
+      out: (run this one on servera, the client)
+    - cmd: df -hT /mnt/shared
+      out: 'Filesystem          Type  Size  Used Avail Use% Mounted on
+
+        serverb:/srv/shared nfs4   20G  1.7G   18G   9% /mnt/shared'
+    tasks:
+    - text: Create the exports file for the lab network, read-write.
+      commands:
+      - echo '/srv/shared  172.25.250.0/24(rw,sync)' > /etc/exports
+    - text: Start the NFS server now and at boot.
+      commands:
+      - systemctl enable --now nfs-server
+    - text: Publish the exports and show them with options.
+      commands:
+      - exportfs -rav
+      - exportfs -v
+    - text: Allow NFS through the firewall, permanently.
+      commands:
+      - firewall-cmd --permanent --add-service=nfs; firewall-cmd --reload
+    - text: On the client, mount the share and look at it.
+      commands:
+      - mkdir -p /mnt/shared; mount -t nfs serverb:/srv/shared /mnt/shared
+      - df -hT /mnt/shared
+quick:
+  questions:
+  - id: q-e03aa649df40
+    q: Which file lists the directories an NFS server shares?
+    options:
+    - /etc/exports
+    - /etc/fstab
+    - /etc/nfs.conf only
+    answer: 0
+    explain: exportfs -rav applies changes.
+  - id: q-2d94368ad7e1
+    q: Which port does NFSv4 need through the firewall?
+    options:
+    - TCP 2049 (the nfs service)
+    - UDP 53
+    - TCP 22
+    answer: 0
+    explain: NFSv3 needs more (rpc-bind, mountd).
+  - id: q-641c229fa2f7
+    q: Which service runs on the NFS server?
+    options:
+    - nfs-server
+    - nfs-client
+    - nfsd.timer
+    answer: 0
+    explain: systemctl enable --now nfs-server.
+  - id: q-a5f0587a1d06
+    q: How does the client attach the share?
+    options:
+    - mount -t nfs server:/export /mountpoint
+    - nfs attach server
+    - exportfs server
+    answer: 0
+    explain: The mount point must exist.
+  - id: q-21399503afc1
+    q: Which command shows the active exports and their options on the server?
+    options:
+    - exportfs -v
+    - showmount -a
+    - mount
+    answer: 0
+    explain: exportfs -rav re-reads /etc/exports.
+  - id: q-62ce3a50811c
+    q: What does root_squash do?
+    options:
+    - Maps the client's root to an unprivileged user on the server
+    - Gives root extra rights
+    - Compresses data
+    answer: 0
+    explain: It is on by default.

@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Server side in four steps?
+    back: mkdir share · /etc/exports line · systemctl enable --now nfs-server · exportfs -rav; firewall nfs service
+  - front: An exports line?
+    back: /srv/shared  172.25.250.0/24(rw,sync)  — path, host(options)
+  - front: Show exports?
+    back: exportfs -v (server) · showmount -e SERVER (needs NFSv3 ports)
+  - front: Client mount?
+    back: mount -t nfs server:/srv/shared /mnt/shared · df -hT · nfsstat -m
+  - front: Permanent client mount?
+    back: server:/srv/shared /mnt/shared nfs defaults,_netdev 0 0
+  - front: What crosses NFS?
+    back: Numeric UIDs and GIDs; use the same numbers on both sides.
+  - front: root_squash?
+    back: Client root becomes nobody on the server (default). Fix permissions, not the squash.
+  - front: No route to host / access denied / Permission denied?
+    back: Firewall / exports / UIDs and modes
+  - front: Install and start autofs?
+    back: dnf install autofs · systemctl enable --now autofs · reload after edits
+  - front: Indirect map?
+    back: '/etc/auto.master.d/x.autofs: /mnt/auto /etc/auto.x --timeout=20 · /etc/auto.x: key -rw server:/dir'
+  - front: Wildcard home directories?
+    back: '* -rw,sync server:/srv/homes/&'
+  - front: Direct map and checking?
+    back: /- /etc/auto.direct with full paths · automount -m · journalctl -u autofs

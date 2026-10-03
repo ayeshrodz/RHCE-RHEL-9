@@ -1,0 +1,189 @@
+map-types:
+  title: Kinds of autofs maps
+  caption: Select a map type.
+  height: 260
+  mode: select
+  initial: wild
+  info:
+    indirect:
+      tone: blue
+      title: Indirect map
+      text: 'The master entry names a parent directory (/mnt/auto); the map lists keys below it: "data -rw serverb:/srv/shared" makes /mnt/auto/data. The most common kind.'
+    wild:
+      tone: green
+      title: Wildcard map
+      text: 'One line covers many keys: "* -rw,sync serverb:/srv/homes/&". Accessing /remote/homes/alice mounts serverb:/srv/homes/alice; the & is replaced by the key. This is how home directories are served.'
+    direct:
+      tone: amber
+      title: Direct map
+      text: 'The master entry /- points at a map whose keys are complete paths: "/mnt/direct/data -rw serverb:/srv/shared". Use it when the mount point lives where you cannot own the parent directory.'
+    opts:
+      tone: gray
+      title: Options in a map
+      text: -rw or -ro, sync, vers=4.2, sec=sys, soft, fstype=nfs4. And --timeout=N on the master line sets the idle time before unmounting.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: indirect
+    sub: key under a directory
+    titleSize: 13
+    select: indirect
+    active:
+    - indirect
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: wildcard
+    sub: '* and &'
+    mono: true
+    titleSize: 15
+    select: wild
+    active:
+    - wild
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: amber
+    title: direct
+    sub: /- full paths
+    mono: true
+    titleSize: 14
+    select: direct
+    active:
+    - direct
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: gray
+    title: options
+    sub: -rw,sync…
+    mono: true
+    titleSize: 13
+    select: opts
+    active:
+    - opts
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: home directories on demand'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: echo '/srv/homes  172.25.250.0/24(rw,sync)' >> /etc/exports; exportfs -ra
+      out: (run this one on serverb, the server)
+    - cmd: echo '/remote/homes  /etc/auto.homes' > /etc/auto.master.d/homes.autofs
+      out: ''
+    - cmd: echo '*  -rw,sync  serverb:/srv/homes/&' > /etc/auto.homes
+      out: ''
+    - cmd: systemctl reload autofs
+      out: ''
+    - cmd: ls /remote/homes
+      out: ''
+    - cmd: cat /remote/homes/alice/readme
+      out: alice home
+    - cmd: ls /remote/homes
+      out: alice
+    - cmd: mount | grep remote | cut -c1-70
+      out: '/etc/auto.homes on /remote/homes type autofs (rw,relatime,fd=15,pgrp=2
+
+        serverb:/srv/homes/alice on /remote/homes/alice type nfs4 (rw,relatime'
+    - cmd: echo '/-  /etc/auto.direct' > /etc/auto.master.d/direct.autofs; echo '/mnt/direct/data  -rw  serverb:/srv/shared' > /etc/auto.direct
+      out: ''
+    - cmd: systemctl reload autofs; ls /mnt/direct/data | head -2
+      out: 'alice
+
+        hello.txt'
+    - cmd: automount -m | grep -E "Mount point|map:"
+      out: "Mount point: /misc\n  map: /etc/auto.misc\nMount point: /net\nMount point: /-\n  map: /etc/auto.direct\nMount point: /remote/homes\n  map: /etc/auto.homes\nMount point: /mnt/auto\n  map: /etc/auto.shared"
+    tasks:
+    - text: Create the master entry and a wildcard map for home directories.
+      commands:
+      - echo '/remote/homes  /etc/auto.homes' > /etc/auto.master.d/homes.autofs
+      - echo '*  -rw,sync  serverb:/srv/homes/&' > /etc/auto.homes
+    - text: Reload autofs and list the (still empty) parent directory.
+      commands:
+      - systemctl reload autofs
+      - ls /remote/homes
+    - text: Read one user's file, then list the parent again.
+      commands:
+      - cat /remote/homes/alice/readme
+      - ls /remote/homes
+    - text: Create a direct map entry and trigger it.
+      commands:
+      - echo '/-  /etc/auto.direct' > /etc/auto.master.d/direct.autofs; echo '/mnt/direct/data  -rw  serverb:/srv/shared' > /etc/auto.direct
+      - systemctl reload autofs; ls /mnt/direct/data | head -2
+    - text: Dump the maps autofs knows.
+      commands:
+      - automount -m | grep -E "Mount point|map:"
+quick:
+  questions:
+  - id: q-18e752e0bbdc
+    q: In a wildcard map, what does & stand for?
+    options:
+    - The key that was accessed
+    - The server name
+    - The mount options
+    answer: 0
+    explain: '* matches any key; & repeats it on the right.'
+  - id: q-7a82696b1d55
+    q: Which master map entry introduces a direct map?
+    options:
+    - /-  /etc/auto.direct
+    - /direct  /etc/auto.direct
+    - +direct
+    answer: 0
+    explain: /- means the keys are full paths.
+  - id: q-7c0f7fe755ab
+    q: Which command lists the maps autofs has loaded?
+    options:
+    - automount -m
+    - exportfs -v
+    - showmount -e
+    answer: 0
+    explain: Check after every reload.
+  - id: q-b41e06169c09
+    q: Why is autofs a good fit for home directories?
+    options:
+    - Only the directories in use are mounted, and unmounted when idle
+    - It encrypts them
+    - It speeds up NFS
+    answer: 0
+    explain: No need to list every user.
+  - id: q-381f8e8b0b47
+    q: A map line has the wrong server path. Where do you see why the mount fails?
+    options:
+    - journalctl -u autofs and the error from ls
+    - /etc/exports
+    - dmesg only
+    answer: 0
+    explain: The access gives "No such file or directory".
+  - id: q-fbff1cb9b9b5
+    q: You edited /etc/auto.homes. What next?
+    options:
+    - systemctl reload autofs
+    - Reboot
+    - exportfs -ra on the client
+    answer: 0
+    explain: The change applies to new mounts.
