@@ -1,0 +1,28 @@
+name: sysadmin-12
+title: Networking
+page: ch12/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: address
+      'on': servera.lab.example.com
+      persistent: true
+      id: check-1
+      message: Verify address requirement 1 for Networking
+      targets:
+      - servera.lab.example.com
+      interface: kp-dummy
+      cidr: 192.0.2.10/24
+    - kind: file
+      'on': control
+      paths:
+      - network-evidence.txt
+      nonEmpty: true
+      id: check-2
+      message: Verify file requirement 2 for Networking

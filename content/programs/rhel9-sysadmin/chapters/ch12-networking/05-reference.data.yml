@@ -1,0 +1,11 @@
+recall:
+  cards:
+  - front: A saved profile has a new address but ip address still shows the old one. Why?
+    back: The saved profile may not yet have been applied to the live device. Modification and activation
+      are separate steps.
+  - front: ping works but an HTTP request fails. What did ping establish?
+    back: ICMP reachability, not application readiness. Service protocol tests must be performed independently.
+  - front: LXD names a NIC eth0 while the guest shows enp5s0. Which name belongs in guest nmcli device
+      operations?
+    back: The device name reported inside the guest. Host device labels and guest interface naming are
+      distinct.

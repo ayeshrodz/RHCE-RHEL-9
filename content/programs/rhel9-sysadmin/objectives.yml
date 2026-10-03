@@ -170,6 +170,22 @@
   labs:
   - ch11/lab
   challenges: []
+- id: ch12.operations
+  chapter: ch12
+  lessons:
+  - ch12/network-model
+  - ch12/networkmanager-profiles
+  labs:
+  - ch12/lab
+  challenges: []
+- id: ch12.verification
+  chapter: ch12
+  lessons:
+  - ch12/network-model
+  - ch12/networkmanager-profiles
+  labs:
+  - ch12/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
