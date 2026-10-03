@@ -257,6 +257,9 @@
           "$ref": "#/$defs/checkLogicalVolume"
         },
         {
+          "$ref": "#/$defs/checkVolumeGroup"
+        },
+        {
           "$ref": "#/$defs/checkSwap"
         },
         {
@@ -1138,6 +1141,42 @@
         "minSizeMiB": {
           "type": "integer",
           "minimum": 1
+        }
+      },
+      "type": "object"
+    },
+    "checkVolumeGroup": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "vg"
+      ],
+      "properties": {
+        "kind": {
+          "const": "volume-group"
+        },
+        "vg": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_+.-]{1,64}$"
+        },
+        "minPhysicalVolumes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "minSizeMiB": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "extentSizeMiB": {
+          "description": "The physical extent size of the group, in MiB.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
         }
       },
       "type": "object"

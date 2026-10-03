@@ -240,6 +240,18 @@ def conditions_logical_volume(c):
     return ["lvs --noheadings --units m --nosuffix -o lv_size %s | awk '$1 >= %d {ok=1} END {exit !ok}'" % (device, int(c['minSizeMiB']))]
 
 
+def conditions_volume_group(c):
+    vg = shlex.quote(c['vg'])
+    out = ['vgs %s >/dev/null 2>&1' % vg]
+    if 'minPhysicalVolumes' in c:
+        out.append('[ "$(vgs --noheadings -o pv_count %s | tr -d \' \')" -ge %d ]' % (vg, int(c['minPhysicalVolumes'])))
+    if 'minSizeMiB' in c:
+        out.append("vgs --noheadings --units m --nosuffix -o vg_size %s | awk '$1 >= %d {ok=1} END {exit !ok}'" % (vg, int(c['minSizeMiB'])))
+    if 'extentSizeMiB' in c:
+        out.append("vgs --noheadings --units m --nosuffix -o vg_extent_size %s | awk '$1 == %d {ok=1} END {exit !ok}'" % (vg, int(c['extentSizeMiB'])))
+    return out
+
+
 def conditions_http(c):
     url = c['url']
     scheme, rest = url.split('://', 1)
@@ -346,7 +358,7 @@ def conditions_process(c):
 HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
-    'logical-volume': conditions_logical_volume, 'swap': conditions_swap, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
+    'logical-volume': conditions_logical_volume, 'volume-group': conditions_volume_group, 'swap': conditions_swap, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
     'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'selinux-boolean': conditions_selinux_boolean, 'selinux-port': conditions_selinux_port, 'selinux-fcontext': conditions_selinux_fcontext, 'address': conditions_address,
     'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process,
 }

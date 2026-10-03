@@ -1,0 +1,394 @@
+stack:
+  title: The LVM layers
+  caption: Select a layer.
+  height: 290
+  mode: select
+  initial: vg
+  info:
+    disk:
+      tone: gray
+      title: Disks and partitions
+      text: 'The raw storage: /dev/sdb1, /dev/sdb2, whole disks. LVM can use partitions (give them the lvm type) or entire disks. These are the building blocks that run out or fail.'
+    pv:
+      tone: blue
+      title: Physical volumes (PV)
+      text: A disk or partition that has been prepared for LVM with pvcreate. It carries a label and is divided into fixed-size chunks called physical extents (4 MiB by default). Show with pvs.
+    vg:
+      tone: purple
+      title: Volume group (VG)
+      text: A pool made of one or more PVs. Its size is the sum of its PVs. You create logical volumes from this pool and enlarge the pool by adding PVs. Show with vgs.
+    lv:
+      tone: green
+      title: Logical volumes (LV)
+      text: 'The "virtual partitions" you create from the pool: /dev/vgdata/lvapp. An LV can be any size, can span several PVs, and can be grown (and sometimes shrunk) while in use. Show with lvs.'
+    fs:
+      tone: amber
+      title: File system or swap
+      text: 'Just as on a partition: mkfs.xfs on the LV, then mount it. The file system sits on the LV, not on a disk, so it can grow with it.'
+  elements:
+  - kind: node
+    x: 10
+    y: 24
+    w: 150
+    h: 50
+    tone: amber
+    title: file system
+    sub: xfs · ext4 · swap
+    mono: true
+    titleSize: 13
+    select: fs
+    active:
+    - fs
+  - kind: node
+    x: 10
+    y: 80
+    w: 150
+    h: 50
+    tone: green
+    title: logical volumes
+    sub: lvapp · lvlog
+    mono: true
+    titleSize: 13
+    select: lv
+    active:
+    - lv
+  - kind: node
+    x: 10
+    y: 136
+    w: 150
+    h: 50
+    tone: purple
+    title: volume group
+    sub: vgdata
+    mono: true
+    titleSize: 13
+    select: vg
+    active:
+    - vg
+  - kind: node
+    x: 10
+    y: 192
+    w: 150
+    h: 50
+    tone: blue
+    title: physical volumes
+    sub: /dev/sdb1 /dev/sdb2
+    mono: true
+    titleSize: 12
+    select: pv
+    active:
+    - pv
+  - kind: node
+    x: 10
+    y: 248
+    w: 150
+    h: 40
+    tone: gray
+    title: disks
+    sub: sdb
+    mono: true
+    titleSize: 12
+    select: disk
+    active:
+    - disk
+  - kind: node
+    x: 200
+    y: 24
+    w: 470
+    h: 50
+    tone: amber
+    title: mount /dev/vgdata/lvapp /srv/app
+    mono: true
+    titleSize: 12.5
+  - kind: node
+    x: 200
+    y: 80
+    w: 470
+    h: 50
+    tone: green
+    title: lvcreate -n lvapp -L 1G vgdata
+    mono: true
+    titleSize: 12.5
+  - kind: node
+    x: 200
+    y: 136
+    w: 470
+    h: 50
+    tone: purple
+    title: vgcreate vgdata /dev/sdb1
+    mono: true
+    titleSize: 12.5
+  - kind: node
+    x: 200
+    y: 192
+    w: 470
+    h: 50
+    tone: blue
+    title: pvcreate /dev/sdb1
+    mono: true
+    titleSize: 12.5
+  - kind: node
+    x: 200
+    y: 248
+    w: 470
+    h: 40
+    tone: gray
+    title: parted … set 1 lvm on
+    mono: true
+    titleSize: 12
+build:
+  title: Build storage with LVM
+  caption: Step through the five commands.
+  height: 250
+  mode: steps
+  steps:
+  - title: 1 · Prepare a physical volume
+    text: pvcreate /dev/sdb1. The partition (type lvm) now carries an LVM label. If the disk held an older file system, answer y when asked whether to wipe the old signature.
+  - title: 2 · Create a volume group
+    text: vgcreate vgdata /dev/sdb1. The pool has the capacity of its PVs, cut into 4 MiB extents.
+  - title: 3 · Create logical volumes
+    text: lvcreate -n lvapp -L 1G vgdata (an exact size) or -l 50%FREE (a share of what is left). The device appears as /dev/vgdata/lvapp.
+  - title: 4 · Put a file system on it
+    text: mkfs.xfs /dev/vgdata/lvapp, exactly as on a partition.
+  - title: 5 · Mount it
+    text: mount /dev/vgdata/lvapp /srv/app, and an /etc/fstab line (/dev/vgdata/lvapp or its UUID) to keep it.
+  elements:
+  - kind: node
+    x: 8
+    y: 24
+    w: 128
+    h: 56
+    tone: blue
+    title: pvcreate
+    sub: PV
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 144
+    y: 24
+    w: 128
+    h: 56
+    tone: purple
+    title: vgcreate
+    sub: VG
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 280
+    y: 24
+    w: 128
+    h: 56
+    tone: green
+    title: lvcreate
+    sub: LV
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 416
+    y: 24
+    w: 128
+    h: 56
+    tone: amber
+    title: mkfs
+    sub: file system
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 552
+    y: 24
+    w: 118
+    h: 56
+    tone: teal
+    title: mount
+    sub: use it
+    mono: true
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 136
+      - 52
+    - - 144
+      - 52
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 272
+      - 52
+    - - 280
+      - 52
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 408
+      - 52
+    - - 416
+      - 52
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 544
+      - 52
+    - - 552
+      - 52
+    visible:
+    - 4
+  - kind: node
+    x: 150
+    y: 110
+    w: 380
+    h: 44
+    tone: gray
+    title: 'check each step: pvs · vgs · lvs · lsblk -f · df -h'
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: building LVM storage'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: pvcreate /dev/sdb1
+      out: '  Physical volume "/dev/sdb1" successfully created.'
+    - cmd: pvs
+      out: "  PV         VG Fmt  Attr PSize PFree\n  /dev/sdb1     lvm2 ---  1.50g 1.50g"
+    - cmd: vgcreate vgdata /dev/sdb1
+      out: '  Volume group "vgdata" successfully created'
+    - cmd: vgs
+      out: "  VG     #PV #LV #SN Attr   VSize  VFree \n  vgdata   1   0   0 wz--n- <1.50g <1.50g"
+    - cmd: lvcreate -n lvapp -L 1G vgdata
+      out: '  Logical volume "lvapp" created.'
+    - cmd: lvcreate -n lvlog -l 50%FREE vgdata
+      out: '  Logical volume "lvlog" created.'
+    - cmd: lvs
+      out: "  LV    VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert\n  lvapp vgdata -wi-a-----   1.00g                                                    \n  lvlog vgdata -wi-a----- 252.00m                                                    "
+    - cmd: mkfs.xfs /dev/vgdata/lvapp > /dev/null; mkdir -p /srv/app; mount /dev/vgdata/lvapp /srv/app; df -hT /srv/app
+      out: 'Filesystem               Type  Size  Used Avail Use% Mounted on
+
+        /dev/mapper/vgdata-lvapp xfs   960M   39M  922M   5% /srv/app'
+    - cmd: ls -l /dev/vgdata/ /dev/mapper/ | grep lv
+      out: 'lrwxrwxrwx. 1 root root       7 Oct  3 18:33 vgdata-lvapp -> ../dm-0
+
+        lrwxrwxrwx. 1 root root       7 Oct  3 18:33 vgdata-lvlog -> ../dm-1
+
+        lrwxrwxrwx. 1 root root 7 Oct  3 18:33 lvapp -> ../dm-0
+
+        lrwxrwxrwx. 1 root root 7 Oct  3 18:33 lvlog -> ../dm-1'
+    tasks:
+    - text: Initialise sdb1 as a physical volume and list it.
+      commands:
+      - pvcreate /dev/sdb1
+      - pvs
+    - text: Create the volume group vgdata on it.
+      commands:
+      - vgcreate vgdata /dev/sdb1
+    - text: Create a 1 GiB logical volume lvapp and another lvlog using half of the free space.
+      commands:
+      - lvcreate -n lvapp -L 1G vgdata
+      - lvcreate -n lvlog -l 50%FREE vgdata
+    - text: List the logical volumes.
+      commands:
+      - lvs
+    - text: Make an XFS file system on lvapp, mount it on /srv/app and check.
+      commands:
+      - mkfs.xfs /dev/vgdata/lvapp > /dev/null; mkdir -p /srv/app; mount /dev/vgdata/lvapp /srv/app; df -hT /srv/app
+quick:
+  questions:
+  - id: q-a4f23df4861c
+    q: What is the order of LVM layers, from the disk upwards?
+    options:
+    - PV, VG, LV, file system
+    - LV, VG, PV, file system
+    - VG, PV, file system, LV
+    answer: 0
+    explain: Disks become PVs, PVs form a VG, LVs are cut from it, and the file system goes on the LV.
+  - id: q-317090a0ec5d
+    q: Which command creates a logical volume of 1 GiB named lvapp in the group vgdata?
+    options:
+    - lvcreate -n lvapp -L 1G vgdata
+    - vgcreate lvapp 1G
+    - pvcreate -L 1G lvapp
+    answer: 0
+    explain: -L is a size, -l a number of extents or a percentage.
+  - id: q-e84b323f47fc
+    q: What advantage does an LV have over a plain partition?
+    options:
+    - It can be resized, and can span several disks
+    - It is faster
+    - It needs no file system
+    answer: 0
+    explain: That flexibility is the reason for LVM.
+  - id: q-a4217080527e
+    q: Where does the device file of the LV lvapp in vgdata appear?
+    options:
+    - /dev/vgdata/lvapp (and /dev/mapper/vgdata-lvapp)
+    - /dev/lvapp1
+    - /dev/sdb3
+    answer: 0
+    explain: Both paths point to the same /dev/dm-N device.
+  - id: q-da7025cb716d
+    q: Which command shows the free space left in the volume groups?
+    options:
+    - vgs
+    - lvs
+    - df -h
+    answer: 0
+    explain: VFree column. pvs shows free space per PV.
+  - id: q-4f1153895f03
+    q: lvcreate asks "Wipe it?" about an xfs signature. What does it mean?
+    options:
+    - The space once held an old file system; answering y erases the stale signature
+    - The LV already exists
+    - XFS is not supported
+    answer: 0
+    explain: Use -y / --wipesignatures y when you are sure the old data is no longer needed.

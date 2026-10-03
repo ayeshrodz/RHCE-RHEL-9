@@ -1,4 +1,0 @@
-On a freshly reset servera and blank spare disk, create a 1 GiB XFS logical volume in vgpractice, mount it at /srv/data, then grow it to 1536 MiB while preserving a marker.
-
-Create and inspect PV, VG and LV storage layers.
-Grow a logical volume and its file system with independent verification.

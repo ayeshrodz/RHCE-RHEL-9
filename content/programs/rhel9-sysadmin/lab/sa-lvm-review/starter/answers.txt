@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The lvextend option that also grows the file system (starts with a dash):
+GROW_OPTION=
+# The command that moves the extents of one physical volume to another:
+MOVE_COMMAND=
+# Which file system can be shrunk, xfs or ext4:
+SHRINKABLE_FS=

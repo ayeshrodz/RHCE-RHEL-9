@@ -1,0 +1,105 @@
+name: sa-lvm-review
+title: Logical volume management
+page: ch18/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: vg
+      kind: volume-group
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: vgapp spans two physical volumes and uses 8 MiB extents
+      vg: vgapp
+      minPhysicalVolumes: 2
+      extentSizeMiB: 8
+    - id: lvweb
+      kind: logical-volume
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: lvweb is at least 2000 MiB
+      vg: vgapp
+      lv: lvweb
+      minSizeMiB: 2000
+    - id: lvdb
+      kind: logical-volume
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: lvdb is at least 400 MiB
+      vg: vgapp
+      lv: lvdb
+      minSizeMiB: 400
+    - id: lvswap
+      kind: logical-volume
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: lvswap is at least 256 MiB
+      vg: vgapp
+      lv: lvswap
+      minSizeMiB: 256
+    - id: web-mount
+      kind: mount
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/web is XFS, mounted now and at boot
+      path: /srv/web
+      fstype: xfs
+      persistent: true
+    - id: db-mount
+      kind: mount
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/db is ext4, mounted now and at boot
+      path: /srv/db
+      fstype: ext4
+      persistent: true
+    - id: swap
+      kind: swap
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The swap volume is active and in fstab
+      minSizeMiB: 200
+    - id: web-size
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The data in /srv/web survived the extension
+      paths:
+      - /srv/web/numbers.txt
+      line: '100000'
+    - id: answer-grow-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the lvextend option that also grows the file system'
+      paths:
+      - answers.txt
+      matches: ^GROW_OPTION=-r[ \t]*$
+    - id: answer-move-command
+      kind: file
+      'on': control
+      message: 'answers.txt: the command that moves extents between physical volumes'
+      paths:
+      - answers.txt
+      matches: ^MOVE_COMMAND=pvmove[ \t]*$
+    - id: answer-shrinkable-fs
+      kind: file
+      'on': control
+      message: 'answers.txt: the file system (xfs or ext4) that can be shrunk'
+      paths:
+      - answers.txt
+      matches: ^SHRINKABLE_FS=ext4[ \t]*$

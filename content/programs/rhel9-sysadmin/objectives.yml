@@ -521,20 +521,36 @@
   - ch17/exercise-space
   - ch17/lab
   challenges: []
-- id: ch18.operations
+- id: ch18.concepts
   chapter: ch18
   lessons:
-  - ch18/lvm-layers
-  - ch18/lvm-growth
+  - ch18/lvm-concepts
   labs:
+  - ch18/exercise-build
   - ch18/lab
   challenges: []
-- id: ch18.verification
+- id: ch18.resize
   chapter: ch18
   lessons:
-  - ch18/lvm-layers
-  - ch18/lvm-growth
+  - ch18/growing-and-shrinking
   labs:
+  - ch18/exercise-resize
+  - ch18/lab
+  challenges: []
+- id: ch18.maintenance
+  chapter: ch18
+  lessons:
+  - ch18/moving-and-maintaining
+  labs:
+  - ch18/exercise-maintenance
+  - ch18/lab
+  challenges: []
+- id: ch18.troubleshooting
+  chapter: ch18
+  lessons:
+  - ch18/troubleshooting
+  labs:
+  - ch18/exercise-troubleshooting
   - ch18/lab
   challenges: []
 - id: ch19.operations

@@ -1,8 +1,12 @@
 title: Logical volume management
-goal: Build flexible storage with physical volumes, volume groups and logical volumes.
+goal: Build storage with LVM, grow and shrink volumes online, replace disks without downtime, and diagnose common LVM problems.
 objectives:
-- Create and inspect PV, VG and LV storage layers.
-- Grow a logical volume and its file system with independent verification.
+  - Describe physical volumes, volume groups and logical volumes, and create and inspect them.
+  - Extend logical volumes and their file systems, add disks to a group, and shrink ext4 safely.
+  - Move data between disks with pvmove, rename and remove volumes, and make LVM mounts and swap permanent.
+  - Diagnose inactive volumes, full groups, busy volumes and missing devices.
 objectiveIds:
-- ch18.operations
-- ch18.verification
+  - ch18.concepts
+  - ch18.resize
+  - ch18.maintenance
+  - ch18.troubleshooting
