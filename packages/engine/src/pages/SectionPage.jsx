@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { ArrowLeft, ArrowRight, Check, Clock } from 'lucide-react';
 import { course, findPage, kindLabel, loaderFor, neighbours } from '@/lib/course';
 import { useProgress } from '@/hooks/useProgress';

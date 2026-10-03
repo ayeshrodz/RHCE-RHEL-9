@@ -15,9 +15,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PROGRAM = 'rhel9-ansible'
 BASE = os.environ.get('KERNEL_TEST_URL', 'http://127.0.0.1:4173/')
 
 NORMALISE = [
+    (re.compile(r'#/rhel9-ansible/?'), '#/'),
     (re.compile(r'\b(id|for|aria-controls|aria-labelledby|aria-describedby|href)="([^"]*?)«?:r[0-9a-z]+:»?([^"]*)"'), r'\1="\2(rid)\3"'),
     (re.compile(r'«r[0-9a-z]+»|:r[0-9a-z]+:|_r_[0-9a-z]+_'), '(rid)'),
     (re.compile(r'\s+'), ' '),
@@ -43,7 +45,7 @@ def capture(out):
             browser = p.chromium.launch()
             page = browser.new_context(viewport={'width': 1280, 'height': 900}, reduced_motion='reduce').new_page()
             for route in routes:
-                page.goto(BASE + '#' + route)
+                page.goto(BASE + '#/' + PROGRAM + route)
                 page.locator('h1').first.wait_for()
                 page.wait_for_function("!document.querySelector('.skeleton, .prose .widget[role=status]')")
                 height = page.evaluate('document.body.scrollHeight')

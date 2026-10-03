@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { challenges, course, chapters, objectives, pages } from '@/lib/course';
 import { useProgressData, useStored } from '@/lib/storage';
 import { validateLabReport } from '@/lib/labReports';

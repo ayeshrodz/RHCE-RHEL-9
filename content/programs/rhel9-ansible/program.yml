@@ -1,0 +1,69 @@
+apiVersion: 1
+id: rhel9-ansible
+title: Ansible automation on RHEL 9
+label: Ansible
+tagline: Learn Ansible automation by doing
+summary: A hands-on path from your first playbook to automating real Linux administration. Every idea is drawn as a diagram, every exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.
+platform:
+  family: rhel
+  version: "9"
+  label: RHEL 9
+status: active
+stages:
+  - title: Foundations
+    chapters:
+      - 2
+      - 3
+    text: What Ansible is, inventories, configuration, and your first playbooks.
+  - title: Data and control
+    chapters:
+      - 4
+      - 5
+    text: Variables, facts and secrets; loops, conditions, handlers and errors.
+  - title: Files and structure
+    chapters:
+      - 6
+      - 7
+    text: Templates and file modules; host patterns, imports and includes.
+  - title: Reuse
+    chapters:
+      - 8
+    text: Roles, collections and the system roles.
+  - title: Real work
+    chapters:
+      - 9
+      - 10
+    text: Troubleshooting, then software, users, storage and networking.
+  - title: Prove it
+    chapters:
+      - 11
+    text: Four review exercises and two integrated assessments.
+  - title: Project workflow
+    chapters:
+      - 12
+    text: Git for automation projects, VS Code and development containers.
+variants:
+  - id: classroom
+    label: Classroom
+    icon: school
+  - id: homelab
+    label: Home lab
+    icon: house
+    default: true
+readerVariables:
+  - key: HOST_LAN_IP
+    label: Host's LAN IP
+    hint: hostname -I on the host
+    example: 192.168.1.50
+    pattern: ipv4
+  - key: HOST_USER
+    label: Your user on the host
+    hint: whoami on the host
+    example: alex
+    pattern: username
+  - key: ROUTER_IP
+    label: Your router (default gateway)
+    hint: ip route | grep default
+    example: 192.168.1.1
+    pattern: ipv4
+lab: true

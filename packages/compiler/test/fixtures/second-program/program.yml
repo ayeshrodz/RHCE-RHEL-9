@@ -1,0 +1,10 @@
+apiVersion: 1
+id: second-program
+title: Linux basics (test fixture)
+label: Basics
+summary: A tiny program that proves programs stay separate.
+platform: { family: linux, version: "1", label: Linux }
+status: active
+variants:
+  - { id: classroom, label: Classroom, icon: school }
+  - { id: homelab, label: Home lab, icon: house, default: true }

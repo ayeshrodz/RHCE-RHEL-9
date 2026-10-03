@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router';
 import { Download, RotateCcw, Upload, X } from 'lucide-react';
 import { chapters } from '@/lib/course';
 import { chapterProgress, useProgress } from '@/hooks/useProgress';

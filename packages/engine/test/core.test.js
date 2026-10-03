@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { render } from '../src/lib/jinja.js';
 import { expandRange, parseInventory, graph } from '../src/lib/inventory.js';
 import { matchPattern } from '../src/lib/hostPattern.js';
-import { validateProgress, importProgress, exportProgress, writeStored, resetAllProgress } from '../src/lib/storage.js';
+import { validateProgress, importProgress, exportProgress, writeStored, resetAllProgress, setProgramScope } from '../src/lib/storage.js';
+
+setProgramScope('rhel9-ansible');
 
 const payload = (data, version = 1) => ({ app: 'kernel-path', version, data });
 test('invalid imports preserve saved progress', () => {

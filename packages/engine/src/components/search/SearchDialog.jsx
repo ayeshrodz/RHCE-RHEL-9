@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/lib/router';
 import { CornerDownLeft, FileText, Search, X } from 'lucide-react';
 import { useOverlay } from '@/hooks/useOverlay';
 import { getIndex, search } from './searchIndex';

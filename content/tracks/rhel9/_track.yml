@@ -1,7 +1,0 @@
-id: rhel9
-label: RHEL 9
-platform: platform.md
-exam: RHCE
-rhel: "9"
-aap: "2.2 (classroom reference)"
-ansibleCore: "2.14 (home lab)"

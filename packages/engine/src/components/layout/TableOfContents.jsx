@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { interfaceContent } from '@/lib/course';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/lib/router';
 
 /**
  * "On this page" outline. Reads h2/h3 headings from the rendered article

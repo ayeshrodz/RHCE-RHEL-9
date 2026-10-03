@@ -1,14 +1,19 @@
-import { loadSearchEntries } from '@/lib/course';
+import { loadSearchEntries, program } from '@/lib/course';
 
-let indexPromise = null;
+const indexes = new Map();
 
-/** The program's search entries (heading-sized chunks of plain text), loaded once on first search. */
+/** The active program's search entries (heading-sized chunks of plain text), loaded once per program on first search. */
 export function getIndex() {
-  indexPromise ??= loadSearchEntries().catch((error) => {
-    indexPromise = null;
-    throw error;
-  });
-  return indexPromise;
+  const id = program.id;
+  if (!indexes.has(id))
+    indexes.set(
+      id,
+      loadSearchEntries().catch((error) => {
+        indexes.delete(id);
+        throw error;
+      }),
+    );
+  return indexes.get(id);
 }
 
 export function search(entries, query) {

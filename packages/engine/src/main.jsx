@@ -13,20 +13,10 @@ import './styles/mobile.css';
 import './styles/motion.css';
 // After the global styles, so chapter widget styles (loaded via App) can override them.
 import App from './App';
+import BootError from './pages/BootError';
 import { bootContent } from './lib/course';
 
 const root = createRoot(document.getElementById('root'));
-
-/** Content is loaded and validated before the first render; a failure shows a plain message. */
-function BootError({ error }) {
-  return (
-    <main className="boot-error" role="alert">
-      <h1>This page could not load</h1>
-      <p>{error.message}</p>
-      <p>Check your connection and reload the page.</p>
-    </main>
-  );
-}
 
 bootContent().then(
   () =>

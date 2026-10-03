@@ -2,23 +2,23 @@
 
 Kernel Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
 
-The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/_course.yml`, including the dashboard document title.
+The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/site.yml` and the program's `legacy.yml`, including the dashboard document title.
 
 ## Content and routing
 
 The compiler (`packages/compiler`) turns `content/` into a static bundle of JSON files: a site index, a program manifest, one render tree per page, and a search index. At startup the engine (`packages/engine`) fetches the bundle from `contentBase` in `kernel.config.json`, validates every file with the generated validators from `@kernel-path/schema`, and `src/lib/course.js` exposes navigation and page lookup. Pages load on demand. `PageTree` renders only allowlisted elements and catalog tags; see [architecture.md](architecture.md) for the platform design and security model.
 
-Published URLs use hash routing, for example `#/ch03/inventory`. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
+Published URLs use hash routing, for example `#/rhel9-ansible/ch03/inventory` (program, chapter, section). Addresses without a program, such as `#/ch03/inventory`, open the default program. The engine loads one program at a time; the program route remounts its pages when the reader moves to another. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
 
-`content/_objectives.yml` maps stable skill IDs to lessons, challenges, and labs. Each chapter lists its objective IDs; quizzes and labs reference the skills they practise.
+`content/programs/<id>/objectives.yml` maps stable skill IDs to lessons, challenges, and labs. Each chapter lists its objective IDs; quizzes and labs reference the skills they practise.
 
 ## Track boundary and platform reference
 
-Site metadata lives in `content/_course.yml`; it names the active track. Track identity and version metadata live in `content/tracks/<id>/_track.yml`. `scripts/read-track.mjs` is shared by the compiler and validation, and supplies the track's reference page metadata and content location. `packages/engine/src/lib/course.js` exposes the `track` alongside the course/chapter data.
+Site identity lives in `content/site.yml`, which also lists the programs in order. Each program is a folder, `content/programs/<id>/`, with a `program.yml` (platform family and version, stages, variants, reader variables) and an optional `details.md` reference page. `packages/engine/src/lib/course.js` exposes the active program's `track` alongside the course and chapter data.
 
 The header badge links to `#/platform`. The lazy `ReferencePage` receives a page descriptor and loads its compiled page; it contains no RHEL-specific wording. `FlowMap` renders authored steps with the existing diagram kit and muted controls. Lessons and reference pages share `useHeadingNavigation` for copied links, table-of-contents navigation, and opening optional details. Reference pages have no completion key and do not replace the last visited lesson.
 
-This starts the content boundary for multiple tracks; it does not implement track switching. Before publishing a second track, scope chapter/objective manifests, lab downloads/grading contracts, activity IDs, and progress by track. Migrate existing saved RHEL 9 progress explicitly and preserve published URLs. Prefer explicit track URLs for shared links, and reuse components and grading engines across content packages. Keep the current RHEL 9 curriculum in place until that migration is implemented and verified.
+Programs are separate: each has its own manifest, pages and search index, and its own progress, stored under `rhce:<program>@<key>` and exported with the program's name. Display preferences (theme, lab values) are shared. Lab downloads and grading are still shared and move into programs with the typed labs. Resetting, exporting or importing progress affects only the open program, and an export from another program is refused.
 
 ## Shared content tables
 
@@ -70,6 +70,6 @@ PR CI runs formatting, content validation, JavaScript regressions, Python lab-to
 
 `CodeEditor` retains controlled input and adds shared indentation tools without capturing Tab. `editor.js` changes selected lines and maps selection positions. Code blocks wrap by default on phones and let readers switch to horizontal scrolling; clipboard extraction uses the original DOM text, independent of visual wrapping.
 
-`MdxContent` provides each page's `widgetContent` export. `defineWidget` binds page-authored text/data to a reusable renderer with stable identity, preserving local activity state across ordinary rerenders. Shared interface and landing-page catalogs are loaded by the content manifest. Search and reading-time helpers exclude these invisible metadata exports. The widget contract validator checks required fields and child dependencies. This boundary supports future track catalogs; track switching and progress scoping remain future work.
+`PageTree` provides each page's widget data. `defineWidget` binds page-authored text/data to a reusable renderer with stable identity, preserving local activity state across ordinary rerenders. Shared interface and landing-page catalogs come with the program's compiled bundle. Search and reading-time helpers exclude this widget data. The widget contract validator checks required fields and child dependencies.
 
 `tests/mobile_checks.py` covers all published routes at phone and tablet widths plus overlay, outline, editor, diagram and rerender behavior. It supplements the existing production-route and learning-flow suite; physical iOS and Android validation is separate.
