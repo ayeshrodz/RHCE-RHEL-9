@@ -14,8 +14,8 @@ Thanks for helping make this guide better. Anyone can propose changes; only the 
 Requires Node.js 20.19+ or 22.12+.
 
 ```bash
-git clone https://github.com/<you>/playbook-path.git    # your fork
-cd playbook-path
+git clone https://github.com/<you>/kernel-path.git    # your fork
+cd kernel-path
 npm install
 npm run dev                                          # http://localhost:3000, edits show live
 ```

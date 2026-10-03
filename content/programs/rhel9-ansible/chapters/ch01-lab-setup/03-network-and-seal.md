@@ -24,7 +24,7 @@ Phases 03 and 04: build the virtual switch `rhcebr0` with the classroom's addres
     | --- | --- |
     | Type | Bridge |
     | Name | rhcebr0 |
-    | Description | RHCE sealed lab network |
+    | Description | Kernel Path sealed lab network |
     | IPv4 address | 172.25.250.254/24 |
     | IPv4 NAT | On |
     | IPv6 address | none |
@@ -37,7 +37,7 @@ Phases 03 and 04: build the virtual switch `rhcebr0` with the classroom's addres
 ```yaml {% title="rhcebr0: YAML configuration" %}
 name: rhcebr0
 type: bridge
-description: RHCE sealed lab network
+description: Kernel Path sealed lab network
 config:
   ipv4.address: 172.25.250.254/24
   ipv4.nat: "true"

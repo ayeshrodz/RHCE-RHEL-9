@@ -1,4 +1,4 @@
-Licence for the written content of the RHCE Field Guide
+Licence for the written content of Kernel Path
 =======================================================
 
 This licence covers the written content: everything under content/ and docs/,
@@ -10,9 +10,9 @@ Commons Attribution 4.0 International licence (CC BY 4.0). You may share and
 adapt it for any purpose, including commercially, if you give appropriate
 credit, link to the licence and indicate if you made changes.
 
-Suggested credit: "RHCE Field Guide, https://github.com/ayeshrodz/RHCE-RHEL-9"
+Suggested credit: "Kernel Path, https://github.com/ayeshrodz/kernel-path"
 
-Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks of their
+Red Hat, Red Hat Enterprise Linux and Ansible are trademarks of their
 respective owners. This project is independent and is not affiliated with,
 sponsored by, or endorsed by Red Hat, Inc. Using the names describes what the
 guide is about; it does not give you the right to use the marks.

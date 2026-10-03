@@ -1,10 +1,10 @@
 # Kernel Path
 
-[![Deploy](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
+[![Deploy](https://github.com/ayeshrodz/kernel-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/kernel-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
 
 **Read it online: https://kernelpath.dev/**
 
-**Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. The path follows the objectives of the **RHCE** exam, so it doubles as exam preparation. It is written by learners, for learners, as a way to study together: short explanations combine browser activities, real Linux labs, quizzes, and summaries. A learning dashboard keeps reading, practice, confidence, and local grading evidence separate.
+**Learn Ansible automation by doing.** A free, interactive course and home-lab build that takes you from your first playbook to automating real Linux administration on RHEL 9. It teaches the Ansible skills that DevOps and system administration teams use every day. It is written by learners, for learners, as a way to study together: short explanations combine browser activities, real Linux labs, quizzes, and summaries. A learning dashboard keeps reading, practice, confidence, and local grading evidence separate.
 
 > An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 
@@ -105,4 +105,4 @@ Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Security
 - **Source code** (`packages/`, `scripts/`, build and configuration files): [MIT](LICENSE).
 - **Written content** (`content/`, `docs/`) and the site's text and diagrams: [CC BY 4.0](LICENSE-CONTENT). Reuse is welcome with credit.
 
-Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks of Red Hat, Inc. This project is independent and is not affiliated with, sponsored by, or endorsed by Red Hat, Inc.
+Red Hat, Red Hat Enterprise Linux and Ansible are trademarks of Red Hat, Inc. This project is independent and is not affiliated with, sponsored by, or endorsed by Red Hat, Inc.

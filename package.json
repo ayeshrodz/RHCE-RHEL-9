@@ -6,10 +6,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ayeshrodz/playbook-path.git"
+    "url": "git+https://github.com/ayeshrodz/kernel-path.git"
   },
   "homepage": "https://kernelpath.dev/",
-  "bugs": "https://github.com/ayeshrodz/playbook-path/issues",
+  "bugs": "https://github.com/ayeshrodz/kernel-path/issues",
   "type": "module",
   "scripts": {
     "dev": "npm run dev -w @kernel-path/engine",

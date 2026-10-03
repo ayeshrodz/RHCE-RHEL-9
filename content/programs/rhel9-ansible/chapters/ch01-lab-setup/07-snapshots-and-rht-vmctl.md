@@ -44,7 +44,7 @@ sudo tee /usr/local/bin/rht-vmctl >/dev/null
 
 ```bash {% title="/usr/local/bin/rht-vmctl" %}
 #!/usr/bin/env bash
-# rht-vmctl - classroom-style VM control for the RHCE LXD home lab
+# rht-vmctl - classroom-style VM control for the Kernel Path LXD home lab
 # Install: sudo install -m 755 rht-vmctl /usr/local/bin/rht-vmctl
 # Version 2 (2026-09-30): the servers' extra disks are snapshotted and reset too
 set -uo pipefail
@@ -146,7 +146,7 @@ has_ws()      { printf '%s\n' "$@" | grep -qx workstation; }
 
 usage() {
 cat <<USAGE
-rht-vmctl v$VERSION - RHCE home lab (LXD project: $PROJECT)
+rht-vmctl v$VERSION - Kernel Path home lab (LXD project: $PROJECT)
 
 Classroom commands (same syntax):
   rht-vmctl status    VM|all       show state

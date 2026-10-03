@@ -20,7 +20,7 @@ Phases 05 to 07: give the lab its own LXD project, turn the project's default pr
     | Field | Value | Why |
     | --- | --- | --- |
     | Project name | rhce | |
-    | Description | RHCE practice lab | |
+    | Description | Kernel Path practice lab | |
     | Features | Customised | |
     | Allow custom profiles | ✓ on | The lab gets its own template |
     | Allow storage volumes | ✓ on | The extra disks belong to the lab |
@@ -73,7 +73,7 @@ A **profile** is a template every VM inherits. The rhce project's `default` prof
 
 ```yaml {% title="rhce project: default profile" %}
 name: default
-description: RHCE lab machine template
+description: Kernel Path lab machine template
 config:
   limits.cpu: "1"
   limits.memory: 1GiB

@@ -2,7 +2,7 @@
 
 Kernel Path is a static React application. GitHub Pages serves the built files; learning progress stays in the reader's browser. There are no accounts, server APIs, analytics, or paid dependencies.
 
-The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` records the configured custom domain and is copied into the build. The source repository remains `ayeshrodz/playbook-path`, so repository, issue, and PR links continue to use that name. Site branding comes from `content/site.yml` and the program's `legacy.yml`, including the dashboard document title.
+The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` records the configured custom domain and is copied into the build. The source repository is `ayeshrodz/kernel-path`. Site branding comes from `content/site.yml` and the program's `legacy.yml`, including the dashboard document title.
 
 ## Content and routing
 
