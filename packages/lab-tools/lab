@@ -78,7 +78,7 @@ cmd_start() {
     || die "setup failed; exercise is not ready. Fix the reported error and restart with --force"
   rm -f "$dir/.lab-prepare.py" "$dir/.lab-catalog.json" "$dir/.lab-not-ready"
   say "~/$name is ready: cd ~/$name"
-  echo "  Start from clean servers (on the Ubuntu host: rht-vmctl reset servers)."
+  echo "  If an earlier exercise left changes on the servers, finish it first (lab finish NAME) or reset them on the Ubuntu host: rht-vmctl reset servers"
 }
 
 cmd_finish() {
