@@ -200,7 +200,7 @@ def ssh_keypairs(a, ctx):
 # ---------------------------------------------------------------------------------------
 # Host actions: fixed scripts, built from validated values, run as root on lab servers.
 
-SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\.conf|httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
+SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|logs|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\.conf|httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
 PROTECTED = {'/srv', '/opt', '/mnt', '/tmp', '/root', '/home', '/var/www', '/var/tmp', '/var/log', '/usr/local', '/etc/systemd', '/etc/containers'}
 NAME = re.compile(r'^[a-z_][a-z0-9_-]{0,31}$')
 SSH = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR']
@@ -246,13 +246,13 @@ def script_service(a):
         state = a.get('state')
         enabled = a.get('enabled')
         if enabled is True and state == 'started':
-            out.append('%s%s enable --now %s' % (pre, ctl, u))
+            out.append('%s%s enable --now %s%s' % (pre, ctl, u, ' 2>/dev/null || true' if a.get('tolerant') else ''))
             continue
         if enabled is False and state == 'stopped':
             out.append('%s%s disable --now %s 2>/dev/null || true' % (pre, ctl, u))
             continue
         if state:
-            out.append('%s%s %s %s%s' % (pre, ctl, {'started': 'start', 'stopped': 'stop', 'restarted': 'restart'}[state], u, ' 2>/dev/null || true' if state == 'stopped' else ''))
+            out.append('%s%s %s %s%s' % (pre, ctl, {'started': 'start', 'stopped': 'stop', 'restarted': 'restart'}[state], u, ' 2>/dev/null || true' if state == 'stopped' or a.get('tolerant') else ''))
         if enabled is not None:
             out.append('%s%s %s %s%s' % (pre, ctl, 'enable' if enabled else 'disable', u, '' if enabled else ' 2>/dev/null || true'))
         if a.get('masked') is not None:
@@ -298,12 +298,20 @@ def owner_args(a, path):
     return out
 
 
+def label_args(a, path):
+    if 'selinuxType' not in a:
+        return []
+    if not re.match(r'^[a-z_]+_t$', a['selinuxType']):
+        raise SetupError('unsafe SELinux type')
+    return ['chcon -t %s %s' % (q(a['selinuxType']), path)]
+
+
 def script_directory(a):
     path = safe_path(a['path'], a.get('state') == 'absent')
     p = q(path)
     if a.get('state', 'present') == 'absent':
         return 'rm -rf -- %s' % p
-    return '\n'.join(['mkdir -p -- %s' % p] + owner_args(a, p))
+    return '\n'.join(['mkdir -p -- %s' % p] + owner_args(a, p) + label_args(a, p))
 
 
 def script_file(a):
@@ -314,7 +322,7 @@ def script_file(a):
     import base64
     data = base64.b64encode(a.get('content', '').encode()).decode()
     lines = ['mkdir -p -- "$(dirname %s)"' % p, 'echo %s | base64 -d > %s' % (data, p)]
-    return '\n'.join(lines + owner_args(a, p))
+    return '\n'.join(lines + owner_args(a, p) + label_args(a, p))
 
 
 def script_remove_lines(a):
@@ -438,6 +446,41 @@ def script_crontab(a):
     return 'crontab -r -u %s 2>/dev/null || true' % q(name(a['user']))
 
 
+def script_partition_disk(a):
+    dev = a['device']
+    if not re.match(r'^/dev/(?:sd|vd)[b-z]$', dev):
+        raise SetupError('unsafe device')
+    out = ['parted -s %s mklabel gpt' % q(dev)]
+    for part in a['partitions']:
+        if not re.match(r'^[a-z][a-z0-9-]{0,15}$', part['name']) or part['fs'] not in ('xfs', 'ext4', 'linux-swap', 'lvm'):
+            raise SetupError('unsafe partition')
+        fs = 'xfs' if part['fs'] == 'lvm' else part['fs']
+        out.append('parted -s %s mkpart %s %s %dMiB %dMiB' % (q(dev), q(part['name']), fs, part['startMiB'], part['endMiB']))
+        if part['fs'] == 'lvm':
+            out.append('parted -s %s set %d lvm on' % (q(dev), a['partitions'].index(part) + 1))
+    out.append('udevadm settle')
+    return '\n'.join(out)
+
+
+def script_format(a):
+    dev = a['device']
+    if not re.match(r'^/dev/(?:sd|vd)[b-z][0-9]{1,2}$', dev):
+        raise SetupError('unsafe device')
+    label = ' -L %s' % q(a['label']) if a.get('label') else ''
+    cmd = {'xfs': 'mkfs.xfs -f%s %s', 'ext4': 'mkfs.ext4 -q -F%s %s', 'swap': 'mkswap%s %s'}[a['type']]
+    return (cmd % (label, q(dev))) + ' >/dev/null'
+
+
+def script_append_line(a):
+    if a['path'] not in ('/etc/fstab', '/etc/exports', '/etc/hosts') or not re.match(r'^[A-Za-z0-9 _./:,@=()*+-]{1,160}$', a['line']):
+        raise SetupError('unsafe line')
+    return 'grep -qxF -- %s %s || echo %s >> %s' % (q(a['line']), a['path'], q(a['line']), a['path'])
+
+
+def script_mount_all(a):
+    return 'systemctl daemon-reload\nmount -a\nswapon -a'
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -451,6 +494,7 @@ HOST_SCRIPTS = {
     'wipe-disk': script_wipe_disk, 'systemd': script_systemd, 'linger': script_linger, 'container-reset': script_container_reset,
     'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
     'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module, 'crontab': script_crontab,
+    'partition-disk': script_partition_disk, 'format': script_format, 'append-line': script_append_line, 'mount-all': script_mount_all,
 }
 
 

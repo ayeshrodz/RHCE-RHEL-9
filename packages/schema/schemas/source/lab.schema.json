@@ -317,6 +317,9 @@
         },
         {
           "$ref": "#/$defs/checkContainer"
+        },
+        {
+          "$ref": "#/$defs/checkPartition"
         }
       ]
     },
@@ -686,6 +689,10 @@
             },
             "masked": {
               "type": "boolean"
+            },
+            "tolerant": {
+              "type": "boolean",
+              "description": "A failing start is not an error (the exercise starts from a service that fails)."
             }
           }
         },
@@ -805,6 +812,10 @@
                 "present",
                 "absent"
               ]
+            },
+            "selinuxType": {
+              "type": "string",
+              "pattern": "^[a-z_]+_t$"
             }
           }
         },
@@ -845,6 +856,10 @@
                 "present",
                 "absent"
               ]
+            },
+            "selinuxType": {
+              "type": "string",
+              "pattern": "^[a-z_]+_t$"
             }
           }
         },
@@ -1395,6 +1410,145 @@
               "enum": [
                 "absent"
               ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "device",
+            "partitions"
+          ],
+          "properties": {
+            "action": {
+              "const": "partition-disk"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "device": {
+              "type": "string",
+              "pattern": "^/dev/(?:sd|vd)[b-z]$"
+            },
+            "partitions": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "fs",
+                  "startMiB",
+                  "endMiB"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9-]{0,15}$"
+                  },
+                  "fs": {
+                    "enum": [
+                      "xfs",
+                      "ext4",
+                      "linux-swap",
+                      "lvm"
+                    ]
+                  },
+                  "startMiB": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "endMiB": {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 100000
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "device",
+            "type"
+          ],
+          "properties": {
+            "action": {
+              "const": "format"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "device": {
+              "type": "string",
+              "pattern": "^/dev/(?:sd|vd)[b-z][0-9]{1,2}$"
+            },
+            "type": {
+              "enum": [
+                "xfs",
+                "ext4",
+                "swap"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,12}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "path",
+            "line"
+          ],
+          "properties": {
+            "action": {
+              "const": "append-line"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "path": {
+              "enum": [
+                "/etc/fstab",
+                "/etc/exports",
+                "/etc/hosts"
+              ]
+            },
+            "line": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9 _./:,@=()*+-]{1,160}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts"
+          ],
+          "properties": {
+            "action": {
+              "const": "mount-all"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
             }
           }
         }
@@ -2540,7 +2694,7 @@
       "description": "A path a setup or cleanup action may create or remove on a managed host: only under directories meant for local data and drop-in configuration.",
       "type": "string",
       "maxLength": 200,
-      "pattern": "^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\\.conf|httpd/conf\\.d|systemd|auto\\.master\\.d|auto\\.[a-z0-9_-]+|cron\\.d|exports\\.d|sudoers\\.d|profile\\.d|ssh/sshd_config\\.d|chrony\\.d|yum\\.repos\\.d|logrotate\\.d|rsyslog\\.d|security/limits\\.d|sysctl\\.d|NetworkManager/system-connections|containers|httpd/conf\\.d|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$",
+      "pattern": "^/(?:srv|opt|mnt|data|logs|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\\.conf|httpd/conf\\.d|systemd|auto\\.master\\.d|auto\\.[a-z0-9_-]+|cron\\.d|exports\\.d|sudoers\\.d|profile\\.d|ssh/sshd_config\\.d|chrony\\.d|yum\\.repos\\.d|logrotate\\.d|rsyslog\\.d|security/limits\\.d|sysctl\\.d|NetworkManager/system-connections|containers|httpd/conf\\.d|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$",
       "not": {
         "pattern": "(?:^|/)\\.\\.(?:/|$)"
       }
@@ -2570,6 +2724,55 @@
       "not": {
         "pattern": "(?:^|/)\\.\\.(?:/|$)"
       }
+    },
+    "checkPartition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "device"
+      ],
+      "properties": {
+        "kind": {
+          "const": "partition"
+        },
+        "device": {
+          "type": "string",
+          "pattern": "^/dev/(?:sd|vd)[b-z][0-9]{0,2}$"
+        },
+        "minSizeMiB": {
+          "type": "integer"
+        },
+        "maxSizeMiB": {
+          "type": "integer"
+        },
+        "partLabel": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,15}$"
+        },
+        "tableType": {
+          "enum": [
+            "gpt",
+            "msdos"
+          ]
+        },
+        "fsType": {
+          "enum": [
+            "xfs",
+            "ext4",
+            "swap",
+            "LVM2_member"
+          ]
+        },
+        "fsLabel": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,12}$"
+        }
+      },
+      "type": "object"
     }
   }
 }

@@ -380,12 +380,31 @@ def conditions_container(c):
     return out
 
 
+def conditions_partition(c):
+    dev = shlex.quote(c['device'])
+    out = ['[ -b %s ]' % dev]
+    if 'minSizeMiB' in c:
+        out.append('[ $(( $(blockdev --getsize64 %s) / 1048576 )) -ge %d ]' % (dev, c['minSizeMiB']))
+    if 'maxSizeMiB' in c:
+        out.append('[ $(( $(blockdev --getsize64 %s) / 1048576 )) -le %d ]' % (dev, c['maxSizeMiB']))
+    if 'partLabel' in c:
+        out.append('[ "$(lsblk -no PARTLABEL %s | head -1)" = %s ]' % (dev, shlex.quote(c['partLabel'])))
+    if 'tableType' in c:
+        disk = re.sub(r'[0-9]+$', '', c['device'])
+        out.append('parted -s %s print 2>/dev/null | grep -q %s' % (shlex.quote(disk), shlex.quote('Partition Table: ' + c['tableType'])))
+    if 'fsType' in c:
+        out.append('[ "$(blkid -s TYPE -o value %s)" = %s ]' % (dev, shlex.quote(c['fsType'])))
+    if 'fsLabel' in c:
+        out.append('[ "$(blkid -s LABEL -o value %s)" = %s ]' % (dev, shlex.quote(c['fsLabel'])))
+    return out
+
+
 HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
     'logical-volume': conditions_logical_volume, 'volume-group': conditions_volume_group, 'swap': conditions_swap, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
     'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'selinux-boolean': conditions_selinux_boolean, 'selinux-port': conditions_selinux_port, 'selinux-fcontext': conditions_selinux_fcontext, 'address': conditions_address,
-    'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process, 'container': conditions_container,
+    'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process, 'container': conditions_container, 'partition': conditions_partition,
 }
 
 
