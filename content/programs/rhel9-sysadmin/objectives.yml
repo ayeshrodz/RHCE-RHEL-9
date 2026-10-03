@@ -26,3 +26,19 @@
   labs:
   - ch01/snapshots-and-rht-vmctl
   challenges: []
+- id: ch02.operations
+  chapter: ch02
+  lessons:
+  - ch02/shell-and-status
+  - ch02/streams-and-quoting
+  labs:
+  - ch02/lab
+  challenges: []
+- id: ch02.verification
+  chapter: ch02
+  lessons:
+  - ch02/shell-and-status
+  - ch02/streams-and-quoting
+  labs:
+  - ch02/lab
+  challenges: []
