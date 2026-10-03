@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/variable-precedence.schema.json",
+  "title": "Variable precedence",
+  "description": "The words and data for the variable precedence kit: Ranks the places a variable can be set and shows which one wins.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 36,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "levels"
+      ],
+      "properties": {
+        "levels": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "maxProperties": 30,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/file-edit-simulator.schema.json",
+  "title": "File edit simulator",
+  "description": "The words and data for the file edit simulator kit: Shows how a line-editing task changes a file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 36,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "begin",
+        "end",
+        "modes",
+        "initialSelection1"
+      ],
+      "properties": {
+        "start": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "begin": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "end": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "modes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "append",
+            "replace",
+            "block"
+          ],
+          "properties": {
+            "append": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "hint",
+                "line",
+                "regexp"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "hint": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "line": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "regexp": {
+                  "type": "null"
+                }
+              }
+            },
+            "replace": {
+              "type": "object",
+              "maxProperties": 30,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "block": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "hint",
+                "line",
+                "regexp"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "hint": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "line": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "regexp": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    },
+    "dependencies": {
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

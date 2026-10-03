@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/task-outcome.schema.json",
+  "title": "Task outcome",
+  "description": "The words and data for the task outcome kit: Shows how the failure settings of a task change the result of a run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 102,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outputs"
+      ],
+      "properties": {
+        "outputs": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      }
+    }
+  }
+}

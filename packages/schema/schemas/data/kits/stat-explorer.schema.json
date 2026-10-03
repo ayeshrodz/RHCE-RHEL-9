@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/stat-explorer.schema.json",
+  "title": "Stat explorer",
+  "description": "The words and data for the stat explorer kit: Explores the file facts a stat check returns.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template"
+      ],
+      "properties": {
+        "template": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statSample"
+      ],
+      "properties": {
+        "statSample": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "changed",
+            "failed",
+            "stat"
+          ],
+          "properties": {
+            "changed": {
+              "type": "boolean"
+            },
+            "failed": {
+              "type": "boolean"
+            },
+            "stat": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "exists",
+                "path",
+                "isreg",
+                "isdir",
+                "islnk",
+                "mode",
+                "uid",
+                "gid",
+                "pw_name",
+                "gr_name",
+                "size",
+                "mtime",
+                "checksum",
+                "mimetype",
+                "readable",
+                "writeable",
+                "executable"
+              ],
+              "properties": {
+                "exists": {
+                  "type": "boolean"
+                },
+                "path": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "isreg": {
+                  "type": "boolean"
+                },
+                "isdir": {
+                  "type": "boolean"
+                },
+                "islnk": {
+                  "type": "boolean"
+                },
+                "mode": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "uid": {
+                  "type": "integer"
+                },
+                "gid": {
+                  "type": "integer"
+                },
+                "pw_name": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "gr_name": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "size": {
+                  "type": "integer"
+                },
+                "mtime": {
+                  "type": "number"
+                },
+                "checksum": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "mimetype": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "readable": {
+                  "type": "boolean"
+                },
+                "writeable": {
+                  "type": "boolean"
+                },
+                "executable": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "props": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    },
+    "dependencies": {
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

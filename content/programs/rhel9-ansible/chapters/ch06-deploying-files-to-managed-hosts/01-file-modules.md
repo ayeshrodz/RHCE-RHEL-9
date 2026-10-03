@@ -37,7 +37,7 @@ The `ansible.posix` collection adds two more:
 
 Pick a job to see the module and a task that does it:
 
-{% legacy-widget name="FileModuleChooser" ref="file-module-chooser" /%}
+{% file-module-chooser ref="file-module-chooser" /%}
 
 {% variant name="homelab" %}
 `ansible.posix` is in `/usr/share/ansible/collections` on workstation (section 1.6), so `synchronize` and `patch` resolve without an execution environment. `synchronize` also needs the `rsync` package on both ends: the lab profile installs it on every VM.
@@ -68,7 +68,7 @@ The attribute arguments `owner`, `group`, `mode` and the SELinux ones are shared
 
 Click the bits to build a mode. Both the octal and the symbolic form are accepted:
 
-{% legacy-widget name="ModeCalculator" ref="mode-calculator" /%}
+{% mode-calculator ref="mode-calculator" /%}
 
 ### SELinux type
 
@@ -123,7 +123,7 @@ By default `force: true` applies: if the remote file exists but its content diff
 
 Several hosts may each have a file with the same name, so by default `fetch` builds a separate path for each host. Switch `flat` to see the difference:
 
-{% legacy-widget name="FetchLayout" ref="fetch-layout" /%}
+{% fetch-layout ref="fetch-layout" /%}
 
 ## Editing a file in place
 
@@ -164,7 +164,7 @@ Use the `marker` argument when the file needs a different comment character, or 
 
 Run each module against a small file, change the text, and run it twice:
 
-{% legacy-widget name="FileEditSimulator" ref="file-edit-simulator" /%}
+{% file-edit-simulator ref="file-edit-simulator" /%}
 
 {% callout type="tip" title="When to stop editing lines" %}
 Line edits are fine for one or two settings in a file you do not otherwise manage. Once you are changing many lines, or the content depends on the host, deploy the whole file from a template instead: the next lesson.
@@ -209,7 +209,7 @@ ok: [hostname] => {
 
 Everything sits under the `stat` key of the registered variable. Browse a sample result; the panel shows how to reference the value you select:
 
-{% legacy-widget name="StatExplorer" ref="stat-explorer" /%}
+{% stat-explorer ref="stat-explorer" /%}
 
 `stat.exists` is the one you will use most, in conditions such as `when: not result.stat.exists`.
 

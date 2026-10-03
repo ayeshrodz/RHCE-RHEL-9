@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/fetch-layout.schema.json",
+  "title": "Fetch layout",
+  "description": "The words and data for the fetch layout kit: Shows where fetched files are stored on the control side.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 51,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hosts"
+      ],
+      "properties": {
+        "hosts": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

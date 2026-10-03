@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/facts-explorer.schema.json",
+  "title": "Facts explorer",
+  "description": "The words and data for the facts explorer kit: Browses gathered facts and the expression that reads each one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sampleFacts"
+      ],
+      "properties": {
+        "sampleFacts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostname",
+            "fqdn",
+            "domain",
+            "distribution",
+            "distribution_version",
+            "distribution_major_version",
+            "os_family",
+            "kernel",
+            "architecture",
+            "python_version",
+            "processor_count",
+            "processor_vcpus",
+            "memtotal_mb",
+            "memfree_mb",
+            "default_ipv4",
+            "all_ipv4_addresses",
+            "interfaces",
+            "dns",
+            "devices",
+            "selinux",
+            "virtualization_role",
+            "ansible_local"
+          ],
+          "properties": {
+            "hostname": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "fqdn": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "domain": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "distribution": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "distribution_version": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "distribution_major_version": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "os_family": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "kernel": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "architecture": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "python_version": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "processor_count": {
+              "type": "integer"
+            },
+            "processor_vcpus": {
+              "type": "integer"
+            },
+            "memtotal_mb": {
+              "type": "integer"
+            },
+            "memfree_mb": {
+              "type": "integer"
+            },
+            "default_ipv4": {
+              "type": "object",
+              "maxProperties": 30,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "all_ipv4_addresses": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "interfaces": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "dns": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "nameservers",
+                "search"
+              ],
+              "properties": {
+                "nameservers": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                },
+                "search": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              }
+            },
+            "devices": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "vda"
+              ],
+              "properties": {
+                "vda": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "size",
+                    "partitions"
+                  ],
+                  "properties": {
+                    "size": {
+                      "type": "string",
+                      "maxLength": 4000
+                    },
+                    "partitions": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "vda1",
+                        "vda4"
+                      ],
+                      "properties": {
+                        "vda1": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "size"
+                          ],
+                          "properties": {
+                            "size": {
+                              "type": "string",
+                              "maxLength": 4000
+                            }
+                          }
+                        },
+                        "vda4": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "size"
+                          ],
+                          "properties": {
+                            "size": {
+                              "type": "string",
+                              "maxLength": 4000
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "selinux": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "mode"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "mode": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            },
+            "virtualization_role": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "ansible_local": {
+              "type": "object",
+              "additionalProperties": false
+            }
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

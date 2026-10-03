@@ -35,7 +35,7 @@ for (const [name, c] of tags) {
   if (attributes.length) {
     doc += '| Attribute | Value | Required | Meaning |\n| --- | --- | --- | --- |\n';
     for (const [attribute, a] of attributes) {
-      const values = name === 'legacy-widget' && attribute === 'name' ? 'one of the widget names in the catalog file' : kind(a);
+      const values = kind(a);
       doc += `| \`${attribute}\` | ${cell(values)}${a.default !== undefined ? ` (default \`${a.default}\`)` : ''} | ${(c.required ?? []).includes(attribute) ? 'yes' : ''} | ${cell(a.description)} |\n`;
     }
     doc += '\n';
@@ -46,7 +46,6 @@ for (const [name, c] of tags) {
 
 const snippets = {};
 for (const [name, c] of tags) {
-  if (name === 'legacy-widget') continue;
   let stop = 0;
   // Required attributes become tab stops; a tag with none offers its first two optional ones.
   const all = Object.entries(c.attributes ?? {});

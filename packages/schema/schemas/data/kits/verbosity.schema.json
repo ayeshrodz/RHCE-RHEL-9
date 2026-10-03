@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/verbosity.schema.json",
+  "title": "Verbosity levels",
+  "description": "The words and data for the verbosity levels kit: Shows how output grows as the verbosity level is raised.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "levels"
+      ],
+      "properties": {
+        "levels": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "flag",
+              "text",
+              "lines"
+            ],
+            "properties": {
+              "flag": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "lines": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

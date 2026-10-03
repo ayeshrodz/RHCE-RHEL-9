@@ -28,9 +28,7 @@ Because a play is written in readable YAML, it is also documentation: the tasks 
 
 Here is a complete playbook with one play and one task. Click through the lines to see what each part does.
 
-{% legacy-widget
-  name="AnnotatedYaml"
-  ref="annotated-yaml" /%}
+{% annotated-yaml ref="annotated-yaml" /%}
 
 ### Two indentation rules
 
@@ -146,7 +144,7 @@ Things to notice:
 - The httpd task reports **changed**: the package was missing or out of date, so the module installed it.
 - The **PLAY RECAP** summarises each host. Click through its counters:
 
-{% legacy-widget name="PlayRecap" ref="play-recap" /%}
+{% play-recap ref="play-recap" /%}
 
 Run the same playbook again and every task reports `ok` with `changed=0`, because httpd is already at the latest version. That is idempotency in action.
 
@@ -165,7 +163,7 @@ The default output does not show task details. Add `-v` for more, up to four lev
 | `-vvv` | Information about connections to managed hosts. |
 | `-vvvv` | Extra verbosity for connection plug-ins, including the users used on managed hosts and what scripts were run. |
 
-{% legacy-widget name="Verbosity" ref="verbosity" /%}
+{% verbosity ref="verbosity" /%}
 
 ## Check before you run
 

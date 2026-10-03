@@ -18,7 +18,7 @@ Almost every playbook installs something. Ansible's package modules install, upd
 
 This chapter covers five areas. Use this as a map as you go; each section explains one area in depth.
 
-{% legacy-widget name="AdminModuleFinder" ref="admin-module-finder" /%}
+{% admin-module-finder ref="admin-module-finder" /%}
 
 ## Installing and removing packages
 

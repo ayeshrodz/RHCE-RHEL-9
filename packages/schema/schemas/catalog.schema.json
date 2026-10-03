@@ -103,7 +103,7 @@
         "data": {
           "description": "The schema of the page data entry this tag's `ref` attribute points to.",
           "type": "string",
-          "pattern": "^data/[a-z-]+\\.schema\\.json$"
+          "pattern": "^data/(?:kits/)?[a-z-]+\\.schema\\.json$"
         },
         "copy": {
           "description": "UI strings this component reads from the engine defaults or content overrides.",
@@ -112,6 +112,10 @@
             "type": "string",
             "pattern": "^[a-z][a-zA-Z0-9]*$"
           }
+        },
+        "kit": {
+          "description": "A kit is an interactive teaching component whose words and data come from the page data; the engine loads it on demand and checks its data with a validator loaded on demand.",
+          "type": "boolean"
         },
         "replacedBy": {
           "type": "string",

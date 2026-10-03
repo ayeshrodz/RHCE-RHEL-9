@@ -173,6 +173,16 @@ test('page data must match its tags', async () => {
   await rejects('Text', /invalid page data/, { data: '- not\n- a map\n' });
 });
 
+test('each kit is a catalog tag with a checked data schema', async () => {
+  await rejects('{% loop-unroller ref="k" /%}', /loop-unroller data \(root\) must have required property 'text'/, {
+    data: 'k:\n  data: {}\n',
+  });
+  await rejects('{% loop-unroller ref="k" /%}', /loop-unroller data \(root\) must NOT have additional properties/, {
+    data: 'k:\n  text: {}\n  data: {}\n  script: x\n',
+  });
+  await rejects('{% legacy-widget name="LoopUnroller" ref="k" /%}', /legacy-widget/, { data: 'k:\n  text: {}\n' });
+});
+
 test('malformed frontmatter is rejected', async () => {
   await rejects('text', /frontmatter: \(root\) must have required property 'title'/, { front: 'kind: lesson\nminutes: 5' });
   await rejects('text', /frontmatter: \/kind must be equal to one of/, { front: 'title: T\nkind: blog\nminutes: 5' });

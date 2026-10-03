@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/template-playground.schema.json",
+  "title": "Template playground",
+  "description": "The words and data for the template playground kit: Renders a template with chosen values to show the output file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 84,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hosts",
+        "presets",
+        "initialSelection1",
+        "initialSelection2"
+      ],
+      "properties": {
+        "hosts": {
+          "type": "object",
+          "maxProperties": 30,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "hostname",
+              "ip",
+              "mem",
+              "cpus"
+            ],
+            "properties": {
+              "hostname": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "ip": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "mem": {
+                "type": "integer"
+              },
+              "cpus": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "presets": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "maxProperties": 30,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "initialSelection2": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

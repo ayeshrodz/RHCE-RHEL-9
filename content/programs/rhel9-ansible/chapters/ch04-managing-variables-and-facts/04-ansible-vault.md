@@ -30,7 +30,7 @@ Vault does not implement its own cryptography. It uses an external Python toolki
 
 Pick a subcommand to see what it does to the file:
 
-{% legacy-widget name="VaultCommands" ref="vault-commands" /%}
+{% vault-commands ref="vault-commands" /%}
 
 A few details worth knowing:
 
@@ -126,9 +126,7 @@ The simplest approach is to keep sensitive variables in **their own files** and 
 
 With `group_vars` and `host_vars`, you can use a **directory** named after a group or host instead of a single file. Every file inside the directory applies to that group or host, so you can split plain and secret variables:
 
-{% legacy-widget
-  name="ProjectTree"
-  ref="project-tree" /%}
+{% project-tree ref="project-tree" /%}
 
 The file names `vars` and `vault` are only a convention. The directory can hold any number of files with any names, some encrypted and some not.
 

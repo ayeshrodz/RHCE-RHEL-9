@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import { catalog as tagCatalog } from '@kernel-path/schema';
 import { readBundle, walk } from './read-bundle.mjs';
 
 function files(dir) {
@@ -34,22 +35,27 @@ function validate(catalog, file) {
     for (const child of contract.dependencies.filter((name) => contracts.has(name))) assert(catalog[child], `${file}: ${name} needs ${child} content`);
   }
 }
+// A kit's tag is its component name in kebab case (LoopUnroller is loop-unroller).
+const kitNames = new Map();
+for (const [tag, c] of Object.entries(tagCatalog.components))
+  if (c.kit) kitNames.set(tag, tag.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(''));
+const kitName = (tag) => kitNames.get(tag);
 const { pages, interface: shared } = await readBundle();
 validate(shared, 'interface copy');
 let count = 0;
 for (const [key, page] of Object.entries(pages)) {
-  // Each legacy widget's copy lives in the page data under its ref, plus copy for widgets it renders inside itself.
+  // Each kit's copy lives in the page data under its ref, plus copy for kits it renders inside itself.
   const catalog = {};
   walk(page.tree, (node) => {
-    if (node.t !== 'tag' || node.name !== 'legacy-widget') return;
+    if (node.t !== 'tag' || !kitName(node.name)) return;
     const { text, data, dependencies } = page.data[node.attrs.ref];
-    if (text || data) catalog[node.attrs.name] = { ...(text ? { text } : {}), ...(data ? { data } : {}) };
+    if (text || data) catalog[kitName(node.name)] = { ...(text ? { text } : {}), ...(data ? { data } : {}) };
     Object.assign(catalog, dependencies);
   });
   validate(catalog, key);
   walk(page.tree, (node) => {
-    if (node.t === 'tag' && node.name === 'legacy-widget' && contracts.has(node.attrs.name))
-      assert(catalog[node.attrs.name] || shared[node.attrs.name], `${key}: missing ${node.attrs.name} content`);
+    if (node.t === 'tag' && kitName(node.name) && contracts.has(kitName(node.name)))
+      assert(catalog[kitName(node.name)] || shared[kitName(node.name)], `${key}: missing ${kitName(node.name)} content`);
   });
   count += Object.keys(catalog).length;
 }

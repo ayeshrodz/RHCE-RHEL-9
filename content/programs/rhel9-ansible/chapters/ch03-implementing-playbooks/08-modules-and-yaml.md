@@ -18,7 +18,7 @@ Two skills make you fast with Ansible: finding the right module (and reading its
 
 Ansible ships hundreds of modules for everyday administration. These are some of the most useful; pick one to see the command that shows its documentation.
 
-{% legacy-widget name="ModuleExplorer" ref="module-explorer" /%}
+{% module-explorer ref="module-explorer" /%}
 
 ## Reading module documentation
 
@@ -91,7 +91,7 @@ Unlike most modules, these are **not idempotent**. Every run executes the comman
 
 The best fix, though, is usually a proper module. Compare an unconditional file write, a database command guarded by `creates`, and a content-aware file module. Press run again to see which tasks still report a change:
 
-{% legacy-widget name="CommandVsModule" ref="command-vs-module" /%}
+{% command-vs-module ref="command-vs-module" /%}
 
 {% callout type="important" title="Order of preference" %}
 Avoid `command`, `shell` and `raw` whenever a purpose-built module exists; they make it easy to write playbooks that are not idempotent. If you must use one, try `command` first and use `shell` or `raw` only if you need their special features.
@@ -120,7 +120,7 @@ this is a string
 
 Multi-line strings come in two styles: `|` keeps line breaks, and `>` folds lines into one, which is useful for breaking up very long strings.
 
-{% legacy-widget name="YamlMultiline" ref="yaml-multiline" /%}
+{% yaml-multiline ref="yaml-multiline" /%}
 
 ### Dictionaries
 

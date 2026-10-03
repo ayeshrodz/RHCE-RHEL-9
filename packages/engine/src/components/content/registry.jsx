@@ -14,6 +14,16 @@ import ProgramCards from './ProgramCards';
 import SpecDiagram from './SpecDiagram';
 import chapterWidgets from 'virtual:chapter-widgets';
 
+/** Kits are interactive teaching components, each with a catalog tag of its own (LoopUnroller is loop-unroller). */
+const kitTag = (name) => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+const kits = Object.fromEntries(
+  Object.entries(chapterWidgets)
+    .filter(([name]) => name !== 'LabValues')
+    .map(([name, kit]) => [kitTag(name), kit]),
+);
+/** The component name behind a kit tag, which is the key its words are stored under. */
+export const kitNames = Object.fromEntries(Object.keys(chapterWidgets).map((name) => [kitTag(name), name]));
+
 const FlowMap = lazyWidget(() => import('@/components/interactive/FlowMap'));
 const ChapterPractice = lazyWidget(() => import('@/components/interactive/ChapterPractice'));
 
@@ -72,7 +82,7 @@ export const tags = {
   'reader-variables': () => [chapterWidgets.LabValues],
 
   'flow-map': (a, data) => [FlowMap, { title: a.title, caption: a.caption, steps: data.steps, connections: data.connections }],
-  'legacy-widget': (a, data) => [chapterWidgets[a.name], data.props ?? {}],
+  ...Object.fromEntries(Object.entries(kits).map(([tag, kit]) => [tag, (a, data) => [kit, data.props ?? {}]])),
 };
 
 /** Strip undefined props so components keep their own defaults. */

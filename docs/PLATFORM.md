@@ -47,7 +47,7 @@ Nothing imports `content/`. Content never contains `.js`, `.jsx`, `.ts`, `.css` 
 
 Objects are never attributes, so structured data always goes through a typed data file.
 
-`planned` entries reserve names for components still being built (generic diagram, scenario, layer resolver, landing-page blocks). `legacy-widget` carries the bespoke widgets during the migration, with an enumerated `name`, and is removed when they are replaced.
+`planned` entries reserve names for components still being built (generic diagram, scenario, layer resolver, landing-page blocks). Each remaining interactive kit has a catalog tag of its own (`loop-unroller`, `cron-builder`, …), flagged `kit`, with a checked data schema under `schemas/data/kits/`. Kit data validators are generated into a separate file that the browser loads only for pages that contain a kit.
 
 **Bundle schemas** describe what the compiler emits and the engine reads:
 
@@ -163,7 +163,7 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 4. **Markdoc migration** (done): MDX becomes `.md` files plus `.data.yml`. The compiled bundle is identical, and all 130 routes render identically.
 5. **Programs** (done): `content/programs/<id>/`, program routing (`#/<program>/…`), progress and search kept per program. Variants, reader variables and UI-string overrides stay with the program definition; the interface text still comes from the program's transitional files.
 6. **Platform home and program selector** (done): `#/` is the site home, compiled from `content/site/home.md` with the `program-cards` tag; the header's program menu replaces the track badge; programs without landing or dashboard copy get built-in pages. Shared interface text moved to `content/interface.json`.
-7. **Generic components replace the bespoke widgets** (partly done): a data-driven `diagram` replaces 20 diagram widgets with identical rendering. The 47 stateful simulators and calculators remain platform kits, reached through `legacy-widget`, and move to generic components one family at a time.
+7. **Generic components replace the bespoke widgets** (partly done): a data-driven `diagram` replaces 20 diagram widgets with identical rendering. The 47 stateful simulators and calculators remain platform kits, each with its own catalog tag and checked data, and move to generic components one family at a time.
 8. **Typed labs.**
 9. **Security hardening** (done): strict CSP with Trusted Types, bundled fonts, SRI, content fingerprints checked in the browser, optional ECDSA signing, size limits, per-tag attribute checks, strict YAML, fuzz tests.
 10. **RHEL 9 system administration** as a planned program (done): `rhel9-sysadmin`, a 22-chapter outline built from the RHEL 9 documentation. It has no lessons yet; its chapters list the topics they will cover.

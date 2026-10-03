@@ -111,7 +111,7 @@ Read when the play **reaches that task**, separately for each host. Until then A
 
 That one difference explains everything else. Switch the keyword, then add a condition or a loop:
 
-{% legacy-widget name="ReuseSimulator" ref="reuse-simulator" /%}
+{% reuse-simulator ref="reuse-simulator" /%}
 
 The consequences side by side:
 

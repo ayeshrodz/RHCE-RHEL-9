@@ -52,7 +52,7 @@ Modules generally do not blindly perform an action. They make sure one aspect of
 
 This makes tasks, plays and playbooks **idempotent**: running them again against hosts that are already correct makes no changes. Try it: run the playbook twice, then cause some drift and run it again.
 
-{% legacy-widget name="IdempotencyDemo" ref="idempotency-demo" /%}
+{% idempotency-demo ref="idempotency-demo" /%}
 
 {% callout type="exam" title="Run it twice" %}
 A reliable habit for the exam: after a playbook succeeds, run it a second time. The recap should show `changed=0`. If it does not, some task is not idempotent and may cause trouble.

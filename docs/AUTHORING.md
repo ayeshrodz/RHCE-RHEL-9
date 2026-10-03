@@ -187,7 +187,7 @@ The compiler rejects unknown element kinds or properties, so a typo is an error,
 
 ### Interactive kits
 
-The remaining interactive widgets (simulators, calculators, resolvers) are platform code, bound to page data through `legacy-widget`. To add one, write a component with the kit as follows; it is the exception, not the rule.
+The remaining interactive widgets (simulators, calculators, resolvers) are platform code, each a catalog tag of its own (for example `{% loop-unroller ref="loop-unroller" /%}`) bound to page data. To add one, write a component with the kit as follows; it is the exception, not the rule.
 
 ```jsx
 import { Arrow, Diagram, Group, Node } from '../kit';
@@ -211,7 +211,7 @@ export default function Example() {
 
 Colours come from CSS variables, so every diagram switches to dark mode automatically. Never hard-code colours in a diagram.
 
-Export new diagrams from `packages/engine/src/diagrams/chNN/index.js` and add the name to the `legacy-widget` entry in the catalog; a page then uses it with `{% legacy-widget name="Name" ref="name" /%}` (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Chapter widgets are being replaced by generic, data-driven catalog components. Put a chapter's widget styles in `packages/engine/src/diagrams/chNN/chNN.css` and import it from that `index.js`.
+Export new diagrams from `packages/engine/src/diagrams/chNN/index.js` and add a catalog entry flagged `kit` (the tag is the name in kebab case) with a data schema in `packages/schema/schemas/data/kits/`, then run `npm run schema:validators`; a page then uses it with `{% name-in-kebab-case ref="name" /%}` (the build plugin discovers `export { default as Name }` entries and loads the chapter only when a widget renders). Chapter widgets are being replaced by generic, data-driven catalog components. Put a chapter's widget styles in `packages/engine/src/diagrams/chNN/chNN.css` and import it from that `index.js`.
 
 Reusable pieces from chapter 4 that later chapters can use: `ProjectTree` for directory layouts and `DataExplorer` for any nested variable or JSON result. Their settings go under `props` in the widget's page data.
 

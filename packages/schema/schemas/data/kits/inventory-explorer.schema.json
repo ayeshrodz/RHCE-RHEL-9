@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/inventory-explorer.schema.json",
+  "title": "Inventory explorer",
+  "description": "The words and data for the inventory explorer kit: Explores an inventory file: hosts, groups and the variables each host gets.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 33,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sample",
+        "initialSelection1"
+      ],
+      "properties": {
+        "sample": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

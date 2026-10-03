@@ -2,7 +2,27 @@
 
 Every tag a page may use. This file is generated from `packages/schema/catalog/components.json`; do not edit it. Pages write a tag as `{% name attribute="value" %}…{% /name %}`, or `{% name … /%}` when it holds nothing. Attribute values are text in double quotes, numbers, `true`/`false`, or a list such as `["a", "b"]`.
 
-[`assessment-timer`](#assessment-timer) · [`callout`](#callout) · [`card`](#card) · [`cards`](#cards) · [`column`](#column) · [`columns`](#columns) · [`diagram`](#diagram) · [`flashcards`](#flashcards) · [`flow-map`](#flow-map) · [`glossary`](#glossary) · [`kbd`](#kbd) · [`lab`](#lab) · [`lab-challenge`](#lab-challenge) · [`lab-finish`](#lab-finish) · [`lab-notes`](#lab-notes) · [`lab-setup`](#lab-setup) · [`lead`](#lead) · [`legacy-widget`](#legacy-widget) · [`objectives`](#objectives) · [`practice`](#practice) · [`program-cards`](#program-cards) · [`quiz`](#quiz) · [`reader-variables`](#reader-variables) · [`reveal`](#reveal) · [`starter-files`](#starter-files) · [`step`](#step) · [`steps`](#steps) · [`tab`](#tab) · [`tabs`](#tabs) · [`task`](#task) · [`term`](#term) · [`variant`](#variant) · [`variant-group`](#variant-group) · [`variant-switch`](#variant-switch)
+[`admin-module-finder`](#admin-module-finder) · [`annotated-yaml`](#annotated-yaml) · [`assessment-timer`](#assessment-timer) · [`block-flow`](#block-flow) · [`build-roadmap`](#build-roadmap) · [`callout`](#callout) · [`card`](#card) · [`cards`](#cards) · [`check-mode-sim`](#check-mode-sim) · [`column`](#column) · [`columns`](#columns) · [`command-vs-module`](#command-vs-module) · [`condition-playground`](#condition-playground) · [`cron-builder`](#cron-builder) · [`custom-fact-builder`](#custom-fact-builder) · [`data-explorer`](#data-explorer) · [`diagram`](#diagram) · [`error-decoder`](#error-decoder) · [`fact-gathering`](#fact-gathering) · [`facts-explorer`](#facts-explorer) · [`fetch-layout`](#fetch-layout) · [`file-edit-simulator`](#file-edit-simulator) · [`file-module-chooser`](#file-module-chooser) · [`flashcards`](#flashcards) · [`flow-map`](#flow-map) · [`fqcn-explorer`](#fqcn-explorer) · [`glossary`](#glossary) · [`group-vars-resolver`](#group-vars-resolver) · [`handler-timeline`](#handler-timeline) · [`host-pattern-tester`](#host-pattern-tester) · [`idempotency-demo`](#idempotency-demo) · [`inventory-explorer`](#inventory-explorer) · [`kbd`](#kbd) · [`lab`](#lab) · [`lab-challenge`](#lab-challenge) · [`lab-finish`](#lab-finish) · [`lab-network-map`](#lab-network-map) · [`lab-notes`](#lab-notes) · [`lab-setup`](#lab-setup) · [`lead`](#lead) · [`loop-unroller`](#loop-unroller) · [`magic-variables`](#magic-variables) · [`mode-calculator`](#mode-calculator) · [`module-explorer`](#module-explorer) · [`objectives`](#objectives) · [`play-order`](#play-order) · [`play-recap`](#play-recap) · [`practice`](#practice) · [`precedence-resolver`](#precedence-resolver) · [`program-cards`](#program-cards) · [`project-tree`](#project-tree) · [`quiz`](#quiz) · [`range-expander`](#range-expander) · [`reader-variables`](#reader-variables) · [`readiness-checklist`](#readiness-checklist) · [`reuse-simulator`](#reuse-simulator) · [`reveal`](#reveal) · [`role-anatomy`](#role-anatomy) · [`role-var-resolver`](#role-var-resolver) · [`run-stages`](#run-stages) · [`snapshot-chain`](#snapshot-chain) · [`starter-files`](#starter-files) · [`stat-explorer`](#stat-explorer) · [`step`](#step) · [`steps`](#steps) · [`tab`](#tab) · [`tabs`](#tabs) · [`task`](#task) · [`task-outcome`](#task-outcome) · [`template-playground`](#template-playground) · [`term`](#term) · [`variable-name-checker`](#variable-name-checker) · [`variable-precedence`](#variable-precedence) · [`variable-substitution`](#variable-substitution) · [`variant`](#variant) · [`variant-group`](#variant-group) · [`variant-switch`](#variant-switch) · [`vault-commands`](#vault-commands) · [`verbosity`](#verbosity) · [`yaml-multiline`](#yaml-multiline)
+
+## admin-module-finder
+
+Finds the module for a system administration job.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/admin-module-finder.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## annotated-yaml
+
+A YAML example with each part explained on hover or selection.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/annotated-yaml.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## assessment-timer
 
@@ -14,6 +34,26 @@ An optional countdown for a timed practice assessment; survives reloads.
 | --- | --- | --- | --- |
 | `id` | string (id) | yes | Stable id; the end time is stored under it. |
 | `minutes` | integer (5–480) (default `90`) |  | Length of the session. |
+
+## block-flow
+
+Follows the path through a block, its rescue and its always section.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/block-flow.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## build-roadmap
+
+A checklist-style roadmap of the steps to build the practice lab.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/build-roadmap.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## callout
 
@@ -48,6 +88,16 @@ A responsive grid of cards that stacks on small screens.
 | --- | --- | --- | --- |
 | `cols` | `2`, `3` (default `2`) |  | Columns on wide screens. |
 
+## check-mode-sim
+
+Compares a dry run with a real run of the same tasks.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/check-mode-sim.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## column
 
 One column in a two-column layout.
@@ -65,6 +115,56 @@ Two side-by-side columns that stack on small screens.
 
 **Where:** on its own lines · **Holds:** only `column`
 
+## command-vs-module
+
+Compares a raw command with the module that does the same job.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/command-vs-module.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## condition-playground
+
+Evaluates a conditional against chosen values to show whether the task runs.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/condition-playground.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## cron-builder
+
+Builds a schedule entry and explains when it runs.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/cron-builder.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## custom-fact-builder
+
+Builds a custom fact file and shows the variable it creates.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/custom-fact-builder.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## data-explorer
+
+Explores a nested data structure and the expression that reaches each value.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/data-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## diagram
 
 A diagram of boxes, groups and arrows. It can be static, let the reader select boxes to read an explanation, or step through a sequence.
@@ -74,6 +174,66 @@ A diagram of boxes, groups and arrows. It can be static, let the reader select b
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `ref` | string (dataRef) | yes | Key of the diagram in the page data. |
+
+## error-decoder
+
+Matches an error message to its cause and the usual fix.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/error-decoder.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## fact-gathering
+
+Shows when facts are gathered and what disabling gathering changes.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/fact-gathering.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## facts-explorer
+
+Browses gathered facts and the expression that reads each one.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/facts-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## fetch-layout
+
+Shows where fetched files are stored on the control side.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/fetch-layout.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## file-edit-simulator
+
+Shows how a line-editing task changes a file.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/file-edit-simulator.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## file-module-chooser
+
+Helps pick the file module that fits a described job.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/file-module-chooser.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## flashcards
 
@@ -98,11 +258,71 @@ A responsive sequence of steps with an explanation panel.
 | `title` | string (shortText) |  | Diagram title. |
 | `caption` | string (text) |  | Caption below. |
 
+## fqcn-explorer
+
+Breaks a fully qualified module name into its parts.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/fqcn-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## glossary
 
 A list of terms and definitions.
 
 **Where:** on its own lines · **Holds:** only `term`
+
+## group-vars-resolver
+
+Resolves a host's variables from group and host variable files.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/group-vars-resolver.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## handler-timeline
+
+A timeline showing when notified handlers run relative to tasks.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/handler-timeline.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## host-pattern-tester
+
+Tests a host pattern against an inventory and lists the hosts it selects.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/host-pattern-tester.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## idempotency-demo
+
+Runs a task twice to show a repeat run changing nothing.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/idempotency-demo.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## inventory-explorer
+
+Explores an inventory file: hosts, groups and the variables each host gets.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/inventory-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## kbd
 
@@ -144,6 +364,16 @@ How to grade and finish an exercise with the lab tools.
 | `exercise` | string (exerciseName) | yes | Exercise name. |
 | `grade` | boolean (default `false`) |  | Also show the grading command. |
 
+## lab-network-map
+
+An interactive map of the practice lab's machines and how they connect.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/lab-network-map.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## lab-notes
 
 Prerequisites, verification and variations for an exercise.
@@ -166,22 +396,71 @@ The opening paragraph of a page, shown larger than body text.
 
 **Where:** on its own lines · **Holds:** Markdown
 
-## legacy-widget
+## loop-unroller
 
-A widget that predates the generic catalog. Available during the migration only. _Transitional: being replaced by generic components._
+Unrolls a looped task into the individual runs it produces.
 
-**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/legacy-widget.schema.json` · **Replaced by:** `diagram`
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/loop-unroller.schema.json`
 
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
-| `name` | one of the widget names in the catalog file | yes | The widget. |
-| `ref` | string (dataRef) |  | Key of its data in the page data. |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## magic-variables
+
+Shows what each built-in variable holds for a given host.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/magic-variables.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## mode-calculator
+
+Converts between symbolic and numeric file permissions.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/mode-calculator.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## module-explorer
+
+Browses modules by category with their purpose and an example task.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/module-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## objectives
 
 A boxed list of what the reader will be able to do after the page.
 
 **Where:** on its own lines · **Holds:** Markdown
+
+## play-order
+
+Shows the order a play runs its tasks, roles and handlers.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/play-order.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## play-recap
+
+Explains each part of a play recap line and what the counters mean.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/play-recap.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## practice
 
@@ -193,11 +472,31 @@ A chapter's practice questions, in the quiz format; attempts feed the learning d
 | --- | --- | --- | --- |
 | `ref` | string (dataRef) | yes | Key of the practice set in the page data. |
 
+## precedence-resolver
+
+Shows which of several competing settings wins when they are toggled on and off.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/precedence-resolver.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## program-cards
 
 A card for each program on the site, with its platform, status and the reader's progress.
 
 **Where:** on its own lines · **Holds:** nothing (write it as `/%}`)
+
+## project-tree
+
+A project directory tree with the role of each file explained.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/project-tree.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## quiz
 
@@ -212,11 +511,41 @@ A multiple-choice knowledge check with instant feedback.
 | `title` | string (shortText) |  | Panel title. |
 | `objectives` | string[] |  | Objectives the questions check. |
 
+## range-expander
+
+Expands a host range such as web[01:03] into the hosts it names.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/range-expander.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## reader-variables
 
 A form for the reader's own values (declared in program.yml), substituted into code.
 
 **Where:** on its own lines · **Holds:** nothing (write it as `/%}`)
+
+## readiness-checklist
+
+A self-assessment checklist that records what you feel ready to do.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/readiness-checklist.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## reuse-simulator
+
+Compares ways of reusing tasks and what each does when the play runs.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/reuse-simulator.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## reveal
 
@@ -228,6 +557,46 @@ A collapsed section the reader opens on demand, such as a solution or hint.
 | --- | --- | --- | --- |
 | `title` | string (shortText) (default `Show answer`) |  | The toggle label. |
 
+## role-anatomy
+
+A role's directory layout with the purpose of each part.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/role-anatomy.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## role-var-resolver
+
+Resolves a role variable from its defaults, vars and overrides.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/role-var-resolver.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## run-stages
+
+Steps through the stages of a run and where each problem appears.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/run-stages.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## snapshot-chain
+
+A step-through of lab snapshots and how each one builds on the last.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/snapshot-chain.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## starter-files
 
 Lists an exercise's starter files and lets the reader preview them.
@@ -237,6 +606,16 @@ Lists an exercise's starter files and lets the reader preview them.
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `exercise` | string (exerciseName) | yes | Exercise name. |
+
+## stat-explorer
+
+Explores the file facts a stat check returns.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/stat-explorer.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## step
 
@@ -282,6 +661,26 @@ One tracked task in a hands-on exercise.
 | `title` | string (shortText) | yes | Task title. |
 | `legacyIndex` | integer (1–) |  | Position in the exercise before ids existed; used to keep old progress. |
 
+## task-outcome
+
+Shows how the failure settings of a task change the result of a run.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/task-outcome.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## template-playground
+
+Renders a template with chosen values to show the output file.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/template-playground.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
 ## term
 
 One glossary entry: a term and its definition.
@@ -291,6 +690,36 @@ One glossary entry: a term and its definition.
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `name` | string (shortText) | yes | The term. |
+
+## variable-name-checker
+
+Tests whether a variable name is valid and says why not.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/variable-name-checker.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## variable-precedence
+
+Ranks the places a variable can be set and shows which one wins.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/variable-precedence.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## variable-substitution
+
+Shows a task before and after its variables are replaced with values.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/variable-substitution.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
 ## variant
 
@@ -318,4 +747,34 @@ The control that switches between variants.
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `label` | string (shortText) |  | Label before the switch. |
+
+## vault-commands
+
+Picks the right vault command for a goal and shows its effect.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/vault-commands.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## verbosity
+
+Shows how output grows as the verbosity level is raised.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/verbosity.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## yaml-multiline
+
+Shows how each multi-line string style turns into the resulting text.
+
+**Where:** on its own lines · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/kits/yaml-multiline.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/role-var-resolver.schema.json",
+  "title": "Role variable resolver",
+  "description": "The words and data for the role variable resolver kit: Resolves a role variable from its defaults, vars and overrides.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sources"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "maxProperties": 30,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -62,9 +62,7 @@ Tasks run over a connection to each managed host, so Ansible needs a user to log
 remote_user: remoteuser
 ```
 
-{% legacy-widget
-  name="PrecedenceResolver"
-  ref="precedence-resolver" /%}
+{% precedence-resolver ref="precedence-resolver" /%}
 
 ### Privilege escalation
 
