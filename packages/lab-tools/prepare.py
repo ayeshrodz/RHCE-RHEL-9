@@ -200,7 +200,7 @@ def ssh_keypairs(a, ctx):
 # ---------------------------------------------------------------------------------------
 # Host actions: fixed scripts, built from validated values, run as root on lab servers.
 
-SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|logs|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\.conf|httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
+SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|logs|remote|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\.conf|httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
 PROTECTED = {'/srv', '/opt', '/mnt', '/tmp', '/root', '/home', '/var/www', '/var/tmp', '/var/log', '/usr/local', '/etc/systemd', '/etc/containers'}
 NAME = re.compile(r'^[a-z_][a-z0-9_-]{0,31}$')
 SSH = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR']
@@ -481,6 +481,37 @@ def script_mount_all(a):
     return 'systemctl daemon-reload\nmount -a\nswapon -a'
 
 
+def script_lvm_build(a):
+    vg = a['vg']
+    if not re.match(r'^[a-z][a-z0-9_]{0,15}$', vg):
+        raise SetupError('unsafe volume group name')
+    pvs = ' '.join(q(x) for x in a['pvs'] if re.match(r'^/dev/(?:sd|vd)[b-z][0-9]{1,2}$', x))
+    out = ['pvcreate -ff -y %s >/dev/null' % pvs, 'vgcreate %s %s >/dev/null' % (q(vg), pvs)]
+    for v in a['volumes']:
+        if not re.match(r'^[a-z][a-z0-9_]{0,15}$', v['name']) or not re.match(r'^(?:[0-9]{1,5}[MG]|[0-9]{1,3}%FREE)$', v['size']):
+            raise SetupError('unsafe volume')
+        size = ('-l ' if '%' in v['size'] else '-L ') + q(v['size'])
+        dev = '/dev/%s/%s' % (vg, v['name'])
+        out.append('lvcreate -y -n %s %s %s >/dev/null' % (q(v['name']), size, q(vg)))
+        label = ' -L %s' % q(v['label']) if v.get('label') else ''
+        if v['fs'] == 'xfs':
+            out.append('mkfs.xfs -f%s %s >/dev/null' % (label, q(dev)))
+        elif v['fs'] == 'ext4':
+            out.append('mkfs.ext4 -q -F%s %s' % (label, q(dev)))
+        else:
+            out.append('mkswap %s >/dev/null' % q(dev))
+        if v.get('mount'):
+            out.append('mkdir -p %s && mount %s %s' % (q(safe_path(v['mount'])), q(dev), q(v['mount'])))
+        if v['fs'] == 'swap':
+            out.append('swapon %s' % q(dev))
+    out.append('udevadm settle')
+    return '\n'.join(out)
+
+
+def script_unmount(a):
+    return 'umount -l %s 2>/dev/null || true' % q(safe_path(a['path']))
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -495,6 +526,7 @@ HOST_SCRIPTS = {
     'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
     'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module, 'crontab': script_crontab,
     'partition-disk': script_partition_disk, 'format': script_format, 'append-line': script_append_line, 'mount-all': script_mount_all,
+    'lvm-build': script_lvm_build, 'unmount': script_unmount,
 }
 
 
