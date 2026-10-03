@@ -263,6 +263,15 @@
           "$ref": "#/$defs/checkSelinux"
         },
         {
+          "$ref": "#/$defs/checkSelinuxBoolean"
+        },
+        {
+          "$ref": "#/$defs/checkSelinuxPort"
+        },
+        {
+          "$ref": "#/$defs/checkSelinuxFcontext"
+        },
+        {
           "$ref": "#/$defs/checkSudoers"
         },
         {
@@ -1165,6 +1174,97 @@
         "persistent": {
           "type": "boolean",
           "default": true
+        }
+      },
+      "type": "object"
+    },
+    "checkSelinuxBoolean": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "const": "selinux-boolean"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{2,80}$"
+        },
+        "value": {
+          "type": "boolean"
+        },
+        "persistent": {
+          "description": "Also set in the policy store (setsebool -P). Default true.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "type": "object"
+    },
+    "checkSelinuxPort": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "type",
+        "proto",
+        "port"
+      ],
+      "properties": {
+        "kind": {
+          "const": "selinux-port"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{2,80}_t$"
+        },
+        "proto": {
+          "enum": [
+            "tcp",
+            "udp"
+          ]
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      },
+      "type": "object"
+    },
+    "checkSelinuxFcontext": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "path",
+        "type"
+      ],
+      "properties": {
+        "kind": {
+          "const": "selinux-fcontext"
+        },
+        "path": {
+          "description": "The path pattern exactly as semanage fcontext -l lists it, for example /srv/web(/.*)?",
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9._/()?*+|\\\\-]{1,120}$"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{2,80}_t$"
         }
       },
       "type": "object"

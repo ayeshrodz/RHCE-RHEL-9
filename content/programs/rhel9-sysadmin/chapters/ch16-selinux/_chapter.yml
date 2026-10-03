@@ -1,8 +1,12 @@
 title: SELinux
-goal: Keep SELinux enforcing and fix the problems it reveals.
+goal: Understand SELinux contexts and modes, fix file labels, booleans and ports the right way, and troubleshoot denials without disabling the protection.
 objectives:
-- Explain labels, modes, booleans and port policy.
-- Correct the cause of a denial while keeping SELinux enforcing.
+  - Explain mandatory access control, read security contexts, and show and switch the SELinux mode.
+  - Set permanent file-context rules with semanage fcontext and apply them with restorecon.
+  - Change booleans and port labels permanently, and choose between a label, a boolean and a port.
+  - Diagnose denials from the audit log and fix them with the smallest change, testing in enforcing mode.
 objectiveIds:
-- ch16.operations
-- ch16.verification
+  - ch16.concepts
+  - ch16.contexts
+  - ch16.booleans
+  - ch16.troubleshooting

@@ -457,20 +457,36 @@
   - ch15/exercise-timers
   - ch15/lab
   challenges: []
-- id: ch16.operations
+- id: ch16.concepts
   chapter: ch16
   lessons:
-  - ch16/selinux-model
-  - ch16/selinux-troubleshooting
+  - ch16/selinux-concepts
   labs:
+  - ch16/exercise-contexts
   - ch16/lab
   challenges: []
-- id: ch16.verification
+- id: ch16.contexts
   chapter: ch16
   lessons:
-  - ch16/selinux-model
-  - ch16/selinux-troubleshooting
+  - ch16/file-contexts
   labs:
+  - ch16/exercise-fix-labels
+  - ch16/lab
+  challenges: []
+- id: ch16.booleans
+  chapter: ch16
+  lessons:
+  - ch16/booleans-and-ports
+  labs:
+  - ch16/exercise-booleans-ports
+  - ch16/lab
+  challenges: []
+- id: ch16.troubleshooting
+  chapter: ch16
+  lessons:
+  - ch16/troubleshooting
+  labs:
+  - ch16/exercise-troubleshooting
   - ch16/lab
   challenges: []
 - id: ch18.operations

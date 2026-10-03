@@ -1,0 +1,103 @@
+name: sa-selinux-review
+title: SELinux
+page: ch16/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: mode
+      kind: selinux
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: SELinux is enforcing, now and in the configuration
+      mode: enforcing
+    - id: fcontext
+      kind: selinux-fcontext
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: A file-context rule gives /srv/portal and below the web content type
+      path: /srv/portal(/.*)?
+      type: httpd_sys_content_t
+    - id: label
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: index.html in /srv/portal carries httpd_sys_content_t
+      paths:
+      - /srv/portal/index.html
+      selinuxType: httpd_sys_content_t
+    - id: port
+      kind: selinux-port
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: TCP port 8090 is labelled http_port_t
+      type: http_port_t
+      proto: tcp
+      port: 8090
+    - id: boolean
+      kind: selinux-boolean
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd_can_network_connect is on, permanently
+      name: httpd_can_network_connect
+      value: true
+    - id: homedirs
+      kind: selinux-boolean
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd_enable_homedirs stays off
+      name: httpd_enable_homedirs
+      value: false
+    - id: service
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd is running and enabled
+      names:
+      - httpd.service
+      active: true
+      enabled: true
+    - id: page
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The portal answers on port 8090
+      url: http://localhost:8090/
+      containsAny:
+      - Portal is up
+    - id: answer-process-type
+      kind: file
+      'on': control
+      message: 'answers.txt: the SELinux type of the httpd processes'
+      paths:
+      - answers.txt
+      matches: ^PROCESS_TYPE=httpd_t[ \t]*$
+    - id: answer-restore-cmd
+      kind: file
+      'on': control
+      message: 'answers.txt: the command that applies file-context rules'
+      paths:
+      - answers.txt
+      matches: ^RESTORE_CMD=restorecon[ \t]*$
+    - id: answer-audit-log
+      kind: file
+      'on': control
+      message: 'answers.txt: the file where denials are recorded'
+      paths:
+      - answers.txt
+      matches: ^AUDIT_LOG=/var/log/audit/audit\.log[ \t]*$

@@ -1,0 +1,25 @@
+Exercise: sa-selinux-review (chapter 16 lab)
+
+Work on servera, with sudo or as root. SELinux must stay in enforcing mode
+the whole time.
+
+The portal
+ 1. Install httpd (and audit, setroubleshoot-server for diagnosis), start
+    auditd, and enable and start httpd.
+ 2. Serve /srv/portal (index.html containing the text "Portal is up") on
+    TCP port 8090 only: set "Listen 8090" instead of "Listen 80" in
+    /etc/httpd/conf/httpd.conf, and a DocumentRoot of /srv/portal with
+    "Require all granted" in a file under /etc/httpd/conf.d/.
+ 3. Make it work with SELinux enforcing:
+      - label the port 8090 for web servers,
+      - add a permanent file-context rule for /srv/portal and everything
+        below it, and apply it,
+      - turn on the boolean httpd_can_network_connect permanently (the
+        portal will later talk to a back-end),
+      - leave httpd_enable_homedirs off.
+    Test with: curl http://localhost:8090/
+
+On workstation
+ 4. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-selinux-review

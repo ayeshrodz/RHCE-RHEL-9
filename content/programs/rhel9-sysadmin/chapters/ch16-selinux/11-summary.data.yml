@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: What is a context, and which part matters?
+    back: user:role:type:level; the type (…_t) is what the targeted policy rules are about.
+  - front: See contexts of files, processes, yourself?
+    back: ls -Z · ps -Z · id -Z
+  - front: Show and set the mode?
+    back: getenforce · sestatus · setenforce 0|1 (temporary) · SELINUX= in /etc/selinux/config (permanent)
+  - front: Which type should a path have?
+    back: matchpathcon PATH
+  - front: Permanent label for a directory tree?
+    back: semanage fcontext -a -t TYPE "/dir(/.*)?" then restorecon -Rv /dir
+  - front: Why is chcon temporary?
+    back: It records no rule; restorecon or a relabel resets the label.
+  - front: cp versus mv?
+    back: 'cp takes the destination default; mv keeps the old label: restorecon after mv.'
+  - front: List and set booleans?
+    back: getsebool -a · semanage boolean -l · setsebool -P NAME on|off
+  - front: Allow a service on a non-standard port?
+    back: 'semanage port -a -t http_port_t -p tcp 82 (list: semanage port -l)'
+  - front: Where are denials?
+    back: '/var/log/audit/audit.log: grep AVC · sealert -a /var/log/audit/audit.log'
+  - front: Is SELinux the cause?
+    back: setenforce 0, retry, setenforce 1.
+  - front: Troubleshooting order?
+    back: Test permissive, read the AVC, choose label / boolean / port, smallest fix, test in enforcing.

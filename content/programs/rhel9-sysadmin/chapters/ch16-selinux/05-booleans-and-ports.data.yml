@@ -1,0 +1,184 @@
+adjustments:
+  title: Three ways the policy is adjusted
+  caption: Select one.
+  height: 250
+  mode: select
+  initial: bool
+  info:
+    label:
+      tone: green
+      title: Labels (files)
+      text: 'Which type a file or directory has: semanage fcontext + restorecon. Used when a service needs to reach a new location.'
+    bool:
+      tone: blue
+      title: Booleans (switches)
+      text: The policy ships optional behaviours as named on/off switches, for example httpd_enable_homedirs ("let the web server read users' home directories"). getsebool -a lists them; setsebool -P NAME on|off changes one permanently.
+    port:
+      tone: amber
+      title: Ports (network)
+      text: Services may bind and connect only to ports labelled with their type. http_port_t covers 80, 81, 443, 488, 8008, 8009, 8443, 9000. A service on port 82 needs semanage port -a -t http_port_t -p tcp 82.
+    mod:
+      tone: coral
+      title: Policy modules (last resort)
+      text: If none of the above fits, a custom policy module (audit2allow) can add a rule. It permits something the policy authors did not; review it carefully and prefer the first three.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: labels
+    sub: files
+    titleSize: 14
+    select: label
+    active:
+    - label
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: blue
+    title: booleans
+    sub: switches
+    titleSize: 14
+    select: bool
+    active:
+    - bool
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: amber
+    title: ports
+    sub: network
+    titleSize: 14
+    select: port
+    active:
+    - port
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: coral
+    title: module
+    sub: last resort
+    titleSize: 14
+    select: mod
+    active:
+    - mod
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: booleans and ports'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: getsebool -a | grep -E "^httpd_(enable_homedirs|can_network_connect|read_user_content) "
+      out: 'httpd_can_network_connect --> off
+
+        httpd_enable_homedirs --> off
+
+        httpd_read_user_content --> off'
+    - cmd: semanage boolean -l | grep -E "httpd_enable_homedirs"
+      out: httpd_enable_homedirs          (off  ,  off)  Allow httpd to enable homedirs
+    - cmd: setsebool -P httpd_enable_homedirs on
+      out: ''
+    - cmd: getsebool httpd_enable_homedirs
+      out: httpd_enable_homedirs --> on
+    - cmd: semanage boolean -l -C
+      out: 'SELinux boolean                State  Default Description
+
+
+        httpd_enable_homedirs          (on   ,   on)  Allow httpd to enable homedirs'
+    - cmd: semanage port -l | grep ^http_port_t
+      out: http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
+    - cmd: semanage port -a -t http_port_t -p tcp 82
+      out: ''
+    - cmd: semanage port -l -C
+      out: 'SELinux Port Type              Proto    Port Number
+
+
+        http_port_t                    tcp      82'
+    - cmd: semanage port -d -t http_port_t -p tcp 82
+      out: ''
+    tasks:
+    - text: List the httpd booleans that concern home directories and network connections.
+      commands:
+      - getsebool -a | grep -E "^httpd_(enable_homedirs|can_network_connect|read_user_content) "
+    - text: Turn httpd_enable_homedirs on, permanently.
+      commands:
+      - setsebool -P httpd_enable_homedirs on
+    - text: Show only the booleans changed from the defaults.
+      commands:
+      - semanage boolean -l -C
+    - text: Label TCP port 82 as a web port.
+      commands:
+      - semanage port -a -t http_port_t -p tcp 82
+    - text: Show only the local port changes.
+      commands:
+      - semanage port -l -C
+quick:
+  questions:
+  - id: q-c7b8c93242bd
+    q: What does setsebool -P do that setsebool alone does not?
+    options:
+    - Keeps the change after a reboot
+    - Applies it faster
+    - Asks for confirmation
+    answer: 0
+    explain: Without -P the setting is lost when the machine restarts.
+  - id: q-e48094df6b2e
+    q: httpd must listen on port 8081. It fails with "Permission denied". What is the SELinux fix?
+    options:
+    - semanage port -a -t http_port_t -p tcp 8081
+    - chmod 777 httpd.conf
+    - setenforce 0 permanently
+    answer: 0
+    explain: The port needs the type the service is allowed to bind.
+  - id: q-59e4d9919837
+    q: Which command shows all booleans whose names mention ftp?
+    options:
+    - getsebool -a | grep ftp
+    - semanage port -l | grep ftp
+    - ls -Z ftp
+    answer: 0
+    explain: semanage boolean -l adds descriptions.
+  - id: q-0b724ed8808f
+    q: Why try booleans before writing a custom policy module?
+    options:
+    - The policy authors already provide safe switches for common needs
+    - Modules are not allowed
+    - Booleans are faster
+    answer: 0
+    explain: A module adds permissions that were not designed in.
+  - id: q-ba88b6eff135
+    q: A user's public_html is served as 403 although everything is labelled httpd_user_content_t. Which switch?
+    options:
+    - httpd_enable_homedirs
+    - httpd_can_network_connect
+    - httpd_use_nfs
+    answer: 0
+    explain: It allows httpd to read home directories.
+  - id: q-b868d0c0bfa7
+    q: How do you remove a custom port label?
+    options:
+    - semanage port -d -t TYPE -p tcp PORT
+    - restorecon
+    - setsebool -P
+    answer: 0
+    explain: -d deletes the local entry.

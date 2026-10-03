@@ -257,6 +257,23 @@ def conditions_selinux(c):
     return out
 
 
+def conditions_selinux_boolean(c):
+    name, state = shlex.quote(c['name']), 'on' if c['value'] else 'off'
+    out = ['[ "$(getsebool %s | awk \'{print $3}\')" = %s ]' % (name, state)]
+    if c.get('persistent', True):
+        out.append("semanage boolean -l | tr -d '(),' | awk -v n=%s -v v=%s '$1 == n && $2 == v && $3 == v {ok=1} END {exit !ok}'" % (name, state))
+    return out
+
+
+def conditions_selinux_port(c):
+    return ["semanage port -l | tr -d ',' | awk -v t=%s -v p=%s -v n=%s '$1 == t && $2 == p {for (i = 3; i <= NF; i++) if ($i == n) ok=1} END {exit !ok}'"
+            % (shlex.quote(c['type']), shlex.quote(c['proto']), shlex.quote(str(c['port'])))]
+
+
+def conditions_selinux_fcontext(c):
+    return ['semanage fcontext -l | grep -F -- %s | grep -q %s' % (shlex.quote(c['path']), shlex.quote(':%s:' % c['type']))]
+
+
 def conditions_sudoers(c):
     p = word(c['path'])
     out = []
@@ -323,7 +340,7 @@ HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
     'logical-volume': conditions_logical_volume, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
-    'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'address': conditions_address,
+    'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'selinux-boolean': conditions_selinux_boolean, 'selinux-port': conditions_selinux_port, 'selinux-fcontext': conditions_selinux_fcontext, 'address': conditions_address,
     'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process,
 }
 

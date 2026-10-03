@@ -158,6 +158,38 @@ class ScriptTests(unittest.TestCase):
             for bad in ({'args': [temp], 'output': '^Files: 9$'}, {'args': ['/nonexistent'], 'exitCode': 0}, {'args': [temp], 'exitCode': 3}):
                 self.assertNotEqual(self.run_script({'kind': 'file', 'paths': [str(script)], 'runs': [bad]}), 0, bad)
 
+    def test_selinux_booleans_ports_and_file_contexts_come_from_the_policy_tools(self):
+        with tempfile.TemporaryDirectory() as temp:
+            bin_dir = Path(temp) / 'bin'
+            bin_dir.mkdir()
+            (bin_dir / 'getsebool').write_text('#!/bin/sh\nif [ "$1" = web_flag ]; then echo "web_flag --> on"; else echo "$1 --> off"; fi\n')
+            (bin_dir / 'semanage').write_text('''#!/bin/sh
+case "$1 $2" in
+  "boolean -l") printf 'SELinux boolean State Default Description\\nweb_flag (on , on) Allow the web\\nother_flag (off , off) Another\\n' ;;
+  "port -l") printf 'http_port_t tcp 82, 80, 81\\nssh_port_t tcp 22\\n' ;;
+  "fcontext -l") printf '/srv/web(/.*)? all files system_u:object_r:httpd_sys_content_t:s0\\n' ;;
+esac
+''')
+            for f in bin_dir.iterdir():
+                f.chmod(0o755)
+            old = os.environ['PATH']
+            os.environ['PATH'] = '%s:%s' % (bin_dir, old)
+            try:
+                cases = [
+                    ({'kind': 'selinux-boolean', 'name': 'web_flag', 'value': True}, True),
+                    ({'kind': 'selinux-boolean', 'name': 'web_flag', 'value': False}, False),
+                    ({'kind': 'selinux-boolean', 'name': 'other_flag', 'value': False}, True),
+                    ({'kind': 'selinux-port', 'type': 'http_port_t', 'proto': 'tcp', 'port': 82}, True),
+                    ({'kind': 'selinux-port', 'type': 'http_port_t', 'proto': 'tcp', 'port': 8080}, False),
+                    ({'kind': 'selinux-port', 'type': 'ssh_port_t', 'proto': 'tcp', 'port': 82}, False),
+                    ({'kind': 'selinux-fcontext', 'path': '/srv/web(/.*)?', 'type': 'httpd_sys_content_t'}, True),
+                    ({'kind': 'selinux-fcontext', 'path': '/srv/web(/.*)?', 'type': 'var_t'}, False),
+                ]
+                for check, expected in cases:
+                    self.assertEqual(self.run_script(check) == 0, expected, check)
+            finally:
+                os.environ['PATH'] = old
+
     def test_acl_entries_are_matched_exactly_ignoring_effective_comments(self):
         with tempfile.TemporaryDirectory() as temp:
             bin_dir = Path(temp) / 'bin'

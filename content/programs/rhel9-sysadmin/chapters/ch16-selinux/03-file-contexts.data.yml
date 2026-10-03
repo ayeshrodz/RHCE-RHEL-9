@@ -1,0 +1,305 @@
+fcontext-flow:
+  title: Rules and labels
+  caption: Step through making a custom directory labelled correctly, permanently.
+  height: 250
+  mode: steps
+  steps:
+  - title: The default rules
+    text: 'The policy contains path rules: /var/www(/.*)? → httpd_sys_content_t, and so on. restorecon looks up a file''s path in those rules and sets its label to match.'
+  - title: A new directory has no rule
+    text: /srv/web is under /srv, which the rules label var_t. The web server is not allowed to read var_t.
+  - title: Add a rule
+    text: semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?" adds a local rule for the directory and everything below it. Nothing on disk has changed yet.
+  - title: Apply it
+    text: restorecon -Rv /srv/web relabels the existing files according to the rules, and prints what it changed. New files created there later receive the label automatically.
+  - title: chcon is only a shortcut
+    text: chcon -t TYPE FILE sets a label directly without a rule. It works at once but is lost at the next restorecon or relabel. Use it to experiment, never as the fix.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 160
+    h: 56
+    tone: purple
+    title: policy rules
+    sub: path → type
+    titleSize: 13
+    active:
+    - 0
+    - 2
+  - kind: node
+    x: 10
+    y: 86
+    w: 160
+    h: 50
+    tone: coral
+    title: /srv/web
+    sub: var_t
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 220
+    y: 20
+    w: 180
+    h: 56
+    tone: blue
+    title: semanage fcontext -a
+    sub: adds a rule
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 450
+    y: 20
+    w: 220
+    h: 56
+    tone: green
+    title: restorecon -Rv
+    sub: applies the rules
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 450
+    y: 86
+    w: 220
+    h: 50
+    tone: green
+    title: /srv/web
+    sub: httpd_sys_content_t
+    mono: true
+    titleSize: 11.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 220
+    y: 86
+    w: 180
+    h: 50
+    tone: amber
+    title: chcon (temporary)
+    sub: no rule saved
+    mono: true
+    titleSize: 12
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 170
+      - 48
+    - - 220
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 400
+      - 48
+    - - 450
+      - 48
+    visible:
+    - 3
+    - 4
+cp-mv:
+  title: Copying versus moving
+  caption: Select an operation to see which label the file ends up with.
+  height: 250
+  mode: select
+  initial: cp
+  info:
+    cp:
+      tone: green
+      title: 'cp: gets the destination''s default'
+      text: cp creates a NEW file, which is labelled according to where it lands (here httpd_sys_content_t, from the directory's rule). A copy into a correctly labelled directory is usually already right.
+    mv:
+      tone: coral
+      title: 'mv: keeps its old label'
+      text: mv within a file system only renames the same file, so its label travels with it. A file moved in from /tmp is still labelled for /tmp (user_tmp_t) and the web server cannot read it. This is the most common cause of 403 after "I just moved the file".
+    fix:
+      tone: blue
+      title: restorecon fixes it
+      text: restorecon -v FILE (or -R for a tree) applies the rule that matches the path. Make it a habit after you move files into a service directory.
+    cp-a:
+      tone: amber
+      title: 'cp -a / tar: preserve'
+      text: cp -a keeps the source label and tar with --selinux restores the labels stored in the archive. That can be right for a backup restore, and wrong for a move into a differently labelled place.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: cp
+    sub: 'new file: new label'
+    mono: true
+    titleSize: 14
+    select: cp
+    active:
+    - cp
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: coral
+    title: mv
+    sub: keeps the old label
+    mono: true
+    titleSize: 14
+    select: mv
+    active:
+    - mv
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: blue
+    title: restorecon
+    sub: apply the rules
+    mono: true
+    titleSize: 13
+    select: fix
+    active:
+    - fix
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: amber
+    title: cp -a · tar
+    sub: preserve labels
+    mono: true
+    titleSize: 13
+    select: cp-a
+    active:
+    - cp-a
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: file contexts'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: ls -Z /srv/web/index.html
+      out: unconfined_u:object_r:var_t:s0 /srv/web/index.html
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" http://localhost/
+      out: '403'
+    - cmd: matchpathcon /var/www/html/index.html /srv/web/index.html
+      out: "/var/www/html/index.html\tsystem_u:object_r:httpd_sys_content_t:s0\n/srv/web/index.html\tunconfined_u:object_r:var_t:s0"
+    - cmd: semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?"
+      out: ''
+    - cmd: semanage fcontext -l | grep /srv/web
+      out: /srv/web(/.*)?                                     all files          system_u:object_r:httpd_sys_content_t:s0
+    - cmd: restorecon -Rv /srv/web
+      out: 'Relabeled /srv/web from unconfined_u:object_r:var_t:s0 to system_u:object_r:httpd_sys_content_t:s0
+
+        Relabeled /srv/web/index.html from unconfined_u:object_r:var_t:s0 to system_u:object_r:httpd_sys_content_t:s0'
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" http://localhost/
+      out: '200'
+    - cmd: cp /tmp/second.html /srv/web/copy.html; mv /tmp/moved.html /srv/web/moved.html; ls -Z /srv/web/copy.html /srv/web/moved.html
+      out: "unconfined_u:object_r:httpd_sys_content_t:s0 /srv/web/copy.html\n              unconfined_u:object_r:user_tmp_t:s0 /srv/web/moved.html"
+    - cmd: restorecon -v /srv/web/moved.html
+      out: Relabeled /srv/web/moved.html from unconfined_u:object_r:user_tmp_t:s0 to system_u:object_r:httpd_sys_content_t:s0
+    tasks:
+    - text: Look at the context of the web page that returns 403.
+      commands:
+      - ls -Z /srv/web/index.html
+    - text: See which type the policy expects for the path.
+      commands:
+      - matchpathcon /var/www/html/index.html /srv/web/index.html
+    - text: Add a rule for /srv/web and everything below it.
+      commands:
+      - semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?"
+    - text: Apply the rules to the existing files.
+      commands:
+      - restorecon -Rv /srv/web
+    - text: Copy and move a file into the directory and compare the labels.
+      commands:
+      - cp /tmp/second.html /srv/web/copy.html; mv /tmp/moved.html /srv/web/moved.html; ls -Z /srv/web/copy.html /srv/web/moved.html
+quick:
+  questions:
+  - id: q-b2d7bbeb306d
+    q: You created /srv/web and httpd cannot read it. Which pair of commands fixes it permanently?
+    options:
+    - semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?" then restorecon -R /srv/web
+    - chcon -t httpd_sys_content_t /srv/web only
+    - chmod -R 777 /srv/web
+    answer: 0
+    explain: Add the rule, then apply it. chcon alone is lost at the next relabel.
+  - id: q-eb1e1c1e5310
+    q: Which command shows the type the policy expects for a path?
+    options:
+    - matchpathcon PATH
+    - ls -Z PATH
+    - getenforce PATH
+    answer: 0
+    explain: ls -Z shows the current label; matchpathcon shows what restorecon would set.
+  - id: q-02768b1634a6
+    q: A file moved with mv into a service directory is not served. Why?
+    options:
+    - mv keeps the old label
+    - mv removes permissions
+    - mv is blocked by SELinux
+    answer: 0
+    explain: Run restorecon on it.
+  - id: q-8fab032dbc20
+    q: What does restorecon -Rnv /srv do?
+    options:
+    - Shows what would be relabelled without changing anything
+    - Relabels without output
+    - Deletes labels
+    answer: 0
+    explain: -n means dry run.
+  - id: q-68f29c5645e2
+    q: Why is chcon not a permanent fix?
+    options:
+    - It sets a label without a rule, so restorecon or a relabel undoes it
+    - It needs a reboot
+    - It only works for root files
+    answer: 0
+    explain: Use semanage fcontext to record the rule.
+  - id: q-b3d1998e8c61
+    q: What does the pattern /srv/web(/.*)? match?
+    options:
+    - /srv/web and everything below it
+    - Only /srv/web
+    - Only files in /srv
+    answer: 0
+    explain: '(/.*)? is an optional part: a slash followed by anything.'

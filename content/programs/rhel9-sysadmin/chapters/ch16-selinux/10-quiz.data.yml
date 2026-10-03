@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-c8bd69b4a7fc
+    q: What does SELinux add to ordinary file permissions?
+    options:
+    - A second, policy-based check between process types and object types
+    - Encryption
+    - Backups
+    answer: 0
+    explain: Both must allow.
+  - id: q-98962694a734
+    q: Which command shows file contexts?
+    options:
+    - ls -Z
+    - ls -l
+    - stat -c %a
+    answer: 0
+    explain: Also ps -Z and id -Z.
+  - id: q-ec2ac745ce38
+    q: A file in /srv/web has type var_t. httpd cannot read it. Permanent fix?
+    options:
+    - semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?" ; restorecon -Rv /srv/web
+    - chcon only
+    - setenforce 0
+    answer: 0
+    explain: Rule first, then apply.
+  - id: q-883acf34e6aa
+    q: What happens to the label of a file moved with mv?
+    options:
+    - It keeps the label it had
+    - It takes the destination label
+    - It loses its label
+    answer: 0
+    explain: Use restorecon afterwards.
+  - id: q-e88397fe3e71
+    q: Which command makes a boolean permanent?
+    options:
+    - setsebool -P NAME on
+    - setsebool NAME on
+    - getsebool -P NAME
+    answer: 0
+    explain: Without -P it is lost at reboot.
+  - id: q-e68ef8de8596
+    q: A service bound to a non-standard port is denied. Which tool labels the port?
+    options:
+    - semanage port
+    - restorecon
+    - chcon
+    answer: 0
+    explain: semanage port -a -t http_port_t -p tcp 82.
+  - id: q-ecfbfba36409
+    q: Where is the permanent SELinux mode set?
+    options:
+    - /etc/selinux/config
+    - /etc/sysconfig/selinux-mode
+    - /proc/cmdline only
+    answer: 0
+    explain: SELINUX=enforcing.
+  - id: q-b167b101eb9d
+    q: Which package provides sealert?
+    options:
+    - setroubleshoot-server
+    - policycoreutils
+    - audit
+    answer: 0
+    explain: It reads the audit log.
+  - id: q-f51f5bdd4752
+    q: A colleague proposes SELINUX=disabled to fix a denial. What do you say?
+    options:
+    - 'No: find the wrong label, boolean or port'
+    - Yes, it is the quickest
+    - Only on Fridays
+    answer: 0
+    explain: Disabling needs a full relabel to undo and removes protection.
+  - id: q-9aa1951b249d
+    q: Which command previews what restorecon would change?
+    options:
+    - restorecon -Rnv PATH
+    - restorecon -Rv PATH
+    - chcon -n
+    answer: 0
+    explain: -n is a dry run.
