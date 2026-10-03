@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: What does a matching checksum establish by itself?
+    options:
+    - The bytes match the referenced digest.
+    - The archive publisher is necessarily trustworthy.
+    - The application restore will succeed.
+    answer: 0
+    explain: A digest checks integrity against a reference; authenticity needs trusted provenance.
+    id: q-d9bf57afb819
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Retained source
+    text: Capture stable data with an explicit content and metadata policy.
+    tone: purple
+  - id: part1
+    title: Protected archive
+    text: Store the archive and trusted digest separately from a writable live tree.
+    tone: teal
+  - id: part2
+    title: Restore rehearsal
+    text: Extract to an empty destination, compare metadata and test intended access.
+    tone: green

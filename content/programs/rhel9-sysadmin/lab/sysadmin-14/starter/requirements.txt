@@ -1,0 +1,4 @@
+Back up a small service-data tree, verify its digest and restore into an empty directory. Compare restored contents and file mode, then preview a synchronization without deletion.
+
+Create and inspect archives with explicit metadata policy.
+Prove restored data and synchronize safely.

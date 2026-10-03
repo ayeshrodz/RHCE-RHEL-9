@@ -1,0 +1,11 @@
+recall:
+  cards:
+  - front: What does a matching checksum establish by itself?
+    back: The bytes match the referenced digest. A digest checks integrity against a reference; authenticity
+      needs trusted provenance.
+  - front: Why preview rsync --delete separately?
+    back: It can remove destination data absent from the selected source. Deletion propagates source state
+      and can destroy retained copies.
+  - front: A normal-user restore preserves content. What is still unproven?
+    back: Recovery of arbitrary ownership and privileged service behavior. Privilege and metadata requirements
+      need separate verification.
