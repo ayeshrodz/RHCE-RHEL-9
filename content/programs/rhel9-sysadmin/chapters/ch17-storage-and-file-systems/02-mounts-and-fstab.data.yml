@@ -1,0 +1,10 @@
+quick:
+  questions:
+  - q: Can you shrink an XFS file system using resize2fs?
+    options:
+    - No; XFS does not support shrinking and resize2fs targets other formats.
+    - Yes, if run as root.
+    - Yes, if the volume is renamed.
+    answer: 0
+    explain: Filesystem capabilities and tools are format-specific.
+    id: q-898bb0fbaba8

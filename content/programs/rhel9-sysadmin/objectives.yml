@@ -266,3 +266,19 @@
   labs:
   - ch09/lab
   challenges: []
+- id: ch17.operations
+  chapter: ch17
+  lessons:
+  - ch17/partitions-and-filesystems
+  - ch17/mounts-and-fstab
+  labs:
+  - ch17/lab
+  challenges: []
+- id: ch17.verification
+  chapter: ch17
+  lessons:
+  - ch17/partitions-and-filesystems
+  - ch17/mounts-and-fstab
+  labs:
+  - ch17/lab
+  challenges: []

@@ -1,0 +1,40 @@
+name: sysadmin-17
+title: Storage and file systems
+page: ch17/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: mount
+      'on': servera.lab.example.com
+      path: /srv/data
+      fstype: xfs
+      persistent: true
+      id: check-1
+      message: Verify mount requirement 1 for Storage and file systems
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /srv/data/marker.txt
+      line: storage-ready
+      id: check-2
+      message: Verify file requirement 2 for Storage and file systems
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /swapfile
+      mode: '0600'
+      nonEmpty: true
+      id: check-3
+      message: Verify file requirement 3 for Storage and file systems
+      targets:
+      - servera.lab.example.com
