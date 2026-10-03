@@ -3,16 +3,15 @@ id: rhel9-sysadmin
 title: Linux system administration on RHEL 9
 label: SysAdmin
 tagline: Learn core Linux administration by doing
-summary: 'A hands-on path through the core skills of a Red Hat Enterprise Linux 9
-  system administrator, from the command line to containers, built on the RHEL 9 documentation
-  and the tasks administrators do every day. It is still being written: chapter 1,
-  which builds the practice lab, is ready, and the outline below shows what each remaining
-  chapter will cover.'
+summary: 'Build practical Linux administration skills on RHEL 9: shell and files,
+  identity and access, services and logs, networking, software, storage, security
+  and rootless containers. Explain each change, verify its useful result, and rehearse
+  recovery on a resettable practice lab.'
 platform:
   family: rhel
   version: '9'
   label: RHEL 9
-status: planned
+status: active
 stages:
 - title: Foundations
   chapters:
@@ -65,9 +64,9 @@ showcase:
   - Containers
   title: Linux system administration on RHEL
   label: RHEL
-  summary: A hands-on path through the core skills of a Red Hat Enterprise Linux system
-    administrator, from the command line to containers, built on the tasks administrators
-    do every day. The practice lab is ready; the other chapters are being written.
+  summary: Learn Linux administration through focused lessons, interactive models,
+    real labs and service-recovery practice. Build a resettable lab, verify changes
+    and leave a clear handover.
 lab: true
 variants:
 - id: homelab
