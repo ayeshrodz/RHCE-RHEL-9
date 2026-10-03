@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: A chcon fix disappears after relabeling. What was missing?
+    options:
+    - Persistent file-context intent through semanage fcontext.
+    - A wider chmod mode.
+    - A new hostname.
+    answer: 0
+    explain: chcon alters current state; configured context mappings define relabel behavior.
+    id: q-b6d1235715c8
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Service domain
+    text: The confined process attempts a specific operation.
+    tone: purple
+  - id: part1
+    title: Object type
+    text: The target label must match the documented service access model.
+    tone: teal
+  - id: part2
+    title: Policy-correct result
+    text: Apply persistent intent, retry under enforcing and inspect fresh evidence.
+    tone: green

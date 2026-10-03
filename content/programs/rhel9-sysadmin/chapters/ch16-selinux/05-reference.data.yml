@@ -1,0 +1,11 @@
+recall:
+  cards:
+  - front: A chcon fix disappears after relabeling. What was missing?
+    back: Persistent file-context intent through semanage fcontext. chcon alters current state; configured
+      context mappings define relabel behavior.
+  - front: A nonstandard port is allowed by firewalld but the service cannot bind under SELinux. What
+      should you inspect?
+    back: The SELinux port type and service domain. Network filtering and SELinux bind policy are independent.
+  - front: Why avoid blindly compiling every audit event into an allow module?
+    back: It can authorize unrelated behavior and conceal configuration faults. A narrow diagnosis must
+      precede a policy extension.
