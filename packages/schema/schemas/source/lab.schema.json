@@ -682,6 +682,9 @@
             "user": {
               "description": "Manage the units of this user's systemd instead of the system's.",
               "$ref": "#/$defs/unixName"
+            },
+            "masked": {
+              "type": "boolean"
             }
           }
         },
@@ -1129,6 +1132,36 @@
                   ".bash_profile",
                   ".bash_logout"
                 ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts"
+          ],
+          "properties": {
+            "action": {
+              "const": "boot"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "target": {
+              "enum": [
+                "graphical.target",
+                "multi-user.target"
+              ]
+            },
+            "removeKernelArgs": {
+              "type": "array",
+              "maxItems": 5,
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.=,-]{1,60}$"
               }
             }
           }
@@ -2267,7 +2300,7 @@
       "description": "A path a setup or cleanup action may create or remove on a managed host: only under directories meant for local data and drop-in configuration.",
       "type": "string",
       "maxLength": 200,
-      "pattern": "^/(?:srv|opt|mnt|tmp|root|home|var/www|var/tmp|usr/local|etc/(?:httpd/conf\\.d|systemd|auto\\.master\\.d|auto\\.[a-z0-9_-]+|cron\\.d|exports\\.d|sudoers\\.d|profile\\.d|ssh/sshd_config\\.d|chrony\\.d|yum\\.repos\\.d|logrotate\\.d|rsyslog\\.d|security/limits\\.d|sysctl\\.d|NetworkManager/system-connections|containers|httpd/conf\\.d|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$",
+      "pattern": "^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:httpd/conf\\.d|systemd|auto\\.master\\.d|auto\\.[a-z0-9_-]+|cron\\.d|exports\\.d|sudoers\\.d|profile\\.d|ssh/sshd_config\\.d|chrony\\.d|yum\\.repos\\.d|logrotate\\.d|rsyslog\\.d|security/limits\\.d|sysctl\\.d|NetworkManager/system-connections|containers|httpd/conf\\.d|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$",
       "not": {
         "pattern": "(?:^|/)\\.\\.(?:/|$)"
       }

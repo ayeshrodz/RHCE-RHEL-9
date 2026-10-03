@@ -200,8 +200,8 @@ def ssh_keypairs(a, ctx):
 # ---------------------------------------------------------------------------------------
 # Host actions: fixed scripts, built from validated values, run as root on lab servers.
 
-SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|tmp|root|home|var/www|var/tmp|usr/local|etc/(?:httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
-PROTECTED = {'/srv', '/opt', '/mnt', '/tmp', '/root', '/home', '/var/www', '/var/tmp', '/usr/local', '/etc/systemd', '/etc/containers'}
+SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
+PROTECTED = {'/srv', '/opt', '/mnt', '/tmp', '/root', '/home', '/var/www', '/var/tmp', '/var/log', '/usr/local', '/etc/systemd', '/etc/containers'}
 NAME = re.compile(r'^[a-z_][a-z0-9_-]{0,31}$')
 SSH = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR']
 
@@ -247,12 +247,14 @@ def script_service(a):
             out.append('%s%s enable --now %s' % (pre, ctl, u))
             continue
         if enabled is False and state == 'stopped':
-            out.append('%s%s disable --now %s' % (pre, ctl, u))
+            out.append('%s%s disable --now %s 2>/dev/null || true' % (pre, ctl, u))
             continue
         if state:
-            out.append('%s%s %s %s' % (pre, ctl, {'started': 'start', 'stopped': 'stop', 'restarted': 'restart'}[state], u))
+            out.append('%s%s %s %s%s' % (pre, ctl, {'started': 'start', 'stopped': 'stop', 'restarted': 'restart'}[state], u, ' 2>/dev/null || true' if state == 'stopped' else ''))
         if enabled is not None:
-            out.append('%s%s %s %s' % (pre, ctl, 'enable' if enabled else 'disable', u))
+            out.append('%s%s %s %s%s' % (pre, ctl, 'enable' if enabled else 'disable', u, '' if enabled else ' 2>/dev/null || true'))
+        if a.get('masked') is not None:
+            out.append('%s%s %s %s%s' % (pre, ctl, 'mask' if a['masked'] else 'unmask', u, '' if a['masked'] else ' 2>/dev/null || true'))
     return '\n'.join(out)
 
 
@@ -383,6 +385,17 @@ def script_restore_skel(a):
     return '\n'.join('install -o %s -g %s -m 644 /etc/skel/%s /home/%s/%s' % (q(user), q(user), q(x), q(user), q(x)) for x in files if re.match(r'^\.bash[a-z_]+$', x))
 
 
+def script_boot(a):
+    out = []
+    if 'target' in a:
+        out.append('systemctl set-default %s' % q(a['target']))
+    for arg in a.get('removeKernelArgs', []):
+        if not re.match(r'^[A-Za-z0-9_.=,-]{1,60}$', arg):
+            raise SetupError('unsafe kernel argument')
+        out.append('grubby --update-kernel=ALL --remove-args=%s' % q(arg))
+    return '\n'.join(out) or 'true'
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -394,7 +407,7 @@ HOST_SCRIPTS = {
     'package': script_package, 'service': script_service, 'group': script_group, 'user': script_user, 'directory': script_directory,
     'file': script_file, 'remove-lines': script_remove_lines, 'firewall': script_firewall, 'selinux': script_selinux,
     'wipe-disk': script_wipe_disk, 'systemd': script_systemd, 'linger': script_linger, 'container-reset': script_container_reset,
-    'run-as': script_run_as, 'restore-skel': script_restore_skel,
+    'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot,
 }
 
 
