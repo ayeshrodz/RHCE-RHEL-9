@@ -1,0 +1,31 @@
+Exercise: sa-archives-review (chapter 14 lab)
+
+Work from workstation with ssh root@servera and ssh root@serverb.
+
+The data (servera)
+ 1. Build the project tree on servera by running these commands as root:
+
+      mkdir -p /srv/project/docs /srv/project/data /srv/project/cache
+      echo "Project readme" > /srv/project/docs/readme.txt
+      seq 1 100 | sed 's/$/,record/' > /srv/project/data/records.csv
+      echo "top secret" > /srv/project/secret.txt
+      echo junk > /srv/project/cache/tmp.bin
+      chmod 640 /srv/project/secret.txt
+      setfacl -m u:student:r /srv/project/secret.txt
+
+The backup (servera)
+ 2. /srv/backup/project.tar.xz: an xz archive of /srv/project made with
+    names that start with "project/", WITHOUT the cache directory, and
+    keeping ACLs, SELinux labels and extended attributes.
+ 3. /srv/backup/project.tar.xz.sha256: the SHA-256 checksum of the archive,
+    in the form sha256sum -c accepts when run in /srv/backup.
+
+The restore (serverb)
+ 4. Copy the archive and the checksum file to /srv/restore on serverb,
+    going through workstation (the servers cannot reach each other with
+    ssh keys). On serverb, verify the checksum from /srv/restore.
+ 5. Extract the archive into /srv/restore, keeping ACLs and labels.
+    /srv/restore/project/secret.txt must keep mode 640 and its ACL for
+    student, and the cache must not be there.
+
+Then, on workstation:  lab grade sa-archives-review

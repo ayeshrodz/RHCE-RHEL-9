@@ -1,0 +1,378 @@
+tar-options:
+  title: Reading a tar command
+  caption: 'Select a part of: tar -czvf backup.tar.gz -C /srv data'
+  height: 270
+  mode: select
+  initial: f
+  info:
+    tar:
+      tone: gray
+      title: tar
+      text: 'Tape ARchiver: bundles many files and directories into one file (an archive, often called a tarball). Its options may be written with or without the leading dash.'
+    c:
+      tone: green
+      title: 'c: create'
+      text: Make a new archive. The three main actions are c (create), t (list the contents) and x (extract). Use exactly one.
+    z:
+      tone: blue
+      title: 'z: gzip'
+      text: Compress with gzip (.tar.gz). j is bzip2 (.tar.bz2), J is xz (.tar.xz). When extracting, modern tar detects the compression itself, so a plain -xf works.
+    v:
+      tone: gray
+      title: 'v: verbose'
+      text: Print each file name as it is processed. Leave it out for quiet operation.
+    f:
+      tone: amber
+      title: 'f: file'
+      text: The next word is the archive file name. Always put f last in the group of letters, directly before the name. Without it, tar tries to use a tape device.
+    name:
+      tone: amber
+      title: backup.tar.gz
+      text: The archive file. The suffix is only a hint to humans; the option (z, j or J) decides.
+    cdir:
+      tone: purple
+      title: '-C /srv: change directory'
+      text: tar changes to this directory first. The members are then stored with relative names (data/…), so extracting later works anywhere.
+    data:
+      tone: teal
+      title: 'data: what to archive'
+      text: One or more files or directories, relative to the -C directory.
+  elements:
+  - kind: node
+    x: 6
+    y: 24
+    w: 60
+    h: 50
+    tone: gray
+    title: tar
+    mono: true
+    titleSize: 14
+    select: tar
+    active:
+    - tar
+  - kind: node
+    x: 72
+    y: 24
+    w: 36
+    h: 50
+    tone: green
+    title: c
+    mono: true
+    titleSize: 15
+    select: c
+    active:
+    - c
+  - kind: node
+    x: 112
+    y: 24
+    w: 36
+    h: 50
+    tone: blue
+    title: z
+    mono: true
+    titleSize: 15
+    select: z
+    active:
+    - z
+  - kind: node
+    x: 152
+    y: 24
+    w: 36
+    h: 50
+    tone: gray
+    title: v
+    mono: true
+    titleSize: 15
+    select: v
+    active:
+    - v
+  - kind: node
+    x: 192
+    y: 24
+    w: 36
+    h: 50
+    tone: amber
+    title: f
+    mono: true
+    titleSize: 15
+    select: f
+    active:
+    - f
+  - kind: node
+    x: 234
+    y: 24
+    w: 170
+    h: 50
+    tone: amber
+    title: backup.tar.gz
+    mono: true
+    titleSize: 13
+    select: name
+    active:
+    - name
+  - kind: node
+    x: 410
+    y: 24
+    w: 110
+    h: 50
+    tone: purple
+    title: -C /srv
+    mono: true
+    titleSize: 13
+    select: cdir
+    active:
+    - cdir
+  - kind: node
+    x: 526
+    y: 24
+    w: 80
+    h: 50
+    tone: teal
+    title: data
+    mono: true
+    titleSize: 13
+    select: data
+    active:
+    - data
+tar-workflow:
+  title: Create, list, restore, compare
+  caption: Step through the safe routine for any archive.
+  height: 240
+  mode: steps
+  steps:
+  - title: Create
+    text: tar -czf data.tar.gz -C /srv data. Run it from where the relative names make sense.
+  - title: List
+    text: 'tar -tzf data.tar.gz (or -tvf for details). Look at the first names: are they relative (data/…) or absolute?'
+  - title: Extract somewhere harmless
+    text: tar -xzf data.tar.gz -C /tmp/restore. Extract into a new empty directory first, never over the original.
+  - title: Compare
+    text: diff -r /srv/data /tmp/restore/data prints nothing when identical. An archive you have not tested is not a backup.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: create
+    sub: tar -c
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: list
+    sub: tar -t
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: extract
+    sub: tar -x -C dir
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: teal
+    title: compare
+    sub: diff -r
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: tar'
+    prompt: '[root@servera arch]#'
+    commands:
+    - cmd: tar -cvf project.tar project
+      out: 'project/
+
+        project/docs/
+
+        project/docs/notes.md
+
+        project/run.sh
+
+        project/link.md
+
+        project/src/
+
+        project/src/data2.txt
+
+        project/src/data3.txt
+
+        project/src/data1.txt'
+    - cmd: tar -tvf project.tar | head -4
+      out: 'drwxr-xr-x root/root         0 2026-10-03 17:36 project/
+
+        drwxr-xr-x root/root         0 2026-10-03 17:36 project/docs/
+
+        -rw-r--r-- root/root         8 2026-10-03 17:36 project/docs/notes.md
+
+        -rwxr-x--- root/root        12 2026-10-03 17:36 project/run.sh'
+    - cmd: tar -czf project.tar.gz project
+      out: ''
+    - cmd: ls -l project.tar project.tar.gz
+      out: '-rw-r--r--. 1 root root 337920 Oct  3 17:36 project.tar
+
+        -rw-r--r--. 1 root root 135323 Oct  3 17:36 project.tar.gz'
+    - cmd: mkdir out; tar -xf project.tar.gz -C out; ls out/project
+      out: docs  link.md  run.sh  src
+    - cmd: tar -xzf project.tar.gz -C out project/run.sh; ls -l out/project/run.sh
+      out: -rwxr-x---. 1 root root 12 Oct  3 17:36 out/project/run.sh
+    - cmd: tar -cvf abs.tar /tmp/arch/project/docs
+      out: 'tar: Removing leading `/'' from member names
+
+        /tmp/arch/project/docs/
+
+        /tmp/arch/project/docs/notes.md'
+    - cmd: tar --exclude='*.txt' -czf notxt.tar.gz project; tar -tzf notxt.tar.gz
+      out: 'project/
+
+        project/docs/
+
+        project/docs/notes.md
+
+        project/run.sh
+
+        project/link.md
+
+        project/src/'
+    - cmd: diff -r project out/project; echo "rc=$?"
+      out: rc=0
+    tasks:
+    - text: Create a plain tar archive of the directory project, listing the files as it goes.
+      commands:
+      - tar -cvf project.tar project
+    - text: List the archive with permissions and owners.
+      commands:
+      - tar -tvf project.tar | head -4
+    - text: Make a gzip-compressed archive.
+      commands:
+      - tar -czf project.tar.gz project
+    - text: Extract it into a new directory called out.
+      commands:
+      - mkdir out; tar -xf project.tar.gz -C out; ls out/project
+    - text: Extract only one member.
+      commands:
+      - tar -xzf project.tar.gz -C out project/run.sh; ls -l out/project/run.sh
+    - text: Compare the original and the restored directory.
+      commands:
+      - diff -r project out/project; echo "rc=$?"
+quick:
+  questions:
+  - id: q-774fd21b28eb
+    q: Which tar options create a gzip-compressed archive named a.tar.gz of the directory d?
+    options:
+    - tar -czf a.tar.gz d
+    - tar -xzf a.tar.gz d
+    - tar -tzf a.tar.gz d
+    answer: 0
+    explain: c creates, z compresses with gzip, f names the file.
+  - id: q-c96f78f447df
+    q: Which option lists the contents of an archive without extracting?
+    options:
+    - -t
+    - -l
+    - -x
+    answer: 0
+    explain: t = table of contents.
+  - id: q-959d6895d652
+    q: Why should f be the last letter in tar -czvf name?
+    options:
+    - It takes the next word as the archive name
+    - It means fast
+    - It is optional
+    answer: 0
+    explain: Writing -cfz name would make tar treat z as the file name.
+  - id: q-7293bc73d4de
+    q: tar prints "Removing leading / from member names". What does it protect against?
+    options:
+    - An archive that extracts to absolute paths and overwrites system files
+    - A corrupt archive
+    - A full disk
+    answer: 0
+    explain: Archive with relative names unless you explicitly choose otherwise.
+  - id: q-7197301406f6
+    q: Where does tar extract by default?
+    options:
+    - The current directory (use -C to choose another)
+    - The original location
+    - /tmp
+    answer: 0
+    explain: Relative names are created below the current directory.
+  - id: q-6604db925cec
+    q: How do you extract just one file from an archive?
+    options:
+    - tar -xzf a.tar.gz path/in/archive
+    - tar -gzf
+    - tar --one
+    answer: 0
+    explain: Give the member name exactly as tar -t shows it.
