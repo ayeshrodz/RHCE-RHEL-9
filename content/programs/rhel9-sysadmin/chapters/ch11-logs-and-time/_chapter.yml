@@ -1,8 +1,12 @@
 title: Logs and time
-goal: Read the system logs and keep the clock right.
+goal: Read and filter the system logs, keep them across reboots and under control, keep the clock right, and use a calm method to diagnose problems.
 objectives:
-- Filter logs by host, boot, service and time.
-- Make log retention and time synchronization observable.
+  - Explain journald and rsyslog and filter the journal by unit, priority, boot and time.
+  - Make the journal persistent, add custom rsyslog files, and rotate logs with logrotate.
+  - Read timedatectl and chrony output, set the time zone, and add NTP sources.
+  - Diagnose a failing service from its status, its journal and the wider system logs.
 objectiveIds:
-- ch11.operations
-- ch11.verification
+  - ch11.reading
+  - ch11.retention
+  - ch11.time
+  - ch11.diagnosis

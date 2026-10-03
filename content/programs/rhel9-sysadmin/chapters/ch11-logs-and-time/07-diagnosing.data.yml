@@ -1,0 +1,276 @@
+triage:
+  title: A calm way to diagnose
+  caption: Step through the same six moves every time.
+  height: 240
+  mode: steps
+  steps:
+  - title: 1 · What is the symptom?
+    text: 'Write it down in one sentence: what should happen, and what happens instead. "The web page does not load" is a symptom; "httpd is broken" is already a guess.'
+  - title: 2 · Ask the service
+    text: systemctl status NAME shows the state and the last few log lines. systemctl --failed lists everything that failed.
+  - title: 3 · Read the log around the failure
+    text: 'journalctl -u NAME -b (this boot), or --since "10 minutes ago". Start with the first error, not the last: later errors are often consequences.'
+  - title: 4 · Widen the net
+    text: journalctl -p err -b for the whole system, dmesg for the kernel (hardware, disks, memory), /var/log/secure for logins and sudo.
+  - title: 5 · Form one hypothesis and test it
+    text: Change one thing at a time and write down what you changed, so you can undo it.
+  - title: 6 · Verify and record
+    text: Confirm the symptom is gone, with the same test that showed it. Note the cause and fix for next time.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 102
+    h: 50
+    tone: coral
+    title: symptom
+    sub: what fails?
+    titleSize: 12
+    active:
+    - 0
+  - kind: node
+    x: 120
+    y: 20
+    w: 102
+    h: 50
+    tone: amber
+    title: status
+    sub: systemctl
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 230
+    y: 20
+    w: 102
+    h: 50
+    tone: purple
+    title: journal
+    sub: journalctl
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 340
+    y: 20
+    w: 102
+    h: 50
+    tone: blue
+    title: widen
+    sub: -p err · dmesg
+    titleSize: 11
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 450
+    y: 20
+    w: 102
+    h: 50
+    tone: teal
+    title: test
+    sub: one change
+    titleSize: 12
+    active:
+    - 4
+    visible:
+    - 4
+    - 5
+  - kind: node
+    x: 560
+    y: 20
+    w: 110
+    h: 50
+    tone: green
+    title: verify
+    sub: same test
+    titleSize: 12
+    active:
+    - 5
+    visible:
+    - 5
+  - kind: arrow
+    points:
+    - - 112
+      - 45
+    - - 120
+      - 45
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 222
+      - 45
+    - - 230
+      - 45
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 332
+      - 45
+    - - 340
+      - 45
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 442
+      - 45
+    - - 450
+      - 45
+    visible:
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 552
+      - 45
+    - - 560
+      - 45
+    visible:
+    - 5
+  - kind: node
+    x: 120
+    y: 110
+    w: 430
+    h: 56
+    tone: gray
+    title: a calm order beats guessing
+    sub: ''
+    titleSize: 13
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: kernel messages and logins'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl --failed
+      out: '  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+        0 loaded units listed.'
+    - cmd: dmesg --level=err,warn | head -2
+      out: '[    2.796892] sd 0:0:0:1: Power-on or device reset occurred
+
+        [    2.798899] sd 0:0:1:1: Power-on or device reset occurred'
+    - cmd: dmesg -T | tail -1
+      out: '[Sat Oct  3 17:01:02 2026] ata5: SATA link down (SStatus 0 SControl 300)'
+    - cmd: journalctl -k -n 1 --no-pager
+      out: 'Oct 03 17:01:02 servera.lab.example.com kernel: ata5: SATA link down (SStatus 0 SControl 300)'
+    - cmd: last -n 3
+      out: 'reboot   system boot  5.14.0-687.53.1. Sat Oct  3 17:00   still running
+
+        student  pts/0        172.25.251.9     Sat Oct  3 09:30 - 09:30  (00:00)
+
+        reboot   system boot  5.14.0-687.53.1. Sat Oct  3 09:29   still running'
+    - cmd: journalctl -u chronyd --no-pager | tail -2
+      out: 'Oct 03 17:01:01 servera.lab.example.com chronyd[466]: Loaded seccomp filter (level 2)
+
+        Oct 03 17:01:01 servera.lab.example.com systemd[1]: Started NTP client/server.'
+    - cmd: journalctl --list-boots
+      out: "IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY\n  0 e223ff84f70141d5b05d37983cb06b03 Sat 2026-10-03 17:00:58 UTC Sat 2026-10-03 17:01:08 UTC"
+    tasks:
+    - text: List failed units.
+      commands:
+      - systemctl --failed
+    - text: Show kernel warnings and errors.
+      commands:
+      - dmesg --level=err,warn | head -2
+    - text: Show kernel messages with readable timestamps.
+      commands:
+      - dmesg -T | tail -1
+    - text: See who logged in and when the machine rebooted.
+      commands:
+      - last -n 3
+quick:
+  questions:
+  - id: q-7cdeb44a4120
+    q: A service fails to start. Which command gives the quickest first look?
+    options:
+    - systemctl status NAME
+    - reboot
+    - dnf update
+    answer: 0
+    explain: It shows the state, the exit code and the last log lines in one place.
+  - id: q-864e29bcce92
+    q: Which command shows the kernel ring buffer (hardware and driver messages)?
+    options:
+    - dmesg
+    - last
+    - ss
+    answer: 0
+    explain: Also journalctl -k.
+  - id: q-73829e3dbd84
+    q: Several errors appear one after another. Which do you investigate first?
+    options:
+    - The earliest one
+    - The most recent one
+    - The longest one
+    answer: 0
+    explain: Later errors are often consequences of the first failure.
+  - id: q-8bbcb7180a28
+    q: Which command lists past logins and reboots?
+    options:
+    - last
+    - who -r
+    - lastlog -u
+    answer: 0
+    explain: last reads /var/log/wtmp.
+  - id: q-6e80a03a7a1d
+    q: Which habit helps most when troubleshooting?
+    options:
+    - Change one thing at a time and note it
+    - Change several settings at once
+    - Restart everything first
+    answer: 0
+    explain: You can only learn from a change if it is the only one.
+  - id: q-7cc1525e3499
+    q: journalctl -b -1 shows nothing useful. Why?
+    options:
+    - The journal is volatile, so earlier boots are gone
+    - The system never rebooted
+    - The clock was wrong
+    answer: 0
+    explain: Make the journal persistent before you need it.

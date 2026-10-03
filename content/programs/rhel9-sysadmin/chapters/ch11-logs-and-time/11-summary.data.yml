@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: journald versus rsyslog?
+    back: journald keeps a structured journal (journalctl); rsyslog writes plain text files in /var/log.
+  - front: Log of one service, this boot, errors only?
+    back: journalctl -u NAME -b -p err
+  - front: Follow the log live; filter by time?
+    back: journalctl -f  ·  journalctl --since "1 hour ago" --until now
+  - front: Which file holds logins and sudo records?
+    back: /var/log/secure
+  - front: Write a test message to the logs?
+    back: logger -p user.notice "text"
+  - front: Make the journal persistent?
+    back: mkdir /var/log/journal; systemctl restart systemd-journald; journalctl --flush
+  - front: Add a custom log file for a facility?
+    back: /etc/rsyslog.d/10-NAME.conf with 'local5.* /var/log/NAME.log'; restart rsyslog
+  - front: Test and force a log rotation?
+    back: logrotate -d FILE  ·  logrotate -f FILE
+  - front: Show clock, zone and sync state; set the zone?
+    back: timedatectl  ·  timedatectl set-timezone Area/City
+  - front: Check NTP sources and offset?
+    back: chronyc sources  ·  chronyc tracking
+  - front: Kernel messages?
+    back: dmesg -T  ·  journalctl -k
+  - front: Six-step diagnosis?
+    back: Symptom, status, log around the failure, widen, one change, verify.

@@ -1,0 +1,259 @@
+ntp-flow:
+  title: How chrony keeps the clock
+  caption: Step through how a server finds and follows good time.
+  height: 240
+  mode: steps
+  steps:
+  - title: Sources
+    text: 'chronyd is configured with time sources: a pool of public NTP servers (pool …) or named servers (server …). It asks several of them at regular intervals.'
+  - title: Choose the best
+    text: It compares their answers, discards the ones that disagree, and selects the best source (marked * in chronyc sources).
+  - title: Step once at startup
+    text: If the clock is far off when chronyd starts, makestep lets it jump straight to the right time (first 3 updates only).
+  - title: Then adjust gently
+    text: 'After that it slews: it speeds up or slows down the clock slightly, so time never jumps backwards and logs stay in order.'
+  - title: Check
+    text: 'timedatectl says "System clock synchronized: yes"; chronyc tracking shows the offset; chronyc sources lists the sources.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 50
+    tone: gray
+    title: NTP servers
+    sub: stratum 1 and 2
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+  - kind: node
+    x: 10
+    y: 80
+    w: 150
+    h: 50
+    tone: green
+    title: a selected source
+    sub: chronyc sources *
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 230
+    y: 50
+    w: 180
+    h: 60
+    tone: blue
+    title: chronyd
+    sub: /etc/chrony.conf
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 480
+    y: 20
+    w: 190
+    h: 50
+    tone: amber
+    title: clock jumps once
+    sub: makestep 1.0 3
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+  - kind: node
+    x: 480
+    y: 80
+    w: 190
+    h: 50
+    tone: teal
+    title: clock adjusts slowly
+    sub: slew
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 480
+    y: 140
+    w: 190
+    h: 44
+    tone: green
+    title: 'synchronized: yes'
+    sub: timedatectl
+    mono: true
+    titleSize: 12
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 160
+      - 45
+    - - 230
+      - 70
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 160
+      - 105
+    - - 230
+      - 90
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 70
+    - - 480
+      - 45
+    visible:
+    - 2
+  - kind: arrow
+    points:
+    - - 410
+      - 90
+    - - 480
+      - 105
+    visible:
+    - 3
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: time'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: timedatectl
+      out: "               Local time: Sat 2026-10-03 16:59:49 UTC\n           Universal time: Sat 2026-10-03 16:59:49 UTC\n                 RTC time: Sat 2026-10-03 16:59:48\n                Time zone: UTC (UTC, +0000)\nSystem clock synchronized: yes\n              NTP service: active\n          RTC in local TZ: no"
+    - cmd: timedatectl list-timezones | grep -i colombo
+      out: Asia/Colombo
+    - cmd: timedatectl set-timezone Asia/Colombo
+      out: ''
+    - cmd: date
+      out: Sat Oct  3 22:29:50 +0530 2026
+    - cmd: timedatectl set-timezone UTC
+      out: ''
+    - cmd: chronyc sources
+      out: "MS Name/IP address         Stratum Poll Reach LastRx Last sample               \n===============================================================================\n^- ntp2.ntp.net.nz               1   6    37    51  +1130us[+1130us] +/- 3864us\n^* 132.181.2.72                  1   6    37    51    -13us[-4847us] +/- 9289us\n^- zappa.convolute.net.nz        1   6    37    50   -862us[ -862us] +/-   33ms"
+    - cmd: chronyc tracking
+      out: 'Reference ID    : 84B50248 (132.181.2.72)
+
+        Stratum         : 2
+
+        Ref time (UTC)  : Sat Oct 03 16:58:57 2026
+
+        System time     : 0.000004469 seconds fast of NTP time
+
+        Last offset     : -0.004834540 seconds
+
+        RMS offset      : 0.004834540 seconds'
+    - cmd: timedatectl set-time '2026-01-01 12:00:00'
+      out: 'Failed to set time: Automatic time synchronization is enabled'
+    - cmd: grep -v "^#" /etc/chrony.conf | grep -v "^$" | head -3
+      out: 'pool 2.rocky.pool.ntp.org iburst
+
+        sourcedir /run/chrony-dhcp
+
+        driftfile /var/lib/chrony/drift'
+    tasks:
+    - text: Show the clock, the zone and the synchronisation state.
+      commands:
+      - timedatectl
+    - text: Set the time zone to Asia/Colombo and look at the date.
+      commands:
+      - timedatectl set-timezone Asia/Colombo
+      - date
+    - text: See which time source chrony has selected.
+      commands:
+      - chronyc sources
+    - text: Check how far the clock is from NTP time.
+      commands:
+      - chronyc tracking
+    - text: Try to set the time by hand while NTP is active.
+      commands:
+      - timedatectl set-time '2026-01-01 12:00:00'
+quick:
+  questions:
+  - id: q-49ee2f913c38
+    q: Which command shows whether the clock is synchronised?
+    options:
+    - timedatectl
+    - date -s
+    - hwclock --set
+    answer: 0
+    explain: '"System clock synchronized: yes" and "NTP service: active".'
+  - id: q-fb5c48e74077
+    q: In chronyc sources, what does the * mean?
+    options:
+    - The source chronyd is currently using
+    - A failed source
+    - A pool member
+    answer: 0
+    explain: '* is the selected source; + sources are combined; - are not used.'
+  - id: q-5407440121ab
+    q: Why does chrony slew instead of jumping the clock?
+    options:
+    - So that time never goes backwards and logs stay consistent
+    - It is faster
+    - To save power
+    answer: 0
+    explain: Small errors are corrected by speeding up or slowing down the clock.
+  - id: q-db8b7b3cfaf5
+    q: Where do you add an NTP server?
+    options:
+    - /etc/chrony.conf (server NAME iburst), then restart chronyd
+    - /etc/ntp.conf
+    - /etc/timezone
+    answer: 0
+    explain: RHEL uses chrony; edit its configuration and restart the service.
+  - id: q-8bb61e6683fe
+    q: Which command changes the time zone?
+    options:
+    - timedatectl set-timezone Asia/Colombo
+    - date --timezone
+    - chronyc zone
+    answer: 0
+    explain: It updates the /etc/localtime link. timedatectl list-timezones lists the names.
+  - id: q-252c1f877990
+    q: Why is the server clock usually kept in UTC?
+    options:
+    - Logs from many machines line up, and daylight saving causes no jumps
+    - It is required by law
+    - Chrony cannot use other zones
+    answer: 0
+    explain: Show local time to people, keep machines in UTC.

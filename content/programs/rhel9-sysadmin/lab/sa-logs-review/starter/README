@@ -1,0 +1,26 @@
+Exercise: sa-logs-review (chapter 11 lab)
+
+Work on servera, with sudo or as root.
+
+Journal
+ 1. Make the journal persistent: create /var/log/journal, and add a drop-in
+    /etc/systemd/journald.conf.d/10-retention.conf with
+    Storage=persistent and SystemMaxUse=100M. Restart systemd-journald and run journalctl --flush.
+
+An application log
+ 2. /etc/rsyslog.d/10-appserver.conf sending the facility local6 (every
+    priority) to /var/log/appserver.log. Restart rsyslog.
+ 3. Send the message "drill complete" to it with logger, using facility
+    local6, and make sure it arrived in the file.
+ 4. /etc/logrotate.d/appserver: rotate that file weekly, keep 6 copies and
+    compress them.
+
+Time
+ 5. Set the time zone to Asia/Colombo.
+ 6. Add the line "server 0.pool.ntp.org iburst" to /etc/chrony.conf and
+    restart chronyd. It must stay running and enabled.
+
+On workstation
+ 7. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-logs-review

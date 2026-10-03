@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-d272fb52190e
+    q: Which file would you read for failed and successful logins?
+    options:
+    - /var/log/secure
+    - /var/log/dnf.log
+    - /var/log/cron
+    answer: 0
+    explain: authpriv messages are written there.
+  - id: q-8246a747fd94
+    q: Which journalctl options show the errors of this boot for one service?
+    options:
+    - -u NAME -p err -b
+    - -s NAME -e
+    - -f NAME
+    answer: 0
+    explain: 'Combine the filters: unit, priority, boot.'
+  - id: q-7212d2f3a15f
+    q: How do you make the journal survive reboots?
+    options:
+    - mkdir /var/log/journal; systemctl restart systemd-journald; journalctl --flush
+    - rm /run/log/journal
+    - journalctl --flush only
+    answer: 0
+    explain: Storage=auto turns persistent when the directory exists.
+  - id: q-fc4ed7ed8fa4
+    q: Which logrotate keyword keeps four old copies?
+    options:
+    - rotate 4
+    - keep 4
+    - copies 4
+    answer: 0
+    explain: rotate COUNT; with weekly, that is about a month.
+  - id: q-b6025da250a5
+    q: Which command stops a manual clock change from being overwritten by NTP?
+    options:
+    - timedatectl set-ntp false
+    - chronyc reset
+    - hwclock -w
+    answer: 0
+    explain: With NTP active, set-time is refused. Switch it off first, and on again afterwards.
+  - id: q-4e0e79ccab41
+    q: A rule local5.* /var/log/myapp.log is added to /etc/rsyslog.d/. What else is needed?
+    options:
+    - systemctl restart rsyslog
+    - A reboot
+    - Nothing
+    answer: 0
+    explain: rsyslog reads its configuration at startup.
+  - id: q-a2daf9a80541
+    q: 'chronyc tracking shows "System time: 0.000004 seconds fast". What does it mean?'
+    options:
+    - The clock is almost exactly right
+    - The clock is 4 seconds fast
+    - NTP is off
+    answer: 0
+    explain: The offset is a few microseconds.
+  - id: q-e9567170fba8
+    q: Which command shows the time zone and the NTP state?
+    options:
+    - timedatectl
+    - date
+    - uptime
+    answer: 0
+    explain: It also shows the RTC time and whether the clock is synchronised.
+  - id: q-232ebed16dcb
+    q: Where do kernel boot messages go?
+    options:
+    - dmesg and journalctl -k
+    - /var/log/secure
+    - /etc/issue
+    answer: 0
+    explain: The kernel ring buffer.
+  - id: q-5cbdea8af25f
+    q: What is the best first move when something is "broken"?
+    options:
+    - State the symptom precisely, then check status and logs
+    - Restart the server
+    - Reinstall the package
+    answer: 0
+    explain: Evidence first, change second.

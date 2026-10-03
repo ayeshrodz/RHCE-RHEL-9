@@ -1,0 +1,404 @@
+log-flow:
+  title: Where a log message goes
+  caption: Step through the life of one message.
+  height: 250
+  mode: steps
+  steps:
+  - title: A program speaks
+    text: 'A service writes a message: to its standard output, to the syslog socket, or through the journal API. Here sshd reports a login.'
+  - title: journald collects it
+    text: systemd-journald stores it in a structured, indexed journal with the time, unit, PID and priority attached. Query it with journalctl.
+  - title: rsyslog forwards it
+    text: rsyslog reads the journal and, following its rules, writes classic text lines to files such as /var/log/messages (general) and /var/log/secure (authentication).
+  - title: Files grow, logrotate tidies
+    text: A timer runs logrotate, which renames old logs (messages-20261003), compresses them, and deletes the oldest, so the disk does not fill.
+  elements:
+  - kind: node
+    x: 8
+    y: 30
+    w: 130
+    h: 60
+    tone: blue
+    title: service
+    sub: sshd, crond…
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 168
+    y: 30
+    w: 150
+    h: 60
+    tone: purple
+    title: journald
+    sub: binary journal
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 348
+    y: 30
+    w: 150
+    h: 60
+    tone: teal
+    title: rsyslog
+    sub: rules
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 528
+    y: 10
+    w: 144
+    h: 48
+    tone: green
+    title: /var/log/secure
+    sub: authpriv
+    mono: true
+    titleSize: 11.5
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 528
+    y: 66
+    w: 144
+    h: 48
+    tone: green
+    title: /var/log/messages
+    sub: '*.info'
+    mono: true
+    titleSize: 11.5
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 138
+      - 60
+    - - 168
+      - 60
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 318
+      - 60
+    - - 348
+      - 60
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 498
+      - 52
+    - - 528
+      - 34
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 498
+      - 68
+    - - 528
+      - 90
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 348
+    y: 140
+    w: 324
+    h: 48
+    tone: amber
+    title: 'logrotate: rotate, compress, delete old'
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+priorities:
+  title: Message priorities
+  caption: Select a level; journalctl -p LEVEL shows that level and everything more serious.
+  height: 250
+  mode: select
+  initial: err
+  info:
+    emerg:
+      tone: coral
+      title: 0 · emerg
+      text: The system is unusable.
+    alert:
+      tone: coral
+      title: 1 · alert
+      text: Act immediately.
+    crit:
+      tone: coral
+      title: 2 · crit
+      text: Critical conditions, such as a hardware failure.
+    err:
+      tone: amber
+      title: 3 · err
+      text: 'An error: something failed. journalctl -p err is the first filter to try when looking for problems.'
+    warning:
+      tone: amber
+      title: 4 · warning
+      text: Something is odd and may become a problem.
+    notice:
+      tone: blue
+      title: 5 · notice
+      text: Normal but significant events.
+    info:
+      tone: green
+      title: 6 · info
+      text: Ordinary information. The default level of /var/log/messages.
+    debug:
+      tone: gray
+      title: 7 · debug
+      text: Details useful only to developers; very noisy.
+  elements:
+  - kind: node
+    x: 6
+    y: 30
+    w: 78
+    h: 56
+    tone: coral
+    title: '0'
+    sub: emerg
+    mono: true
+    titleSize: 18
+    select: emerg
+    active:
+    - emerg
+  - kind: node
+    x: 90
+    y: 30
+    w: 78
+    h: 56
+    tone: coral
+    title: '1'
+    sub: alert
+    mono: true
+    titleSize: 18
+    select: alert
+    active:
+    - alert
+  - kind: node
+    x: 174
+    y: 30
+    w: 78
+    h: 56
+    tone: coral
+    title: '2'
+    sub: crit
+    mono: true
+    titleSize: 18
+    select: crit
+    active:
+    - crit
+  - kind: node
+    x: 258
+    y: 30
+    w: 78
+    h: 56
+    tone: amber
+    title: '3'
+    sub: err
+    mono: true
+    titleSize: 18
+    select: err
+    active:
+    - err
+  - kind: node
+    x: 342
+    y: 30
+    w: 78
+    h: 56
+    tone: amber
+    title: '4'
+    sub: warning
+    mono: true
+    titleSize: 18
+    select: warning
+    active:
+    - warning
+  - kind: node
+    x: 426
+    y: 30
+    w: 78
+    h: 56
+    tone: blue
+    title: '5'
+    sub: notice
+    mono: true
+    titleSize: 18
+    select: notice
+    active:
+    - notice
+  - kind: node
+    x: 510
+    y: 30
+    w: 78
+    h: 56
+    tone: green
+    title: '6'
+    sub: info
+    mono: true
+    titleSize: 18
+    select: info
+    active:
+    - info
+  - kind: node
+    x: 594
+    y: 30
+    w: 78
+    h: 56
+    tone: gray
+    title: '7'
+    sub: debug
+    mono: true
+    titleSize: 18
+    select: debug
+    active:
+    - debug
+  - kind: label
+    x: 340
+    y: 124
+    text: -p err  =  levels 0 to 3 · -p warning  =  0 to 4 · logger -p user.notice "text" writes your own
+    size: 12
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: asking the journal'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: journalctl -n 3 --no-pager
+      out: 'Oct 03 16:59:31 servera.lab.example.com lxd-agent[445]: time="2026-10-03T16:59:31Z" level=warning msg="Failed closing connection"
+
+        Oct 03 16:59:31 servera.lab.example.com systemd[1]: Starting Hostname Service...
+
+        Oct 03 16:59:31 servera.lab.example.com systemd[1]: Started Hostname Service.'
+    - cmd: journalctl -u sshd -n 2 --no-pager
+      out: 'Oct 03 16:57:53 servera.lab.example.com sshd-session[658]: pam_unix(sshd:session): session opened for user student(uid=1000) by (uid=0)
+
+        Oct 03 16:57:53 servera.lab.example.com sshd-session[658]: pam_unix(sshd:session): session closed for user student'
+    - cmd: journalctl -p err -b --no-pager
+      out: -- No entries --
+    - cmd: journalctl --since "10 minutes ago" --no-pager | wc -l
+      out: '1356'
+    - cmd: journalctl -o short-iso -n 1 --no-pager
+      out: '2026-10-03T16:59:31+0000 servera.lab.example.com systemd[1]: Started Hostname Service.'
+    - cmd: journalctl -g Accepted -n 1 --no-pager
+      out: 'Oct 03 17:01:04 servera.lab.example.com sshd-session[1049]: Accepted publickey for root from 172.25.251.9 port 41352 ssh2: ED25519 SHA256:WflAun3QNCSKLM0S+9kUnThzL5WJzuppRj3uxDb8jYY'
+    - cmd: logger -p user.notice "hello from logger"
+      out: ''
+    - cmd: journalctl -n 1 --no-pager
+      out: 'Oct 03 16:59:31 servera.lab.example.com root[727]: hello from logger'
+    - cmd: tail -1 /var/log/messages
+      out: 'Oct  3 16:59:31 servera root[727]: hello from logger'
+    - cmd: tail -2 /var/log/secure
+      out: 'Oct  3 16:57:53 servera sshd-session[671]: Disconnected from user student 172.25.251.9 port 37186
+
+        Oct  3 16:57:53 servera sshd-session[658]: pam_unix(sshd:session): session closed for user student'
+    - cmd: journalctl --disk-usage
+      out: Archived and active journals take up 3.0M in the file system.
+    tasks:
+    - text: Show the last 3 journal entries without a pager.
+      commands:
+      - journalctl -n 3 --no-pager
+    - text: Show only the messages of the sshd service.
+      commands:
+      - journalctl -u sshd -n 2 --no-pager
+    - text: Show errors (and worse) since the last boot.
+      commands:
+      - journalctl -p err -b --no-pager
+    - text: Search for the word Accepted.
+      commands:
+      - journalctl -g Accepted -n 1 --no-pager
+    - text: Write your own message, then find it in the journal and in /var/log/messages.
+      commands:
+      - logger -p user.notice "hello from logger"
+      - journalctl -n 1 --no-pager
+      - tail -1 /var/log/messages
+quick:
+  questions:
+  - id: q-f46f78488eda
+    q: Which command shows only the log of the sshd service?
+    options:
+    - journalctl -u sshd
+    - journalctl -p sshd
+    - cat /var/log/sshd
+    answer: 0
+    explain: -u selects a unit.
+  - id: q-1011eff4d13c
+    q: Which file records logins and sudo use on RHEL?
+    options:
+    - /var/log/secure
+    - /var/log/messages
+    - /var/log/dmesg
+    answer: 0
+    explain: authpriv messages go to /var/log/secure.
+  - id: q-7cad2905a417
+    q: journalctl -p err shows ...
+    options:
+    - Messages of priority err and more serious
+    - Only errors, exactly
+    - All messages
+    answer: 0
+    explain: 'Levels 0 to 3: emerg, alert, crit and err.'
+  - id: q-6aa4e401e704
+    q: Which option follows the journal live, like tail -f?
+    options:
+    - journalctl -f
+    - journalctl -l
+    - journalctl --live
+    answer: 0
+    explain: -f keeps showing new entries until Ctrl+C.
+  - id: q-58408bb46f7a
+    q: Which command writes your own message into the logs?
+    options:
+    - logger "text"
+    - echo "text" > /var/log/messages
+    - journalctl --add "text"
+    answer: 0
+    explain: logger sends the text through the syslog interface; -p chooses facility and priority.
+  - id: q-7b562d62d12d
+    q: Why might journalctl show more detail than /var/log/messages?
+    options:
+    - The journal keeps structured fields (unit, PID, priority) and all priorities
+    - It is a different machine
+    - messages is encrypted
+    answer: 0
+    explain: messages only holds what the rsyslog rules select, as plain text.
