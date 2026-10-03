@@ -1,10 +1,8 @@
-title: "Permissions and ACLs"
-goal: "Control who can read, write and run what, including shared directories."
-status: planned
-topics:
-  - "Read, write and execute for user, group and others"
-  - "Changing permissions with symbolic and octal modes"
-  - "Ownership and the default mask (umask)"
-  - "Special permissions: setuid, setgid and the sticky bit"
-  - "POSIX ACLs and default ACLs"
-  - "Directories for group collaboration, and diagnosing permission problems"
+title: Permissions and ACLs
+goal: Control who can read, write and run what, including shared directories.
+objectives:
+- Apply modes, ownership and special directory permissions.
+- Explain effective ACL access and test it as the intended user.
+objectiveIds:
+- ch07.operations
+- ch07.verification
