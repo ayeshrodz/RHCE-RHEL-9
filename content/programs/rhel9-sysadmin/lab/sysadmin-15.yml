@@ -1,0 +1,45 @@
+name: sysadmin-15
+title: Scripts and scheduling
+page: ch15/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: file
+      'on': control
+      paths:
+      - count.txt
+      line: '2'
+      id: check-1
+      message: Verify file requirement 1 for Scripts and scheduling
+    - kind: service
+      'on': servera.lab.example.com
+      names:
+      - kp-stamp.timer
+      active: true
+      enabled: true
+      id: check-2
+      message: Verify service requirement 2 for Scripts and scheduling
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /var/log/kp-stamp.log
+      nonEmpty: true
+      id: check-3
+      message: Verify file requirement 3 for Scripts and scheduling
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': control
+      paths:
+      - observations.txt
+      nonEmpty: true
+      id: check-4
+      message: Verify file requirement 4 for Scripts and scheduling

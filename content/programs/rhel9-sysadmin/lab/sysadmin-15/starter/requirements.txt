@@ -1,0 +1,4 @@
+Write a safe argument-checking script on workstation. On clean servera, schedule a separate harmless timestamp task with a systemd timer and observe actual execution, including after reboot.
+
+Write small scripts with explicit input and failure behavior.
+Choose and verify cron, at or systemd timer scheduling.

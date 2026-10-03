@@ -1,0 +1,10 @@
+quick:
+  questions:
+  - q: A script receives a path with spaces. What preserves it as one argument?
+    options:
+    - Quote "$1" when passing it onward.
+    - Use eval on it.
+    - Remove every space from the path.
+    answer: 0
+    explain: Quoted expansions preserve argument boundaries without executing their contents.
+    id: q-c89c68e49046
