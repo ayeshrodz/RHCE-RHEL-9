@@ -175,7 +175,7 @@ Jinja2 `for` and `if` blocks belong in template files. In a playbook, use the ta
 
 Edit the template, switch host, break it on purpose. The examples cover everything above:
 
-{% legacy-widget name="TemplatePlayground" ref="template-playground" /%}
+{% template-playground ref="template-playground" /%}
 
 Things worth trying:
 

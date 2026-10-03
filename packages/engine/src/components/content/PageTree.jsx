@@ -7,7 +7,7 @@ import { H2, H3 } from '@/components/prose/Heading';
 import Table from '@/components/prose/Table';
 import CodeBlock from '@/components/prose/CodeBlock';
 import { TeachingContentProvider } from '@/components/interactive/TeachingContent';
-import { cleanProps, tags } from './registry';
+import { cleanProps, kitNames, tags } from './registry';
 
 /** Elements content may produce, and the engine component that renders each. */
 const ELEMENTS = {
@@ -118,15 +118,15 @@ function renderNode(node, key, context) {
   }
 }
 
-/** Copy for the page's legacy widgets, keyed by widget name, as the widgets expect it. */
+/** Copy for the page's kits, keyed by kit name, as the kits expect it. */
 function widgetCopy(page) {
   const copy = {};
   (function visit(nodes) {
     for (const node of nodes ?? []) {
-      if (node.t === 'tag' && node.name === 'legacy-widget') {
+      if (node.t === 'tag' && Object.hasOwn(kitNames, node.name)) {
         const entry = page.data[node.attrs.ref] ?? {};
         Object.assign(copy, entry.dependencies ?? {});
-        if (entry.text || entry.data) copy[node.attrs.name] = { text: entry.text ?? {}, data: entry.data ?? {} };
+        if (entry.text || entry.data) copy[kitNames[node.name]] = { text: entry.text ?? {}, data: entry.data ?? {} };
       }
       visit(node.c);
     }

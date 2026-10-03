@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/vault-commands.schema.json",
+  "title": "Vault commands",
+  "description": "The words and data for the vault commands kit: Picks the right vault command for a goal and shows its effect.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commands"
+      ],
+      "properties": {
+        "commands": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cmd",
+              "run",
+              "before",
+              "after",
+              "prompts",
+              "text"
+            ],
+            "properties": {
+              "cmd": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "run": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "before": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                ]
+              },
+              "after": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "prompts": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

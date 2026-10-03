@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/annotated-yaml.schema.json",
+  "title": "Annotated YAML",
+  "description": "The words and data for the annotated yaml kit: A YAML example with each part explained on hover or selection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ayamlHint",
+        "widgetLabel"
+      ],
+      "properties": {
+        "ayamlHint": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "widgetLabel": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "props": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "code",
+        "notes"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "code": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lines",
+              "title",
+              "text"
+            ],
+            "properties": {
+              "lines": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

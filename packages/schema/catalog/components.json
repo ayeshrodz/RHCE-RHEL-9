@@ -1,6 +1,44 @@
 {
   "apiVersion": 1,
   "components": {
+    "admin-module-finder": {
+      "summary": "Finds the module for a system administration job.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/admin-module-finder.schema.json"
+    },
+    "annotated-yaml": {
+      "summary": "A YAML example with each part explained on hover or selection.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/annotated-yaml.schema.json"
+    },
     "assessment-timer": {
       "summary": "An optional countdown for a timed practice assessment; survives reloads.",
       "status": "stable",
@@ -24,6 +62,44 @@
       "required": [
         "id"
       ]
+    },
+    "block-flow": {
+      "summary": "Follows the path through a block, its rescue and its always section.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/block-flow.schema.json"
+    },
+    "build-roadmap": {
+      "summary": "A checklist-style roadmap of the steps to build the practice lab.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/build-roadmap.schema.json"
     },
     "callout": {
       "summary": "A highlighted note beside the main text.",
@@ -124,6 +200,25 @@
         "page"
       ]
     },
+    "check-mode-sim": {
+      "summary": "Compares a dry run with a real run of the same tasks.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/check-mode-sim.schema.json"
+    },
     "checklist": {
       "summary": "A self-assessment checklist stored per program.",
       "status": "planned",
@@ -190,6 +285,25 @@
         "column"
       ]
     },
+    "command-vs-module": {
+      "summary": "Compares a raw command with the module that does the same job.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/command-vs-module.schema.json"
+    },
     "compare": {
       "summary": "Side-by-side comparison of approaches.",
       "status": "planned",
@@ -212,27 +326,81 @@
         "ref"
       ]
     },
-    "data-explorer": {
-      "summary": "A browsable tree of structured data with the expression that reaches each value.",
-      "status": "planned",
+    "condition-playground": {
+      "summary": "Evaluates a conditional against chosen values to show whether the task runs.",
+      "status": "stable",
       "since": 1,
+      "kit": true,
       "placement": "block",
       "children": "none",
       "attributes": {
         "ref": {
           "type": "string",
-          "description": "Key of the definition in the page data.",
+          "description": "Key of its words and data in the page data.",
           "format": "dataRef"
-        },
-        "title": {
-          "type": "string",
-          "description": "Title.",
-          "format": "shortText"
         }
       },
       "required": [
         "ref"
-      ]
+      ],
+      "data": "data/kits/condition-playground.schema.json"
+    },
+    "cron-builder": {
+      "summary": "Builds a schedule entry and explains when it runs.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/cron-builder.schema.json"
+    },
+    "custom-fact-builder": {
+      "summary": "Builds a custom fact file and shows the variable it creates.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/custom-fact-builder.schema.json"
+    },
+    "data-explorer": {
+      "summary": "Explores a nested data structure and the expression that reaches each value.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/data-explorer.schema.json"
     },
     "diagram": {
       "summary": "A diagram of boxes, groups and arrows. It can be static, let the reader select boxes to read an explanation, or step through a sequence.",
@@ -252,6 +420,63 @@
       ],
       "data": "data/diagram.schema.json"
     },
+    "error-decoder": {
+      "summary": "Matches an error message to its cause and the usual fix.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/error-decoder.schema.json"
+    },
+    "fact-gathering": {
+      "summary": "Shows when facts are gathered and what disabling gathering changes.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/fact-gathering.schema.json"
+    },
+    "facts-explorer": {
+      "summary": "Browses gathered facts and the expression that reads each one.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/facts-explorer.schema.json"
+    },
     "feature-grid": {
       "summary": "A grid of short feature descriptions.",
       "status": "planned",
@@ -268,6 +493,63 @@
       "parents": [
         "page"
       ]
+    },
+    "fetch-layout": {
+      "summary": "Shows where fetched files are stored on the control side.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/fetch-layout.schema.json"
+    },
+    "file-edit-simulator": {
+      "summary": "Shows how a line-editing task changes a file.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/file-edit-simulator.schema.json"
+    },
+    "file-module-chooser": {
+      "summary": "Helps pick the file module that fits a described job.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/file-module-chooser.schema.json"
     },
     "file-tree": {
       "summary": "A project tree with notes per file.",
@@ -342,6 +624,25 @@
       ],
       "data": "data/flow-map.schema.json"
     },
+    "fqcn-explorer": {
+      "summary": "Breaks a fully qualified module name into its parts.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/fqcn-explorer.schema.json"
+    },
     "glossary": {
       "summary": "A list of terms and definitions.",
       "status": "stable",
@@ -352,6 +653,44 @@
       "allowedChildren": [
         "term"
       ]
+    },
+    "group-vars-resolver": {
+      "summary": "Resolves a host's variables from group and host variable files.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/group-vars-resolver.schema.json"
+    },
+    "handler-timeline": {
+      "summary": "A timeline showing when notified handlers run relative to tasks.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/handler-timeline.schema.json"
     },
     "hero": {
       "summary": "The opening block of a landing page.",
@@ -374,6 +713,63 @@
       "parents": [
         "page"
       ]
+    },
+    "host-pattern-tester": {
+      "summary": "Tests a host pattern against an inventory and lists the hosts it selects.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/host-pattern-tester.schema.json"
+    },
+    "idempotency-demo": {
+      "summary": "Runs a task twice to show a repeat run changing nothing.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/idempotency-demo.schema.json"
+    },
+    "inventory-explorer": {
+      "summary": "Explores an inventory file: hosts, groups and the variables each host gets.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/inventory-explorer.schema.json"
     },
     "kbd": {
       "summary": "A keyboard key, such as Esc or Ctrl+C.",
@@ -495,6 +891,25 @@
         "page"
       ]
     },
+    "lab-network-map": {
+      "summary": "An interactive map of the practice lab's machines and how they connect.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/lab-network-map.schema.json"
+    },
     "lab-notes": {
       "summary": "Prerequisites, verification and variations for an exercise.",
       "status": "stable",
@@ -556,77 +971,81 @@
       "children": "markdown",
       "attributes": {}
     },
-    "legacy-widget": {
-      "summary": "A widget that predates the generic catalog. Available during the migration only.",
-      "status": "legacy",
+    "loop-unroller": {
+      "summary": "Unrolls a looped task into the individual runs it produces.",
+      "status": "stable",
       "since": 1,
+      "kit": true,
       "placement": "block",
       "children": "none",
       "attributes": {
-        "name": {
-          "type": "string",
-          "description": "The widget.",
-          "enum": [
-            "LabNetworkMap",
-            "SnapshotChain",
-            "BuildRoadmap",
-            "IdempotencyDemo",
-            "InventoryExplorer",
-            "RangeExpander",
-            "PrecedenceResolver",
-            "AnnotatedYaml",
-            "PlayRecap",
-            "Verbosity",
-            "ModuleExplorer",
-            "CommandVsModule",
-            "YamlMultiline",
-            "VariableNameChecker",
-            "VariableSubstitution",
-            "VariablePrecedence",
-            "ProjectTree",
-            "GroupVarsResolver",
-            "DataExplorer",
-            "VaultCommands",
-            "FactsExplorer",
-            "FactGathering",
-            "CustomFactBuilder",
-            "MagicVariables",
-            "LoopUnroller",
-            "ConditionPlayground",
-            "HandlerTimeline",
-            "BlockFlow",
-            "TaskOutcome",
-            "FileModuleChooser",
-            "ModeCalculator",
-            "FileEditSimulator",
-            "FetchLayout",
-            "TemplatePlayground",
-            "StatExplorer",
-            "HostPatternTester",
-            "ReuseSimulator",
-            "RoleAnatomy",
-            "PlayOrder",
-            "RoleVarResolver",
-            "FqcnExplorer",
-            "RunStages",
-            "ErrorDecoder",
-            "CheckModeSim",
-            "AdminModuleFinder",
-            "CronBuilder",
-            "ReadinessChecklist"
-          ]
-        },
         "ref": {
           "type": "string",
-          "description": "Key of its data in the page data.",
+          "description": "Key of its words and data in the page data.",
           "format": "dataRef"
         }
       },
-      "replacedBy": "diagram",
       "required": [
-        "name"
+        "ref"
       ],
-      "data": "data/legacy-widget.schema.json"
+      "data": "data/kits/loop-unroller.schema.json"
+    },
+    "magic-variables": {
+      "summary": "Shows what each built-in variable holds for a given host.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/magic-variables.schema.json"
+    },
+    "mode-calculator": {
+      "summary": "Converts between symbolic and numeric file permissions.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/mode-calculator.schema.json"
+    },
+    "module-explorer": {
+      "summary": "Browses modules by category with their purpose and an example task.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/module-explorer.schema.json"
     },
     "objectives": {
       "summary": "A boxed list of what the reader will be able to do after the page.",
@@ -635,6 +1054,44 @@
       "placement": "block",
       "children": "markdown",
       "attributes": {}
+    },
+    "play-order": {
+      "summary": "Shows the order a play runs its tasks, roles and handlers.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/play-order.schema.json"
+    },
+    "play-recap": {
+      "summary": "Explains each part of a play recap line and what the counters mean.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/play-recap.schema.json"
     },
     "practice": {
       "summary": "A chapter's practice questions, in the quiz format; attempts feed the learning dashboard.",
@@ -654,6 +1111,25 @@
       ],
       "data": "data/practice.schema.json"
     },
+    "precedence-resolver": {
+      "summary": "Shows which of several competing settings wins when they are toggled on and off.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/precedence-resolver.schema.json"
+    },
     "program-cards": {
       "summary": "A card for each program on the site, with its platform, status and the reader's progress.",
       "status": "stable",
@@ -672,6 +1148,25 @@
       "parents": [
         "page"
       ]
+    },
+    "project-tree": {
+      "summary": "A project directory tree with the role of each file explained.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/project-tree.schema.json"
     },
     "quiz": {
       "summary": "A multiple-choice knowledge check with instant feedback.",
@@ -708,6 +1203,25 @@
       ],
       "data": "data/quiz.schema.json"
     },
+    "range-expander": {
+      "summary": "Expands a host range such as web[01:03] into the hosts it names.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/range-expander.schema.json"
+    },
     "reader-variables": {
       "summary": "A form for the reader's own values (declared in program.yml), substituted into code.",
       "status": "stable",
@@ -715,6 +1229,44 @@
       "placement": "block",
       "children": "none",
       "attributes": {}
+    },
+    "readiness-checklist": {
+      "summary": "A self-assessment checklist that records what you feel ready to do.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/readiness-checklist.schema.json"
+    },
+    "reuse-simulator": {
+      "summary": "Compares ways of reusing tasks and what each does when the play runs.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/reuse-simulator.schema.json"
     },
     "reveal": {
       "summary": "A collapsed section the reader opens on demand, such as a solution or hint.",
@@ -730,6 +1282,63 @@
           "default": "Show answer"
         }
       }
+    },
+    "role-anatomy": {
+      "summary": "A role's directory layout with the purpose of each part.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/role-anatomy.schema.json"
+    },
+    "role-var-resolver": {
+      "summary": "Resolves a role variable from its defaults, vars and overrides.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/role-var-resolver.schema.json"
+    },
+    "run-stages": {
+      "summary": "Steps through the stages of a run and where each problem appears.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/run-stages.schema.json"
     },
     "scenario": {
       "summary": "Controls whose combinations select authored outputs (text, code, terminal, highlights).",
@@ -753,6 +1362,25 @@
         "ref"
       ]
     },
+    "snapshot-chain": {
+      "summary": "A step-through of lab snapshots and how each one builds on the last.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/snapshot-chain.schema.json"
+    },
     "starter-files": {
       "summary": "Lists an exercise's starter files and lets the reader preview them.",
       "status": "stable",
@@ -769,6 +1397,25 @@
       "required": [
         "exercise"
       ]
+    },
+    "stat-explorer": {
+      "summary": "Explores the file facts a stat check returns.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/stat-explorer.schema.json"
     },
     "step": {
       "summary": "One numbered step of a procedure.",
@@ -860,6 +1507,44 @@
         "title"
       ]
     },
+    "task-outcome": {
+      "summary": "Shows how the failure settings of a task change the result of a run.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/task-outcome.schema.json"
+    },
+    "template-playground": {
+      "summary": "Renders a template with chosen values to show the output file.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/template-playground.schema.json"
+    },
     "term": {
       "summary": "One glossary entry: a term and its definition.",
       "status": "stable",
@@ -901,6 +1586,63 @@
       "required": [
         "ref"
       ]
+    },
+    "variable-name-checker": {
+      "summary": "Tests whether a variable name is valid and says why not.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/variable-name-checker.schema.json"
+    },
+    "variable-precedence": {
+      "summary": "Ranks the places a variable can be set and shows which one wins.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/variable-precedence.schema.json"
+    },
+    "variable-substitution": {
+      "summary": "Shows a task before and after its variables are replaced with values.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/variable-substitution.schema.json"
     },
     "variant": {
       "summary": "Instructions for one variant (declared in program.yml).",
@@ -948,6 +1690,63 @@
           "format": "shortText"
         }
       }
+    },
+    "vault-commands": {
+      "summary": "Picks the right vault command for a goal and shows its effect.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/vault-commands.schema.json"
+    },
+    "verbosity": {
+      "summary": "Shows how output grows as the verbosity level is raised.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/verbosity.schema.json"
+    },
+    "yaml-multiline": {
+      "summary": "Shows how each multi-line string style turns into the resulting text.",
+      "status": "stable",
+      "since": 1,
+      "kit": true,
+      "placement": "block",
+      "children": "none",
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of its words and data in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/kits/yaml-multiline.schema.json"
     }
   }
 }

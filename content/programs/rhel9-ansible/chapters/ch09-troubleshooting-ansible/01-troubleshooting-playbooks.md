@@ -19,7 +19,7 @@ Most failed runs come down to a handful of mistakes: a quote missing, an indent 
 
 Every task goes through the same stages: the playbook is read, the hosts are chosen, Ansible connects, becomes root if asked, runs the module, and reports the result. A message tells you which stage failed, and that halves the search at once.
 
-{% legacy-widget name="RunStages" ref="run-stages" /%}
+{% run-stages ref="run-stages" /%}
 
 Two words in the output separate the big groups:
 
@@ -33,7 +33,7 @@ Two words in the output separate the big groups:
 
 Every message below was produced by the ansible-core version this guide uses. Pick one to see what it means:
 
-{% legacy-widget name="ErrorDecoder" ref="error-decoder" /%}
+{% error-decoder ref="error-decoder" /%}
 
 {% callout type="tip" title="Read the whole message" %}
 Ansible usually points at a line and column, and then says "but may be elsewhere in the file". It is often the line **above** the one marked: a missing quote or colon only becomes a problem where the parser trips over it. For YAML errors, the last paragraph often suggests the fix, for example "Always quote template expression brackets when they start a value".
@@ -57,7 +57,7 @@ It cannot catch everything: an undefined variable, a wrong value for an argument
 
 Each `-v` adds detail, up to `-vvvv`:
 
-{% legacy-widget name="Verbosity" ref="verbosity" /%}
+{% verbosity ref="verbosity" /%}
 
 `-v` shows each task's full result, which is often enough to see why a task did what it did. `-vvv` adds the SSH connection details, which is what you want for connection problems.
 
@@ -172,7 +172,7 @@ With `--start-at-task`, the earlier tasks do not run, so anything they would hav
 
 `--check` runs the play without changing anything. Each task that supports check mode reports what it **would** do. `--diff` shows, line by line, how files would change. Together they are the safest way to see the effect of a playbook on a production host:
 
-{% legacy-widget name="CheckModeSim" ref="check-mode-sim" /%}
+{% check-mode-sim ref="check-mode-sim" /%}
 
 A task can opt in or out whatever the command line says: `check_mode: true` always simulates, `check_mode: false` always really runs. The second is handy for a read-only command whose result later tasks need even in check mode.
 

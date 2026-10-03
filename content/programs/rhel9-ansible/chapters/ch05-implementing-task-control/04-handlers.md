@@ -71,7 +71,7 @@ handlers:
 
 Try it: flip tasks between `ok` and `changed`, and add a failure:
 
-{% legacy-widget name="HandlerTimeline" ref="handler-timeline" /%}
+{% handler-timeline ref="handler-timeline" /%}
 
 The rules the simulator follows:
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/loop-unroller.schema.json",
+  "title": "Loop unroller",
+  "description": "The words and data for the loop unroller kit: Unrolls a looped task into the individual runs it produces.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 57,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initialSelection1"
+      ],
+      "properties": {
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

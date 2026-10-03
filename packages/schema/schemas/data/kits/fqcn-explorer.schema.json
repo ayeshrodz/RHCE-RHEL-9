@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/fqcn-explorer.schema.json",
+  "title": "Collection name explorer",
+  "description": "The words and data for the collection name explorer kit: Breaks a fully qualified module name into its parts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 51,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "samples",
+        "paths"
+      ],
+      "properties": {
+        "samples": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "kind"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "kind": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "builtin": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "paths": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      }
+    }
+  }
+}

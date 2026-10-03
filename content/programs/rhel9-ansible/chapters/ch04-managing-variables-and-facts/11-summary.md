@@ -45,9 +45,7 @@ The chapter on one page: what to remember, the commands and patterns to have at 
   {% /tab %}
   {% tab label="Project layout" %}
 
-{% legacy-widget
-  name="ProjectTree"
-  ref="project-tree" /%}
+{% project-tree ref="project-tree" /%}
 
   {% /tab %}
   {% tab label="Facts" %}

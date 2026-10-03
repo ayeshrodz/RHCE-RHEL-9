@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/error-decoder.schema.json",
+  "title": "Error decoder",
+  "description": "The words and data for the error decoder kit: Matches an error message to its cause and the usual fix.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "errors",
+        "stages",
+        "initialSelection1"
+      ],
+      "properties": {
+        "errors": {
+          "type": "array",
+          "maxItems": 28,
+          "items": {
+            "type": "object",
+            "maxProperties": 30,
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        },
+        "stages": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

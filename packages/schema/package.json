@@ -11,6 +11,7 @@
     "./catalog/*": "./catalog/*",
     "./revision": "./src/revision.js",
     "./validators": "./generated/validators.js",
+    "./kits": "./generated/kits.js",
     "./limits": "./src/limits.js"
   },
   "files": [

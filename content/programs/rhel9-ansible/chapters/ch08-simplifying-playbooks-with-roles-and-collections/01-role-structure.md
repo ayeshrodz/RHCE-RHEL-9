@@ -29,7 +29,7 @@ Roles pay off in three ways:
 
 Select a file to see what it is for:
 
-{% legacy-widget name="RoleAnatomy" ref="role-anatomy" /%}
+{% role-anatomy ref="role-anatomy" /%}
 
 No individual file is mandatory: a role may provide tasks, variables, handlers, or files. A role that runs tasks normally uses `tasks/main.yml`. Leave out, or delete, any directory a role does not use.
 
@@ -72,7 +72,7 @@ To set a role's variables for one play, give the role entry a `vars` section:
 
 A play can contain roles and its own tasks. Ansible does not run them in the order they are written. It runs **`pre_tasks`**, then **`roles`**, then **`tasks`**, then **`post_tasks`**, with handler flushes after `pre_tasks`, after `roles` and `tasks` together, and after `post_tasks`. Select a step to see where it comes from:
 
-{% legacy-widget name="PlayOrder" ref="play-order" /%}
+{% play-order ref="play-order" /%}
 
 Use `pre_tasks` for something that must happen before any role, such as taking a host out of a load balancer, and `post_tasks` for the matching step afterwards.
 
@@ -107,7 +107,7 @@ Values the role needs internally, such as a path that must not change. They have
 
 Tick the places where a variable is set and see which value the role ends up with:
 
-{% legacy-widget name="RoleVarResolver" ref="role-var-resolver" /%}
+{% role-var-resolver ref="role-var-resolver" /%}
 
 {% callout type="tip" title="Two habits for role variables" %}
 **Put anything a user might change in `defaults`**, and keep `vars` for values that really are fixed.

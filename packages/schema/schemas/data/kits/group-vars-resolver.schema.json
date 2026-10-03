@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/group-vars-resolver.schema.json",
+  "title": "Group variables resolver",
+  "description": "The words and data for the group variables resolver kit: Resolves a host's variables from group and host variable files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 42,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "hosts",
+        "initialSelection1"
+      ],
+      "properties": {
+        "files": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "group_vars/datacenters",
+            "group_vars/datacenter1",
+            "group_vars/datacenter2",
+            "host_vars/demo1.example.com",
+            "host_vars/demo2.example.com",
+            "host_vars/demo3.example.com",
+            "host_vars/demo4.example.com"
+          ],
+          "properties": {
+            "group_vars/datacenters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "group",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "group": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "group_vars/datacenter1": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "group",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "group": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "group_vars/datacenter2": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "group",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "group": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "host_vars/demo1.example.com": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "host",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "host": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "host_vars/demo2.example.com": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "host",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "host": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "host_vars/demo3.example.com": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "host",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "host": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            },
+            "host_vars/demo4.example.com": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "host",
+                "value",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "host": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "rank": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "hosts": {
+          "type": "object",
+          "maxProperties": 30,
+          "additionalProperties": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

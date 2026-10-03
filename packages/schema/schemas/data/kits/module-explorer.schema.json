@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/module-explorer.schema.json",
+  "title": "Module explorer",
+  "description": "The words and data for the module explorer kit: Browses modules by category with their purpose and an example task.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modules",
+        "cats",
+        "initialSelection1",
+        "initialSelection2"
+      ],
+      "properties": {
+        "modules": {
+          "type": "array",
+          "maxItems": 34,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fqcn",
+              "cat",
+              "text"
+            ],
+            "properties": {
+              "fqcn": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "cat": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "warn": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "cats": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "initialSelection2": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

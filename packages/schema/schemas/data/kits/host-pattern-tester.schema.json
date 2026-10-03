@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/host-pattern-tester.schema.json",
+  "title": "Host pattern tester",
+  "description": "The words and data for the host pattern tester kit: Tests a host pattern against an inventory and lists the hosts it selects.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 45,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inventory",
+        "presets",
+        "ops",
+        "initialSelection1"
+      ],
+      "properties": {
+        "inventory": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "presets": {
+          "type": "array",
+          "maxItems": 22,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "ops": {
+          "type": "object",
+          "maxProperties": 30,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

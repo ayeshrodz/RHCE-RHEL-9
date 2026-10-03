@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/condition-playground.schema.json",
+  "title": "Condition playground",
+  "description": "The words and data for the condition playground kit: Evaluates a conditional against chosen values to show whether the task runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 84,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hosts"
+      ],
+      "properties": {
+        "hosts": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "distribution",
+              "major",
+              "version",
+              "mem",
+              "vars"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "distribution": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "major": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "version": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "mem": {
+                "type": "integer"
+              },
+              "vars": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "my_service": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

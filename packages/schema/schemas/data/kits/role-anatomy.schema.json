@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/role-anatomy.schema.json",
+  "title": "Role anatomy",
+  "description": "The words and data for the role anatomy kit: A role's directory layout with the purpose of each part.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "widgetLabel"
+      ],
+      "properties": {
+        "widgetLabel": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "initialSelection1"
+      ],
+      "properties": {
+        "files": {
+          "type": "object",
+          "maxProperties": 30,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "what",
+              "code"
+            ],
+            "properties": {
+              "what": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            }
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

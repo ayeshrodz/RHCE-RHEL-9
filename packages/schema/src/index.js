@@ -15,13 +15,18 @@ import practice from '../schemas/data/practice.schema.json' with { type: 'json' 
 import flashcards from '../schemas/data/flashcards.schema.json' with { type: 'json' };
 import flowMap from '../schemas/data/flow-map.schema.json' with { type: 'json' };
 import diagram from '../schemas/data/diagram.schema.json' with { type: 'json' };
-import legacyWidget from '../schemas/data/legacy-widget.schema.json' with { type: 'json' };
+import fs from 'node:fs';
 import bundleSite from '../schemas/bundle/site.schema.json' with { type: 'json' };
 import bundleManifest from '../schemas/bundle/manifest.schema.json' with { type: 'json' };
 import bundlePage from '../schemas/bundle/page.schema.json' with { type: 'json' };
 import bundleSearch from '../schemas/bundle/search.schema.json' with { type: 'json' };
 import bundleInterface from '../schemas/bundle/interface.schema.json' with { type: 'json' };
 import bundleLegacy from '../schemas/bundle/legacy.schema.json' with { type: 'json' };
+
+// One data schema per kit, discovered from the catalog so adding a kit needs no edit here.
+const kitSchemas = Object.entries(catalog.components)
+  .filter(([, c]) => c.kit)
+  .map(([, c]) => JSON.parse(fs.readFileSync(new URL(`../schemas/${c.data}`, import.meta.url), 'utf8')));
 
 // A compiled page may only use tags the catalog offers (not the planned ones, which cannot be rendered yet).
 const pageSchema = structuredClone(bundlePage);
@@ -51,7 +56,7 @@ export const schemas = [
   flashcards,
   flowMap,
   diagram,
-  legacyWidget,
+  ...kitSchemas,
   bundleSite,
   bundleManifest,
   pageSchema,
@@ -95,6 +100,7 @@ export function tagTable() {
         name,
         {
           required: c.required ?? [],
+          ...(c.kit ? { kit: true } : {}),
           attributes: Object.fromEntries(
             Object.entries(c.attributes ?? {}).map(([attribute, a]) => [
               attribute,

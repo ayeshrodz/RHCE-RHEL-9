@@ -89,7 +89,7 @@ def content_from_another_origin(browser):
             page.goto(base + '#/' + PROGRAM + '/ch03/inventory')
             page.locator('h1').first.wait_for()
             assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
-            assert page.locator('pre.shiki').count() > 3
+            wait_until(page, "document.querySelectorAll('pre.shiki').length > 3")
             assert any(url.startswith(origin + 'p/') for url in requested), 'pages came from the content origin'
             assert not any(url.startswith(base + 'content/') for url in requested), 'nothing came from this site'
             context.close()

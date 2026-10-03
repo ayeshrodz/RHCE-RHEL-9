@@ -44,7 +44,7 @@ A variable name must **start with a letter**, and may contain only **letters, nu
 
 Try some names of your own:
 
-{% legacy-widget name="VariableNameChecker" ref="variable-name-checker" /%}
+{% variable-name-checker ref="variable-name-checker" /%}
 
 ## Defining variables in a play
 
@@ -113,7 +113,7 @@ If a variable reference is the **first thing** in a value, put the whole value i
 
 Edit the values below, then untick the quotes to see the error you will get:
 
-{% legacy-widget name="VariableSubstitution" ref="variable-substitution" /%}
+{% variable-substitution ref="variable-substitution" /%}
 
 The same rule applies to list items: write `- "{{ package }}"`, not `- {{ package }}`.
 
@@ -153,7 +153,7 @@ users:
 
 To read a value inside a dictionary you can use **dot notation**, `users.bjones.first_name`, or **bracket notation**, `users['bjones']['first_name']`. Both return `Bob`. Click around this dictionary to see both forms for any value:
 
-{% legacy-widget name="DataExplorer" ref="data-explorer" /%}
+{% data-explorer ref="data-explorer" /%}
 
 {% callout type="tip" title="Prefer brackets, and be consistent" %}
 Dot notation breaks when a key has the same name as a Python method or attribute, such as `copy`, `add` or `discard`: Ansible may return the method instead of your data. Bracket notation always works. Both are valid, but pick one style and use it across the whole project so it is easier to troubleshoot.

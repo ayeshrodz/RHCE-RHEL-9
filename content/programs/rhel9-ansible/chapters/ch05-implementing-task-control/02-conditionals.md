@@ -52,7 +52,7 @@ Notice that the condition is **not** wrapped in `{{ }}`. `when` is already evalu
 
 Pick a condition and see which of three hosts would run the task. `servera` and `serverb` run RHEL 9; `fedora1` runs Fedora 34; only two of them define `my_service`.
 
-{% legacy-widget name="ConditionPlayground" ref="condition-playground" /%}
+{% condition-playground ref="condition-playground" /%}
 
 ### Operators you will use
 

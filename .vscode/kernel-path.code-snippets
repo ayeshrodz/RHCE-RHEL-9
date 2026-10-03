@@ -1,9 +1,37 @@
 {
+  "kp-admin-module-finder": {
+    "prefix": "kp-admin-module-finder",
+    "description": "Finds the module for a system administration job.",
+    "body": [
+      "{% admin-module-finder ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-annotated-yaml": {
+    "prefix": "kp-annotated-yaml",
+    "description": "A YAML example with each part explained on hover or selection.",
+    "body": [
+      "{% annotated-yaml ref=\"${1}\" /%}"
+    ]
+  },
   "kp-assessment-timer": {
     "prefix": "kp-assessment-timer",
     "description": "An optional countdown for a timed practice assessment; survives reloads.",
     "body": [
       "{% assessment-timer id=\"${1}\" /%}"
+    ]
+  },
+  "kp-block-flow": {
+    "prefix": "kp-block-flow",
+    "description": "Follows the path through a block, its rescue and its always section.",
+    "body": [
+      "{% block-flow ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-build-roadmap": {
+    "prefix": "kp-build-roadmap",
+    "description": "A checklist-style roadmap of the steps to build the practice lab.",
+    "body": [
+      "{% build-roadmap ref=\"${1}\" /%}"
     ]
   },
   "kp-callout": {
@@ -33,6 +61,13 @@
       "{% /cards %}"
     ]
   },
+  "kp-check-mode-sim": {
+    "prefix": "kp-check-mode-sim",
+    "description": "Compares a dry run with a real run of the same tasks.",
+    "body": [
+      "{% check-mode-sim ref=\"${1}\" /%}"
+    ]
+  },
   "kp-column": {
     "prefix": "kp-column",
     "description": "One column in a two-column layout.",
@@ -51,11 +86,88 @@
       "{% /columns %}"
     ]
   },
+  "kp-command-vs-module": {
+    "prefix": "kp-command-vs-module",
+    "description": "Compares a raw command with the module that does the same job.",
+    "body": [
+      "{% command-vs-module ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-condition-playground": {
+    "prefix": "kp-condition-playground",
+    "description": "Evaluates a conditional against chosen values to show whether the task runs.",
+    "body": [
+      "{% condition-playground ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-cron-builder": {
+    "prefix": "kp-cron-builder",
+    "description": "Builds a schedule entry and explains when it runs.",
+    "body": [
+      "{% cron-builder ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-custom-fact-builder": {
+    "prefix": "kp-custom-fact-builder",
+    "description": "Builds a custom fact file and shows the variable it creates.",
+    "body": [
+      "{% custom-fact-builder ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-data-explorer": {
+    "prefix": "kp-data-explorer",
+    "description": "Explores a nested data structure and the expression that reaches each value.",
+    "body": [
+      "{% data-explorer ref=\"${1}\" /%}"
+    ]
+  },
   "kp-diagram": {
     "prefix": "kp-diagram",
     "description": "A diagram of boxes, groups and arrows. It can be static, let the reader select boxes to read an explanation, or step through a sequence.",
     "body": [
       "{% diagram ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-error-decoder": {
+    "prefix": "kp-error-decoder",
+    "description": "Matches an error message to its cause and the usual fix.",
+    "body": [
+      "{% error-decoder ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-fact-gathering": {
+    "prefix": "kp-fact-gathering",
+    "description": "Shows when facts are gathered and what disabling gathering changes.",
+    "body": [
+      "{% fact-gathering ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-facts-explorer": {
+    "prefix": "kp-facts-explorer",
+    "description": "Browses gathered facts and the expression that reads each one.",
+    "body": [
+      "{% facts-explorer ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-fetch-layout": {
+    "prefix": "kp-fetch-layout",
+    "description": "Shows where fetched files are stored on the control side.",
+    "body": [
+      "{% fetch-layout ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-file-edit-simulator": {
+    "prefix": "kp-file-edit-simulator",
+    "description": "Shows how a line-editing task changes a file.",
+    "body": [
+      "{% file-edit-simulator ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-file-module-chooser": {
+    "prefix": "kp-file-module-chooser",
+    "description": "Helps pick the file module that fits a described job.",
+    "body": [
+      "{% file-module-chooser ref=\"${1}\" /%}"
     ]
   },
   "kp-flashcards": {
@@ -72,6 +184,13 @@
       "{% flow-map ref=\"${1}\" /%}"
     ]
   },
+  "kp-fqcn-explorer": {
+    "prefix": "kp-fqcn-explorer",
+    "description": "Breaks a fully qualified module name into its parts.",
+    "body": [
+      "{% fqcn-explorer ref=\"${1}\" /%}"
+    ]
+  },
   "kp-glossary": {
     "prefix": "kp-glossary",
     "description": "A list of terms and definitions.",
@@ -79,6 +198,41 @@
       "{% glossary %}",
       "\t$0",
       "{% /glossary %}"
+    ]
+  },
+  "kp-group-vars-resolver": {
+    "prefix": "kp-group-vars-resolver",
+    "description": "Resolves a host's variables from group and host variable files.",
+    "body": [
+      "{% group-vars-resolver ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-handler-timeline": {
+    "prefix": "kp-handler-timeline",
+    "description": "A timeline showing when notified handlers run relative to tasks.",
+    "body": [
+      "{% handler-timeline ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-host-pattern-tester": {
+    "prefix": "kp-host-pattern-tester",
+    "description": "Tests a host pattern against an inventory and lists the hosts it selects.",
+    "body": [
+      "{% host-pattern-tester ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-idempotency-demo": {
+    "prefix": "kp-idempotency-demo",
+    "description": "Runs a task twice to show a repeat run changing nothing.",
+    "body": [
+      "{% idempotency-demo ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-inventory-explorer": {
+    "prefix": "kp-inventory-explorer",
+    "description": "Explores an inventory file: hosts, groups and the variables each host gets.",
+    "body": [
+      "{% inventory-explorer ref=\"${1}\" /%}"
     ]
   },
   "kp-kbd": {
@@ -115,6 +269,13 @@
       "{% lab-finish exercise=\"${1}\" /%}"
     ]
   },
+  "kp-lab-network-map": {
+    "prefix": "kp-lab-network-map",
+    "description": "An interactive map of the practice lab's machines and how they connect.",
+    "body": [
+      "{% lab-network-map ref=\"${1}\" /%}"
+    ]
+  },
   "kp-lab-notes": {
     "prefix": "kp-lab-notes",
     "description": "Prerequisites, verification and variations for an exercise.",
@@ -142,6 +303,34 @@
       "{% /lead %}"
     ]
   },
+  "kp-loop-unroller": {
+    "prefix": "kp-loop-unroller",
+    "description": "Unrolls a looped task into the individual runs it produces.",
+    "body": [
+      "{% loop-unroller ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-magic-variables": {
+    "prefix": "kp-magic-variables",
+    "description": "Shows what each built-in variable holds for a given host.",
+    "body": [
+      "{% magic-variables ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-mode-calculator": {
+    "prefix": "kp-mode-calculator",
+    "description": "Converts between symbolic and numeric file permissions.",
+    "body": [
+      "{% mode-calculator ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-module-explorer": {
+    "prefix": "kp-module-explorer",
+    "description": "Browses modules by category with their purpose and an example task.",
+    "body": [
+      "{% module-explorer ref=\"${1}\" /%}"
+    ]
+  },
   "kp-objectives": {
     "prefix": "kp-objectives",
     "description": "A boxed list of what the reader will be able to do after the page.",
@@ -151,11 +340,32 @@
       "{% /objectives %}"
     ]
   },
+  "kp-play-order": {
+    "prefix": "kp-play-order",
+    "description": "Shows the order a play runs its tasks, roles and handlers.",
+    "body": [
+      "{% play-order ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-play-recap": {
+    "prefix": "kp-play-recap",
+    "description": "Explains each part of a play recap line and what the counters mean.",
+    "body": [
+      "{% play-recap ref=\"${1}\" /%}"
+    ]
+  },
   "kp-practice": {
     "prefix": "kp-practice",
     "description": "A chapter's practice questions, in the quiz format; attempts feed the learning dashboard.",
     "body": [
       "{% practice ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-precedence-resolver": {
+    "prefix": "kp-precedence-resolver",
+    "description": "Shows which of several competing settings wins when they are toggled on and off.",
+    "body": [
+      "{% precedence-resolver ref=\"${1}\" /%}"
     ]
   },
   "kp-program-cards": {
@@ -165,6 +375,13 @@
       "{% program-cards /%}"
     ]
   },
+  "kp-project-tree": {
+    "prefix": "kp-project-tree",
+    "description": "A project directory tree with the role of each file explained.",
+    "body": [
+      "{% project-tree ref=\"${1}\" /%}"
+    ]
+  },
   "kp-quiz": {
     "prefix": "kp-quiz",
     "description": "A multiple-choice knowledge check with instant feedback.",
@@ -172,11 +389,32 @@
       "{% quiz ref=\"${1}\" /%}"
     ]
   },
+  "kp-range-expander": {
+    "prefix": "kp-range-expander",
+    "description": "Expands a host range such as web[01:03] into the hosts it names.",
+    "body": [
+      "{% range-expander ref=\"${1}\" /%}"
+    ]
+  },
   "kp-reader-variables": {
     "prefix": "kp-reader-variables",
     "description": "A form for the reader's own values (declared in program.yml), substituted into code.",
     "body": [
       "{% reader-variables /%}"
+    ]
+  },
+  "kp-readiness-checklist": {
+    "prefix": "kp-readiness-checklist",
+    "description": "A self-assessment checklist that records what you feel ready to do.",
+    "body": [
+      "{% readiness-checklist ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-reuse-simulator": {
+    "prefix": "kp-reuse-simulator",
+    "description": "Compares ways of reusing tasks and what each does when the play runs.",
+    "body": [
+      "{% reuse-simulator ref=\"${1}\" /%}"
     ]
   },
   "kp-reveal": {
@@ -188,11 +426,46 @@
       "{% /reveal %}"
     ]
   },
+  "kp-role-anatomy": {
+    "prefix": "kp-role-anatomy",
+    "description": "A role's directory layout with the purpose of each part.",
+    "body": [
+      "{% role-anatomy ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-role-var-resolver": {
+    "prefix": "kp-role-var-resolver",
+    "description": "Resolves a role variable from its defaults, vars and overrides.",
+    "body": [
+      "{% role-var-resolver ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-run-stages": {
+    "prefix": "kp-run-stages",
+    "description": "Steps through the stages of a run and where each problem appears.",
+    "body": [
+      "{% run-stages ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-snapshot-chain": {
+    "prefix": "kp-snapshot-chain",
+    "description": "A step-through of lab snapshots and how each one builds on the last.",
+    "body": [
+      "{% snapshot-chain ref=\"${1}\" /%}"
+    ]
+  },
   "kp-starter-files": {
     "prefix": "kp-starter-files",
     "description": "Lists an exercise's starter files and lets the reader preview them.",
     "body": [
       "{% starter-files exercise=\"${1}\" /%}"
+    ]
+  },
+  "kp-stat-explorer": {
+    "prefix": "kp-stat-explorer",
+    "description": "Explores the file facts a stat check returns.",
+    "body": [
+      "{% stat-explorer ref=\"${1}\" /%}"
     ]
   },
   "kp-step": {
@@ -240,6 +513,20 @@
       "{% /task %}"
     ]
   },
+  "kp-task-outcome": {
+    "prefix": "kp-task-outcome",
+    "description": "Shows how the failure settings of a task change the result of a run.",
+    "body": [
+      "{% task-outcome ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-template-playground": {
+    "prefix": "kp-template-playground",
+    "description": "Renders a template with chosen values to show the output file.",
+    "body": [
+      "{% template-playground ref=\"${1}\" /%}"
+    ]
+  },
   "kp-term": {
     "prefix": "kp-term",
     "description": "One glossary entry: a term and its definition.",
@@ -247,6 +534,27 @@
       "{% term name=\"${1}\" %}",
       "$0",
       "{% /term %}"
+    ]
+  },
+  "kp-variable-name-checker": {
+    "prefix": "kp-variable-name-checker",
+    "description": "Tests whether a variable name is valid and says why not.",
+    "body": [
+      "{% variable-name-checker ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-variable-precedence": {
+    "prefix": "kp-variable-precedence",
+    "description": "Ranks the places a variable can be set and shows which one wins.",
+    "body": [
+      "{% variable-precedence ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-variable-substitution": {
+    "prefix": "kp-variable-substitution",
+    "description": "Shows a task before and after its variables are replaced with values.",
+    "body": [
+      "{% variable-substitution ref=\"${1}\" /%}"
     ]
   },
   "kp-variant": {
@@ -272,6 +580,27 @@
     "description": "The control that switches between variants.",
     "body": [
       "{% variant-switch label=\"${1}\" /%}"
+    ]
+  },
+  "kp-vault-commands": {
+    "prefix": "kp-vault-commands",
+    "description": "Picks the right vault command for a goal and shows its effect.",
+    "body": [
+      "{% vault-commands ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-verbosity": {
+    "prefix": "kp-verbosity",
+    "description": "Shows how output grows as the verbosity level is raised.",
+    "body": [
+      "{% verbosity ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-yaml-multiline": {
+    "prefix": "kp-yaml-multiline",
+    "description": "Shows how each multi-line string style turns into the resulting text.",
+    "body": [
+      "{% yaml-multiline ref=\"${1}\" /%}"
     ]
   }
 }

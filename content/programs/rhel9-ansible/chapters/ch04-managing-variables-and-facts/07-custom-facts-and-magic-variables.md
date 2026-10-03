@@ -67,7 +67,7 @@ ansible_facts['ansible_local']['custom']['users']['user1']   →   joe
 
 Edit this fact file, or rename it, and watch the path change:
 
-{% legacy-widget name="CustomFactBuilder" ref="custom-fact-builder" /%}
+{% custom-fact-builder ref="custom-fact-builder" /%}
 
 To inspect the structure on a real host, print `ansible_local`:
 
@@ -116,7 +116,7 @@ Ansible also sets some variables itself, describing the inventory and the curren
 
 Pick the host a task is running on and see what each one contains:
 
-{% legacy-widget name="MagicVariables" ref="magic-variables" /%}
+{% magic-variables ref="magic-variables" /%}
 
 For example, this task prints the network interfaces of `demo2.example.com` from whichever host runs it, as long as facts for demo2 were already gathered:
 
