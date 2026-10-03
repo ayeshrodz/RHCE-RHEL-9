@@ -1,8 +1,12 @@
 title: Network file systems and autofs
-goal: Use files that live on another machine, and mount them only when needed.
+goal: Share a directory from one server, mount it on another with the right access, make the mount permanent or on-demand with autofs, and diagnose the usual failures.
 objectives:
-- Mount a defined NFS export with suitable access policy.
-- Configure and diagnose direct, indirect and wildcard automounts.
+  - Export a directory with NFS, open the firewall and mount it from a client.
+  - Explain how user IDs, root squash and read-only exports decide who can do what.
+  - Make an NFS mount permanent with fstab, or on demand with autofs.
+  - Write wildcard and direct autofs maps and inspect what autofs has loaded.
 objectiveIds:
-- ch19.operations
-- ch19.verification
+  - ch19.nfs
+  - ch19.access
+  - ch19.persistent
+  - ch19.maps

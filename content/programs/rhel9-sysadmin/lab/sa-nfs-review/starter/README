@@ -1,0 +1,27 @@
+Exercise: sa-nfs-review (chapter 19 lab)
+
+serverb is the NFS server and servera is the client. Work with sudo or as
+root. The user student exists on both machines.
+
+On serverb
+ 1. Create /srv/projects, owned by student, and /srv/archive/2025 with a file
+    notes.txt in it. Install nfs-utils on both machines if needed.
+ 2. Export /srv/projects read-write and /srv/archive read-only to your lab
+    network (172.25.250.0/24 on the course network, whatever your lab uses).
+ 3. Start and enable nfs-server and open the nfs service in the firewall,
+    permanently.
+
+On servera
+ 4. Mount serverb:/srv/projects on /mnt/projects permanently through
+    /etc/fstab, with the option _netdev. Test with mount -a.
+ 5. As student, write the line "written from servera" into
+    /mnt/projects/from-client.txt. It must be owned by student on serverb.
+ 6. Install autofs, enable it, and make /remote/archive serve every
+    directory of serverb:/srv/archive read-only on demand:
+      /etc/auto.master.d/archive.autofs  and  /etc/auto.archive
+    (a wildcard map). Test by listing /remote/archive/2025.
+
+On workstation
+ 7. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-nfs-review

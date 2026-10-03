@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The TCP port that NFSv4 uses:
+NFS_PORT=
+# The default export setting that maps the client's root to an unprivileged user:
+SQUASH_DEFAULT=
+# The firewalld service to open on the server for NFS:
+FIREWALL_SERVICE=

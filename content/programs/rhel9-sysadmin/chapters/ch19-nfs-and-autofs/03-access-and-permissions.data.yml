@@ -1,0 +1,297 @@
+uid-mapping:
+  title: Users are numbers
+  caption: Step through the same file seen from the server and from the client.
+  height: 260
+  mode: steps
+  steps:
+  - title: On the server
+    text: alice has UID 2001 on serverb and owns /srv/shared/alice. student has UID 1000 on both servers.
+  - title: 'On the client: the same number matters'
+    text: servera has no alice. ls -l shows the owner as 2001, a bare number. NFS carries user IDs, not names.
+  - title: student works as expected
+    text: student is UID 1000 on both machines, so files student creates on servera belong to student on serverb too, and access is allowed or denied exactly as on the server.
+  - title: root is squashed
+    text: root on servera is UID 0, which the server maps to nobody (root_squash). A root-owned directory is therefore read-only for root through the mount. This is by design.
+  - title: Fix the cause, not the symptom
+    text: Create users with the same UID and GID everywhere (or use a directory service), and set ownership and modes on the server. Avoid no_root_squash and chmod 777.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 170
+    h: 60
+    tone: green
+    title: serverb
+    sub: alice = 2001
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+    - 2
+  - kind: node
+    x: 500
+    y: 20
+    w: 170
+    h: 60
+    tone: blue
+    title: servera
+    sub: student = 1000
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 250
+    y: 20
+    w: 200
+    h: 60
+    tone: amber
+    title: NFS
+    sub: numbers cross
+    mono: true
+    titleSize: 14
+    active:
+    - 1
+    - 2
+    - 3
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 180
+      - 50
+    - - 250
+      - 50
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 450
+      - 50
+    - - 500
+      - 50
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 120
+    w: 380
+    h: 44
+    tone: gray
+    title: ls -ln shows the numbers that really travel
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    - 4
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+diagnose:
+  title: Where did it fail?
+  caption: Select the error message.
+  height: 270
+  mode: select
+  initial: route
+  info:
+    route:
+      tone: amber
+      title: No route to host
+      text: 'The network is fine (ping works) but the firewall on the server rejects the port. Add the nfs service: firewall-cmd --permanent --add-service=nfs; firewall-cmd --reload. A timeout instead usually means a different firewall or routing problem.'
+    denied:
+      tone: coral
+      title: access denied by server while mounting
+      text: 'The server received the request and refused this client: its address is not in /etc/exports, or you forgot exportfs -rav. Check exportfs -v and the client name or address.'
+    perm:
+      tone: blue
+      title: Permission denied (after mounting)
+      text: 'The mount works but the file permissions on the server do not allow this user. Compare ls -ln on both sides: UIDs, GIDs, modes, and root_squash for root.'
+    ro:
+      tone: green
+      title: Read-only file system
+      text: The export (ro) or the mount (-o ro) is read-only. Check exportfs -v on the server and mount | grep nfs on the client.
+    stale:
+      tone: gray
+      title: Stale file handle
+      text: The exported directory was removed or replaced on the server while mounted. Unmount and mount again.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 200
+    h: 54
+    tone: amber
+    title: No route to host
+    sub: firewall
+    titleSize: 13
+    select: route
+    active:
+    - route
+  - kind: node
+    x: 220
+    y: 30
+    w: 230
+    h: 54
+    tone: coral
+    title: access denied by server
+    sub: exports
+    titleSize: 13
+    select: denied
+    active:
+    - denied
+  - kind: node
+    x: 460
+    y: 30
+    w: 210
+    h: 54
+    tone: blue
+    title: Permission denied
+    sub: UIDs · modes
+    titleSize: 13
+    select: perm
+    active:
+    - perm
+  - kind: node
+    x: 10
+    y: 96
+    w: 200
+    h: 54
+    tone: green
+    title: Read-only file system
+    sub: ro
+    titleSize: 13
+    select: ro
+    active:
+    - ro
+  - kind: node
+    x: 220
+    y: 96
+    w: 230
+    h: 54
+    tone: gray
+    title: Stale file handle
+    sub: remount
+    titleSize: 13
+    select: stale
+    active:
+    - stale
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: who is who'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: id -u
+      out: '1000'
+    - cmd: cd /mnt/shared; echo "from servera as student" > st.txt; ls -ln
+      out: 'total 12
+
+        drwxr-xr-x. 2 2001 2001 4096 Oct  3 18:48 alice
+
+        -rw-r--r--. 1    0    0   12 Oct  3 18:47 hello.txt
+
+        -rw-r--r--. 1 1000 1000   24 Oct  3 18:48 st.txt'
+    - cmd: ls -l
+      out: 'total 12
+
+        drwxr-xr-x. 2    2001    2001 4096 Oct  3 18:48 alice
+
+        -rw-r--r--. 1 root    root      12 Oct  3 18:47 hello.txt
+
+        -rw-r--r--. 1 student student   24 Oct  3 18:48 st.txt'
+    - cmd: echo x > alice/hack.txt
+      out: 'bash: alice/hack.txt: Permission denied'
+    - cmd: sudo touch /mnt/shared/rootfile
+      out: 'touch: cannot touch ''/mnt/shared/rootfile'': Permission denied'
+    - cmd: mount | grep shared | cut -c1-100
+      out: serverb:/srv/shared on /mnt/shared type nfs4 (rw,relatime,vers=4.2,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,timeo=600
+    - cmd: nfsstat -m
+      out: "/mnt/shared from serverb:/srv/shared\n Flags:\trw,relatime,vers=4.2,rsize=131072,wsize=131072,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=172.25.250.10,local_lock=none,addr=172.25.250.11"
+    tasks:
+    - text: Create a file in the share as student and list owners as numbers.
+      commands:
+      - cd /mnt/shared; echo "from servera as student" > st.txt; ls -ln
+    - text: List the same files with names. Why is alice's directory a number?
+      commands:
+      - ls -l
+    - text: Try to write into alice's directory.
+      commands:
+      - echo x > alice/hack.txt
+    - text: Show the NFS options in use.
+      commands:
+      - nfsstat -m
+quick:
+  questions:
+  - id: q-103f3dfb5bbf
+    q: Files created by student (UID 1000) on the client belong to which user on the server?
+    options:
+    - The user with UID 1000 on the server
+    - nobody always
+    - root
+    answer: 0
+    explain: NFS (with sec=sys) carries numeric IDs.
+  - id: q-d122fecbe66c
+    q: ls -l on the client shows an owner as 2001 instead of a name. Why?
+    options:
+    - The client has no user with UID 2001
+    - The file is corrupt
+    - The share is read-only
+    answer: 0
+    explain: Use the same UIDs everywhere or a central directory.
+  - id: q-ed143e00c633
+    q: root on a client cannot write to a root-owned directory of the share. Why?
+    options:
+    - root_squash maps root to nobody
+    - NFS forbids writes
+    - SELinux always blocks
+    answer: 0
+    explain: Fix permissions on the server instead of using no_root_squash.
+  - id: q-cb64c8704af3
+    q: mount says "access denied by server". Where do you look?
+    options:
+    - /etc/exports and exportfs -v on the server
+    - /etc/fstab on the client
+    - The journal of the client
+    answer: 0
+    explain: The client address must match an export entry.
+  - id: q-5dd988510c7d
+    q: '"No route to host" while mounting, but ping works. Likely cause?'
+    options:
+    - The server firewall blocks NFS
+    - The disk is full
+    - A wrong UID
+    answer: 0
+    explain: Open the nfs service.
+  - id: q-db8e61530263
+    q: Which mount option makes the mount read-only on the client?
+    options:
+    - -o ro
+    - -o noexec
+    - -o soft
+    answer: 0
+    explain: The export can also be read-only.

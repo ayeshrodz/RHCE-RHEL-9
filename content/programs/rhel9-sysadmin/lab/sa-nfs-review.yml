@@ -1,0 +1,137 @@
+name: sa-nfs-review
+title: Network file systems and autofs
+page: ch19/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: exp-projects
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb exports /srv/projects read-write
+      paths:
+      - /etc/exports
+      matches: ^/srv/projects[[:space:]]+[^[:space:](]+\([^)]*rw[^)]*\)[[:space:]]*$
+    - id: exp-archive
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb exports /srv/archive read-only
+      paths:
+      - /etc/exports
+      matches: ^/srv/archive[[:space:]]+[^[:space:](]+\([^)]*ro[^)]*\)[[:space:]]*$
+    - id: nfs-server
+      kind: service
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: nfs-server is running and enabled on serverb
+      names:
+      - nfs-server.service
+      active: true
+      enabled: true
+    - id: firewall
+      kind: firewall
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The nfs firewall service is permanently open on serverb
+      service: nfs
+      permanent: true
+    - id: projects-dir
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/projects belongs to student
+      paths:
+      - /srv/projects
+      fileType: directory
+      owner: student
+    - id: from-client
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: student wrote a file over NFS from servera
+      paths:
+      - /srv/projects/from-client.txt
+      owner: student
+      line: written from servera
+    - id: fstab
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: servera mounts /mnt/projects through fstab with _netdev
+      paths:
+      - /etc/fstab
+      matches: ^serverb(\.lab\.example\.com)?:/srv/projects[[:space:]]+/mnt/projects[[:space:]]+nfs4?[[:space:]]+[^[:space:]]*_netdev
+    - id: mount
+      kind: mount
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: /mnt/projects is an NFS mount, now and at boot
+      path: /mnt/projects
+      fstype: nfs4
+      persistent: true
+    - id: autofs-master
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: autofs has a master entry for /remote/archive
+      paths:
+      - /etc/auto.master.d/archive.autofs
+      matches: ^/remote/archive[[:space:]]+/etc/auto\.archive
+    - id: autofs-map
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The map is a read-only wildcard for serverb:/srv/archive
+      paths:
+      - /etc/auto.archive
+      matches: ^\*[[:space:]]+-[^[:space:]]*ro[^[:space:]]*[[:space:]]+serverb(\.lab\.example\.com)?:/srv/archive/&[[:space:]]*$
+    - id: autofs
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: autofs is running and enabled on servera
+      names:
+      - autofs.service
+      active: true
+      enabled: true
+    - id: answer-nfs-port
+      kind: file
+      'on': control
+      message: 'answers.txt: the TCP port NFSv4 uses'
+      paths:
+      - answers.txt
+      matches: ^NFS_PORT=2049[[:space:]]*$
+    - id: answer-squash-default
+      kind: file
+      'on': control
+      message: 'answers.txt: the default setting that maps client root to an unprivileged user'
+      paths:
+      - answers.txt
+      matches: ^SQUASH_DEFAULT=root_squash[[:space:]]*$
+    - id: answer-firewall-service
+      kind: file
+      'on': control
+      message: 'answers.txt: the firewalld service to open for NFS'
+      paths:
+      - answers.txt
+      matches: ^FIREWALL_SERVICE=nfs[[:space:]]*$
