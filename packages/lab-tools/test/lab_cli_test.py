@@ -61,6 +61,20 @@ class DownloadTests(unittest.TestCase):
             self.assertNotEqual(self.invoke(root, assets, 'start', 'demo', '--force').returncode, 0)
             self.assertFalse((root.parent / 'escape').exists())
 
+    def test_an_old_lab_command_is_told_to_update(self):
+        """Version 4 runs "@" lines as hooks: for an exercise with setup actions it must stop with advice, not half-prepare."""
+        old = (ROOT / 'packages/lab-tools/test/fixtures/lab-v4').read_text()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            script = root / 'lab-v4'
+            script.write_text(old)
+            result = subprocess.run(['bash', str(script), 'start', 'data-review'], text=True, capture_output=True,
+                                    env={**os.environ, 'LAB_HOME': str(root), 'LAB_URL': lab_tree().as_uri()})
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('lab update', result.stdout + result.stderr)
+            self.assertTrue((root / 'data-review/.lab-not-ready').exists(), 'the old command reports it as not ready')
+            self.assertTrue((root / 'data-review/files/.htaccess').is_file(), 'dotfiles still download under their real names')
+
     def test_downloaded_scripts_are_not_run(self):
         """A hook line in a manifest is not a feature any more: nothing the exercise ships is executed."""
         with tempfile.TemporaryDirectory() as temp:
@@ -79,6 +93,7 @@ class DownloadTests(unittest.TestCase):
             self.assertTrue((root / 'data-review/files/htpasswd').read_text().startswith('guest:'))
             self.assertTrue((root / 'data-review/files/.htaccess').is_file())
             self.assertFalse((root / 'data-review/.lab-not-ready').exists())
+            self.assertEqual([p.name for p in (root / 'data-review').glob('lab-update-required')], [])
 
     def test_every_exercise_downloads_completely(self):
         """All starter files of all exercises are reachable under the names the manifests give."""
@@ -86,7 +101,9 @@ class DownloadTests(unittest.TestCase):
         for manifest in tree.glob('*/MANIFEST'):
             for line in manifest.read_text().splitlines():
                 line = line.split('#')[0].strip()
-                if line:
+                if line.startswith('@'):
+                    self.assertTrue((manifest.parent / line[1:]).is_file(), (manifest.parent.name, line))
+                elif line:
                     self.assertTrue((manifest.parent / line.partition('=')[2]).is_file(), (manifest.parent.name, line))
 
 

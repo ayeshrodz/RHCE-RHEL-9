@@ -17,6 +17,8 @@ export function Anchor({ href = '', onClick, ...props }) {
   if (href.startsWith('#/')) {
     // Content addresses pages relative to its program; the link gains the program id.
     const go = (e) => {
+      // Let the browser handle "open in a new tab or window"; the href is already the full address.
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
       navigate(href.slice(1));
     };

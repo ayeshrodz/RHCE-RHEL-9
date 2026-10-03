@@ -106,6 +106,16 @@ class ActionTests(unittest.TestCase):
         with self.assertRaisesRegex(prepare.SetupError, 'lab update'):
             prepare.prepare('demo', self.project, '', catalog_with_new_action)
 
+    def test_published_names_match_the_compiler(self):
+        """prepare.py finds tree files under the names the compiler publishes them as."""
+        self.assertEqual(prepare.published('trees/a/.gitignore'), 'trees/a/_.gitignore.lab')
+        for manifest in lab_tree().glob('*/MANIFEST'):
+            for line in manifest.read_text().splitlines():
+                line = line.split('#')[0].strip()
+                if line and not line.startswith('@'):
+                    dest, _, src = line.partition('=')
+                    self.assertEqual(prepare.published(dest), src, manifest.parent.name)
+
     def test_every_action_in_the_catalog_is_implemented(self):
         for name, exercise in CATALOG['exercises'].items():
             for action in exercise.get('setup', []):

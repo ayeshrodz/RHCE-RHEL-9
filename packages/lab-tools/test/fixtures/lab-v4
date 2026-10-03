@@ -2,10 +2,10 @@
 # lab - starts and finishes exercises on the Kernel Path home lab
 # (same syntax as a classroom 'lab' command). Runs on workstation as student.
 # Install or update: see section 1.6 of the guide, or run: lab update
-# Version 5
+# Version 4
 set -euo pipefail
 
-VERSION=5
+VERSION=4
 BASE="${LAB_URL:-https://kernelpath.dev/lab}"
 LAB_ROOT="${LAB_HOME:-$HOME}"
 ARCHIVE="$LAB_ROOT/lab-archive"
@@ -40,7 +40,7 @@ stamp() { date +%Y%m%d-%H%M%S; }
 
 cmd_start() {
   need_name "${1:-}"; valid_name "$1"
-  local name="$1" force="${2:-}" dir="$LAB_ROOT/$1" stage manifest line dest src count=0
+  local name="$1" force="${2:-}" dir="$LAB_ROOT/$1" stage manifest line dest src h hooks=() count=0
   [[ -z $force || $force == --force ]] || die "unknown option: $force"
   [[ ! -e $dir || $force == --force ]] || die "~/$name already exists (use --force to archive and restart)"
   stage=$(mktemp -d "$LAB_ROOT/.lab-$name.XXXXXX")
@@ -51,26 +51,29 @@ cmd_start() {
   while IFS= read -r line; do
     line="${line%%#*}"; line="${line//[[:space:]]/}"
     [[ -z $line ]] && continue
-    [[ $line == @* ]] && continue   # hooks are for lab commands before version 5; setup actions replace them
+    if [[ $line == @* ]]; then hooks+=("${line#@}"); continue; fi
     dest="${line%%=*}"; src="${line#*=}"
     [[ $dest =~ ^[a-zA-Z0-9_./-]+$ && $src =~ ^[a-zA-Z0-9_./-]+$ && $dest != /* && $src != /* && $dest != *..* && $src != *..* ]] || die "unsafe manifest path"
     mkdir -p "$stage/$(dirname "$dest")"
     fetch "$name/$src" > "$stage/$dest" || die "download failed: $src; exercise is not ready"
     count=$((count + 1))
   done <<< "$manifest"
-  # The platform's own setup program and the exercise catalog: setup actions are named in
-  # the catalog and implemented by prepare.py; no exercise downloads or runs a script of its own.
-  fetch prepare.py > "$stage/.lab-prepare.py" || die "download failed: prepare.py"
-  fetch graders.json > "$stage/.lab-catalog.json" || die "download failed: graders.json"
+  for h in "${hooks[@]}"; do
+    [[ $h =~ ^[a-zA-Z0-9_.-]+$ && $h != *..* ]] || die "unsafe hook name"
+    fetch "$name/$h" > "$stage/.lab-hook-$h" || die "download failed: $h"
+    # Some setup hooks use the published ~/NAME path. Download every file first,
+    # then move the complete project into place and explicitly mark hook failures.
+  done
   if [[ -e $dir ]]; then
     mkdir -p "$ARCHIVE"; mv "$dir" "$ARCHIVE/$name-$(stamp)-$$"
     warn "previous work was archived"
   fi
   mv "$stage" "$dir"; trap - EXIT
   touch "$dir/.lab-not-ready"
-  python3 "$dir/.lab-prepare.py" "$name" --project "$dir" --catalog "$dir/.lab-catalog.json" --base "$BASE" \
-    || die "setup failed; exercise is not ready. Fix the reported error and restart with --force"
-  rm -f "$dir/.lab-prepare.py" "$dir/.lab-catalog.json" "$dir/.lab-not-ready"
+  for h in "${hooks[@]}"; do
+    (cd "$dir" && bash -e ".lab-hook-$h") || die "setup failed: $h; exercise is not ready. Fix the reported error and restart with --force"
+  done
+  rm -f "$dir"/.lab-hook-* "$dir/.lab-not-ready"
   say "~/$name is ready: cd ~/$name"
   echo "  Start from clean servers. Read the requirements before running playbooks."
 }

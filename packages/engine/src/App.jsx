@@ -51,7 +51,7 @@ function ProgramGate() {
     if (!known) return undefined;
     let live = true;
     activateProgram(programId).then(
-      () => live && setState({ id: programId, error: null }),
+      (installed) => live && installed && setState({ id: programId, error: null }),
       (error) => live && setState({ id: programId, error }),
     );
     return () => {
@@ -60,7 +60,13 @@ function ProgramGate() {
   }, [programId, known]);
 
   if (!known) {
-    return OLD_ADDRESS.test(pathname) ? <Navigate to={`/${defaultProgramId()}${pathname}${search}${hash}`} replace /> : <RootNotFound />;
+    return OLD_ADDRESS.test(pathname) ? (
+      <Navigate to={`/${defaultProgramId()}${pathname}${search}${hash}`} replace />
+    ) : (
+      <PlatformShell>
+        <RootNotFound />
+      </PlatformShell>
+    );
   }
   if (state.id !== programId)
     return (
@@ -68,7 +74,12 @@ function ProgramGate() {
         Loading…
       </p>
     );
-  if (state.error) return <BootError error={state.error} />;
+  if (state.error)
+    return (
+      <PlatformShell>
+        <BootError error={state.error} />
+      </PlatformShell>
+    );
   return <Outlet key={programId} />;
 }
 
@@ -105,7 +116,14 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
-        <Route path="*" element={<RootNotFound />} />
+        <Route
+          path="*"
+          element={
+            <PlatformShell>
+              <RootNotFound />
+            </PlatformShell>
+          }
+        />
       </Routes>
     </HashRouter>
   );
