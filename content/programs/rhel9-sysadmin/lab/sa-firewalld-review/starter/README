@@ -1,0 +1,27 @@
+Exercise: sa-firewalld-review (chapter 20 lab)
+
+servera is the web server and serverb is the partner that may use it.
+Work with sudo or as root. Do not stop or disable firewalld.
+
+On servera
+ 1. Install httpd, start and enable it. The home page
+    /var/www/html/index.html contains the line: Welcome to servera
+ 2. httpd must also listen on ports 8080 and 9000
+    (a file in /etc/httpd/conf.d/ with two Listen lines).
+ 3. Create the permanent zone partners with serverb's address as its source
+    (172.25.250.11 on the course network, whatever getent hosts serverb shows
+    on your lab). The zone allows:
+      - the service http
+      - a service of your own named portal, defined for 9000/tcp
+      - a forward of port 8081 to port 8080
+ 4. The default zone (public) must NOT allow http, 8080 or 9000.
+ 5. Everything must survive a reload: use --permanent and --reload.
+
+Check from serverb
+ 6. curl http://servera/ , http://servera:9000/ and http://servera:8081/
+    work from serverb. From workstation they should be rejected.
+
+On workstation
+ 7. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-firewalld-review

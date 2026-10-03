@@ -1,4 +1,0 @@
-Run a harmless Apache page on clean servera. Verify it locally, allow HTTP at runtime, prove access from workstation, then persist only that allowance and test it after reload and reboot.
-
-Apply zone policy in runtime and permanent configuration.
-Verify allowed and denied service access from another host.

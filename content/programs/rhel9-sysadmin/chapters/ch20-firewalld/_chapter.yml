@@ -1,8 +1,12 @@
 title: The firewall
-goal: Control which network traffic reaches the machine.
+goal: Control which network traffic reaches a machine with firewalld, change rules so they survive a reload and a reboot, limit services to chosen hosts, and find out why a connection fails.
 objectives:
-- Apply zone policy in runtime and permanent configuration.
-- Verify allowed and denied service access from another host.
+  - Read the active zone and allow services and ports in it.
+  - Keep the runtime and permanent rules apart, and make changes persistent.
+  - Limit access to one host, define a service, forward a port and write a rich rule.
+  - Diagnose a failed connection layer by layer from the symptom the client sees.
 objectiveIds:
-- ch20.operations
-- ch20.verification
+  - ch20.zones
+  - ch20.stores
+  - ch20.special
+  - ch20.diagnosis

@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Is the firewall up, and which zone?
+    back: firewall-cmd --state · --get-default-zone · --get-active-zones
+  - front: Show everything an active zone allows?
+    back: firewall-cmd --list-all [--zone=NAME]
+  - front: Which zone judges a packet?
+    back: Source match first, then interface, then the default zone.
+  - front: Allow a service permanently?
+    back: firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+  - front: Allow a port?
+    back: firewall-cmd --permanent --add-port=9000/tcp; firewall-cmd --reload
+  - front: Runtime versus permanent?
+    back: 'Without --permanent: now only. With it: saved only. --reload loads the saved state.'
+  - front: A rule for a test?
+    back: firewall-cmd --add-port=8080/tcp --timeout=60
+  - front: Danger of --runtime-to-permanent?
+    back: It saves every temporary change too.
+  - front: Only one host may connect?
+    back: New zone + --add-source=IP + --add-service, then --reload.
+  - front: Forward a port?
+    back: --add-forward-port=port=8081:proto=tcp:toport=8080
+  - front: Symptoms?
+    back: No route to host = rejected · timeout = dropped · refused = nothing listening
+  - front: Debug order?
+    back: Service running → listening (ss -tlnp) → zone rules → SELinux port label; log with --set-log-denied=all.

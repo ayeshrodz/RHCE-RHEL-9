@@ -141,12 +141,20 @@ def conditions_service(c):
 
 
 def conditions_firewall(c):
-    query = '--query-service=' + shlex.quote(c['service']) if 'service' in c else '--query-port=' + shlex.quote(c['port'])
+    zone = ' --zone=' + shlex.quote(c['zone']) if 'zone' in c else ''
+    if 'service' in c:
+        query = '--query-service=' + shlex.quote(c['service'])
+    elif 'port' in c:
+        query = '--query-port=' + shlex.quote(c['port'])
+    elif 'source' in c:
+        query = '--query-source=' + shlex.quote(c['source'])
+    else:
+        query = '--query-forward-port=' + shlex.quote(c['forwardPort'])
     parts = []
     if c.get('runtime', True):
-        parts.append('firewall-cmd ' + query)
+        parts.append('firewall-cmd%s %s' % (zone, query))
     if c.get('permanent', True):
-        parts.append('firewall-cmd --permanent ' + query)
+        parts.append('firewall-cmd --permanent%s %s' % (zone, query))
     if c.get('allowed', True):
         return parts
     return ['! ' + part for part in parts]

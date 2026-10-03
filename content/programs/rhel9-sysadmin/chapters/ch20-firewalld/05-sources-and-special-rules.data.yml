@@ -1,0 +1,327 @@
+source-zone:
+  title: Allow a service for one host only
+  caption: Step through limiting a web server to serverb.
+  height: 270
+  mode: steps
+  steps:
+  - title: The goal
+    text: Port 80 should answer only serverb (172.25.250.11). Opening http in public would let everyone in.
+  - title: A zone for the trusted caller
+    text: 'Create a zone with a name of your own: firewall-cmd --permanent --new-zone=lanonly. It starts empty.'
+  - title: Assign the source and the service
+    text: Add the address as a source of the zone and allow http there. Then --reload. Traffic from that address now uses the new zone.
+  - title: Everyone else stays in public
+    text: Other clients still match public and still get a rejection. The test from serverb works; the same test from another host does not.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 160
+    h: 60
+    tone: blue
+    title: serverb
+    sub: 172.25.250.11
+    mono: true
+    titleSize: 14
+    active:
+    - 0
+    - 2
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 10
+    y: 140
+    w: 160
+    h: 60
+    tone: gray
+    title: other host
+    sub: 172.25.250.12
+    mono: true
+    titleSize: 14
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: node
+    x: 280
+    y: 30
+    w: 170
+    h: 60
+    tone: green
+    title: zone lanonly
+    sub: source + http
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 280
+    y: 140
+    w: 170
+    h: 60
+    tone: amber
+    title: zone public
+    sub: ssh only
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: node
+    x: 530
+    y: 30
+    w: 140
+    h: 60
+    tone: purple
+    title: servera:80
+    sub: httpd
+    mono: true
+    titleSize: 13
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 170
+      - 60
+    - - 280
+      - 60
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 450
+      - 60
+    - - 530
+      - 60
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 170
+      - 170
+    - - 280
+      - 170
+    visible:
+    - 3
+rule-tools:
+  title: Tools for special cases
+  caption: Select a kind of rule.
+  height: 280
+  mode: select
+  initial: src
+  info:
+    src:
+      tone: green
+      title: Source in a zone
+      text: firewall-cmd --permanent --zone=lanonly --add-source=172.25.250.11. Everything from that address is handled by that zone. Use drop or block to shut a host out, trusted or a custom zone to let it in.
+    fwd:
+      tone: blue
+      title: Forward a port
+      text: --add-forward-port=port=8081:proto=tcp:toport=8080 sends requests for 8081 to 8080 on the same machine. No program has to listen on 8081.
+    rich:
+      tone: purple
+      title: Rich rule
+      text: 'One line with conditions and an action: rule family="ipv4" source address="172.25.250.11" port port="8080" protocol="tcp" reject. Use when a service or a source zone cannot say it.'
+    svc:
+      tone: amber
+      title: Custom service
+      text: --new-service=myapp, then --add-port=9000/tcp. Give your own port set a name, then allow it with --add-service=myapp.
+    log:
+      tone: coral
+      title: Log denied
+      text: --set-log-denied=all writes a kernel message for every rejected packet. Switch it off again with off.
+  elements:
+  - kind: node
+    x: 6
+    y: 34
+    w: 128
+    h: 56
+    tone: green
+    title: source
+    sub: zone by address
+    titleSize: 13
+    select: src
+    active:
+    - src
+  - kind: node
+    x: 142
+    y: 34
+    w: 128
+    h: 56
+    tone: blue
+    title: forward
+    sub: 8081 → 8080
+    titleSize: 13
+    select: fwd
+    active:
+    - fwd
+  - kind: node
+    x: 278
+    y: 34
+    w: 128
+    h: 56
+    tone: purple
+    title: rich rule
+    sub: conditions
+    titleSize: 13
+    select: rich
+    active:
+    - rich
+  - kind: node
+    x: 414
+    y: 34
+    w: 128
+    h: 56
+    tone: amber
+    title: service
+    sub: your own
+    titleSize: 13
+    select: svc
+    active:
+    - svc
+  - kind: node
+    x: 550
+    y: 34
+    w: 120
+    h: 56
+    tone: coral
+    title: log
+    sub: see denials
+    titleSize: 13
+    select: log
+    active:
+    - log
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: sources, forwarding, rich rules'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: firewall-cmd --permanent --new-zone=lanonly
+      out: success
+    - cmd: firewall-cmd --reload
+      out: success
+    - cmd: firewall-cmd --permanent --zone=lanonly --add-source=172.25.250.11
+      out: success
+    - cmd: firewall-cmd --permanent --zone=lanonly --add-service=http
+      out: success
+    - cmd: firewall-cmd --reload
+      out: success
+    - cmd: firewall-cmd --get-active-zones
+      out: "lanonly\n  sources: 172.25.250.11\npublic\n  interfaces: enp1s0"
+    - cmd: firewall-cmd --get-zone-of-source=172.25.250.11
+      out: lanonly
+    - cmd: firewall-cmd --permanent --zone=lanonly --add-forward-port=port=8081:proto=tcp:toport=8080
+      out: success
+    - cmd: firewall-cmd --permanent --zone=lanonly --add-rich-rule='rule family="ipv4" source address="172.25.250.11" port port="8080" protocol="tcp" reject'
+      out: success
+    - cmd: firewall-cmd --reload
+      out: success
+    - cmd: firewall-cmd --zone=lanonly --list-all
+      out: "lanonly (active)\n  target: default\n  icmp-block-inversion: no\n  interfaces: \n  sources: 172.25.250.11\n  services: http\n  ports: \n  protocols: \n  forward: no\n  masquerade: no\n  forward-ports: \n\tport=8081:proto=tcp:toport=8080:toaddr=\n  source-ports: \n  icmp-blocks: \n  rich rules: \n\trule family=\"ipv4\" source address=\"172.25.250.11\" port port=\"8080\" protocol=\"tcp\" reject"
+    - cmd: firewall-cmd --permanent --new-service=myapp
+      out: success
+    - cmd: firewall-cmd --permanent --service=myapp --add-port=9000/tcp
+      out: success
+    - cmd: firewall-cmd --reload; firewall-cmd --info-service=myapp
+      out: "success\nmyapp\n  ports: 9000/tcp\n  protocols: \n  source-ports: \n  modules: \n  destination: \n  includes: \n  helpers: "
+    - cmd: firewall-cmd --set-log-denied=all
+      out: success
+    - cmd: firewall-cmd --get-log-denied
+      out: all
+    tasks:
+    - text: Create the zone lanonly and give it the source 172.25.250.11 and the service http.
+      commands:
+      - firewall-cmd --permanent --new-zone=lanonly
+      - firewall-cmd --reload
+      - firewall-cmd --permanent --zone=lanonly --add-source=172.25.250.11
+      - firewall-cmd --permanent --zone=lanonly --add-service=http
+    - text: Load it and check which zone handles that address.
+      commands:
+      - firewall-cmd --reload
+      - firewall-cmd --get-zone-of-source=172.25.250.11
+    - text: Forward port 8081 to 8080 in that zone and reload.
+      commands:
+      - firewall-cmd --permanent --zone=lanonly --add-forward-port=port=8081:proto=tcp:toport=8080
+      - firewall-cmd --reload
+    - text: Create your own service myapp for 9000/tcp.
+      commands:
+      - firewall-cmd --permanent --new-service=myapp
+      - firewall-cmd --permanent --service=myapp --add-port=9000/tcp
+    - text: Switch on logging of rejected packets.
+      commands:
+      - firewall-cmd --set-log-denied=all
+quick:
+  questions:
+  - id: q-4c6439d3fb82
+    q: You want only 172.25.250.11 to reach port 80. What is the cleanest way?
+    options:
+    - A zone with that source and the http service
+    - Open http in public
+    - Stop firewalld
+    answer: 0
+    explain: Everyone else stays in public and is rejected.
+  - id: q-eae20b9f7013
+    q: What does a source assignment do?
+    options:
+    - Sends all traffic from that address to the zone
+    - Blocks the address
+    - Changes the interface zone
+    answer: 0
+    explain: The zone decides what that address may do.
+  - id: q-968d10934535
+    q: Which zone silently discards everything from a source?
+    options:
+    - drop
+    - public
+    - trusted
+    answer: 0
+    explain: block replies with a rejection instead.
+  - id: q-46a358049d52
+    q: What does --add-forward-port=port=8081:proto=tcp:toport=8080 do?
+    options:
+    - Sends connections for 8081 to port 8080
+    - Opens 8080 and 8081
+    - Moves the daemon
+    answer: 0
+    explain: The local daemon only has to listen on 8080.
+  - id: q-7db41e3d76ac
+    q: What is a custom service for?
+    options:
+    - Giving your own set of ports a name to allow
+    - Starting a daemon
+    - Creating a user
+    answer: 0
+    explain: Define it once with --new-service, then --add-service.
+  - id: q-322826f68116
+    q: Which option writes a message for each rejected packet?
+    options:
+    - --set-log-denied=all
+    - --debug
+    - --panic-on
+    answer: 0
+    explain: Read them with journalctl -k. Turn it off afterwards.

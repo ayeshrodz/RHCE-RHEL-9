@@ -1,0 +1,364 @@
+zone-choice:
+  title: Which zone decides?
+  caption: Step through a packet arriving at servera.
+  height: 270
+  mode: steps
+  steps:
+  - title: A packet arrives
+    text: serverb (172.25.250.11) sends a request to port 80 of servera. firewalld must choose one zone to judge it.
+  - title: 1. Does a source match?
+    text: If the sender's address is listed as a source of some zone, that zone wins. No zone has this address as a source here.
+  - title: 2. Which interface?
+    text: Otherwise the zone of the interface the packet came in on is used. enp1s0 belongs to the zone public.
+  - title: 3. Or the default zone
+    text: An interface with no zone, and traffic that matches nothing else, falls back to the default zone (also public on a fresh system).
+  - title: The zone's rules decide
+    text: 'public allows the services ssh, cockpit and dhcpv6-client. Port 80 is not among them, so the packet is rejected: the client sees "No route to host".'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: packet
+    sub: to servera:80
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: source?
+    sub: source zone first
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: interface?
+    sub: then its zone
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: gray
+    title: default
+    sub: last resort
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 130
+    w: 380
+    h: 60
+    tone: green
+    title: zone public
+    sub: ssh · cockpit · dhcpv6-client
+    mono: true
+    titleSize: 14
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 610
+      - 76
+    - - 610
+      - 110
+    - - 530
+      - 150
+    visible:
+    - 4
+list-all:
+  title: Reading firewall-cmd --list-all
+  caption: Select a line of the output.
+  height: 330
+  mode: select
+  initial: target
+  info:
+    zone:
+      tone: blue
+      title: public (active)
+      text: The zone and whether it is in use. Active means at least one interface or source is assigned to it.
+    target:
+      tone: coral
+      title: 'target: default'
+      text: What happens to traffic that no rule allows. default means reject (with a "No route to host" reply). Zones such as drop silently discard, trusted accepts everything.
+    ifaces:
+      tone: purple
+      title: 'interfaces: enp1s0'
+      text: The network interfaces whose traffic this zone judges. One interface belongs to at most one zone.
+    sources:
+      tone: amber
+      title: 'sources:'
+      text: Sender addresses or networks that always use this zone, whatever interface they arrive on. Empty here.
+    services:
+      tone: green
+      title: 'services: cockpit dhcpv6-client ssh'
+      text: 'Named bundles of ports and protocols that are allowed in. A service is a definition, not a daemon: allowing http does not start a web server.'
+    ports:
+      tone: green
+      title: 'ports:'
+      text: Individual ports allowed in addition to the services, written 8080/tcp.
+    rich:
+      tone: gray
+      title: forward-ports · rich rules · masquerade
+      text: Port forwarding, rich rules and address translation. Empty unless you add them (the next lessons).
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 180
+    h: 44
+    tone: blue
+    title: public (active)
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: zone
+    active:
+    - zone
+  - kind: node
+    x: 10
+    y: 80
+    w: 180
+    h: 44
+    tone: coral
+    title: 'target: default'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: target
+    active:
+    - target
+  - kind: node
+    x: 10
+    y: 132
+    w: 180
+    h: 44
+    tone: purple
+    title: 'interfaces: enp1s0'
+    sub: ''
+    mono: true
+    titleSize: 12.5
+    select: ifaces
+    active:
+    - ifaces
+  - kind: node
+    x: 10
+    y: 184
+    w: 180
+    h: 44
+    tone: amber
+    title: 'sources:'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: sources
+    active:
+    - sources
+  - kind: node
+    x: 10
+    y: 236
+    w: 180
+    h: 44
+    tone: green
+    title: 'services: ssh …'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: services
+    active:
+    - services
+  - kind: node
+    x: 10
+    y: 288
+    w: 86
+    h: 34
+    tone: green
+    title: 'ports:'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: ports
+    active:
+    - ports
+  - kind: node
+    x: 100
+    y: 288
+    w: 90
+    h: 34
+    tone: gray
+    title: rich …
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: rich
+    active:
+    - rich
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: look at the firewall'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl is-active firewalld
+      out: active
+    - cmd: firewall-cmd --state
+      out: running
+    - cmd: firewall-cmd --get-default-zone
+      out: public
+    - cmd: firewall-cmd --get-active-zones
+      out: "public\n  interfaces: enp1s0"
+    - cmd: firewall-cmd --list-all
+      out: "public (active)\n  target: default\n  icmp-block-inversion: no\n  interfaces: enp1s0\n  sources: \n  services: cockpit dhcpv6-client ssh\n  ports: \n  protocols: \n  forward: yes\n  masquerade: no\n  forward-ports: \n  source-ports: \n  icmp-blocks: \n  rich rules: "
+    - cmd: firewall-cmd --get-zones
+      out: block dmz drop external home internal nm-shared public trusted work
+    - cmd: firewall-cmd --get-services | wc -w
+      out: '225'
+    - cmd: firewall-cmd --info-service=http
+      out: "http\n  ports: 80/tcp\n  protocols: \n  source-ports: \n  modules: \n  destination: \n  includes: \n  helpers: "
+    - cmd: firewall-cmd --permanent --add-service=http
+      out: success
+    - cmd: firewall-cmd --reload
+      out: success
+    - cmd: firewall-cmd --list-services
+      out: cockpit dhcpv6-client http ssh
+    - cmd: firewall-cmd --query-service=http
+      out: 'yes'
+    tasks:
+    - text: Check that firewalld is running and which zone is the default.
+      commands:
+      - firewall-cmd --state
+      - firewall-cmd --get-default-zone
+    - text: Show the active zones and everything the active zone allows.
+      commands:
+      - firewall-cmd --get-active-zones
+      - firewall-cmd --list-all
+    - text: Read what the service http stands for.
+      commands:
+      - firewall-cmd --info-service=http
+    - text: Allow http permanently, load it, and ask whether it is allowed.
+      commands:
+      - firewall-cmd --permanent --add-service=http
+      - firewall-cmd --reload
+      - firewall-cmd --query-service=http
+quick:
+  questions:
+  - id: q-72afc577fd88
+    q: A packet comes from an address listed as the source of the zone work, on an interface in the zone public. Which zone judges it?
+    options:
+    - 'work: a matching source wins over the interface'
+    - public, because the interface decides
+    - The default zone
+    answer: 0
+    explain: 'Order: source, then interface, then the default zone.'
+  - id: q-e57d731edcbc
+    q: What is a firewalld service?
+    options:
+    - A named set of ports and protocols to allow
+    - A systemd unit that serves the port
+    - A user account
+    answer: 0
+    explain: Allowing http does not start httpd, and starting httpd does not open the port.
+  - id: q-03e588e48430
+    q: Which command shows everything the active zone allows?
+    options:
+    - firewall-cmd --list-all
+    - firewall-cmd --state
+    - systemctl status firewalld
+    answer: 0
+    explain: --state only says whether the daemon is running.
+  - id: q-b17bab610220
+    q: A client gets "No route to host" from a web server whose httpd is running. Most likely cause?
+    options:
+    - The firewall rejects the port
+    - DNS is broken
+    - The disk is full
+    answer: 0
+    explain: The default reply of a zone is a rejection, which looks like that message.
+  - id: q-20407846a4e2
+    q: What does the target "default" mean for traffic nothing allows?
+    options:
+    - It is rejected
+    - It is accepted
+    - It is logged only
+    answer: 0
+    explain: drop discards silently, trusted accepts.
+  - id: q-76e78d9dbbd1
+    q: Which command lists the zone names that exist?
+    options:
+    - firewall-cmd --get-zones
+    - firewall-cmd --get-active-zones
+    - firewall-cmd --zones
+    answer: 0
+    explain: --get-active-zones lists only those in use.

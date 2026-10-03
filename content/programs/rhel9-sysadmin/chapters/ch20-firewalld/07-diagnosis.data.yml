@@ -1,0 +1,311 @@
+layers:
+  title: Four layers, in order
+  caption: Step through what to check when a client cannot connect.
+  height: 270
+  mode: steps
+  steps:
+  - title: The client sees a symptom
+    text: No route to host, a timeout, or Connection refused. Each points to a different layer. Start from the symptom.
+  - title: 1. Is the service running?
+    text: 'On the server: systemctl status httpd. If it is not active, nothing can answer, whatever the firewall says.'
+  - title: 2. Is it listening where you expect?
+    text: ss -tlnp shows ports and programs. A service listening only on 127.0.0.1 is invisible from outside.
+  - title: 3. Does the firewall allow it?
+    text: firewall-cmd --list-all for the zone that judges the client. Compare with --get-active-zones and --get-zone-of-source.
+  - title: 4. Does SELinux allow the port?
+    text: A daemon on an unusual port needs the port label (chapter 16). The firewall can be fine and the service still fail to start.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: blue
+    title: client
+    sub: symptom
+    titleSize: 13
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: service
+    sub: running?
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 290
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: listening
+    sub: ss -tlnp
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 430
+    y: 20
+    w: 120
+    h: 56
+    tone: coral
+    title: firewall
+    sub: zone rules
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: purple
+    title: SELinux
+    sub: port label
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 150
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 270
+      - 48
+    - - 290
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 48
+    - - 430
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 550
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+symptoms:
+  title: What the client sees
+  caption: Select a symptom.
+  height: 270
+  mode: select
+  initial: route
+  info:
+    route:
+      tone: coral
+      title: No route to host
+      text: The firewall rejected the connection, or the host is unreachable. If ping works, suspect a missing firewall rule (the zone's default reply is a rejection).
+    timeout:
+      tone: amber
+      title: Connection timed out
+      text: 'Packets vanish with no answer: a drop zone or drop rule, a lost route, or a firewall in between. It takes as long as the client''s timeout.'
+    refused:
+      tone: purple
+      title: Connection refused
+      text: The packet reached the machine and nothing listens on that port (service stopped, wrong port, wrong address), or a rule rejected it explicitly.
+    ok:
+      tone: green
+      title: It connects
+      text: The firewall and the service both work. If the content is wrong, look at the application.
+  elements:
+  - kind: node
+    x: 6
+    y: 34
+    w: 160
+    h: 56
+    tone: coral
+    title: No route to host
+    sub: rejected
+    titleSize: 13
+    select: route
+    active:
+    - route
+  - kind: node
+    x: 176
+    y: 34
+    w: 160
+    h: 56
+    tone: amber
+    title: timed out
+    sub: dropped
+    titleSize: 13
+    select: timeout
+    active:
+    - timeout
+  - kind: node
+    x: 346
+    y: 34
+    w: 160
+    h: 56
+    tone: purple
+    title: refused
+    sub: not listening
+    titleSize: 13
+    select: refused
+    active:
+    - refused
+  - kind: node
+    x: 516
+    y: 34
+    w: 154
+    h: 56
+    tone: green
+    title: 200 OK
+    sub: works
+    titleSize: 13
+    select: ok
+    active:
+    - ok
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: diagnose from both sides'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl is-active httpd
+      out: active
+    - cmd: ss -tlnp | grep httpd | cut -c1-60
+      out: LISTEN 0      511                *:80              *:*
+    - cmd: firewall-cmd --get-active-zones
+      out: "public\n  interfaces: enp1s0"
+    - cmd: firewall-cmd --list-services
+      out: cockpit dhcpv6-client ssh
+    - cmd: firewall-cmd --set-log-denied=all
+      out: success
+    - cmd: journalctl -k --no-pager | grep REJECT | tail -1 | cut -c1-130
+      out: 'Oct  3 19:57:58 servera.lab.example.com kernel: filter_IN_public_REJECT: IN=enp1s0 OUT= MAC=… SRC=172.25.250.11 DST=172.25.250.10'
+    - cmd: firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+      out: 'success
+
+        success'
+    - cmd: firewall-cmd --set-log-denied=off
+      out: success
+    - cmd: curl -s -m 3 http://servera/
+      out: hello from servera
+    - cmd: curl -sS -m 3 http://servera:8080/
+      out: 'curl: (7) Failed to connect to servera port 8080: Connection refused'
+    tasks:
+    - text: Confirm that the service runs and listens.
+      commands:
+      - systemctl is-active httpd
+      - ss -tlnp | grep httpd | cut -c1-60
+    - text: Find the zone that judges the client and what it allows.
+      commands:
+      - firewall-cmd --get-active-zones
+      - firewall-cmd --list-services
+    - text: Log the rejected packets and read one.
+      commands:
+      - firewall-cmd --set-log-denied=all
+      - journalctl -k --no-pager | grep REJECT | tail -1 | cut -c1-130
+    - text: Fix it properly, switch logging off and test from the client.
+      commands:
+      - firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+      - firewall-cmd --set-log-denied=off
+      - curl -s -m 3 http://servera/
+quick:
+  questions:
+  - id: q-3db7a5346e53
+    q: curl says "No route to host" but ping works. What is the first suspect?
+    options:
+    - The firewall of the server
+    - A full disk
+    - The user password
+    answer: 0
+    explain: The zone's default reply looks like this.
+  - id: q-9e02d3d467ed
+    q: curl says "Connection refused". What does that suggest?
+    options:
+    - Nothing listens on that port
+    - The firewall dropped the packet silently
+    - The DNS name is wrong
+    answer: 0
+    explain: A dropped packet gives a timeout instead.
+  - id: q-9f8def441c56
+    q: curl waits and then times out. Which firewall setting fits?
+    options:
+    - The source or zone is set to drop
+    - The service is allowed
+    - The service is stopped
+    answer: 0
+    explain: A stopped service refuses at once.
+  - id: q-31cfa519c144
+    q: Which command shows what listens on which port, with the program?
+    options:
+    - ss -tlnp
+    - firewall-cmd --list-all
+    - ip a
+    answer: 0
+    explain: Run it on the server as root to see the program names.
+  - id: q-34771b484425
+    q: httpd listens on 127.0.0.1:80 only. A client on the network fails. Is it the firewall?
+    options:
+    - 'No: the daemon must listen on the network address'
+    - Yes, always
+    - Only for UDP
+    answer: 0
+    explain: Fix the Listen line, not the firewall.
+  - id: q-14c4b93f8ce2
+    q: Where do you read the packets that a zone rejects?
+    options:
+    - journalctl -k after --set-log-denied=all
+    - /etc/firewalld
+    - ss -tlnp
+    answer: 0
+    explain: Switch logging off again when done.

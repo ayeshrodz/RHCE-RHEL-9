@@ -1,0 +1,299 @@
+two-stores:
+  title: Two stores of rules
+  caption: Step through a change that is made without --permanent.
+  height: 270
+  mode: steps
+  steps:
+  - title: 'Runtime: what is enforced now'
+    text: firewall-cmd --add-service=http changes the rules in memory. They work at once, but they are gone after a reload or a reboot.
+  - title: 'Permanent: what is saved'
+    text: --permanent writes /etc/firewalld/ only. Nothing changes in the running firewall until the next reload.
+  - title: --reload
+    text: 'Loads the saved configuration into the running firewall. It replaces the runtime state: runtime-only changes disappear.'
+  - title: --runtime-to-permanent
+    text: Saves everything that is in force now. Handy, but it also saves anything temporary you forgot, such as a port opened for a test.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 200
+    h: 70
+    tone: amber
+    title: runtime
+    sub: in force now
+    titleSize: 15
+    active:
+    - 0
+    - 2
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 470
+    y: 30
+    w: 200
+    h: 70
+    tone: green
+    title: permanent
+    sub: saved in /etc/firewalld
+    titleSize: 14
+    active:
+    - 1
+    - 3
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 470
+      - 50
+    - - 210
+      - 50
+    label: --reload
+    labelDy: -8
+    visible:
+    - 2
+  - kind: arrow
+    points:
+    - - 210
+      - 80
+    - - 470
+      - 80
+    label: --runtime-to-permanent
+    labelDy: 14
+    visible:
+    - 3
+  - kind: label
+    x: 340
+    y: 160
+    text: add-service=http  →  runtime only
+    mono: true
+    size: 13
+    muted: true
+  - kind: node
+    x: 190
+    y: 190
+    w: 300
+    h: 40
+    tone: gray
+    title: --permanent  →  saved only
+    sub: ''
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+options:
+  title: Options that change the store
+  caption: Select an option.
+  height: 250
+  mode: select
+  initial: permanent
+  info:
+    permanent:
+      tone: green
+      title: --permanent
+      text: Apply the change to the saved configuration only. Use it for changes that must survive, then --reload.
+    reload:
+      tone: blue
+      title: --reload
+      text: Load the saved configuration. Runtime-only changes are lost. Existing connections are kept.
+    timeout:
+      tone: amber
+      title: --timeout=60
+      text: 'Runtime only: the change removes itself after 60 seconds (or 10m, 1h). Ideal for a quick test.'
+    rtp:
+      tone: coral
+      title: --runtime-to-permanent
+      text: Copies the whole running configuration to the saved one. Check --list-all first or you save things you did not mean to.
+    query:
+      tone: gray
+      title: --query-service=NAME
+      text: Prints yes or no (and sets the exit status). Add --permanent to ask the saved store instead.
+  elements:
+  - kind: node
+    x: 6
+    y: 34
+    w: 128
+    h: 56
+    tone: green
+    title: --permanent
+    sub: save
+    mono: true
+    titleSize: 13
+    select: permanent
+    active:
+    - permanent
+  - kind: node
+    x: 142
+    y: 34
+    w: 128
+    h: 56
+    tone: blue
+    title: --reload
+    sub: load
+    mono: true
+    titleSize: 13
+    select: reload
+    active:
+    - reload
+  - kind: node
+    x: 278
+    y: 34
+    w: 128
+    h: 56
+    tone: amber
+    title: --timeout
+    sub: temporary
+    mono: true
+    titleSize: 13
+    select: timeout
+    active:
+    - timeout
+  - kind: node
+    x: 414
+    y: 34
+    w: 128
+    h: 56
+    tone: coral
+    title: --runtime-to-…
+    sub: save all
+    mono: true
+    titleSize: 12
+    select: rtp
+    active:
+    - rtp
+  - kind: node
+    x: 550
+    y: 34
+    w: 120
+    h: 56
+    tone: gray
+    title: --query-…
+    sub: yes / no
+    mono: true
+    titleSize: 13
+    select: query
+    active:
+    - query
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: runtime and permanent'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: firewall-cmd --add-service=http
+      out: success
+    - cmd: firewall-cmd --query-service=http
+      out: 'yes'
+    - cmd: firewall-cmd --permanent --query-service=http
+      out: 'no'
+    - cmd: firewall-cmd --list-services
+      out: cockpit dhcpv6-client http ssh
+    - cmd: firewall-cmd --permanent --list-services
+      out: cockpit dhcpv6-client ssh
+    - cmd: firewall-cmd --reload
+      out: success
+    - cmd: firewall-cmd --query-service=http
+      out: 'no'
+    - cmd: firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+      out: 'success
+
+        success'
+    - cmd: firewall-cmd --add-port=8080/tcp --timeout=60
+      out: success
+    - cmd: firewall-cmd --list-ports
+      out: 8080/tcp
+    - cmd: firewall-cmd --runtime-to-permanent
+      out: success
+    - cmd: firewall-cmd --permanent --list-ports
+      out: 8080/tcp
+    - cmd: firewall-cmd --permanent --remove-port=8080/tcp; firewall-cmd --reload
+      out: 'success
+
+        success'
+    tasks:
+    - text: Allow http in the running firewall only, and compare both stores.
+      commands:
+      - firewall-cmd --add-service=http
+      - firewall-cmd --list-services
+      - firewall-cmd --permanent --list-services
+    - text: Reload and see that the runtime change is gone.
+      commands:
+      - firewall-cmd --reload
+      - firewall-cmd --query-service=http
+    - text: 'Make the change properly: permanent first, then reload.'
+      commands:
+      - firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+    - text: Open 8080/tcp for 60 seconds, then watch --runtime-to-permanent save it anyway.
+      commands:
+      - firewall-cmd --add-port=8080/tcp --timeout=60
+      - firewall-cmd --runtime-to-permanent
+      - firewall-cmd --permanent --list-ports
+quick:
+  questions:
+  - id: q-1ba8098c9ceb
+    q: You run firewall-cmd --add-service=http and reboot. What happens?
+    options:
+    - 'The rule is gone: it was runtime only'
+    - The rule is kept
+    - The firewall fails to start
+    answer: 0
+    explain: Use --permanent, then --reload.
+  - id: q-d4a871f7fbc1
+    q: What does firewall-cmd --reload do to runtime-only changes?
+    options:
+    - Discards them
+    - Saves them
+    - Keeps them until reboot
+    answer: 0
+    explain: It replaces runtime with the saved configuration.
+  - id: q-bbaf40847780
+    q: Which option removes a temporary rule by itself after a time?
+    options:
+    - --timeout=60
+    - --expire
+    - --reload
+    answer: 0
+    explain: It is runtime only, so it cannot be combined with --permanent.
+  - id: q-8580c6b24227
+    q: Why can --runtime-to-permanent be risky?
+    options:
+    - It also saves temporary changes you forgot
+    - It deletes the zones
+    - It needs a reboot
+    answer: 0
+    explain: Read --list-all before you run it.
+  - id: q-9cf7fb0ae027
+    q: How do you ask whether http is allowed in the saved configuration?
+    options:
+    - firewall-cmd --permanent --query-service=http
+    - firewall-cmd --query-service=http
+    - systemctl is-enabled http
+    answer: 0
+    explain: Without --permanent the runtime state is queried.
+  - id: q-0896f404d2ec
+    q: After firewall-cmd --permanent --add-service=http, is port 80 open?
+    options:
+    - 'Not yet: reload to load it'
+    - Yes, at once
+    - Only after a reboot
+    answer: 0
+    explain: The change is saved, not enforced, until --reload.
