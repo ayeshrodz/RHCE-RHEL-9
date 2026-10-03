@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: An autofs parent exists but no NFS child appears yet. What should you do?
+    options:
+    - Assume the remote data is already mounted.
+    - Disable SELinux.
+    - Access a defined child key and inspect the triggered mount.
+    answer: 2
+    explain: An on-demand child mount is created when the mapped path is used.
+    id: q-205c727282ae
+  - q: Why does root_squash matter?
+    options:
+    - It provides a backup.
+    - It prevents client root from automatically acting as server root.
+    - It encrypts NFS traffic.
+    answer: 1
+    explain: Root mapping constrains identity; it is not encryption or retention.
+    id: q-712ded54b76f
+  - q: A mapping does not expire while your shell is inside it. Why?
+    options:
+    - The mount is busy due to active use.
+    - Timeout never applies to autofs.
+    - The map must use a private key.
+    answer: 0
+    explain: Processes holding a path open can prevent idle unmounting.
+    id: q-40e81d93c2be

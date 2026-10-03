@@ -266,6 +266,22 @@
   labs:
   - ch18/lab
   challenges: []
+- id: ch19.operations
+  chapter: ch19
+  lessons:
+  - ch19/nfs-access
+  - ch19/automounts
+  labs:
+  - ch19/lab
+  challenges: []
+- id: ch19.verification
+  chapter: ch19
+  lessons:
+  - ch19/nfs-access
+  - ch19/automounts
+  labs:
+  - ch19/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:

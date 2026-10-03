@@ -1,9 +1,8 @@
-title: "Network file systems and autofs"
-goal: "Use files that live on another machine, and mount them only when needed."
-status: planned
-topics:
-  - "NFS shares: finding, mounting and unmounting"
-  - "Persistent NFS mounts"
-  - "autofs: direct and indirect maps"
-  - "Wildcard maps for home directories"
-  - "Firewall and SELinux settings for NFS"
+title: Network file systems and autofs
+goal: Use files that live on another machine, and mount them only when needed.
+objectives:
+- Mount a defined NFS export with suitable access policy.
+- Configure and diagnose direct, indirect and wildcard automounts.
+objectiveIds:
+- ch19.operations
+- ch19.verification
