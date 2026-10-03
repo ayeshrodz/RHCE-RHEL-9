@@ -1,0 +1,10 @@
+recall:
+  cards:
+  - front: chronyd is active, but no source is selected. What can you conclude?
+    back: The daemon runs, but synchronization is not established. Daemon health and synchronization health
+      are separate observations.
+  - front: What verifies persistent journal storage most directly?
+    back: Finding the known event in the previous boot after reboot. A prior-boot query tests retention
+      across the lifecycle boundary.
+  - front: What does a timezone change normally alter?
+    back: How an instant is displayed locally. Timezone is a presentation setting, not an NTP source.

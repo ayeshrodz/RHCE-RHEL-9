@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: chronyd is active, but no source is selected. What can you conclude?
+    options:
+    - The timezone must be UTC.
+    - The daemon runs, but synchronization is not established.
+    - The clock is definitely accurate.
+    answer: 1
+    explain: Daemon health and synchronization health are separate observations.
+    id: q-8eb7a1c9365a
+  - q: What verifies persistent journal storage most directly?
+    options:
+    - Finding the known event in the previous boot after reboot.
+    - Finding a current event before reboot.
+    - Changing only the hostname.
+    answer: 0
+    explain: A prior-boot query tests retention across the lifecycle boundary.
+    id: q-98c61e4d048e
+  - q: What does a timezone change normally alter?
+    options:
+    - The identity of a boot.
+    - Which unit owns a process.
+    - How an instant is displayed locally.
+    answer: 2
+    explain: Timezone is a presentation setting, not an NTP source.
+    id: q-a164cee7fc7b
