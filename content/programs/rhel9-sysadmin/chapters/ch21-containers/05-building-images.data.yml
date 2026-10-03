@@ -1,0 +1,317 @@
+containerfile:
+  title: A Containerfile
+  caption: Select an instruction.
+  height: 280
+  mode: select
+  initial: from
+  info:
+    from:
+      tone: purple
+      title: FROM
+      text: The base image to start from. Name it fully; for a reproducible build pin it to a tag you tested or, better, to its digest (image@sha256:…).
+    copy:
+      tone: green
+      title: COPY
+      text: Copies files from the build directory (the context) into the image. The files are fixed at build time, unlike a volume, which shows the current data at run time.
+    run:
+      tone: blue
+      title: RUN
+      text: Runs a command during the build, for example installing a package. Each instruction makes a layer; combine commands with && to keep layers few.
+    user:
+      tone: amber
+      title: USER
+      text: The account the program runs as. Prefer a non-root user so a flaw in the program does not give root inside the container.
+    cmd:
+      tone: coral
+      title: CMD
+      text: The default command when the container starts. A container lives as long as this main process does.
+  elements:
+  - kind: node
+    x: 6
+    y: 34
+    w: 128
+    h: 56
+    tone: purple
+    title: FROM
+    sub: base image
+    mono: true
+    titleSize: 15
+    select: from
+    active:
+    - from
+  - kind: node
+    x: 142
+    y: 34
+    w: 128
+    h: 56
+    tone: green
+    title: COPY
+    sub: add files
+    mono: true
+    titleSize: 15
+    select: copy
+    active:
+    - copy
+  - kind: node
+    x: 278
+    y: 34
+    w: 128
+    h: 56
+    tone: blue
+    title: RUN
+    sub: build step
+    mono: true
+    titleSize: 15
+    select: run
+    active:
+    - run
+  - kind: node
+    x: 414
+    y: 34
+    w: 128
+    h: 56
+    tone: amber
+    title: USER
+    sub: who runs
+    mono: true
+    titleSize: 15
+    select: user
+    active:
+    - user
+  - kind: node
+    x: 550
+    y: 34
+    w: 120
+    h: 56
+    tone: coral
+    title: CMD
+    sub: start
+    mono: true
+    titleSize: 15
+    select: cmd
+    active:
+    - cmd
+build-flow:
+  title: From files to an image
+  caption: Step through podman build.
+  height: 270
+  mode: steps
+  steps:
+  - title: Files and a Containerfile
+    text: 'A directory holds the Containerfile and what it copies: here index.html, the page of the portal.'
+  - title: podman build -t localhost/portal:1 .
+    text: Reads the Containerfile top to bottom. Each instruction becomes a layer on top of the base image.
+  - title: The image is local
+    text: Tagged localhost/portal:1 in your own storage. It is not on any registry; nobody else has it.
+  - title: Run it like any image
+    text: 'podman run -d -p 8080:8080 localhost/portal:1 serves the page, with no volume needed: the page is inside the image.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 170
+    h: 60
+    tone: gray
+    title: Containerfile + index.html
+    sub: build context
+    titleSize: 12
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 250
+    y: 20
+    w: 150
+    h: 60
+    tone: amber
+    title: podman build
+    sub: layers
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 470
+    y: 20
+    w: 200
+    h: 60
+    tone: blue
+    title: localhost/portal:1
+    sub: local image
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 470
+    y: 120
+    w: 200
+    h: 50
+    tone: green
+    title: container
+    sub: podman run
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 180
+      - 50
+    - - 250
+      - 50
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 400
+      - 50
+    - - 470
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 570
+      - 80
+    - - 570
+      - 120
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: build an image'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: mkdir -p ~/portal && cd ~/portal && echo "Portal is up" > index.html
+      out: ''
+    - cmd: printf 'FROM registry.access.redhat.com/ubi9/httpd-24:latest\nCOPY index.html /var/www/html/index.html\n' > Containerfile
+      out: ''
+    - cmd: cat Containerfile
+      out: 'FROM registry.access.redhat.com/ubi9/httpd-24:latest
+
+        COPY index.html /var/www/html/index.html'
+    - cmd: podman build -t localhost/portal:1 .
+      out: 'STEP 1/2: FROM registry.access.redhat.com/ubi9/httpd-24:latest
+
+        STEP 2/2: COPY index.html /var/www/html/index.html
+
+        COMMIT localhost/portal:1
+
+        --> 49203ad043a3
+
+        Successfully tagged localhost/portal:1
+
+        49203ad043a3e208fce8ed4aeb3ff117a24e0cd63f212dd89e3aac708edab38c'
+    - cmd: podman images --format "{{.Repository}}:{{.Tag}} {{.Size}}"
+      out: 'localhost/portal:1 310 MB
+
+        registry.access.redhat.com/ubi9/httpd-24:latest 310 MB'
+    - cmd: podman run -d --name portal -p 8080:8080 localhost/portal:1
+      out: 7a1d3c0e5b92
+    - cmd: curl -s localhost:8080
+      out: Portal is up
+    - cmd: podman history localhost/portal:1 | head -3 | cut -c1-90
+      out: 'ID            CREATED                 CREATED BY                                     SIZE
+
+        cf1e25990315  Less than a second ago  /bin/sh -c #(nop) COPY file:702c4212… in /var/www/html/index.html  2.56kB'
+    - cmd: podman tag localhost/portal:1 localhost/portal:latest; podman rm -f -t 1 portal; podman rmi localhost/portal:latest
+      out: 'Untagged: localhost/portal:latest
+
+        portal'
+    tasks:
+    - text: Write the page and a two-line Containerfile in ~/portal.
+      commands:
+      - mkdir -p ~/portal && cd ~/portal && echo "Portal is up" > index.html
+      - printf 'FROM registry.access.redhat.com/ubi9/httpd-24:latest\nCOPY index.html /var/www/html/index.html\n' > Containerfile
+      - cat Containerfile
+    - text: Build the image with a tag and list your images.
+      commands:
+      - podman build -t localhost/portal:1 .
+      - podman images --format "{{.Repository}}:{{.Tag}} {{.Size}}"
+    - text: Run it and fetch the page.
+      commands:
+      - podman run -d --name portal -p 8080:8080 localhost/portal:1
+      - curl -s localhost:8080
+    - text: Look at the layers, then clean up the container.
+      commands:
+      - podman history localhost/portal:1 | head -3 | cut -c1-90
+      - podman tag localhost/portal:1 localhost/portal:latest; podman rm -f -t 1 portal; podman rmi localhost/portal:latest
+quick:
+  questions:
+  - id: q-4458c10c08a8
+    q: Which instruction chooses the image you build upon?
+    options:
+    - FROM
+    - RUN
+    - CMD
+    answer: 0
+    explain: Pin it to a tag or a digest you tested.
+  - id: q-a16ad26b05d5
+    q: What is the difference between COPY and a volume?
+    options:
+    - COPY fixes the files in the image at build time; a volume shows the data present at run time
+    - They are identical
+    - A volume is faster
+    answer: 0
+    explain: Build the application into the image; keep changing data in a volume.
+  - id: q-289eaa710126
+    q: Why can a mutable tag such as latest be a problem?
+    options:
+    - It can point to a different image tomorrow
+    - It is always slower
+    - It cannot be pulled
+    answer: 0
+    explain: A digest identifies one exact image.
+  - id: q-30e8cc303037
+    q: Where is localhost/portal:1 stored?
+    options:
+    - In your local image storage only
+    - On the Red Hat registry
+    - In /etc/containers
+    answer: 0
+    explain: To share it you must push it to a registry.
+  - id: q-a7c1cab897bb
+    q: Which command shows the layers of an image?
+    options:
+    - podman history
+    - podman top
+    - podman port
+    answer: 0
+    explain: Each instruction is a layer.
+  - id: q-afe953063b42
+    q: A one-shot image that prints a line and exits is run under Restart=always in a service. What happens?
+    options:
+    - It restarts again and again
+    - It runs once
+    - Systemd refuses the unit
+    answer: 0
+    explain: Services need a long-running main process.

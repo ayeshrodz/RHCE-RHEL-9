@@ -1,0 +1,316 @@
+model:
+  title: Containers, images and registries
+  caption: Select a part.
+  height: 270
+  mode: select
+  initial: image
+  info:
+    registry:
+      tone: purple
+      title: Registry
+      text: 'A server that stores images and hands them out: registry.access.redhat.com, quay.io and others. You pull an image from it by its full name, such as registry.access.redhat.com/ubi9/httpd-24:latest.'
+    image:
+      tone: blue
+      title: Image
+      text: 'A read-only template: files plus the default command to run. An image is identified by name:tag and by a digest, a hash of its content. A tag can move to a new image; a digest cannot.'
+    container:
+      tone: green
+      title: Container
+      text: 'A running (or stopped) instance of an image: ordinary processes of your host, isolated with namespaces and limited with control groups. Several containers can share one image.'
+    storage:
+      tone: amber
+      title: Local storage
+      text: 'Images and containers live in your own area, ~/.local/share/containers/storage, when you run rootless. Root has a separate store: sudo podman cannot see what student pulled.'
+  elements:
+  - kind: node
+    x: 6
+    y: 40
+    w: 150
+    h: 70
+    tone: purple
+    title: registry
+    sub: pull from
+    titleSize: 14
+    select: registry
+    active:
+    - registry
+  - kind: node
+    x: 190
+    y: 40
+    w: 150
+    h: 70
+    tone: blue
+    title: image
+    sub: read-only template
+    titleSize: 14
+    select: image
+    active:
+    - image
+  - kind: node
+    x: 374
+    y: 40
+    w: 150
+    h: 70
+    tone: green
+    title: container
+    sub: running instance
+    titleSize: 14
+    select: container
+    active:
+    - container
+  - kind: node
+    x: 540
+    y: 40
+    w: 130
+    h: 70
+    tone: amber
+    title: storage
+    sub: ~/.local/share
+    titleSize: 14
+    select: storage
+    active:
+    - storage
+  - kind: arrow
+    points:
+    - - 156
+      - 75
+    - - 190
+      - 75
+  - kind: arrow
+    points:
+    - - 340
+      - 75
+    - - 374
+      - 75
+lifecycle:
+  title: The life of a container
+  caption: Step through the commands.
+  height: 270
+  mode: steps
+  steps:
+  - title: podman pull
+    text: Downloads an image to local storage. podman run does it for you if the image is missing.
+  - title: podman run -d --name web IMAGE
+    text: Creates a container from the image and starts it in the background (-d). The name makes it easy to refer to.
+  - title: podman ps, logs, exec
+    text: ps lists running containers; logs shows their output; exec runs another command inside, for example a shell to look around.
+  - title: podman stop
+    text: Asks the main process to exit (SIGTERM), then kills it after a few seconds. The container still exists, in the state Exited.
+  - title: podman rm
+    text: Deletes the stopped container. The image stays in local storage. rm -f stops and removes in one step.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: blue
+    title: image
+    sub: pulled
+    titleSize: 14
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 180
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: running
+    sub: web
+    mono: true
+    titleSize: 14
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 380
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: exited
+    sub: web
+    mono: true
+    titleSize: 14
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: gray
+    title: gone
+    sub: removed
+    titleSize: 14
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 180
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 330
+      - 48
+    - - 380
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 530
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: run and manage a container'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: podman --version
+      out: podman version 5.8.2
+    - cmd: podman pull registry.access.redhat.com/ubi9/ubi-minimal:latest
+      out: 'Trying to pull registry.access.redhat.com/ubi9/ubi-minimal:latest...
+
+        Getting image source signatures
+
+        Copying blob 5d5a5ce3a8d4 done   |
+
+        Copying config 791c6eb32e done   |
+
+        Writing manifest to image destination
+
+        791c6eb32e560d616e601ed273b35b07118ba234a56e027937dee10c2e7f026c'
+    - cmd: podman images
+      out: 'REPOSITORY                                   TAG         IMAGE ID      CREATED     SIZE
+
+        registry.access.redhat.com/ubi9/ubi-minimal  latest      791c6eb32e56  3 days ago  109 MB'
+    - cmd: podman run --rm registry.access.redhat.com/ubi9/ubi-minimal cat /etc/os-release | head -2
+      out: 'NAME="Red Hat Enterprise Linux"
+
+        VERSION="9.8 (Plow)"'
+    - cmd: podman run -d --name idle registry.access.redhat.com/ubi9/ubi-minimal sleep 600
+      out: 2fd01c4a6e18d21bbd4b0f3a1b7ce7d3de9bb6bf1d1e5d9d0a5f1c7f0c6b2c11
+    - cmd: podman ps
+      out: 'CONTAINER ID  IMAGE                                        COMMAND     CREATED        STATUS        PORTS       NAMES
+
+        2fd01c4a6e18  registry.access.redhat.com/ubi9/ubi-minimal  sleep 600   2 seconds ago  Up 2 seconds              idle'
+    - cmd: podman exec idle id
+      out: uid=0(root) gid=0(root) groups=0(root)
+    - cmd: podman stop -t 1 idle
+      out: idle
+    - cmd: podman ps -a --format "{{.Names}} {{.Status}}"
+      out: idle Exited (137) 1 second ago
+    - cmd: podman rm idle
+      out: idle
+    - cmd: podman pull httpd
+      out: 'Error: short-name resolution enforced but cannot prompt without a TTY'
+    tasks:
+    - text: Pull the minimal image with its full name and list your images.
+      commands:
+      - podman pull registry.access.redhat.com/ubi9/ubi-minimal:latest
+      - podman images
+    - text: Run a one-off container that prints the OS release and disappears.
+      commands:
+      - podman run --rm registry.access.redhat.com/ubi9/ubi-minimal cat /etc/os-release | head -2
+    - text: Start a container in the background, look at it and run a command inside.
+      commands:
+      - podman run -d --name idle registry.access.redhat.com/ubi9/ubi-minimal sleep 600
+      - podman ps
+      - podman exec idle id
+    - text: Stop it, see its state, and remove it.
+      commands:
+      - podman stop -t 1 idle
+      - podman ps -a --format "{{.Names}} {{.Status}}"
+      - podman rm idle
+quick:
+  questions:
+  - id: q-3d81023a45d1
+    q: What is the relationship between an image and a container?
+    options:
+    - A container is a running instance made from an image
+    - They are two names for the same thing
+    - An image is a running container that was stopped
+    answer: 0
+    explain: Images are read-only templates; containers are what runs.
+  - id: q-006423546597
+    q: Where does a rootless user's Podman keep images?
+    options:
+    - In their own home directory
+    - In /var/lib/containers for everyone
+    - In /etc/containers
+    answer: 0
+    explain: sudo podman uses a separate store, so the two do not see each other's images.
+  - id: q-f46e7d9b88e9
+    q: Which command shows stopped containers as well as running ones?
+    options:
+    - podman ps -a
+    - podman ps
+    - podman images
+    answer: 0
+    explain: Plain ps lists only running containers.
+  - id: q-32baf7690fca
+    q: A container started with -d exits at once. Where do you look first?
+    options:
+    - podman logs NAME and podman ps -a
+    - systemctl status podman
+    - /var/log/messages only
+    answer: 0
+    explain: The main process ended; its output explains why.
+  - id: q-1818d2ed8ffd
+    q: Why use a full image name such as registry.access.redhat.com/ubi9/ubi-minimal?
+    options:
+    - Short names are ambiguous and are refused without a prompt
+    - It makes the image smaller
+    - It is required for rootless mode only
+    answer: 0
+    explain: You know exactly which registry you trust.
+  - id: q-2d0a4e35e389
+    q: What does podman rm do to the image?
+    options:
+    - 'Nothing: it only removes the container'
+    - Deletes the image
+    - Stops the registry
+    answer: 0
+    explain: Use podman rmi to remove an image.

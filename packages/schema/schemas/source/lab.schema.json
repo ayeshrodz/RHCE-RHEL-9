@@ -306,6 +306,9 @@
         },
         {
           "$ref": "#/$defs/checkLint"
+        },
+        {
+          "$ref": "#/$defs/checkContainer"
         }
       ]
     },
@@ -1690,6 +1693,47 @@
       "description": "An Ansible inventory group name.",
       "type": "string",
       "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"
+    },
+    "checkContainer": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "user"
+      ],
+      "properties": {
+        "kind": {
+          "const": "container"
+        },
+        "user": {
+          "description": "The account whose rootless Podman storage and user services are examined.",
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_-]{0,31}$"
+        },
+        "image": {
+          "description": "A local image the user must have, for example localhost/portal:1.",
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._/:@-]{0,199}$"
+        },
+        "running": {
+          "description": "The name of a container that must be running.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        "unit": {
+          "description": "A user service that must be active.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9:_.@-]+\\.service$"
+        },
+        "linger": {
+          "description": "Whether lingering is enabled for the user.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
     }
   }
 }

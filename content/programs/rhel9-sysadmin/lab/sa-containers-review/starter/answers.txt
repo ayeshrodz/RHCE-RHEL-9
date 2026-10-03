@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The podman run option that publishes a port (starts with a dash):
+PUBLISH_OPTION=
+# The loginctl command that keeps a user's services running without a login:
+LINGER_COMMAND=
+# The single-letter volume option that relabels a directory privately for one container:
+LABEL_OPTION=

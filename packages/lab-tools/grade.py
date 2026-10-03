@@ -363,12 +363,27 @@ def conditions_process(c):
     return out
 
 
+def conditions_container(c):
+    user = shlex.quote(c['user'])
+    run = 'cd / && runuser -u %s -- env XDG_RUNTIME_DIR=/run/user/$(id -u %s) ' % (user, user)
+    out = []
+    if 'image' in c:
+        out.append(run + 'podman image exists ' + shlex.quote(c['image']))
+    if 'running' in c:
+        out.append(run + "podman container inspect --format '{{.State.Running}}' %s | grep -qx true" % shlex.quote(c['running']))
+    if 'unit' in c:
+        out.append(run + 'systemctl --user is-active --quiet ' + shlex.quote(c['unit']))
+    if 'linger' in c:
+        out.append(('' if c['linger'] else '! ') + 'loginctl show-user %s -p Linger | grep -qx Linger=yes' % user)
+    return out
+
+
 HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
     'logical-volume': conditions_logical_volume, 'volume-group': conditions_volume_group, 'swap': conditions_swap, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
     'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'selinux-boolean': conditions_selinux_boolean, 'selinux-port': conditions_selinux_port, 'selinux-fcontext': conditions_selinux_fcontext, 'address': conditions_address,
-    'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process,
+    'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process, 'container': conditions_container,
 }
 
 

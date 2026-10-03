@@ -1,0 +1,302 @@
+ports:
+  title: Publishing a port
+  caption: Select a part of -p 8080:8080.
+  height: 280
+  mode: select
+  initial: host
+  info:
+    host:
+      tone: blue
+      title: Host port 8080
+      text: The port on the machine that clients connect to. Rootless users cannot use ports below 1024 (the setting net.ipv4.ip_unprivileged_port_start). Add the port to the firewall to let other hosts in.
+    container:
+      tone: green
+      title: Container port 8080
+      text: 'The port the program inside the container listens on. It is a fact about the image, not a choice: the httpd-24 image listens on 8080. -p does not make a program listen; it only connects the two.'
+    bind:
+      tone: purple
+      title: Bind address
+      text: -p 127.0.0.1:8080:8080 publishes on the loopback address only. Without an address it listens on all addresses.
+    env:
+      tone: amber
+      title: Environment
+      text: '-e NAME=value gives the program a setting. Good for ordinary settings. Do not put secrets on the command line or in an image: they are visible to anyone who can inspect it.'
+  elements:
+  - kind: node
+    x: 6
+    y: 40
+    w: 180
+    h: 70
+    tone: blue
+    title: -p 8080:8080
+    sub: 'host : container'
+    mono: true
+    titleSize: 15
+    select: host
+    active:
+    - host
+  - kind: node
+    x: 210
+    y: 40
+    w: 200
+    h: 70
+    tone: green
+    title: program listens :8080
+    sub: inside the container
+    titleSize: 13
+    select: container
+    active:
+    - container
+  - kind: node
+    x: 434
+    y: 40
+    w: 120
+    h: 70
+    tone: purple
+    title: '127.0.0.1:'
+    sub: optional prefix
+    mono: true
+    titleSize: 13
+    select: bind
+    active:
+    - bind
+  - kind: node
+    x: 570
+    y: 40
+    w: 100
+    h: 70
+    tone: amber
+    title: -e KEY=v
+    sub: settings
+    mono: true
+    titleSize: 12
+    select: env
+    active:
+    - env
+bind-mount:
+  title: A bind mount and SELinux
+  caption: Step through mounting a host directory into a container.
+  height: 280
+  mode: steps
+  steps:
+  - title: The goal
+    text: Serve ~/web/index.html from a container that expects its pages in /var/www/html. A bind mount shares the host directory into the container.
+  - title: Without a label option
+    text: 'podman run -v ~/web:/var/www/html:ro … The files keep their home-directory SELinux label (httpd_user_content_t). The confined container is not allowed to read it: the web server answers 403.'
+  - title: :Z relabels for this container
+    text: Adding Z (-v ~/web:/var/www/html:ro,Z) relabels the directory with container_file_t and a private category for this container. The same page now loads.
+  - title: z shares, Z is private
+    text: ':z gives a shared label for several containers; :Z a private one. Never relabel a whole home directory or /etc: mount a directory made for the job.'
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 170
+    h: 70
+    tone: amber
+    title: ~/web
+    sub: httpd_user_content_t
+    mono: true
+    titleSize: 14
+    active:
+    - 1
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    overrides:
+      sub:
+        '0': home directory
+        '1': httpd_user_content_t
+        '2': container_file_t
+        '3': container_file_t
+  - kind: node
+    x: 260
+    y: 30
+    w: 200
+    h: 70
+    tone: blue
+    title: container httpd
+    sub: /var/www/html
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    - 2
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 540
+    y: 30
+    w: 130
+    h: 70
+    tone: gray
+    title: client
+    sub: curl :8080
+    mono: true
+    titleSize: 13
+    visible:
+    - 1
+    - 2
+    - 3
+    overrides:
+      sub:
+        '0': curl :8080
+        '1': 403 Forbidden
+        '2': 200 OK
+        '3': 200 OK
+  - kind: arrow
+    points:
+    - - 180
+      - 65
+    - - 260
+      - 65
+    label: -v
+    labelDy: -6
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 460
+      - 65
+    - - 540
+      - 65
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: label
+    x: 340
+    y: 170
+    text: :ro = read-only · :Z = relabel, private
+    mono: true
+    size: 13
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: ports and volumes'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: mkdir -p ~/web; echo "hello from a container" > ~/web/index.html
+      out: ''
+    - cmd: podman run -d --name web -p 8080:8080 -v ~/web:/var/www/html:ro registry.access.redhat.com/ubi9/httpd-24
+      out: bb1afbdb4ff503b95a53
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" localhost:8080
+      out: '403'
+    - cmd: podman rm -f -t 1 web
+      out: web
+    - cmd: podman run -d --name web -p 8080:8080 -v ~/web:/var/www/html:ro,Z registry.access.redhat.com/ubi9/httpd-24
+      out: c3f9e84a5d0b21aa17d0
+    - cmd: curl -s localhost:8080
+      out: hello from a container
+    - cmd: podman port web
+      out: 8080/tcp -> 0.0.0.0:8080
+    - cmd: podman run -d --name two -p 8080:8080 registry.access.redhat.com/ubi9/ubi-minimal sleep 60
+      out: 'Error: pasta failed with exit code 1:
+
+        Failed to bind port 8080 (Address already in use) for option ''-t 8080-8080:8080-8080'''
+    - cmd: podman run --rm -p 80:8080 registry.access.redhat.com/ubi9/ubi-minimal true
+      out: 'Error: pasta failed with exit code 1:
+
+        Failed to bind port 80 (Permission denied) for option ''-t 80-80:8080-8080'''
+    - cmd: podman run --rm -e GREETING=hi registry.access.redhat.com/ubi9/ubi-minimal sh -c 'echo $GREETING'
+      out: hi
+    - cmd: podman volume create appdata
+      out: appdata
+    - cmd: podman run --rm -v appdata:/data registry.access.redhat.com/ubi9/ubi-minimal sh -c 'echo persisted > /data/f'
+      out: ''
+    - cmd: podman run --rm -v appdata:/data registry.access.redhat.com/ubi9/ubi-minimal cat /data/f
+      out: persisted
+    - cmd: podman volume ls
+      out: 'DRIVER      VOLUME NAME
+
+        local       appdata'
+    tasks:
+    - text: Publish a web container with a bind mount but no label option, and see the status code.
+      commands:
+      - mkdir -p ~/web; echo "hello from a container" > ~/web/index.html
+      - podman run -d --name web -p 8080:8080 -v ~/web:/var/www/html:ro registry.access.redhat.com/ubi9/httpd-24
+      - curl -s -o /dev/null -w "%{http_code}\n" localhost:8080
+    - text: Recreate it with the Z option and fetch the page.
+      commands:
+      - podman rm -f -t 1 web
+      - podman run -d --name web -p 8080:8080 -v ~/web:/var/www/html:ro,Z registry.access.redhat.com/ubi9/httpd-24
+      - curl -s localhost:8080
+    - text: See the two errors for a busy port and a privileged port.
+      commands:
+      - podman run -d --name two -p 8080:8080 registry.access.redhat.com/ubi9/ubi-minimal sleep 60
+      - podman run --rm -p 80:8080 registry.access.redhat.com/ubi9/ubi-minimal true
+    - text: Create a named volume, write to it, and read it from a second container.
+      commands:
+      - podman volume create appdata
+      - podman run --rm -v appdata:/data registry.access.redhat.com/ubi9/ubi-minimal sh -c 'echo persisted > /data/f'
+      - podman run --rm -v appdata:/data registry.access.redhat.com/ubi9/ubi-minimal cat /data/f
+quick:
+  questions:
+  - id: q-50d9dc7d8250
+    q: A web container answers 403 for a page that exists in the bind-mounted directory. What is the likely fix?
+    options:
+    - Add :Z to the volume so SELinux lets the container read it
+    - Run the container as root
+    - Disable SELinux
+    answer: 0
+    explain: The label of the host directory, not its mode, is the problem.
+  - id: q-33da8b0225fb
+    q: What does -p 8080:8080 mean?
+    options:
+    - Host port 8080 is connected to container port 8080
+    - The container may use only port 8080
+    - It opens the firewall
+    answer: 0
+    explain: The firewall is a separate step.
+  - id: q-def76740d14f
+    q: A rootless container with -p 80:8080 fails to start. Why?
+    options:
+    - Unprivileged users cannot bind ports below 1024
+    - Port 80 is reserved by SELinux
+    - The image has no port 80
+    answer: 0
+    explain: Publish a high port, or forward port 80 on the firewall.
+  - id: q-38d5f1c118ba
+    q: Which option keeps data when the container is removed?
+    options:
+    - A volume or bind mount
+    - The -d option
+    - -e
+    answer: 0
+    explain: The container's own writable layer disappears with it.
+  - id: q-64ba0b074541
+    q: What is the difference between :z and :Z?
+    options:
+    - z gives a shared label, Z a private label for one container
+    - z is read-only, Z read-write
+    - There is none
+    answer: 0
+    explain: Use Z for one container, z when several share the data.
+  - id: q-b08d457be60d
+    q: Why avoid putting a password in -e or in a Containerfile?
+    options:
+    - It is visible in inspect output and image layers
+    - It slows the container
+    - It is not supported
+    answer: 0
+    explain: Use a protected file or a secret mechanism instead.
