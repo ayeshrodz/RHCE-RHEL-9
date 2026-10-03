@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: A runtime-only allowance vanishes on reload. Why?
+    options:
+    - DNS deletes all firewall rules.
+    - Reload replaces runtime with saved permanent policy.
+    - The daemon must have changed its port.
+    answer: 1
+    explain: Runtime and permanent configuration stores are distinct.
+    id: q-33f91b0eb026
+  - q: A local web request succeeds. Does that prove remote callers cross the firewall?
+    options:
+    - No; test from the intended remote client and zone.
+    - Yes, every request follows the same boundary.
+    - Yes, if the page has a title.
+    answer: 0
+    explain: Loopback and remote traffic can encounter different policy.
+    id: q-6c325c50572b
+  - q: A source-restricted rich rule exists, but every client still reaches HTTP. What should you inspect?
+    options:
+    - Only the rich-rule spelling.
+    - Only chrony synchronization.
+    - Other broad allowances and active-zone selection.
+    answer: 2
+    explain: The total applicable policy can grant access beyond the narrow rule.
+    id: q-221ebedf3da1

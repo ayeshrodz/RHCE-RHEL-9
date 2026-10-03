@@ -1,9 +1,8 @@
-title: "The firewall"
-goal: "Control which network traffic reaches the machine."
-status: planned
-topics:
-  - "Zones, services and ports"
-  - "Runtime and permanent configuration"
-  - "Changing the default zone and assigning interfaces"
-  - "Source-based rules"
-  - "Verifying what is allowed"
+title: The firewall
+goal: Control which network traffic reaches the machine.
+objectives:
+- Apply zone policy in runtime and permanent configuration.
+- Verify allowed and denied service access from another host.
+objectiveIds:
+- ch20.operations
+- ch20.verification
