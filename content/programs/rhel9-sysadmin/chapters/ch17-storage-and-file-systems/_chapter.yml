@@ -1,10 +1,8 @@
-title: "Storage and file systems"
-goal: "Partition disks, create file systems, and mount them now and at boot."
-status: planned
-topics:
-  - "Disks and partitions: MBR, GPT and the tools that edit them"
-  - "Creating XFS, ext4 and vfat file systems"
-  - "Mounting by UUID and persistent mounts in /etc/fstab"
-  - "Swap partitions and swap files"
-  - "Growing file systems"
-  - "Layered storage and compression (an overview)"
+title: Storage and file systems
+goal: Partition disks, create file systems, and mount them now and at boot.
+objectives:
+- Identify blank secondary storage before partitioning.
+- Create, persist and verify file systems and swap.
+objectiveIds:
+- ch17.operations
+- ch17.verification

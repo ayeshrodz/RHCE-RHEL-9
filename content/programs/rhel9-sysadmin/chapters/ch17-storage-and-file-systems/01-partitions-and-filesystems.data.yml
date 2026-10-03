@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: Which observation authorizes a practice mkfs target?
+    options:
+    - A confirmed blank disposable secondary device with no mount or LVM use.
+    - The device name alone.
+    - Its alphabetic position after the root disk.
+    answer: 0
+    explain: Disk identity and usage must be established, not inferred from a copied name.
+    id: q-2fd24556cd18
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Partition
+    text: A reviewed region of the confirmed disposable disk.
+    tone: purple
+  - id: part1
+    title: File system
+    text: Creates metadata and data layout; its UUID identifies that format instance.
+    tone: teal
+  - id: part2
+    title: Mount
+    text: Exposes the data at a path; verify live state and persistent fstab intent.
+    tone: green
