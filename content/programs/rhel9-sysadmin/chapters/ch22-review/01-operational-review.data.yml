@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: HTTP returns 200 with wrong page content. Is the service contract met?
+    options:
+    - No; transport success and content correctness are separate checks.
+    - Yes; status alone is sufficient.
+    - Only if the firewall is disabled.
+    answer: 0
+    explain: Acceptance should check meaningful behavior, not just a successful protocol status.
+    id: q-59f7d0345182
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Contract
+    text: Define access, content, persistence and recovery conditions before implementation.
+    tone: purple
+  - id: part1
+    title: Evidence
+    text: Connect each condition to configuration, live observation and a useful client operation.
+    tone: teal
+  - id: part2
+    title: Handover
+    text: Record the correction, restore proof, rollback and remaining limitations.
+    tone: green
