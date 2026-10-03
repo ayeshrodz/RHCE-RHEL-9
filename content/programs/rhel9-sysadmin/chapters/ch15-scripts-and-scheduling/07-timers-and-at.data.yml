@@ -1,0 +1,267 @@
+timer-pair:
+  title: A timer and its service
+  caption: Step through the pair of units that make a scheduled job.
+  height: 250
+  mode: steps
+  steps:
+  - title: 'The job: a service'
+    text: 'hello.service has the command to run (ExecStart=) and Type=oneshot: it runs once and exits. You can start it by hand to test: systemctl start hello.service.'
+  - title: 'The schedule: a timer'
+    text: 'hello.timer has [Timer] OnCalendar=… (when) and Persistent=true (catch up after the machine was off). It names no command: it activates the service of the same name.'
+  - title: Enable the timer, not the service
+    text: systemctl enable --now hello.timer. The timer is what must be running; the service only runs when the timer triggers it.
+  - title: See and log
+    text: systemctl list-timers shows NEXT and LAST. Each run is an ordinary service run, so its output is in journalctl -u hello.service.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 170
+    h: 60
+    tone: blue
+    title: hello.service
+    sub: Type=oneshot · ExecStart
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    - 3
+  - kind: node
+    x: 250
+    y: 20
+    w: 170
+    h: 60
+    tone: purple
+    title: hello.timer
+    sub: OnCalendar · Persistent
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 490
+    y: 20
+    w: 180
+    h: 60
+    tone: green
+    title: timers.target
+    sub: enable --now
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 250
+      - 50
+    - - 180
+      - 50
+    label: triggers
+    labelDy: -6
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 420
+      - 50
+    - - 490
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 150
+    y: 110
+    w: 380
+    h: 44
+    tone: gray
+    title: journalctl -u hello.service · systemctl list-timers
+    mono: true
+    titleSize: 12
+    active:
+    - 3
+    visible:
+    - 3
+schedulers:
+  title: Which scheduler?
+  caption: Select a tool.
+  height: 250
+  mode: select
+  initial: cron
+  info:
+    cron:
+      tone: green
+      title: cron
+      text: 'Repeating jobs on a calendar: every night at 02:00, weekdays at 06:15. Simple, everywhere. Output goes to mail or the cron log, and a job missed while the machine was off is skipped (unless anacron is installed).'
+    at:
+      tone: blue
+      title: at
+      text: 'One-off jobs: "run this once at 23:00" or "in one hour". Needs the at package and atd. at now + 5 minutes, atq lists, atrm removes.'
+    timer:
+      tone: purple
+      title: systemd timer
+      text: 'Calendar or relative schedules (OnCalendar, OnBootSec) with the full systemd toolbox: journal logging per run, dependencies, resource limits, Persistent catch-up. Two unit files instead of one line.'
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 200
+    h: 64
+    tone: green
+    title: cron
+    sub: repeat on a calendar
+    mono: true
+    titleSize: 15
+    select: cron
+    active:
+    - cron
+  - kind: node
+    x: 230
+    y: 30
+    w: 200
+    h: 64
+    tone: blue
+    title: at
+    sub: run once
+    mono: true
+    titleSize: 15
+    select: at
+    active:
+    - at
+  - kind: node
+    x: 450
+    y: 30
+    w: 220
+    h: 64
+    tone: purple
+    title: systemd timer
+    sub: calendar + logging
+    mono: true
+    titleSize: 15
+    select: timer
+    active:
+    - timer
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: timers and at'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemd-analyze calendar 'Mon *-*-* 09:30'
+      out: "  Original form: Mon *-*-* 09:30\nNormalized form: Mon *-*-* 09:30:00\n    Next elapse: Mon 2026-10-05 09:30:00 UTC\n       From now: 1 day 15h left"
+    - cmd: systemd-analyze calendar daily
+      out: "  Original form: daily\nNormalized form: *-*-* 00:00:00\n    Next elapse: Sun 2026-10-04 00:00:00 UTC\n       From now: 6h left"
+    - cmd: systemctl list-timers --no-pager | head -4
+      out: 'NEXT                        LEFT         LAST                        PASSED UNIT                         ACTIVATES
+
+        Sat 2026-10-03 18:04:31 UTC 14min left   -                           -      systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+
+        Sat 2026-10-03 18:55:09 UTC 1h 5min left -                           -      dnf-makecache.timer          dnf-makecache.service'
+    - cmd: systemctl enable --now hello.timer
+      out: Created symlink /etc/systemd/system/timers.target.wants/hello.timer → /etc/systemd/system/hello.timer.
+    - cmd: systemctl list-timers hello.timer --no-pager
+      out: 'NEXT                        LEFT     LAST PASSED UNIT        ACTIVATES
+
+        Sat 2026-10-03 17:54:00 UTC 26s left -    -      hello.timer hello.service
+
+
+        1 timers listed.'
+    - cmd: journalctl -t hello-timer --no-pager | tail -1 | cut -c1-110
+      out: 'Oct 03 17:54:03 servera.lab.example.com hello-timer[1327]: hello from the timer'
+    - cmd: echo "echo at job ran > /home/student/at.out" | at now + 1 minute
+      out: 'warning: commands will be executed using /bin/sh
+
+        job 1 at Sat Oct  3 17:53:00 2026'
+    - cmd: atq
+      out: "1\tSat Oct  3 17:53:00 2026 a student"
+    - cmd: atrm 1
+      out: ''
+    tasks:
+    - text: Ask systemd when a calendar expression next elapses.
+      commands:
+      - systemd-analyze calendar 'Mon *-*-* 09:30'
+    - text: List the timers that exist on the system.
+      commands:
+      - systemctl list-timers --no-pager | head -4
+    - text: Enable and start the timer hello.timer.
+      commands:
+      - systemctl enable --now hello.timer
+    - text: Schedule a one-off job one minute from now, and list the queue.
+      commands:
+      - echo "echo at job ran > /home/student/at.out" | at now + 1 minute
+      - atq
+    - text: Remove job 1 from the queue.
+      commands:
+      - atrm 1
+quick:
+  questions:
+  - id: q-bcc9241b5bee
+    q: A systemd timer hello.timer triggers which unit by default?
+    options:
+    - hello.service
+    - hello.target
+    - hello.socket
+    answer: 0
+    explain: The service with the same name.
+  - id: q-9f19166af5ba
+    q: Which command shows when each timer will fire next?
+    options:
+    - systemctl list-timers
+    - systemctl status timers
+    - crontab -l
+    answer: 0
+    explain: NEXT, LEFT, LAST, PASSED columns.
+  - id: q-c30e4270dd85
+    q: What does Persistent=true do?
+    options:
+    - Runs a missed run when the machine comes back
+    - Keeps the timer after reboot
+    - Makes the job run twice
+    answer: 0
+    explain: It records the last run and catches up.
+  - id: q-192a6fc2fd89
+    q: Which unit do you enable to turn on a scheduled job?
+    options:
+    - The .timer
+    - The .service
+    - Both
+    answer: 0
+    explain: The service has no [Install] section; the timer is enabled.
+  - id: q-53d0ee3810f6
+    q: How do you run a command once in the future?
+    options:
+    - at
+    - crontab
+    - cron.d
+    answer: 0
+    explain: at TIME, then atq and atrm.
+  - id: q-ea6f42e049e1
+    q: Where does the output of a timer-started service go?
+    options:
+    - The journal, under the service unit
+    - Mail only
+    - Nowhere
+    answer: 0
+    explain: journalctl -u NAME.service.

@@ -425,20 +425,36 @@
   - ch14/exercise-moving
   - ch14/lab
   challenges: []
-- id: ch15.operations
+- id: ch15.scripts
   chapter: ch15
   lessons:
-  - ch15/bash-scripts
-  - ch15/cron-and-timers
+  - ch15/first-scripts
   labs:
+  - ch15/exercise-first-scripts
   - ch15/lab
   challenges: []
-- id: ch15.verification
+- id: ch15.logic
   chapter: ch15
   lessons:
-  - ch15/bash-scripts
-  - ch15/cron-and-timers
+  - ch15/conditions-and-loops
   labs:
+  - ch15/exercise-conditions
+  - ch15/lab
+  challenges: []
+- id: ch15.cron
+  chapter: ch15
+  lessons:
+  - ch15/cron
+  labs:
+  - ch15/exercise-cron
+  - ch15/lab
+  challenges: []
+- id: ch15.timers
+  chapter: ch15
+  lessons:
+  - ch15/timers-and-at
+  labs:
+  - ch15/exercise-timers
   - ch15/lab
   challenges: []
 - id: ch16.operations

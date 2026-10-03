@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: What makes a file a script you can run?
+    back: A shebang line (#!/bin/bash) and the execute bit (chmod +x).
+  - front: Four ways to run a script?
+    back: ./script (needs x) · bash script · name via PATH · source script (current shell)
+  - front: Arguments and status?
+    back: $1 $2 … · $# count · "$@" all · $0 name · $? last exit status
+  - front: Default value for a variable?
+    back: ${1:-default}
+  - front: Test a file, a number, a string?
+    back: '[ -f F ] · [ "$n" -gt 3 ] · [ "$s" = "x" ]'
+  - front: if / elif / else / fi shape?
+    back: if [ … ]; then …; elif [ … ]; then …; else …; fi
+  - front: Loops?
+    back: for x in LIST; do …; done · while [ … ]; do …; done
+  - front: Choose between patterns?
+    back: case "$1" in start) …;; stop) …;; *) …;; esac
+  - front: Fields of a crontab line?
+    back: minute hour day-of-month month day-of-week [user] command
+  - front: Edit, list, remove your crontab; system jobs?
+    back: crontab -e / -l / -r · files in /etc/cron.d with a user column
+  - front: Gotchas in cron?
+    back: Minimal PATH (use full paths); escape % as \%; check /var/log/cron
+  - front: Timer pair?
+    back: NAME.service (Type=oneshot, ExecStart) + NAME.timer (OnCalendar, Persistent); enable --now the timer; systemctl list-timers

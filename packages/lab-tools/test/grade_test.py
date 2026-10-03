@@ -147,6 +147,17 @@ class ScriptTests(unittest.TestCase):
             archive.write_bytes(b'corrupt')
             self.assertNotEqual(self.run_script({'kind': 'file', 'paths': [str(sums)], 'checksumsVerify': True}), 0)
 
+    def test_scripts_are_run_and_judged_by_exit_status_and_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            script = Path(temp) / 'count.sh'
+            script.write_text('#!/bin/bash\n[ -d "$1" ] || { echo "not a directory: $1" >&2; exit 1; }\necho "Files: $(ls "$1" | wc -l)"\n')
+            script.chmod(0o755)
+            (Path(temp) / 'one').write_text('x')
+            ok = {'kind': 'file', 'paths': [str(script)], 'runs': [{'args': [temp], 'output': '^Files: 2$'}, {'args': ['/nonexistent'], 'exitCode': 1, 'output': 'not a directory'}]}
+            self.assertEqual(self.run_script(ok), 0)
+            for bad in ({'args': [temp], 'output': '^Files: 9$'}, {'args': ['/nonexistent'], 'exitCode': 0}, {'args': [temp], 'exitCode': 3}):
+                self.assertNotEqual(self.run_script({'kind': 'file', 'paths': [str(script)], 'runs': [bad]}), 0, bad)
+
     def test_acl_entries_are_matched_exactly_ignoring_effective_comments(self):
         with tempfile.TemporaryDirectory() as temp:
             bin_dir = Path(temp) / 'bin'

@@ -108,6 +108,13 @@ def file_conditions(c, path):
         out.append('test %s -ef %s' % (p, word(c['sameFileAs'])))
     if 'resolvesTo' in c:
         out.append('[ "$(readlink -f %s)" = %s ]' % (p, word(c['resolvesTo'])))
+    for case in c.get('runs', []):
+        args = ' '.join(shlex.quote(a) for a in case.get('args', []))
+        probe = ('run() { if [ "$(id -u)" = 0 ]; then runuser -u nobody -- timeout 10 "$@"; else timeout 10 "$@"; fi; }; '
+                 'out=$(run %s %s 2>&1); rc=$?; [ "$rc" = %d ]' % (p, args, int(case.get('exitCode', 0))))
+        if 'output' in case:
+            probe += ' && printf "%%s\\n" "$out" | grep -Eq -- %s' % shlex.quote(case['output'])
+        out.append('{ %s; }' % probe)
     if c.get('checksumsVerify'):
         out.append('( cd "$(dirname %s)" && sha256sum --status -c "$(basename %s)" )' % (p, p))
     for entry in c.get('acl', []):

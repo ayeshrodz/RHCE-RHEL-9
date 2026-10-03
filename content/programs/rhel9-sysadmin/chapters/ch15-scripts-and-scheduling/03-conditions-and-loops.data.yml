@@ -1,0 +1,335 @@
+tests:
+  title: The test command
+  caption: Select a group of tests for [ … ].
+  height: 260
+  mode: select
+  initial: files
+  info:
+    files:
+      tone: green
+      title: File tests
+      text: '-e exists · -f regular file · -d directory · -r readable · -w writable · -x executable · -s not empty · -L symbolic link. Example: [ -d /etc ] && echo yes.'
+    nums:
+      tone: blue
+      title: Number tests
+      text: '-eq equal · -ne not equal · -gt greater · -ge greater or equal · -lt less · -le less or equal. Example: [ "$count" -gt 3 ].'
+    strs:
+      tone: purple
+      title: String tests
+      text: '= equal · != not equal · -z empty · -n not empty. Always quote variables: [ "$name" = "root" ].'
+    logic:
+      tone: amber
+      title: Combining
+      text: '! not · && and · || or between two tests: [ -f "$f" ] && [ -r "$f" ]. Spaces inside [ ] are required: [ -f $f ] is right, [-f $f] is an error.'
+    rc:
+      tone: gray
+      title: Exit status
+      text: 'Every test returns an exit status: 0 means true, anything else means false. if looks only at that status, so any command can be a condition: if grep -q root /etc/passwd; then …'
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 128
+    h: 56
+    tone: green
+    title: files
+    sub: -f  -d  -e  -r
+    mono: true
+    titleSize: 13
+    select: files
+    active:
+    - files
+  - kind: node
+    x: 146
+    y: 28
+    w: 128
+    h: 56
+    tone: blue
+    title: numbers
+    sub: -eq  -gt  -lt
+    mono: true
+    titleSize: 13
+    select: nums
+    active:
+    - nums
+  - kind: node
+    x: 282
+    y: 28
+    w: 128
+    h: 56
+    tone: purple
+    title: strings
+    sub: =  !=  -z  -n
+    mono: true
+    titleSize: 13
+    select: strs
+    active:
+    - strs
+  - kind: node
+    x: 418
+    y: 28
+    w: 128
+    h: 56
+    tone: amber
+    title: combine
+    sub: '!  &&  ||'
+    mono: true
+    titleSize: 13
+    select: logic
+    active:
+    - logic
+  - kind: node
+    x: 554
+    y: 28
+    w: 116
+    h: 56
+    tone: gray
+    title: status
+    sub: 0 = true
+    mono: true
+    titleSize: 13
+    select: rc
+    active:
+    - rc
+if-flow:
+  title: How if chooses
+  caption: Step through check.sh with three different arguments.
+  height: 250
+  mode: steps
+  steps:
+  - title: Count the arguments
+    text: if [ $# -ne 1 ] … exit 2. With no argument the script prints a usage message to standard error and stops with status 2.
+  - title: A directory?
+    text: if [ -d "$path" ]. For /etc this is true, so the first branch runs and prints the number of entries.
+  - title: A file?
+    text: elif [ -f "$path" ]. For /etc/hostname the directory test is false, the file test is true, and the size is printed.
+  - title: Neither
+    text: 'else … exit 1. For /nope nothing matched: the script reports an error and exits with status 1.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: $# = 1 ?
+    sub: no → usage, exit 2
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: -d "$path" ?
+    sub: yes → directory
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: -f "$path" ?
+    sub: yes → file
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: coral
+    title: else
+    sub: exit 1
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 3
+  - kind: node
+    x: 150
+    y: 110
+    w: 380
+    h: 44
+    tone: gray
+    title: exit status tells the caller what happened
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: tests, if and loops'
+    prompt: '[student@servera scripts]$'
+    commands:
+    - cmd: '[ -f /etc/hostname ] && echo yes'
+      out: 'yes'
+    - cmd: '[ -f /etc/nothing ] || echo no'
+      out: 'no'
+    - cmd: '[ 5 -gt 3 ] && echo greater'
+      out: greater
+    - cmd: '[ "a" = "a" ] && echo equal'
+      out: equal
+    - cmd: ./check.sh
+      out: 'Usage: ./check.sh PATH'
+    - cmd: echo $?
+      out: '2'
+    - cmd: ./check.sh /etc
+      out: /etc is a directory with 172 entries
+    - cmd: ./check.sh /etc/hostname
+      out: /etc/hostname is a file of 24 bytes
+    - cmd: ./check.sh /nope
+      out: /nope does not exist
+    - cmd: ./loops.sh
+      out: 'square of 1 is 1
+
+        square of 2 is 4
+
+        square of 3 is 9
+
+        countdown 3
+
+        countdown 2
+
+        countdown 1
+
+        /etc/hostname ok
+
+        /etc/hosts ok
+
+        /etc/missing MISSING'
+    - cmd: ./svc.sh start
+      out: starting
+    - cmd: ./svc.sh bogus
+      out: 'Usage: ./svc.sh {start|stop|status}'
+    - cmd: ./users.sh
+      out: student    /bin/bash
+    - cmd: ls /etc/hostname && echo found || echo "not found"
+      out: '/etc/hostname
+
+        found'
+    tasks:
+    - text: Test whether /etc/hostname is a regular file.
+      commands:
+      - '[ -f /etc/hostname ] && echo yes'
+    - text: Run check.sh without arguments, and look at its exit status.
+      commands:
+      - ./check.sh
+      - echo $?
+    - text: Run check.sh on a directory and on a file.
+      commands:
+      - ./check.sh /etc
+      - ./check.sh /etc/hostname
+    - text: Run the loops script.
+      commands:
+      - ./loops.sh
+    - text: Run svc.sh with an unknown option.
+      commands:
+      - ./svc.sh bogus
+quick:
+  questions:
+  - id: q-d944dbdc472f
+    q: What does [ -d "$path" ] test?
+    options:
+    - That $path is a directory
+    - That $path is empty
+    - That $path exists as a file
+    answer: 0
+    explain: -d directory, -f regular file, -e exists.
+  - id: q-509ea60c2dda
+    q: 'Why must a test have spaces inside the brackets: [ -f "$f" ]?'
+    options:
+    - '[ is a command and -f its argument, so they need spaces'
+    - To look nicer
+    - Because of quotes
+    answer: 0
+    explain: '[ is another name for the test command.'
+  - id: q-88042437dc72
+    q: A script ends with exit 2. How can a caller see that?
+    options:
+    - echo $? right after running it
+    - ls
+    - cat $2
+    answer: 0
+    explain: $? holds the exit status of the last command.
+  - id: q-f2aa03a9fa15
+    q: What does cmd1 && cmd2 || cmd3 do?
+    options:
+    - Runs cmd2 if cmd1 succeeds, otherwise cmd3
+    - Always runs all three
+    - Runs cmd3 first
+    answer: 0
+    explain: Handy for one-line decisions; use if for anything longer.
+  - id: q-e4a13845b8a5
+    q: Which loop repeats while a condition is true?
+    options:
+    - while
+    - for
+    - case
+    answer: 0
+    explain: for walks through a list; while repeats on a test; case chooses between patterns.
+  - id: q-36b3fd9c7a18
+    q: In a case statement, what does *) match?
+    options:
+    - Anything not matched earlier
+    - Only *
+    - Nothing
+    answer: 0
+    explain: It is the default branch.
