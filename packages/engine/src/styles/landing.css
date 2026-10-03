@@ -8,11 +8,11 @@
   --lt-50: var(--purple-50);
   max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 32px 96px;
+  padding: 8px 32px 72px;
   overflow-x: clip;
 }
 .landing > h2 {
-  margin: 96px 0 8px;
+  margin: 64px 0 8px;
   font-family: var(--font-reading);
   font-size: clamp(28px, 3.4vw, 38px);
   font-weight: 500;
@@ -37,7 +37,7 @@
 }
 .landing .callout {
   max-width: 760px;
-  margin: 48px auto 0;
+  margin: 40px auto 0;
 }
 
 /* ---------- Hero ---------- */
@@ -48,7 +48,7 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   align-items: center;
   gap: 40px;
-  padding: 48px 0 8px;
+  padding: 24px 0 0;
 }
 .lh::before {
   content: '';
@@ -904,7 +904,7 @@
     padding: 8px 16px 64px;
   }
   .landing > h2 {
-    margin-top: 64px;
+    margin-top: 44px;
   }
   .fg {
     grid-template-columns: minmax(0, 1fr);
@@ -936,10 +936,10 @@
 }
 
 .landing > h2 {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 .landing > h2 + p {
-  margin-top: -20px;
+  margin-top: -14px;
 }
 .landing .heading-link {
   display: none;

@@ -6,7 +6,7 @@ import { tagProblem } from '../src/lib/tagCheck.js';
 test('every tag in the real content passes the browser check', async () => {
   const { files } = await compile('content');
   const site = JSON.parse(files.get('site.json'));
-  const manifest = JSON.parse(files.get(site.programs[0].manifest));
+  const manifest = JSON.parse(files.get(site.programs.find((p) => p.id === 'rhel9-ansible').manifest));
   let tags = 0;
   const visit = (nodes) => {
     for (const node of nodes ?? []) {

@@ -32,15 +32,15 @@ export default function ProgramCards() {
               </span>
               <span className="sc-body">
                 <span className="sc-top">
-                  <span className="sc-platform">{entry.platform.label}</span>
+                  <span className="sc-platform">{look.label ?? entry.platform.label}</span>
                   {planned ? (
                     <span className="pill">{open ? 'Growing' : 'Planned'}</span>
                   ) : (
                     <span className="pill pill-accent">{entry.sections} sections</span>
                   )}
                 </span>
-                <span className="sc-title">{entry.title}</span>
-                <span className="sc-summary">{entry.summary}</span>
+                <span className="sc-title">{look.title ?? entry.title}</span>
+                <span className="sc-summary">{look.summary ?? entry.summary}</span>
                 {look.highlights?.length > 0 && (
                   <span className="sc-chips">
                     {look.highlights.map((h) => (

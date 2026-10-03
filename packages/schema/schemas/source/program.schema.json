@@ -214,6 +214,22 @@
             "maxLength": 28,
             "type": "string"
           }
+        },
+        "title": {
+          "description": "Heading on the home page card, when it should differ from the program title (for example without a version number).",
+          "$ref": "../common.schema.json#/$defs/shortText"
+        },
+        "label": {
+          "description": "Platform name on the home page card, when it should differ from the platform label.",
+          "$ref": "../common.schema.json#/$defs/shortText",
+          "maxLength": 24,
+          "type": "string"
+        },
+        "summary": {
+          "description": "Text on the home page card, when it should differ from the program summary.",
+          "$ref": "../common.schema.json#/$defs/text",
+          "maxLength": 400,
+          "type": "string"
         }
       }
     }
