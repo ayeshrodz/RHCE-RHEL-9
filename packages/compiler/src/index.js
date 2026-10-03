@@ -77,7 +77,10 @@ const LAB_FILES = /[\\/]programs[\\/][^\\/]+[\\/]lab[\\/][^\\/]+[\\/](starter|tr
 function checkFileTypes(dir, diagnostics) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const file = path.join(dir, entry.name);
-    if (entry.isDirectory()) checkFileTypes(file, diagnostics);
+    // A link could pull in a file from outside content (for example the build machine's environment)
+    // and publish it, so content is plain files only.
+    if (entry.isSymbolicLink()) diagnostics.error(file, null, 'symbolic links are not allowed in content');
+    else if (entry.isDirectory()) checkFileTypes(file, diagnostics);
     else if (!DATA_FILE.test(entry.name) && !LAB_FILES.test(file))
       diagnostics.error(file, null, 'only Markdoc, YAML, JSON files are allowed in content');
   }

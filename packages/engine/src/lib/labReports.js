@@ -42,6 +42,9 @@ export function validateLabReport(report, catalog = reportSchema) {
   }
   if (catalog && !RETIRED.has(report.exerciseId)) {
     const exercise = catalog.exercises[report.exerciseId];
+    // A report from an earlier version of the exercise is the learner's evidence of what was checked
+    // then; its checks may have been renamed since, so it is checked for shape only, like a retired one.
+    if (exercise && report.exerciseVersion < exercise.version) return report;
     const checkpoint = exercise?.checkpoints[report.checkpointId];
     if (!exercise || exercise.version !== report.exerciseVersion || !checkpoint)
       throw new Error('The exercise version or checkpoint is not supported.');
