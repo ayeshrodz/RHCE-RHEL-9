@@ -434,6 +434,10 @@ def script_dnf_module(a):
     return 'dnf module enable -y %s:%s >/dev/null 2>&1' % (n, q(a['stream']))
 
 
+def script_crontab(a):
+    return 'crontab -r -u %s 2>/dev/null || true' % q(name(a['user']))
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -446,7 +450,7 @@ HOST_SCRIPTS = {
     'file': script_file, 'remove-lines': script_remove_lines, 'firewall': script_firewall, 'selinux': script_selinux,
     'wipe-disk': script_wipe_disk, 'systemd': script_systemd, 'linger': script_linger, 'container-reset': script_container_reset,
     'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
-    'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module,
+    'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module, 'crontab': script_crontab,
 }
 
 

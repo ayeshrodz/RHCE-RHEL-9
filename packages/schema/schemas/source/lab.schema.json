@@ -1372,6 +1372,31 @@
               ]
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "user"
+          ],
+          "properties": {
+            "action": {
+              "const": "crontab"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "user": {
+              "$ref": "#/$defs/unixName"
+            },
+            "state": {
+              "enum": [
+                "absent"
+              ]
+            }
+          }
         }
       ]
     },
@@ -1678,6 +1703,10 @@
               "$ref": "#/$defs/relativePath"
             }
           ]
+        },
+        "executable": {
+          "description": "The file has its execute permission for the owner.",
+          "type": "boolean"
         }
       },
       "type": "object"

@@ -91,6 +91,8 @@ def file_conditions(c, path):
         out.append('[ "$(cat %s)" = "$(%s)" ]' % (p, fact))
     if 'mode' in c:
         out.append(stat_is(p, '%a', octal(c['mode'])))
+    if c.get('executable'):
+        out.append('[ -x %s ]' % p)
     if 'owner' in c:
         out.append(stat_is(p, '%U', c['owner']))
     if 'group' in c:
