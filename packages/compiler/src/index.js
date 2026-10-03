@@ -15,6 +15,7 @@ import { initHighlighter } from './highlight.js';
 import { readPage, convertPage } from './tree.js';
 import { readContent } from './source.js';
 import { compileLabs, indexText } from './lab.js';
+import { reportCatalog } from './report.js';
 import { toolFiles } from '@kernel-path/lab';
 
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
@@ -155,6 +156,7 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
       return { tree, data };
     };
 
+    let programExercises = {};
     const sectionPages = new Map();
     const labReferences = new Map();
     const manifestChapters = chapters.map((chapter) => {
@@ -199,6 +201,7 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
       const compiled = compileLabs({ labs, pages: sectionPages, references: labReferences, seen: labNames, validator, diagnostics });
       for (const [file, content] of compiled.files) files.set(file, content);
       Object.assign(allExercises, compiled.exercises);
+      programExercises = compiled.exercises;
       labIndex.push(...compiled.index);
       hasLabs = true;
     }
@@ -221,6 +224,7 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
       objectives,
       pages,
       search: searchFile,
+      labReports: reportCatalog(programExercises),
       ...(legacyFile ? { legacy: legacyFile } : {}),
     };
     expect(validator.ids.bundle.manifest, manifest, null, 'manifest');
@@ -275,6 +279,9 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
     ...(shared ? { interface: shared } : {}),
     ...(hasLabs ? { lab: 'lab/' } : {}),
     programs,
+    ...(source.programs.find((entry) => entry.legacyRoutes)
+      ? { legacyProgram: source.programs.find((entry) => entry.legacyRoutes).id }
+      : {}),
   };
   // The signature covers the site index as written without the signature field. Every other file
   // is named for a hash of its content, so signing the index vouches for the whole bundle.

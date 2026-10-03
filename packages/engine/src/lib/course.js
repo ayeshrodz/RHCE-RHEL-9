@@ -4,6 +4,7 @@
 // program, and the program route remounts everything beneath it when that happens.
 import { loadInterface, loadLegacy, loadManifest, loadPage, loadSearch, loadSite } from './content';
 import { readProgramCompleted, setProgramScope } from './storage';
+import { setLabReportCatalog } from './labReports.js';
 
 export let site = null;
 /** Interface text shared by every program (header, footer, search, sidebar). */
@@ -44,9 +45,10 @@ export function programPercent(entry) {
   return Math.min(100, Math.round((readProgramCompleted(entry.id).length / entry.sections) * 100));
 }
 
-/** The program a bare address opens: the first active one. */
+/** Preserve bare links for the content-declared legacy program; otherwise use the first active one. */
 export function defaultProgramId() {
-  return (site.programs.find((p) => p.status === 'active') ?? site.programs[0]).id;
+  return (site.programs.find((p) => p.id === site.legacyProgram) ?? site.programs.find((p) => p.status === 'active') ?? site.programs[0])
+    .id;
 }
 
 export const hasProgram = (id) => site.programs.some((p) => p.id === id);
@@ -64,6 +66,7 @@ export async function activateProgram(id) {
   if (requested !== id) return null;
   manifest = loaded;
   program = manifest.program;
+  setLabReportCatalog(manifest.labReports);
   setProgramScope(program.id);
   course = legacy?.course ?? { title: site.site.name, tagline: program.tagline ?? site.site.tagline, repo: site.site.repo };
   track = legacy?.track ?? {

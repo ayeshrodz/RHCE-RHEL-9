@@ -7,6 +7,11 @@ import { defineWidget, formatCopy } from '@/components/interactive/TeachingConte
 
 export default defineWidget('ProgressPage', (copy) => {
   const EMPTY = [];
+  const practiceLinks = copy.data?.integratedPractice ?? [
+    { path: '/ch11/assessment-release', label: copy.text.link, detail: copy.text.small9 },
+    { path: '/ch11/assessment-operations', label: copy.text.link2, detail: copy.text.small10 },
+  ];
+  const confidenceHref = copy.data?.confidenceHref ?? '/ch11/how-to-review#where-do-you-stand';
 
   function ProgressPage() {
     const { data, storageAvailable } = useProgressData();
@@ -165,14 +170,14 @@ export default defineWidget('ProgressPage', (copy) => {
             <h2 id="dashboard-assessment-title">{copy.text.h22}</h2>
             <p>{copy.text.p2}</p>
             <ul className="dashboard-list">
-              <li>
-                <Link to="/ch11/assessment-release">{copy.text.link}</Link>
-                <small>{copy.text.small9}</small>
-              </li>
-              <li>
-                <Link to="/ch11/assessment-operations">{copy.text.link2}</Link>
-                <small>{copy.text.small10}</small>
-              </li>
+              {practiceLinks
+                .filter((link) => pages.some((page) => page.path === link.path))
+                .map((link) => (
+                  <li key={link.path}>
+                    <Link to={link.path}>{link.label}</Link>
+                    <small>{link.detail}</small>
+                  </li>
+                ))}
             </ul>
             <p className="dashboard-note">{copy.text.dashboardNote}</p>
           </section>
@@ -234,7 +239,7 @@ export default defineWidget('ProgressPage', (copy) => {
         <section className="dashboard-card" aria-labelledby="dashboard-skills-title">
           <h2 id="dashboard-skills-title">{copy.text.h24}</h2>
           <p>
-            {copy.text.p5} <Link to="/ch11/how-to-review#where-do-you-stand">{copy.text.link4}</Link>
+            {copy.text.p5} <Link to={confidenceHref}>{copy.text.link4}</Link>
             {copy.text.p6}
           </p>
           <details>

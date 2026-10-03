@@ -215,22 +215,31 @@ def programs_stay_separate(browser):
 
 
 def planned_program_is_listed(browser):
-    """A planned program shows up on the site home with its outline: the practice lab is written, every other chapter is an outline entry."""
+    """Cards and authored/planned chapter states follow the compiled content for every program."""
+    site = json.loads((ROOT / 'dist/content/site.json').read_text())
     context = browser.new_context()
     page = context.new_page()
-    page.goto(BASE + '#/')
-    cards = page.locator('.showcase .sc')
-    cards.nth(1).wait_for()
-    planned = cards.filter(has_text='Linux system administration on RHEL')
-    assert planned.count() == 1 and 'Growing' in planned.inner_text()
-    planned.click()
-    page.wait_for_url('**/#/rhel9-sysadmin')
-    page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
-    page.locator('.hero-actions a', has_text='Build the practice lab').wait_for()
-    wait_until(page, "document.querySelectorAll('.chapter-card.is-soon').length === 21")
-    page.locator('.chapter-card.is-soon').nth(14).click()
-    page.get_by_role('heading', name='SELinux').first.wait_for()
-    assert 'Allowing services on non-standard ports' in page.locator('main').inner_text()
+    for entry in site['programs']:
+        manifest = json.loads((ROOT / 'dist/content' / entry['manifest']).read_text())
+        page.goto(BASE + '#/')
+        cards = page.locator('.showcase .sc')
+        cards.nth(len(site['programs']) - 1).wait_for()
+        card = cards.filter(has_text=entry.get('showcase', {}).get('title', entry['title']))
+        assert card.count() == 1, entry['id']
+        assert ('Growing' in card.inner_text()) == (entry['status'] == 'planned')
+        card.click()
+        page.wait_for_url('**/#/' + entry['id'])
+        page.locator('h1').first.wait_for()
+        assert not page.locator('.load-error').count(), entry['id']
+        expected = sum(c['status'] == 'planned' or not c['sections'] for c in manifest['chapters'])
+        wait_until(page, "document.querySelectorAll('.chapter-card').length === " + str(len(manifest['chapters'])))
+        assert page.locator('.chapter-card.is-soon').count() == expected, entry['id']
+        authored = next((c for c in manifest['chapters'] if c['sections']), None)
+        if authored:
+            section = authored['sections'][0]
+            page.goto(BASE + '#/' + entry['id'] + '/' + authored['id'] + '/' + section['slug'])
+            page.locator('h1').first.wait_for()
+            assert section['title'] in page.locator('h1').first.inner_text()
     context.close()
 
 
