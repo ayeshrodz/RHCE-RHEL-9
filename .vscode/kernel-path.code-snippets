@@ -1,0 +1,277 @@
+{
+  "kp-assessment-timer": {
+    "prefix": "kp-assessment-timer",
+    "description": "An optional countdown for a timed practice assessment; survives reloads.",
+    "body": [
+      "{% assessment-timer id=\"${1}\" /%}"
+    ]
+  },
+  "kp-callout": {
+    "prefix": "kp-callout",
+    "description": "A highlighted note beside the main text.",
+    "body": [
+      "{% callout type=\"${1|note,tip,important,warning,exam|}\" title=\"${2}\" %}",
+      "$0",
+      "{% /callout %}"
+    ]
+  },
+  "kp-card": {
+    "prefix": "kp-card",
+    "description": "One card in a card grid, with a heading, an optional kicker and a tone.",
+    "body": [
+      "{% card title=\"${1}\" %}",
+      "$0",
+      "{% /card %}"
+    ]
+  },
+  "kp-cards": {
+    "prefix": "kp-cards",
+    "description": "A responsive grid of cards that stacks on small screens.",
+    "body": [
+      "{% cards cols=${1:1} %}",
+      "\t$0",
+      "{% /cards %}"
+    ]
+  },
+  "kp-column": {
+    "prefix": "kp-column",
+    "description": "One column in a two-column layout.",
+    "body": [
+      "{% column title=\"${1}\" tone=\"${2|gray,purple,teal,coral,pink,blue,green,amber,red|}\" %}",
+      "$0",
+      "{% /column %}"
+    ]
+  },
+  "kp-columns": {
+    "prefix": "kp-columns",
+    "description": "Two side-by-side columns that stack on small screens.",
+    "body": [
+      "{% columns %}",
+      "\t$0",
+      "{% /columns %}"
+    ]
+  },
+  "kp-diagram": {
+    "prefix": "kp-diagram",
+    "description": "A diagram of boxes, groups and arrows. It can be static, let the reader select boxes to read an explanation, or step through a sequence.",
+    "body": [
+      "{% diagram ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-flashcards": {
+    "prefix": "kp-flashcards",
+    "description": "A deck of flip cards for recall.",
+    "body": [
+      "{% flashcards ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-flow-map": {
+    "prefix": "kp-flow-map",
+    "description": "A responsive sequence of steps with an explanation panel.",
+    "body": [
+      "{% flow-map ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-glossary": {
+    "prefix": "kp-glossary",
+    "description": "A list of terms and definitions.",
+    "body": [
+      "{% glossary %}",
+      "\t$0",
+      "{% /glossary %}"
+    ]
+  },
+  "kp-kbd": {
+    "prefix": "kp-kbd",
+    "description": "A keyboard key, such as Esc or Ctrl+C.",
+    "body": [
+      "{% kbd %}",
+      "$0",
+      "{% /kbd %}"
+    ]
+  },
+  "kp-lab": {
+    "prefix": "kp-lab",
+    "description": "A hands-on exercise with tracked tasks, notes and an optional challenge brief.",
+    "body": [
+      "{% lab id=\"${1}\" title=\"${2}\" %}",
+      "\t$0",
+      "{% /lab %}"
+    ]
+  },
+  "kp-lab-challenge": {
+    "prefix": "kp-lab-challenge",
+    "description": "The requirements brief shown in Challenge mode.",
+    "body": [
+      "{% lab-challenge %}",
+      "$0",
+      "{% /lab-challenge %}"
+    ]
+  },
+  "kp-lab-finish": {
+    "prefix": "kp-lab-finish",
+    "description": "How to grade and finish an exercise with the lab tools.",
+    "body": [
+      "{% lab-finish exercise=\"${1}\" /%}"
+    ]
+  },
+  "kp-lab-notes": {
+    "prefix": "kp-lab-notes",
+    "description": "Prerequisites, verification and variations for an exercise.",
+    "body": [
+      "{% lab-notes %}",
+      "$0",
+      "{% /lab-notes %}"
+    ]
+  },
+  "kp-lab-setup": {
+    "prefix": "kp-lab-setup",
+    "description": "Extra setup notes shown for one variant, such as the home lab.",
+    "body": [
+      "{% lab-setup variant=\"${1}\" %}",
+      "$0",
+      "{% /lab-setup %}"
+    ]
+  },
+  "kp-lead": {
+    "prefix": "kp-lead",
+    "description": "The opening paragraph of a page, shown larger than body text.",
+    "body": [
+      "{% lead %}",
+      "$0",
+      "{% /lead %}"
+    ]
+  },
+  "kp-objectives": {
+    "prefix": "kp-objectives",
+    "description": "A boxed list of what the reader will be able to do after the page.",
+    "body": [
+      "{% objectives %}",
+      "$0",
+      "{% /objectives %}"
+    ]
+  },
+  "kp-practice": {
+    "prefix": "kp-practice",
+    "description": "A chapter's practice questions, in the quiz format; attempts feed the learning dashboard.",
+    "body": [
+      "{% practice ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-program-cards": {
+    "prefix": "kp-program-cards",
+    "description": "A card for each program on the site, with its platform, status and the reader's progress.",
+    "body": [
+      "{% program-cards /%}"
+    ]
+  },
+  "kp-quiz": {
+    "prefix": "kp-quiz",
+    "description": "A multiple-choice knowledge check with instant feedback.",
+    "body": [
+      "{% quiz ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-reader-variables": {
+    "prefix": "kp-reader-variables",
+    "description": "A form for the reader's own values (declared in program.yml), substituted into code.",
+    "body": [
+      "{% reader-variables /%}"
+    ]
+  },
+  "kp-reveal": {
+    "prefix": "kp-reveal",
+    "description": "A collapsed section the reader opens on demand, such as a solution or hint.",
+    "body": [
+      "{% reveal title=\"${1}\" %}",
+      "$0",
+      "{% /reveal %}"
+    ]
+  },
+  "kp-starter-files": {
+    "prefix": "kp-starter-files",
+    "description": "Lists an exercise's starter files and lets the reader preview them.",
+    "body": [
+      "{% starter-files exercise=\"${1}\" /%}"
+    ]
+  },
+  "kp-step": {
+    "prefix": "kp-step",
+    "description": "One numbered step of a procedure.",
+    "body": [
+      "{% step title=\"${1}\" %}",
+      "$0",
+      "{% /step %}"
+    ]
+  },
+  "kp-steps": {
+    "prefix": "kp-steps",
+    "description": "A numbered procedure made of step tags.",
+    "body": [
+      "{% steps %}",
+      "\t$0",
+      "{% /steps %}"
+    ]
+  },
+  "kp-tab": {
+    "prefix": "kp-tab",
+    "description": "One view inside a tabs group, with its own label.",
+    "body": [
+      "{% tab label=\"${1}\" %}",
+      "$0",
+      "{% /tab %}"
+    ]
+  },
+  "kp-tabs": {
+    "prefix": "kp-tabs",
+    "description": "Alternative views of the same idea; the reader picks one.",
+    "body": [
+      "{% tabs %}",
+      "\t$0",
+      "{% /tabs %}"
+    ]
+  },
+  "kp-task": {
+    "prefix": "kp-task",
+    "description": "One tracked task in a hands-on exercise.",
+    "body": [
+      "{% task id=\"${1}\" title=\"${2}\" %}",
+      "$0",
+      "{% /task %}"
+    ]
+  },
+  "kp-term": {
+    "prefix": "kp-term",
+    "description": "One glossary entry: a term and its definition.",
+    "body": [
+      "{% term name=\"${1}\" %}",
+      "$0",
+      "{% /term %}"
+    ]
+  },
+  "kp-variant": {
+    "prefix": "kp-variant",
+    "description": "Instructions for one variant (declared in program.yml).",
+    "body": [
+      "{% variant name=\"${1}\" %}",
+      "$0",
+      "{% /variant %}"
+    ]
+  },
+  "kp-variant-group": {
+    "prefix": "kp-variant-group",
+    "description": "Alternative instructions for each variant; the reader sees the one they chose.",
+    "body": [
+      "{% variant-group %}",
+      "\t$0",
+      "{% /variant-group %}"
+    ]
+  },
+  "kp-variant-switch": {
+    "prefix": "kp-variant-switch",
+    "description": "The control that switches between variants.",
+    "body": [
+      "{% variant-switch label=\"${1}\" /%}"
+    ]
+  }
+}

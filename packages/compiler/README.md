@@ -5,6 +5,12 @@ The `kernel` command checks Kernel Path content against the contract in [`@kerne
 ```bash
 kernel validate [content-dir]             # check everything, print every error with file and line
 kernel build [content-dir] --out <dir>    # check, then write the bundle
+kernel build … --sign-key key.pem         # also sign the site index (or set KERNEL_SIGNING_KEY)
+kernel keygen key.pem                     # make a signing key; prints the public key to pin
+kernel new program <id>                   # start from a template that passes `validate`:
+kernel new chapter <program> <name>       #   the next chapter number is chosen for you
+kernel new section <program> <chapter> <name> [--kind lesson|lab|quiz|summary]
+kernel new lab <program> <name> --page chNN/slug
 ```
 
 The bundle contains:

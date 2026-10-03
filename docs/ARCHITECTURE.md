@@ -6,7 +6,7 @@ The public site is `https://kernelpath.dev/`; `packages/engine/public/CNAME` rec
 
 ## Content and routing
 
-The compiler (`packages/compiler`) turns `content/` into a static bundle of JSON files: a site index, a program manifest, one render tree per page, and a search index. At startup the engine (`packages/engine`) fetches the bundle from `contentBase` in `kernel.config.json`, validates every file with the generated validators from `@kernel-path/schema`, and `src/lib/course.js` exposes navigation and page lookup. Pages load on demand. `PageTree` renders only allowlisted elements and catalog tags; see [architecture.md](architecture.md) for the platform design and security model.
+The compiler (`packages/compiler`) turns `content/` into a static bundle of JSON files: a site index, a program manifest, one render tree per page, and a search index. At startup the engine (`packages/engine`) fetches the bundle from `contentBase` in `kernel.config.json`, validates every file with the generated validators from `@kernel-path/schema`, and `src/lib/course.js` exposes navigation and page lookup. Pages load on demand. `PageTree` renders only allowlisted elements and catalog tags; see [PLATFORM.md](PLATFORM.md) for the platform design and security model.
 
 Published URLs use hash routing, for example `#/rhel9-ansible/ch03/inventory` (program, chapter, section). Addresses without a program, such as `#/ch03/inventory`, open the default program. The engine loads one program at a time; the program route remounts its pages when the reader moves to another. A second hash identifies a heading or activity. Keep published filenames, heading text, and stable activity IDs when editing. Links into optional reveals open their containing details.
 

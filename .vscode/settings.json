@@ -1,0 +1,16 @@
+{
+  "yaml.schemas": {
+    "./packages/schema/schemas/source/site.schema.json": "content/site.yml",
+    "./packages/schema/schemas/source/program.schema.json": "content/programs/*/program.yml",
+    "./packages/schema/schemas/source/objectives.schema.json": "content/programs/*/objectives.yml",
+    "./packages/schema/schemas/source/chapter.schema.json": "content/programs/*/chapters/*/_chapter.yml",
+    "./packages/schema/schemas/source/lab.schema.json": "content/programs/*/lab/*.yml"
+  },
+  "files.associations": {
+    "*.data.yml": "yaml",
+    "content/**/*.md": "markdown"
+  },
+  "editor.quickSuggestions": { "other": true, "comments": false, "strings": true },
+  "[markdown]": { "editor.wordWrap": "on", "editor.defaultFormatter": null },
+  "markdown.validate.enabled": false
+}

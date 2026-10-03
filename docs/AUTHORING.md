@@ -2,6 +2,19 @@
 
 How to add sections, diagrams and exercises so they match the rest of the guide.
 
+## Quick start
+
+```bash
+npm install
+npm run dev                                   # live preview; content errors appear in the terminal
+npx kernel new chapter <program> <name>       # starts from a template that already validates
+npx kernel new section <program> <chapter> <name> [--kind lesson|lab|quiz|summary]
+npx kernel new lab <program> <name> --page chNN/slug
+npx kernel validate                           # every error, with file and line
+```
+
+In VS Code, install the recommended extensions (YAML, Markdoc, Prettier). The committed `.vscode` settings check the YAML files against the content schemas, and typing `kp-` in a page offers a snippet for each tag. Outside this repository, the schemas are published beside the site at `https://<site>/schema/v1/` (for example `source/program.schema.json`), so any editor with JSON Schema support can use them. The full list of tags, with every attribute, is the generated [component catalog](CATALOG.md).
+
 ## 1. How content is organised
 
 The `content/` folder is the single source of truth. It holds only data: Markdoc pages (`.md`), YAML and JSON. The compiler (`packages/compiler`, run as `kernel validate` or `kernel build`) checks it against the content contract and builds the navigation, so you never edit JavaScript to add material. `npm run dev` recompiles it on every change.
@@ -102,6 +115,8 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 - Only state exam facts you can back up. Phrase advice as practice habits, not as claims about how the exam is graded.
 
 ## 4. Tags
+
+(Every tag and attribute is listed in the generated [component catalog](CATALOG.md); this section explains how to use the common ones.)
 
 Pages use Markdown plus Markdoc tags: `{% name attribute="value" %}…{% /name %}`, or `{% name … /%}` for a tag without content. Every tag and attribute is declared in the component catalog (`packages/schema/catalog/components.json`), and the compiler rejects anything else. The engine renders tags through `packages/engine/src/components/content/registry.jsx`.
 
@@ -270,7 +285,7 @@ checkpoints:
 - `on` is an inventory host or group pattern (groups joined with `:`), or `control` for the learner's project folder. A check on managed hosts must list its `targets`; a missing target fails instead of passing silently.
 - `{host}` and `{hostShort}` in paths and text are replaced with the inventory name and its first label.
 - Setup actions: `self-signed-cert`, `htpasswd`, `password-hash-var`, `vault-encrypt`, `ssh-keypairs`, `pack-installed-collection`, `build-collection`, `collection-requirements` and `git-seed-remote`.
-- Starter and tree files are published with a `.lab` suffix so a browser never renders them; the lab command saves them under their real names.
+- Starter and tree files are published with a `.lab` suffix so a browser never renders them, and a name part that starts with a dot gets a `_` in front (`files/.htaccess` is published as `files/_.htaccess.lab`), because static hosts leave dotfiles out. The lab command saves them under their real names. Do not name a file starting with `_.`; that form is reserved.
 
 The compiler publishes the lab tree (the `lab` command, the grader, starter files, `INDEX`, and a `MANIFEST` per exercise) with the rest of the site, and the build also places it at `/lab/`. Try an exercise end to end with `npm run build`, then `LAB_URL=file://$PWD/dist/lab bash dist/lab/lab start NAME`, and run its solution against the lab before you publish it.
 

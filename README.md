@@ -8,22 +8,12 @@
 
 > An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc. It is not official training material and does not replace Red Hat's courses or documentation.
 
-## Status
+## Programs
 
-| Chapter | Status |
+| Program | Status |
 | --- | --- |
-| 0. Build Your Practice Lab | Complete (tested home lab: Rocky Linux 9 on LXD) |
-| 1. Introducing Ansible | Complete |
-| 2. Implementing an Ansible Playbook | Complete |
-| 3. Managing Variables and Facts | Complete |
-| 4. Implementing Task Control | Complete |
-| 5. Deploying Files to Managed Hosts | Complete |
-| 6. Managing Complex Plays and Playbooks | Complete |
-| 7. Simplifying Playbooks with Roles and Collections | Complete |
-| 8. Troubleshooting Ansible | Complete |
-| 9. Automating Linux Administration Tasks | Complete |
-| 10. Comprehensive Review | Includes two integrated assessments |
-| 11. Current Automation Workflows | Git, development containers, execution environments, archive recovery, and security |
+| **Ansible automation on RHEL 9** (`rhel9-ansible`) | Complete: 12 chapters, from building the practice lab to Git and development containers, with two integrated assessments |
+| **Linux system administration on RHEL 9** (`rhel9-sysadmin`) | Planned: a 22-chapter outline |
 
 ## Quick start
 
@@ -31,18 +21,40 @@ Requires Node.js 20.19+ or 22.12+.
 
 ```bash
 npm install
-npm run dev       # http://localhost:3000
-npm run build     # static site in dist/
+npm run dev       # http://localhost:3000; content edits show live
+npm run build     # the static site in dist/ (engine, content bundle, lab tools, schemas)
 npm run preview   # serve the built site locally
-npm run format    # format application code
+npm test          # unit, contract and fuzz tests
 npm run validate:content
-npm test
 npm run test:labs
+npm run format
 ```
+
+To write content, start a program or add to one with the scaffolder, then check it:
+
+```bash
+npx kernel new chapter rhel9-sysadmin containers-intro
+npx kernel new section rhel9-sysadmin 21 first-container
+npx kernel validate
+```
+
+The [authoring guide](docs/AUTHORING.md) explains the page format, and the [component catalog](docs/CATALOG.md) lists every tag. VS Code users get schema checking and `kp-` snippets from the committed `.vscode` settings (install the recommended extensions).
+
+## Documentation
+
+| | |
+| --- | --- |
+| [docs/AUTHORING.md](docs/AUTHORING.md) | Writing pages, diagrams, quizzes and exercises |
+| [docs/CATALOG.md](docs/CATALOG.md) | Every tag content may use (generated) |
+| [docs/PLATFORM.md](docs/PLATFORM.md) | The platform design, content contract and security model |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the engine works |
+| [docs/HOSTING.md](docs/HOSTING.md) | Deploying, hosting content elsewhere, signed content |
+| [docs/LAB-GRADING.md](docs/LAB-GRADING.md) | The `lab` command, grading and exercise checks |
+| [packages/](packages) | A README per package: schema, compiler, engine, lab tools |
 
 ## How it is built
 
-Kernel Path is being turned into a data-only learning platform (see [docs/architecture.md](docs/architecture.md)). It is three parts plus the content:
+Kernel Path is being turned into a data-only learning platform (see [docs/PLATFORM.md](docs/PLATFORM.md)). It is three parts plus the content:
 
 - **The contract** (`packages/schema`): JSON schemas for content and for the compiled bundle, the catalog of tags content may use, and generated browser validators.
 - **The compiler** (`packages/compiler`, the `kernel` command): validates `content/` against the contract and compiles it into a static, content-hashed bundle. Code is highlighted at build time.
