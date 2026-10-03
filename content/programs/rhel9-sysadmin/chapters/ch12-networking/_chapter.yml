@@ -1,8 +1,12 @@
 title: Networking
-goal: Configure addresses, names and routes, and check that they work.
+goal: Read and configure a host's network with ip and NetworkManager, manage names and DNS, and troubleshoot connections layer by layer.
 objectives:
-- Distinguish live addresses from persistent NetworkManager profiles.
-- Diagnose reachability in layers without breaking management access.
+  - Explain address, prefix, gateway and DNS, and inspect them with ip, ping and ss.
+  - Create and modify persistent connection profiles with nmcli.
+  - Set the host name and explain name resolution through /etc/hosts and DNS.
+  - Troubleshoot a connection layer by layer and read the failure messages.
 objectiveIds:
-- ch12.operations
-- ch12.verification
+  - ch12.basics
+  - ch12.networkmanager
+  - ch12.names
+  - ch12.troubleshooting

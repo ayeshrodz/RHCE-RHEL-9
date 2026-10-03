@@ -1,0 +1,207 @@
+device-profile:
+  title: Devices and connection profiles
+  caption: Step through how NetworkManager configures an interface.
+  height: 250
+  mode: steps
+  steps:
+  - title: A device
+    text: 'enp5s0 is a network device: the hardware, seen by the kernel. nmcli device status lists devices.'
+  - title: A connection profile
+    text: 'A profile is a saved set of settings: name, address method, address, gateway, DNS. It is stored under /etc/NetworkManager/system-connections/ and survives reboots. nmcli connection show lists them.'
+  - title: 'Activate: apply a profile to a device'
+    text: nmcli connection up NAME applies the profile to the device. The kernel gets the address, routes and DNS settings.
+  - title: Modify changes the profile, not the device
+    text: nmcli connection modify … edits the stored profile only. Nothing changes on the wire until you run nmcli connection up NAME again.
+  - title: Deactivate or delete
+    text: connection down removes the settings from the device but keeps the profile; connection delete removes the profile too.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 170
+    h: 70
+    tone: blue
+    title: device
+    sub: enp5s0 · dummy0
+    mono: true
+    titleSize: 14
+    active:
+    - 0
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 250
+    y: 30
+    w: 200
+    h: 70
+    tone: purple
+    title: connection profile
+    sub: settings on disk
+    titleSize: 14
+    active:
+    - 1
+    - 3
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 520
+    y: 30
+    w: 150
+    h: 70
+    tone: green
+    title: live settings
+    sub: ip addr · ip route
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    - 4
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 250
+      - 65
+    - - 180
+      - 65
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 450
+      - 65
+    - - 520
+      - 65
+    label: up
+    labelDy: -6
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 250
+    y: 130
+    w: 200
+    h: 44
+    tone: amber
+    title: 'modify: profile only'
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: nmcli'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: nmcli device status
+      out: "DEVICE  TYPE      STATE                   CONNECTION    \nenp5s0  ethernet  connected               System enp5s0 \nlo      loopback  connected (externally)  lo            "
+    - cmd: nmcli connection show
+      out: "NAME           UUID                                  TYPE      DEVICE \nSystem enp5s0  9310e179-14b6-430a-6843-6491c047d532  ethernet  enp5s0 \nlo             f70215b4-09f6-4aeb-b431-8be72ac28cce  loopback  lo     "
+    - cmd: nmcli connection add type dummy ifname dummy0 con-name dummy0 ipv4.method manual ipv4.addresses 10.20.30.1/24 ipv6.method disabled
+      out: Connection 'dummy0' (1eb3d901-8d60-465a-98fb-d365ea4b7649) successfully added.
+    - cmd: ip -br addr show dummy0
+      out: 'dummy0           UNKNOWN        10.20.30.1/24 '
+    - cmd: nmcli connection modify dummy0 +ipv4.addresses 10.20.30.2/24
+      out: ''
+    - cmd: ip -br addr show dummy0
+      out: 'dummy0           UNKNOWN        10.20.30.1/24 '
+    - cmd: nmcli connection up dummy0
+      out: 'Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/4)'
+    - cmd: ip -br addr show dummy0
+      out: 'dummy0           UNKNOWN        10.20.30.1/24 10.20.30.2/24 '
+    - cmd: nmcli -g ipv4.addresses,ipv4.method connection show dummy0
+      out: '10.20.30.1/24, 10.20.30.2/24
+
+        manual'
+    - cmd: ls /etc/NetworkManager/system-connections/
+      out: dummy0.nmconnection
+    - cmd: nmcli connection delete dummy0
+      out: Connection 'dummy0' (1eb3d901-8d60-465a-98fb-d365ea4b7649) successfully deleted.
+    tasks:
+    - text: List the network devices and their state.
+      commands:
+      - nmcli device status
+    - text: Create a static dummy0 connection with 10.20.30.1/24.
+      commands:
+      - nmcli connection add type dummy ifname dummy0 con-name dummy0 ipv4.method manual ipv4.addresses 10.20.30.1/24 ipv6.method disabled
+    - text: Add a second address to the profile, then apply it.
+      commands:
+      - nmcli connection modify dummy0 +ipv4.addresses 10.20.30.2/24
+      - nmcli connection up dummy0
+    - text: Delete the connection when you are done.
+      commands:
+      - nmcli connection delete dummy0
+quick:
+  questions:
+  - id: q-369ec6cf142c
+    q: What is the difference between a device and a connection in NetworkManager?
+    options:
+    - A device is the interface; a connection is a saved profile of settings
+    - They are the same
+    - A connection is a cable
+    answer: 0
+    explain: One device can have several profiles, but only one active at a time.
+  - id: q-c91076739b64
+    q: You ran nmcli connection modify with a new address, and ip addr still shows the old one. Why?
+    options:
+    - modify changes the profile only; run nmcli connection up
+    - The command failed silently
+    - ip addr is cached
+    answer: 0
+    explain: Apply the changed profile with connection up.
+  - id: q-4d35fe35f16a
+    q: Which option adds an address without removing the existing ones?
+    options:
+    - +ipv4.addresses
+    - ipv4.addresses
+    - ipv4.add
+    answer: 0
+    explain: The + prefix appends to a list property; - removes.
+  - id: q-539b07f475b1
+    q: Where are profiles stored?
+    options:
+    - /etc/NetworkManager/system-connections/
+    - /etc/hosts
+    - /var/log/NetworkManager
+    answer: 0
+    explain: One .nmconnection file per profile (older RHEL used ifcfg files).
+  - id: q-6921ca9bc519
+    q: Which setting makes an address static instead of from DHCP?
+    options:
+    - ipv4.method manual
+    - ipv4.method auto
+    - ipv4.static yes
+    answer: 0
+    explain: auto means DHCP.
+  - id: q-b3104010566b
+    q: Which command removes a profile completely?
+    options:
+    - nmcli connection delete NAME
+    - nmcli connection down NAME
+    - nmcli device disconnect
+    answer: 0
+    explain: down only deactivates; delete removes the stored profile too.

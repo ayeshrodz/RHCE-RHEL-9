@@ -1,0 +1,304 @@
+cidr:
+  title: An address with its prefix
+  caption: Select a part of 172.25.250.10/24.
+  height: 250
+  mode: select
+  initial: addr
+  info:
+    addr:
+      tone: blue
+      title: 'The address: 172.25.250.10'
+      text: Four numbers from 0 to 255 that identify this interface on the network. Every host on a network needs its own.
+    prefix:
+      tone: purple
+      title: 'The prefix: /24'
+      text: How many of the first bits name the NETWORK. /24 means the first three numbers (24 bits) are the network, and the last number is the host. The same thing written as a netmask is 255.255.255.0.
+    net:
+      tone: green
+      title: 'The network: 172.25.250.0/24'
+      text: 'Everything that shares the first 24 bits. Hosts on the same network talk to each other directly, without a router. Here: 172.25.250.0 to 172.25.250.255, of which .0 names the network and .255 is the broadcast address.'
+    gw:
+      tone: amber
+      title: 'The gateway: 172.25.250.254'
+      text: The router on the same network that forwards traffic for any other network (the "default route"). It must be inside the interface's own network.
+    dns:
+      tone: teal
+      title: 'DNS: 172.25.250.254'
+      text: The server that turns names into addresses. Several can be listed, tried in order.
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 200
+    h: 56
+    tone: blue
+    title: 172.25.250.10
+    sub: address
+    mono: true
+    titleSize: 15
+    select: addr
+    active:
+    - addr
+  - kind: node
+    x: 220
+    y: 28
+    w: 90
+    h: 56
+    tone: purple
+    title: /24
+    sub: prefix
+    mono: true
+    titleSize: 18
+    select: prefix
+    active:
+    - prefix
+  - kind: node
+    x: 330
+    y: 28
+    w: 200
+    h: 56
+    tone: green
+    title: 172.25.250.0/24
+    sub: network
+    mono: true
+    titleSize: 14
+    select: net
+    active:
+    - net
+  - kind: node
+    x: 10
+    y: 100
+    w: 200
+    h: 50
+    tone: amber
+    title: 172.25.250.254
+    sub: gateway
+    mono: true
+    titleSize: 14
+    select: gw
+    active:
+    - gw
+  - kind: node
+    x: 220
+    y: 100
+    w: 200
+    h: 50
+    tone: teal
+    title: 172.25.250.254
+    sub: DNS server
+    mono: true
+    titleSize: 14
+    select: dns
+    active:
+    - dns
+  - kind: label
+    x: 340
+    y: 190
+    text: 'ip route shows the gateway as: default via ADDRESS'
+    size: 12
+    muted: true
+host-view:
+  title: What a host needs to talk to others
+  caption: Select an item to see where it comes from and how to look at it.
+  height: 250
+  mode: select
+  initial: iface
+  info:
+    iface:
+      tone: blue
+      title: Interface
+      text: 'The network card, real or virtual: enp5s0 (an Ethernet NIC), lo (loopback), dummy0 (a virtual test interface). ip link and nmcli device status list them.'
+    ip:
+      tone: purple
+      title: IP address and prefix
+      text: ip addr (or ip -br addr for short) shows them. Set by DHCP or by hand.
+    route:
+      tone: amber
+      title: Routes and gateway
+      text: ip route shows where traffic goes. The default route names the gateway.
+    dns:
+      tone: teal
+      title: DNS servers
+      text: cat /etc/resolv.conf (written by NetworkManager). Which names get looked up where is in /etc/nsswitch.conf.
+    name:
+      tone: green
+      title: Host name
+      text: hostnamectl shows it; /etc/hostname stores it; /etc/hosts maps names to addresses locally.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 120
+    h: 60
+    tone: blue
+    title: interface
+    sub: enp5s0
+    mono: true
+    titleSize: 13
+    select: iface
+    active:
+    - iface
+  - kind: node
+    x: 146
+    y: 30
+    w: 120
+    h: 60
+    tone: purple
+    title: address
+    sub: ip addr
+    mono: true
+    titleSize: 13
+    select: ip
+    active:
+    - ip
+  - kind: node
+    x: 282
+    y: 30
+    w: 120
+    h: 60
+    tone: amber
+    title: routes
+    sub: ip route
+    mono: true
+    titleSize: 13
+    select: route
+    active:
+    - route
+  - kind: node
+    x: 418
+    y: 30
+    w: 120
+    h: 60
+    tone: teal
+    title: DNS
+    sub: resolv.conf
+    mono: true
+    titleSize: 13
+    select: dns
+    active:
+    - dns
+  - kind: node
+    x: 554
+    y: 30
+    w: 116
+    h: 60
+    tone: green
+    title: names
+    sub: hostnamectl
+    mono: true
+    titleSize: 13
+    select: name
+    active:
+    - name
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: looking at the network'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: ip -br addr
+      out: "lo               UNKNOWN        127.0.0.1/8 ::1/128 \nenp5s0           UP             172.25.250.10/24 fe80::216:3eff:fe88:153c/64 "
+    - cmd: ip -br link
+      out: "lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> \nenp5s0           UP             00:16:3e:88:15:3c <BROADCAST,MULTICAST,UP,LOWER_UP> "
+    - cmd: ip route
+      out: "default via 172.25.250.254 dev enp5s0 proto dhcp src 172.25.250.10 metric 100 \n172.25.250.0/24 dev enp5s0 proto kernel scope link src 172.25.250.10 metric 100 "
+    - cmd: ping -c 2 serverb
+      out: 'PING serverb.lab.example.com (172.25.250.11) 56(84) bytes of data.
+
+        64 bytes from serverb.lab.example.com (172.25.250.11): icmp_seq=1 ttl=64 time=0.535 ms
+
+        64 bytes from serverb.lab.example.com (172.25.250.11): icmp_seq=2 ttl=64 time=0.891 ms
+
+
+        --- serverb.lab.example.com ping statistics ---
+
+        2 packets transmitted, 2 received, 0% packet loss, time 1006ms
+
+        rtt min/avg/max/mdev = 0.535/0.713/0.891/0.178 ms'
+    - cmd: ip neigh
+      out: "172.25.250.254 dev enp5s0 lladdr 00:16:3e:42:55:32 DELAY \n172.25.250.11 dev enp5s0 lladdr 00:16:3e:04:a5:a7 REACHABLE "
+    - cmd: ss -tulpn
+      out: 'Netid State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+
+        udp   UNCONN 0      0          127.0.0.1:323       0.0.0.0:*    users:(("chronyd",pid=465,fd=5))
+
+        tcp   LISTEN 0      128          0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=641,fd=7))
+
+        tcp   LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",pid=641,fd=8))'
+    - cmd: tracepath -n -m 3 172.25.250.254
+      out: "1?: [LOCALHOST]                      pmtu 1500\n1:  172.25.250.254                                        0.301ms reached\n1:  172.25.250.254                                        0.186ms reached\n     Resume: pmtu 1500 hops 1 back 1"
+    tasks:
+    - text: List the addresses of every interface in brief form.
+      commands:
+      - ip -br addr
+    - text: Show the routing table, including the default route.
+      commands:
+      - ip route
+    - text: Check that serverb answers two pings.
+      commands:
+      - ping -c 2 serverb
+    - text: Show which TCP and UDP ports are open for listening, and the programs behind them.
+      commands:
+      - ss -tulpn
+quick:
+  questions:
+  - id: q-1c24f298c970
+    q: A host has 172.25.250.10/24. Which address is on the SAME network?
+    options:
+    - 172.25.250.77
+    - 172.25.251.10
+    - 172.26.250.10
+    answer: 0
+    explain: With /24, only the last number differs inside the network.
+  - id: q-5e5b0b3b6620
+    q: What does the default gateway do?
+    options:
+    - It forwards traffic for networks the host is not directly on
+    - It translates names to addresses
+    - It assigns addresses
+    answer: 0
+    explain: It is a router on the local network, used for everything else.
+  - id: q-e7041820ac6c
+    q: Which command shows the routing table?
+    options:
+    - ip route
+    - ip addr
+    - ss -r
+    answer: 0
+    explain: default via GATEWAY dev INTERFACE is the line to look for.
+  - id: q-1baf75459bc2
+    q: What does /24 mean as a netmask?
+    options:
+    - 255.255.255.0
+    - 255.255.0.0
+    - 255.0.0.0
+    answer: 0
+    explain: 24 one-bits, written as four bytes.
+  - id: q-9e2624a1d973
+    q: Which command lists open listening ports and the programs using them?
+    options:
+    - ss -tulpn
+    - ip -s link
+    - ping -l
+    answer: 0
+    explain: t tcp, u udp, l listening, p process, n numbers.
+  - id: q-b072e3822b15
+    q: ping works but a web page does not load. Which layer is the likely problem?
+    options:
+    - The port or the service (firewall or not listening), not the address
+    - The cable
+    - The gateway address
+    answer: 0
+    explain: ping tests reachability of the address; the application needs its own port to be open and listened on.

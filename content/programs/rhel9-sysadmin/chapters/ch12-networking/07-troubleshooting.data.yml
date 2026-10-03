@@ -1,0 +1,273 @@
+ladder:
+  title: Work up the ladder
+  caption: Step through the layers; stop at the first one that fails.
+  height: 260
+  mode: steps
+  steps:
+  - title: 1 · Is the link up?
+    text: 'ip -br link and nmcli device status: the interface must be UP and connected. If not, nothing above can work.'
+  - title: 2 · Does it have an address?
+    text: 'ip -br addr: a valid address and prefix for the right network. A 169.254.x.x address means DHCP failed.'
+  - title: 3 · Can it reach the gateway?
+    text: 'ip route shows the default route; ping -c 2 GATEWAY tests it. If this fails, the problem is local: cable, switch, address, prefix.'
+  - title: 4 · Can it reach the target by address?
+    text: ping -c 2 192.0.2.10 (an address, not a name). If this works, routing is fine.
+  - title: 5 · Does the name resolve?
+    text: getent hosts NAME. If the address works and the name does not, look at /etc/hosts, /etc/resolv.conf and the DNS server.
+  - title: 6 · Is the service reachable?
+    text: curl -v http://HOST:PORT. "No route to host" with a working ping usually means a firewall; "Connection refused" means nothing listens on that port (check ss -tlnp on the server); a timeout is a silent drop.
+  elements:
+  - kind: node
+    x: 8
+    y: 28
+    w: 104
+    h: 50
+    tone: coral
+    title: link
+    sub: ip link
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+  - kind: node
+    x: 120
+    y: 28
+    w: 104
+    h: 50
+    tone: amber
+    title: address
+    sub: ip addr
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 232
+    y: 28
+    w: 104
+    h: 50
+    tone: amber
+    title: gateway
+    sub: ip route · ping
+    mono: true
+    titleSize: 11
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 344
+    y: 28
+    w: 104
+    h: 50
+    tone: blue
+    title: target IP
+    sub: ping ADDR
+    mono: true
+    titleSize: 12
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 456
+    y: 28
+    w: 104
+    h: 50
+    tone: teal
+    title: name
+    sub: getent hosts
+    mono: true
+    titleSize: 11
+    active:
+    - 4
+    visible:
+    - 4
+    - 5
+  - kind: node
+    x: 568
+    y: 28
+    w: 102
+    h: 50
+    tone: green
+    title: port
+    sub: curl · ss
+    mono: true
+    titleSize: 12
+    active:
+    - 5
+    visible:
+    - 5
+  - kind: arrow
+    points:
+    - - 112
+      - 53
+    - - 120
+      - 53
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 224
+      - 53
+    - - 232
+      - 53
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 336
+      - 53
+    - - 344
+      - 53
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 448
+      - 53
+    - - 456
+      - 53
+    visible:
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 560
+      - 53
+    - - 568
+      - 53
+    visible:
+    - 5
+  - kind: node
+    x: 120
+    y: 120
+    w: 430
+    h: 56
+    tone: gray
+    title: stop at the first failing rung; fix it; go back to the top
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: finding where it breaks'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: curl -sS -m 5 http://serverb:8080/
+      out: 'curl: (7) Failed to connect to serverb port 8080: No route to host'
+    - cmd: ping -c 1 serverb
+      out: 'PING serverb.lab.example.com (172.25.250.11) 56(84) bytes of data.
+
+        64 bytes from serverb.lab.example.com (172.25.250.11): icmp_seq=1 ttl=64 time=0.134 ms
+
+
+        --- serverb.lab.example.com ping statistics ---
+
+        1 packets transmitted, 1 received, 0% packet loss, time 0ms'
+    - cmd: ss -tlnp | grep 8080
+      out: LISTEN 0      5          127.0.0.1:8080      0.0.0.0:*    users:(("python3",pid=679,fd=3))
+    - cmd: curl -sS -m 5 http://serverb:8080/
+      out: 'curl: (7) Failed to connect to serverb port 8080: Connection refused'
+    - cmd: curl -sS -m 5 http://serverb:8080/
+      out: hello from serverb
+    - cmd: timeout 3 bash -c '</dev/tcp/serverb/8080' && echo open || echo closed
+      out: open
+    tasks:
+    - text: Test the service from servera.
+      commands:
+      - curl -sS -m 5 http://serverb:8080/
+    - text: Check that serverb itself answers a ping.
+      commands:
+      - ping -c 1 serverb
+    - text: On serverb, show what listens on port 8080 and on which address.
+      commands:
+      - ss -tlnp | grep 8080
+quick:
+  questions:
+  - id: q-67f305df9dc4
+    q: ping to the server works, but curl says "No route to host". What is the most likely cause?
+    options:
+    - A firewall on the server rejects the port
+    - The cable is unplugged
+    - DNS is down
+    answer: 0
+    explain: The address is reachable; the specific port is rejected.
+  - id: q-864182f0b06c
+    q: curl says "Connection refused". What does it mean?
+    options:
+    - The host answered, but nothing listens on that port
+    - The host is off
+    - DNS failed
+    answer: 0
+    explain: Check ss -tlnp on the server; the service may be stopped or bound to another address.
+  - id: q-b81de55522a3
+    q: ss -tlnp shows 127.0.0.1:8080 for a service. Who can reach it?
+    options:
+    - Only programs on the same host
+    - Everyone on the network
+    - Nobody
+    answer: 0
+    explain: It listens on the loopback address only. 0.0.0.0 means every address.
+  - id: q-b56b8a036a57
+    q: A name does not resolve but pinging the IP address works. Which layer is broken?
+    options:
+    - Name resolution
+    - The gateway
+    - The link
+    answer: 0
+    explain: Check getent hosts, /etc/hosts and /etc/resolv.conf.
+  - id: q-772470f1a23e
+    q: Which command traces the path to a destination and shows each hop?
+    options:
+    - tracepath
+    - ss
+    - hostnamectl
+    answer: 0
+    explain: tracepath (or traceroute) lists the routers on the way.
+  - id: q-8980a1797f1c
+    q: Which first step suits a connectivity problem best?
+    options:
+    - 'Work up from the link: link, address, gateway, target, name, port'
+    - Reboot
+    - Disable the firewall
+    answer: 0
+    explain: Checking in order finds the first failing layer.
