@@ -1,4 +1,0 @@
-Create a small system service on clean servera. Prove its running and enabled states separately, diagnose an intentional executable-path fault, restore it, and verify it after a reboot.
-
-Separate live service state from boot activation policy.
-Diagnose unit failures and rehearse console-based recovery.

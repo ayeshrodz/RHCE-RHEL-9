@@ -187,6 +187,8 @@ class ScriptTests(unittest.TestCase):
             ({'kind': 'boot-target', 'target': 'nothing.target'}, 1),
             ({'kind': 'process', 'pattern': '^sleep 4321$', 'running': False}, 0),
             ({'kind': 'process', 'pattern': '^sleep 4321$'}, 1),
+            ({'kind': 'service', 'names': ['no-such-unit-xyz.service'], 'masked': False}, 0),
+            ({'kind': 'service', 'names': ['no-such-unit-xyz.service'], 'masked': True}, 1),
             ({'kind': 'commands', 'names': ['bash', 'ls']}, 0),
             ({'kind': 'commands', 'names': ['bash', 'no-such-cmd-xyz']}, 1),
         ]

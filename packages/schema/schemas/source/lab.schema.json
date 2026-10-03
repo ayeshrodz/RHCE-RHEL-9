@@ -617,6 +617,10 @@
         },
         "enabled": {
           "type": "boolean"
+        },
+        "masked": {
+          "description": "Whether the unit must be masked (true) or must not be (false).",
+          "type": "boolean"
         }
       },
       "type": "object"

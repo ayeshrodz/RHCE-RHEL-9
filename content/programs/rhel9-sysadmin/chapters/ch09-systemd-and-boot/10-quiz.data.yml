@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-d288b746d470
+    q: Which command starts a service now and at every boot?
+    options:
+    - systemctl enable --now NAME
+    - systemctl start NAME
+    - systemctl reload NAME
+    answer: 0
+    explain: enable controls boot, --now also starts it.
+  - id: q-0ab64d97ee24
+    q: A unit is "enabled" but "inactive". What does that mean?
+    options:
+    - It is not running now but will start at boot
+    - It failed
+    - It is masked
+    answer: 0
+    explain: Enabled is boot policy; inactive is the current state.
+  - id: q-0fe3ce4befa4
+    q: Where do you put your own unit file?
+    options:
+    - /etc/systemd/system/NAME.service
+    - /usr/lib/systemd/system/NAME.service
+    - /etc/NAME.service
+    answer: 0
+    explain: Files in /etc/systemd/system belong to the administrator.
+  - id: q-81e70b7b1c45
+    q: After creating a unit file, what must you run?
+    options:
+    - systemctl daemon-reload
+    - systemctl reboot
+    - systemctl isolate
+    answer: 0
+    explain: systemd must reread its unit files.
+  - id: q-6b78fe6ed78c
+    q: Which command shows the log of one service?
+    options:
+    - journalctl -u NAME
+    - cat /var/log/NAME
+    - systemctl log NAME
+    answer: 0
+    explain: The journal indexes messages by unit.
+  - id: q-10e01a79676a
+    q: Which target is the usual default for a server without a GUI?
+    options:
+    - multi-user.target
+    - rescue.target
+    - poweroff.target
+    answer: 0
+    explain: graphical.target adds a login screen; rescue.target is for repairs.
+  - id: q-2ecb7e00c4f1
+    q: What does systemctl set-default multi-user.target change?
+    options:
+    - The target used at the next boot
+    - The running target immediately
+    - Nothing until daemon-reload
+    answer: 0
+    explain: To switch the running system too, use systemctl isolate.
+  - id: q-49ccf5b20e59
+    q: Which command shows how long each unit took to start?
+    options:
+    - systemd-analyze blame
+    - systemctl list-timers
+    - uptime
+    answer: 0
+    explain: blame sorts units by start time; critical-chain shows what delayed the target.
+  - id: q-ea49abe4e722
+    q: How do you stop a service from ever being started, even as a dependency?
+    options:
+    - systemctl mask NAME
+    - systemctl disable NAME
+    - systemctl stop NAME
+    answer: 0
+    explain: A masked unit is linked to /dev/null.
+  - id: q-a823753968e6
+    q: At the GRUB menu, which key lets you edit the boot entry for this boot only?
+    options:
+    - e
+    - Ctrl+Alt+Del
+    - Tab
+    answer: 0
+    explain: Press e, change the linux line, and Ctrl+X boots with the edit.

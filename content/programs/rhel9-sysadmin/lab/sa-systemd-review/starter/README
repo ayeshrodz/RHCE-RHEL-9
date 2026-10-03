@@ -1,0 +1,24 @@
+Exercise: sa-systemd-review (chapter 9 lab)
+
+Work on servera, with sudo or as root.
+
+A custom service
+ 1. /usr/local/bin/reporter.sh, an executable script (mode 755) that
+    appends a line with the time and the text "reporter alive" to
+    /var/log/reporter.log every ${INTERVAL:-10} seconds.
+ 2. /etc/systemd/system/reporter.service that runs the script with
+    ExecStart, restarts it on failure, and is wanted by
+    multi-user.target.
+ 3. A drop-in /etc/systemd/system/reporter.service.d/10-interval.conf that
+    sets Environment=INTERVAL=2. Do not edit the unit file for this.
+ 4. The service is running now and enabled at boot, and has written to its
+    log.
+
+Service policy
+ 5. bluetooth.service is masked.
+ 6. mdmonitor.service is stopped and disabled.
+
+Boot
+ 7. The default target is multi-user.target.
+
+Then, on workstation:  lab grade sa-systemd-review

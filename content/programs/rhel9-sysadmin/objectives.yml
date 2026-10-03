@@ -233,6 +233,38 @@
   - ch08/exercise-monitoring
   - ch08/lab
   challenges: []
+- id: ch09.services
+  chapter: ch09
+  lessons:
+  - ch09/services
+  labs:
+  - ch09/exercise-services
+  - ch09/lab
+  challenges: []
+- id: ch09.units
+  chapter: ch09
+  lessons:
+  - ch09/unit-files
+  labs:
+  - ch09/exercise-unit-files
+  - ch09/lab
+  challenges: []
+- id: ch09.boot
+  chapter: ch09
+  lessons:
+  - ch09/targets-and-boot
+  labs:
+  - ch09/exercise-boot
+  - ch09/lab
+  challenges: []
+- id: ch09.recovery
+  chapter: ch09
+  lessons:
+  - ch09/recovery
+  labs:
+  - ch09/exercise-fstab
+  - ch09/lab
+  challenges: []
 - id: ch10.operations
   chapter: ch10
   lessons:
@@ -408,22 +440,6 @@
   - ch22/incident-and-handover
   labs:
   - ch22/lab
-  challenges: []
-- id: ch09.operations
-  chapter: ch09
-  lessons:
-  - ch09/service-state
-  - ch09/boot-and-recovery
-  labs:
-  - ch09/lab
-  challenges: []
-- id: ch09.verification
-  chapter: ch09
-  lessons:
-  - ch09/service-state
-  - ch09/boot-and-recovery
-  labs:
-  - ch09/lab
   challenges: []
 - id: ch21.operations
   chapter: ch21

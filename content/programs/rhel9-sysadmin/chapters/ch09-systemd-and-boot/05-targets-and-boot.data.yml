@@ -1,0 +1,359 @@
+boot-steps:
+  title: From power to login prompt
+  caption: Step through what happens at boot.
+  height: 230
+  mode: steps
+  steps:
+  - title: Firmware
+    text: UEFI (or BIOS) tests the hardware and finds a boot device.
+  - title: 'Bootloader: GRUB 2'
+    text: GRUB shows the menu, loads the kernel and the initial RAM disk into memory. Kernel arguments are set here, and you can edit them for one boot.
+  - title: Kernel
+    text: Starts, detects hardware, and mounts a temporary root from the initramfs.
+  - title: initramfs
+    text: A small file system with just enough drivers and tools to find and mount the real root file system.
+  - title: systemd (PID 1)
+    text: The kernel switches to the real root and starts systemd, which reads its units.
+  - title: The default target
+    text: systemd starts everything needed for the default target (multi-user or graphical), in parallel where possible. Then login prompts appear.
+  elements:
+  - kind: node
+    x: 8
+    y: 30
+    w: 100
+    h: 56
+    tone: gray
+    title: firmware
+    sub: UEFI
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 116
+    y: 30
+    w: 100
+    h: 56
+    tone: amber
+    title: GRUB
+    sub: bootloader
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 224
+    y: 30
+    w: 100
+    h: 56
+    tone: coral
+    title: kernel
+    sub: hardware
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 332
+    y: 30
+    w: 100
+    h: 56
+    tone: purple
+    title: initramfs
+    sub: find the root
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: node
+    x: 440
+    y: 30
+    w: 100
+    h: 56
+    tone: blue
+    title: systemd
+    sub: PID 1
+    titleSize: 12.5
+    active:
+    - 4
+    visible:
+    - 4
+    - 5
+  - kind: node
+    x: 548
+    y: 30
+    w: 120
+    h: 56
+    tone: green
+    title: target
+    sub: multi-user
+    titleSize: 12.5
+    active:
+    - 5
+    visible:
+    - 5
+  - kind: arrow
+    points:
+    - - 108
+      - 58
+    - - 116
+      - 58
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 216
+      - 58
+    - - 224
+      - 58
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 324
+      - 58
+    - - 332
+      - 58
+    visible:
+    - 3
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 432
+      - 58
+    - - 440
+      - 58
+    visible:
+    - 4
+    - 5
+  - kind: arrow
+    points:
+    - - 540
+      - 58
+    - - 548
+      - 58
+    visible:
+    - 5
+  - kind: label
+    x: 340
+    y: 130
+    text: 'edit kernel arguments here: press e in the GRUB menu'
+    size: 12.5
+    muted: true
+targets:
+  title: Targets
+  caption: Select a target to see what it groups.
+  height: 240
+  mode: select
+  initial: multi
+  info:
+    poweroff:
+      tone: gray
+      title: poweroff.target
+      text: Shut the machine down. systemctl poweroff and systemctl reboot use poweroff and reboot targets.
+    rescue:
+      tone: amber
+      title: rescue.target
+      text: A single-user shell with the basic system and file systems mounted, but no network and no services. For repairs.
+    multi:
+      tone: green
+      title: multi-user.target
+      text: 'The normal text-mode server: networking, logins and all enabled services. The usual choice for servers.'
+    graphical:
+      tone: blue
+      title: graphical.target
+      text: Everything in multi-user, plus a graphical login. The default on desktops, and on this lab image.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 56
+    tone: gray
+    title: poweroff
+    sub: stop everything
+    mono: true
+    titleSize: 13
+    select: poweroff
+    active:
+    - poweroff
+  - kind: node
+    x: 180
+    y: 30
+    w: 150
+    h: 56
+    tone: amber
+    title: rescue
+    sub: one shell, no services
+    mono: true
+    titleSize: 12.5
+    select: rescue
+    active:
+    - rescue
+  - kind: node
+    x: 350
+    y: 30
+    w: 150
+    h: 56
+    tone: green
+    title: multi-user
+    sub: text mode, services
+    mono: true
+    titleSize: 13
+    select: multi
+    active:
+    - multi
+  - kind: node
+    x: 520
+    y: 30
+    w: 150
+    h: 56
+    tone: blue
+    title: graphical
+    sub: multi-user + GUI
+    mono: true
+    titleSize: 13
+    select: graphical
+    active:
+    - graphical
+  - kind: label
+    x: 340
+    y: 118
+    text: systemctl get-default · systemctl set-default NAME · systemctl isolate NAME
+    mono: true
+    size: 12.5
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: targets and boot analysis'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl get-default
+      out: graphical.target
+    - cmd: systemctl set-default multi-user.target
+      out: Created symlink /etc/systemd/system/default.target → /usr/lib/systemd/system/multi-user.target.
+    - cmd: systemctl list-dependencies multi-user.target | head -4
+      out: 'multi-user.target
+
+        ● ├─chronyd.service
+
+        ● ├─crond.service
+
+        ● ├─firewalld.service'
+    - cmd: systemd-analyze
+      out: "Startup finished in 1.835s (kernel) + 1.517s (initrd) + 5.773s (userspace) = 9.126s \ngraphical.target reached after 4.932s in userspace."
+    - cmd: systemd-analyze critical-chain | head -4
+      out: 'The time when unit became active or started is printed after the "@" character.
+
+        The time the unit took to start is printed after the "+" character.
+
+
+        graphical.target @4.932s'
+    - cmd: cat /proc/cmdline
+      out: BOOT_IMAGE=(hd0,gpt2)/boot/vmlinuz-5.14.0-687.53.1.el9_8.x86_64 console=tty1 console=ttyS0 root=UUID=4bbdcf8d-863d-4050-957c-c815ca3838b8 ro
+    - cmd: grubby --default-kernel
+      out: /boot/vmlinuz-5.14.0-687.53.1.el9_8.x86_64
+    - cmd: grubby --update-kernel=ALL --args="loglevel=5"
+      out: ''
+    - cmd: grubby --info=DEFAULT | grep args
+      out: args="console=tty1 console=ttyS0 ro loglevel=5"
+    - cmd: journalctl --list-boots
+      out: "IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY\n  0 40c5978bc61848209a017d48d2184fe4 Sat 2026-10-03 16:37:42 UTC Sat 2026-10-03 16:38:24 UTC"
+    tasks:
+    - text: Find the default target.
+      commands:
+      - systemctl get-default
+    - text: Make the multi-user target the default.
+      commands:
+      - systemctl set-default multi-user.target
+    - text: See how long the last boot took.
+      commands:
+      - systemd-analyze
+    - text: Show the arguments the running kernel was started with.
+      commands:
+      - cat /proc/cmdline
+    - text: Add the argument loglevel=5 to every installed kernel.
+      commands:
+      - grubby --update-kernel=ALL --args="loglevel=5"
+quick:
+  questions:
+  - id: q-922affcfb841
+    q: Which component loads the kernel and the initramfs?
+    options:
+    - GRUB 2
+    - systemd
+    - udev
+    answer: 0
+    explain: The bootloader reads its menu and loads both into memory, passing the kernel arguments.
+  - id: q-afbad0896e46
+    q: What is the first process the kernel starts on the real root?
+    options:
+    - systemd (PID 1)
+    - bash
+    - init.sh
+    answer: 0
+    explain: systemd starts all other services and ends up at the default target.
+  - id: q-46d233cbdf78
+    q: Which command makes the system boot to the text-mode target?
+    options:
+    - systemctl set-default multi-user.target
+    - systemctl isolate multi-user.target
+    - systemctl enable multi-user
+    answer: 0
+    explain: set-default is the persistent choice; isolate switches the running system but changes nothing for the next boot.
+  - id: q-1a83c5869757
+    q: What does systemctl isolate rescue.target do?
+    options:
+    - Switches the running system to a single-user rescue state
+    - Boots into rescue mode next time
+    - Deletes the default target
+    answer: 0
+    explain: It stops everything not part of rescue.target right now, so over ssh it would cut you off.
+  - id: q-39182711e483
+    q: Where do you edit kernel arguments for a single boot?
+    options:
+    - 'The GRUB menu: press e, edit the linux line, Ctrl+X'
+    - /etc/default/grub only
+    - /proc/cmdline
+    answer: 0
+    explain: /proc/cmdline is read-only and shows what was used. A one-off change is made in GRUB itself.
+  - id: q-4c1c02c4c051
+    q: The boot journal from before the last reboot is "no persistent journal was found". Why?
+    options:
+    - The journal is kept only in memory by default here
+    - journalctl is broken
+    - The disk is full
+    answer: 0
+    explain: Without /var/log/journal the journal is volatile and lost at reboot. Chapter 11 makes it persistent.
