@@ -1,0 +1,10 @@
+quick:
+  questions:
+  - q: How does a Quadlet-generated service acquire startup activation?
+    options:
+    - From the source definition Install section during generation.
+    - By editing the generated unit and enabling it normally.
+    - By changing only the image tag.
+    answer: 0
+    explain: Generated transient units use activation links created from the Quadlet source.
+    id: q-3776b6c8accf

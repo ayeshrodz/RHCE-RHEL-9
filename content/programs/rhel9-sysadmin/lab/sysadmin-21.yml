@@ -1,0 +1,39 @@
+name: sysadmin-21
+title: Containers with Podman
+page: ch21/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: package
+      'on': servera.lab.example.com
+      names:
+      - podman
+      installed: true
+      id: check-1
+      message: Verify package requirement 1 for Containers with Podman
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /home/student/.config/containers/systemd/kp-heartbeat.container
+      contains:
+      - WantedBy=default.target
+      - ContainerName=kp-heartbeat
+      id: check-2
+      message: Verify file requirement 2 for Containers with Podman
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': control
+      paths:
+      - container-evidence.txt
+      nonEmpty: true
+      id: check-3
+      message: Verify file requirement 3 for Containers with Podman

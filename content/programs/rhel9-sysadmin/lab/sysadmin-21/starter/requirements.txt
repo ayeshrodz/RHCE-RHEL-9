@@ -1,0 +1,4 @@
+On clean servera, use student login to create a rootless Quadlet heartbeat with a mounted data fixture. Confirm the rootless store, mounted marker and user-service behavior across logout and reboot. This is a lifecycle lab, not a web-health test.
+
+Run and inspect rootless containers with intentional storage and ports.
+Use version-supported systemd integration and verify restart behavior.

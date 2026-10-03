@@ -314,6 +314,22 @@
   labs:
   - ch09/lab
   challenges: []
+- id: ch21.operations
+  chapter: ch21
+  lessons:
+  - ch21/podman-basics
+  - ch21/quadlet-and-systemd
+  labs:
+  - ch21/lab
+  challenges: []
+- id: ch21.verification
+  chapter: ch21
+  lessons:
+  - ch21/podman-basics
+  - ch21/quadlet-and-systemd
+  labs:
+  - ch21/lab
+  challenges: []
 - id: ch17.operations
   chapter: ch17
   lessons:
