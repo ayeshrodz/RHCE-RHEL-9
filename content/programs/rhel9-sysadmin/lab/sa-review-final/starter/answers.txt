@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The HTTP status code the web server gives when the ACL for apache is missing:
+LOST_ACL_STATUS=
+# What a client sees when httpd is stopped: refused, noroute or timeout
+STOPPED_SYMPTOM=
+# The tar option that keeps SELinux labels in an archive (starts with two dashes):
+TAR_LABEL_OPTION=

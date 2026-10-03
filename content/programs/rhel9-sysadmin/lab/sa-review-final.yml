@@ -1,0 +1,236 @@
+name: sa-review-final
+title: Review and practice
+page: ch22/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: owner
+      kind: user
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: statusadm (UID 3100) is a nologin account with the primary group ops
+      names:
+      - statusadm
+      uid: 3100
+      primaryGroup: ops
+      shell: /sbin/nologin
+    - id: auditor
+      kind: user
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The account auditor (UID 3101) exists
+      names:
+      - auditor
+      uid: 3101
+    - id: package
+      kind: package
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd is installed
+      names:
+      - httpd
+    - id: service
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd is running and enabled
+      names:
+      - httpd.service
+      active: true
+      enabled: true
+    - id: dir
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: /srv/status belongs to statusadm:ops with mode 2750
+      paths:
+      - /srv/status
+      fileType: directory
+      owner: statusadm
+      group: ops
+      mode: '2750'
+    - id: page
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: index.html has the required line, owner, group and mode 640
+      paths:
+      - /srv/status/index.html
+      fileType: regular
+      owner: statusadm
+      group: ops
+      mode: '0640'
+      line: 'Status page: ready'
+    - id: acl
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: apache and auditor may read the page through ACL entries
+      paths:
+      - /srv/status/index.html
+      acl:
+      - user:apache:r--
+      - user:auditor:r--
+    - id: label
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The page carries the web content type
+      paths:
+      - /srv/status/index.html
+      selinuxType: httpd_sys_content_t
+    - id: fcontext
+      kind: selinux-fcontext
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: A stored mapping gives /srv/status and below the web content type
+      path: /srv/status(/.*)?
+      type: httpd_sys_content_t
+    - id: port-label
+      kind: selinux-port
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: TCP port 8095 is labelled http_port_t
+      type: http_port_t
+      proto: tcp
+      port: 8095
+    - id: enforcing
+      kind: selinux
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: SELinux is enforcing, now and in the configuration
+      mode: enforcing
+    - id: zone-port
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The zone statuspartners allows 8095/tcp
+      zone: statuspartners
+      port: 8095/tcp
+    - id: zone-file
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The permanent zone statuspartners has a source address
+      paths:
+      - /etc/firewalld/zones/statuspartners.xml
+      matches: <source address="[0-9a-fA-F.:/]+"/>
+    - id: public-closed
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The default zone does not open 8095/tcp
+      port: 8095/tcp
+      allowed: false
+    - id: journal
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The journal is persistent
+      paths:
+      - /var/log/journal
+      fileType: directory
+    - id: journal-conf
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: journald is configured for persistent storage
+      paths:
+      - /etc/systemd/journald.conf.d/10-persistent.conf
+      contains:
+      - Storage=persistent
+    - id: timer
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: status-backup.timer is enabled and running
+      names:
+      - status-backup.timer
+      active: true
+      enabled: true
+    - id: backup-unit
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The backup service keeps ACLs and labels
+      paths:
+      - /etc/systemd/system/status-backup.service
+      contains:
+      - --acls
+      - --selinux
+      - /srv/backups/status.tar.gz
+    - id: archive
+      kind: archive
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The backup archive holds the status page
+      path: /srv/backups/status.tar.gz
+      format: tar.gz
+      members:
+      - status/index.html
+    - id: local
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The status page answers on servera itself
+      url: http://localhost:8095/
+      containsAny:
+      - 'Status page: ready'
+    - id: remote
+      kind: http
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb reaches the status page
+      url: http://servera.lab.example.com:8095/
+      containsAny:
+      - 'Status page: ready'
+    - id: answer-lost-acl-status
+      kind: file
+      'on': control
+      message: 'answers.txt: the HTTP status the web server gives when the ACL for apache is missing'
+      paths:
+      - answers.txt
+      matches: ^LOST_ACL_STATUS=403[ \t]*$
+    - id: answer-stopped-symptom
+      kind: file
+      'on': control
+      message: 'answers.txt: what a client sees when httpd is stopped (refused, noroute or timeout)'
+      paths:
+      - answers.txt
+      matches: ^STOPPED_SYMPTOM=refused[ \t]*$
+    - id: answer-tar-label-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the tar option that keeps SELinux labels in an archive'
+      paths:
+      - answers.txt
+      matches: ^TAR_LABEL_OPTION=--selinux[ \t]*$

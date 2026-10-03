@@ -1,0 +1,322 @@
+recovery:
+  title: Backup, loss and restore
+  caption: Step through a tested recovery.
+  height: 280
+  mode: steps
+  steps:
+  - title: A scheduled backup
+    text: 'A timer runs a one-shot service: tar --acls --selinux -czf /srv/backups/portal.tar.gz -C /srv portal. --acls and --selinux keep the extras that the web server needs.'
+  - title: Something goes wrong
+    text: The page is overwritten with wrong content (or the file is deleted). The service is up; only the content is wrong.
+  - title: Restore into a staging directory
+    text: 'Unpack into an empty directory first and look: tar --acls --selinux -xzf … -C /root/stage. Compare content, owner, ACL and label with what you expect.'
+  - title: Replace only what is needed
+    text: cp -a --preserve=all copies the one good file over the bad one with its attributes. Then restorecon -v checks the label, and the failing request is repeated.
+  - title: Prove it after a reboot
+    text: Reboot, then repeat the useful requests from the partner and from a stranger. Persistence is only proven by the same test after a restart.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 130
+    h: 56
+    tone: blue
+    title: backup
+    sub: timer + tar
+    titleSize: 13
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 170
+    y: 20
+    w: 130
+    h: 56
+    tone: coral
+    title: fault
+    sub: page replaced
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 330
+    y: 20
+    w: 130
+    h: 56
+    tone: amber
+    title: stage
+    sub: unpack, compare
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 490
+    y: 20
+    w: 180
+    h: 56
+    tone: green
+    title: restore + verify
+    sub: cp -a, restorecon
+    titleSize: 13
+    active:
+    - 3
+    - 4
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 140
+      - 48
+    - - 170
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 300
+      - 48
+    - - 330
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 460
+      - 48
+    - - 490
+      - 48
+    visible:
+    - 3
+    - 4
+handover:
+  title: A handover note
+  caption: Select a section.
+  height: 330
+  mode: select
+  initial: what
+  info:
+    what:
+      tone: blue
+      title: Purpose and hosts
+      text: What the service is for, which hosts, which software and versions (rpm -q), who asked for it.
+    changes:
+      tone: purple
+      title: What you changed
+      text: 'Files and settings that you created or edited, in a list: accounts, content, httpd configuration, mappings, zone and port, units. Note the commands that created them.'
+    ops:
+      tone: green
+      title: How to operate it
+      text: Start, stop, reload and check commands, where the logs are, and how to read them.
+    recover:
+      tone: amber
+      title: Backup and recovery
+      text: What is saved, when, where, and the tested restore procedure with the time it took.
+    faults:
+      tone: coral
+      title: Known failures
+      text: 'Symptoms you met and what each meant: 403 after restore means the ACL is missing; "will not start" with a bind error means the port label.'
+    limits:
+      tone: gray
+      title: Limits
+      text: What you did not test. A lab on a clone distribution does not prove vendor-specific behaviour such as subscriptions, or every minor release.
+  elements:
+  - kind: node
+    x: 6
+    y: 30
+    w: 210
+    h: 56
+    tone: blue
+    title: Purpose and hosts
+    sub: ''
+    titleSize: 13
+    select: what
+    active:
+    - what
+  - kind: node
+    x: 230
+    y: 30
+    w: 210
+    h: 56
+    tone: purple
+    title: What changed
+    sub: ''
+    titleSize: 13
+    select: changes
+    active:
+    - changes
+  - kind: node
+    x: 454
+    y: 30
+    w: 216
+    h: 56
+    tone: green
+    title: Operate
+    sub: ''
+    titleSize: 13
+    select: ops
+    active:
+    - ops
+  - kind: node
+    x: 6
+    y: 110
+    w: 210
+    h: 56
+    tone: amber
+    title: Backup and recovery
+    sub: ''
+    titleSize: 13
+    select: recover
+    active:
+    - recover
+  - kind: node
+    x: 230
+    y: 110
+    w: 210
+    h: 56
+    tone: coral
+    title: Known failures
+    sub: ''
+    titleSize: 13
+    select: faults
+    active:
+    - faults
+  - kind: node
+    x: 454
+    y: 110
+    w: 216
+    h: 56
+    tone: gray
+    title: Limits
+    sub: ''
+    titleSize: 13
+    select: limits
+    active:
+    - limits
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: backup and restore'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: mkdir -p /srv/backups; chmod 750 /srv/backups
+      out: ''
+    - cmd: systemctl start portal-backup.service; ls -l /srv/backups | tail -1
+      out: -rw-r--r--. 1 root root 461 Oct  3 20:32 portal.tar.gz
+    - cmd: tar -tzf /srv/backups/portal.tar.gz
+      out: 'portal/
+
+        portal/index.html'
+    - cmd: echo defaced > /srv/portal/index.html; curl -s localhost:8090
+      out: defaced
+    - cmd: mkdir /root/stage; tar --acls --selinux -xzf /srv/backups/portal.tar.gz -C /root/stage; cat /root/stage/portal/index.html
+      out: 'Portal status: OK'
+    - cmd: ls -lZ /root/stage/portal/index.html
+      out: -rw-r-----+ 1 portaladm portal system_u:object_r:httpd_sys_content_t:s0 18 Oct  3 20:30 /root/stage/portal/index.html
+    - cmd: cp -a --preserve=all /root/stage/portal/index.html /srv/portal/index.html
+      out: ''
+    - cmd: restorecon -v /srv/portal/index.html
+      out: ''
+    - cmd: curl -s localhost:8090
+      out: 'Portal status: OK'
+    - cmd: sha256sum /srv/backups/portal.tar.gz | cut -c1-20
+      out: 2e46d2621750dc98c8fd
+    tasks:
+    - text: Run the backup service and list the archive.
+      commands:
+      - mkdir -p /srv/backups; chmod 750 /srv/backups
+      - systemctl start portal-backup.service; ls -l /srv/backups | tail -1
+      - tar -tzf /srv/backups/portal.tar.gz
+    - text: Overwrite the page and see the wrong content being served.
+      commands:
+      - echo defaced > /srv/portal/index.html; curl -s localhost:8090
+    - text: Unpack into a staging directory and inspect the page there.
+      commands:
+      - mkdir /root/stage; tar --acls --selinux -xzf /srv/backups/portal.tar.gz -C /root/stage; cat /root/stage/portal/index.html
+      - ls -lZ /root/stage/portal/index.html
+    - text: Copy the good page back with attributes, check its label, and repeat the request.
+      commands:
+      - cp -a --preserve=all /root/stage/portal/index.html /srv/portal/index.html
+      - restorecon -v /srv/portal/index.html
+      - curl -s localhost:8090
+quick:
+  questions:
+  - id: q-f9a7b6e54df3
+    q: Why use --acls and --selinux with tar for this content?
+    options:
+    - So ACLs and labels survive in the archive and the restore
+    - They make the archive smaller
+    - They encrypt the archive
+    answer: 0
+    explain: A restore without them gives 403 for the web server.
+  - id: q-8c213e0eea56
+    q: Why restore into a staging directory first?
+    options:
+    - To inspect the content and attributes before touching the live copy
+    - It is required by tar
+    - It saves disk
+    answer: 0
+    explain: You replace only what you have checked.
+  - id: q-50c7f1291c8a
+    q: What proves that the service survives a reboot?
+    options:
+    - The same useful request after an actual reboot
+    - systemctl is-enabled alone
+    - A successful reload
+    answer: 0
+    explain: Enabled units and saved rules are intent, not proof.
+  - id: q-02fafdb52ed9
+    q: What does a good handover note contain?
+    options:
+    - Purpose, changes, operation, recovery, known failures and limits
+    - Only the commands history
+    - The root password
+    answer: 0
+    explain: Keep secrets out of it.
+  - id: q-d7bfd4c93c0b
+    q: Which statement about the lab is honest?
+    options:
+    - It tests the skills on a RHEL-compatible system, not every vendor-specific behaviour
+    - It proves support entitlement behaviour
+    - It replaces production testing
+    answer: 0
+    explain: Say what you did not test.
+  - id: q-da093c8954fc
+    q: After restoring a file, the web server answers 403. What did the restore probably lose?
+    options:
+    - The ACL or the SELinux label
+    - The file name
+    - The port number
+    answer: 0
+    explain: Check getfacl and ls -Z, then restorecon.

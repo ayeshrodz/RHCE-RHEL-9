@@ -1,0 +1,334 @@
+method:
+  title: One method for every fault
+  caption: Step through a diagnosis.
+  height: 270
+  mode: steps
+  steps:
+  - title: State the failure
+    text: Which operation fails, for whom, from where, since when, and what did you expect? "serverb gets 403 for http://servera:8090/ since this morning."
+  - title: Gather a narrow baseline
+    text: Service state and journal, listener, a local request, a remote request, the zone rules, owner, mode, ACL and label. Look first; change nothing.
+  - title: Rank the hypotheses
+    text: 'Use the symptom: refused, no route, timeout, 403, wrong content, fails to start. Each points to one or two layers.'
+  - title: Change one thing
+    text: Fix the most likely cause only. If you change three things you will not know which one helped, or which one weakened security.
+  - title: Repeat the failing operation
+    text: Run exactly the request that failed, from the same place. Then check that the other requirements still hold, and write down what you found.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: blue
+    title: state
+    sub: the failure
+    titleSize: 13
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: baseline
+    sub: look, do not touch
+    titleSize: 11.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 290
+    y: 20
+    w: 120
+    h: 56
+    tone: purple
+    title: hypothesis
+    sub: rank
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 430
+    y: 20
+    w: 120
+    h: 56
+    tone: coral
+    title: one change
+    sub: fix
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: green
+    title: verify
+    sub: and record
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 150
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 270
+      - 48
+    - - 290
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 48
+    - - 430
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 550
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+symptoms:
+  title: Symptom to layer
+  caption: Select what the client sees.
+  height: 340
+  mode: select
+  initial: refused
+  info:
+    refused:
+      tone: purple
+      title: Connection refused
+      text: 'The packet arrived and nothing listens: the service is stopped, failed, or listens on another port or address. Chapter 9 (systemctl status, journal) and ss -tlnp.'
+    noroute:
+      tone: coral
+      title: No route to host
+      text: 'The firewall rejected it. Chapter 20: which zone judges the client, and does it allow the port?'
+    timeout:
+      tone: amber
+      title: Timeout
+      text: 'Packets are dropped or lost: a drop zone or source, a wrong address or route. Chapters 20 and 12.'
+    forbidden:
+      tone: blue
+      title: 403 Forbidden
+      text: 'The server runs but may not read the content: mode and ACL (chapter 7), the SELinux label (chapter 16), or the directory path.'
+    content:
+      tone: green
+      title: 200 but wrong page
+      text: Everything works technically and the content is wrong or old. Compare with the backup (chapter 14), check the document root, and restore.
+    start:
+      tone: gray
+      title: Service will not start
+      text: 'Read the journal: a permission error on a port means the SELinux port label (chapter 16); a syntax error means the configuration; "address in use" means another program.'
+  elements:
+  - kind: node
+    x: 6
+    y: 30
+    w: 210
+    h: 56
+    tone: purple
+    title: Connection refused
+    sub: nothing listens
+    titleSize: 13
+    select: refused
+    active:
+    - refused
+  - kind: node
+    x: 230
+    y: 30
+    w: 210
+    h: 56
+    tone: coral
+    title: No route to host
+    sub: rejected
+    titleSize: 13
+    select: noroute
+    active:
+    - noroute
+  - kind: node
+    x: 454
+    y: 30
+    w: 216
+    h: 56
+    tone: amber
+    title: Timeout
+    sub: dropped
+    titleSize: 13
+    select: timeout
+    active:
+    - timeout
+  - kind: node
+    x: 6
+    y: 110
+    w: 210
+    h: 56
+    tone: blue
+    title: 403 Forbidden
+    sub: may not read
+    titleSize: 13
+    select: forbidden
+    active:
+    - forbidden
+  - kind: node
+    x: 230
+    y: 110
+    w: 210
+    h: 56
+    tone: green
+    title: 200 + wrong page
+    sub: content
+    titleSize: 13
+    select: content
+    active:
+    - content
+  - kind: node
+    x: 454
+    y: 110
+    w: 216
+    h: 56
+    tone: gray
+    title: will not start
+    sub: read the journal
+    titleSize: 13
+    select: start
+    active:
+    - start
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: the baseline'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl status httpd --no-pager | head -3 | cut -c1-80
+      out: "● httpd.service - The Apache HTTP Server\n     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)\n     Active: active (running) since Sat 2026-10-03 20:31:38 UTC; 3min ago"
+    - cmd: ss -tlnp | grep 8090 | awk '{print $1,$4}'
+      out: LISTEN *:8090
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" localhost:8090
+      out: '403'
+    - cmd: ls -lZ /srv/portal/index.html
+      out: -rw-r-----+ 1 portaladm portal system_u:object_r:var_t:s0 18 Oct  3 20:30 /srv/portal/index.html
+    - cmd: getfacl -cp /srv/portal/index.html | grep apache
+      out: user:apache:r--
+    - cmd: restorecon -v /srv/portal/index.html
+      out: Relabeled /srv/portal/index.html from system_u:object_r:var_t:s0 to system_u:object_r:httpd_sys_content_t:s0
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" localhost:8090
+      out: '200'
+    - cmd: firewall-cmd --zone=portal --list-ports
+      out: 8090/tcp
+    tasks:
+    - text: Check the service, then what listens on 8090.
+      commands:
+      - systemctl status httpd --no-pager | head -3 | cut -c1-80
+      - ss -tlnp | grep 8090 | awk '{print $1,$4}'
+    - text: Make the failing request locally and read the status code.
+      commands:
+      - curl -s -o /dev/null -w "%{http_code}\n" localhost:8090
+    - text: Look at the owner, ACL and label of the page.
+      commands:
+      - ls -lZ /srv/portal/index.html
+      - getfacl -cp /srv/portal/index.html | grep apache
+    - text: Correct the label with the stored mapping and repeat the request.
+      commands:
+      - restorecon -v /srv/portal/index.html
+      - curl -s -o /dev/null -w "%{http_code}\n" localhost:8090
+quick:
+  questions:
+  - id: q-67718eb0dfd1
+    q: A user reports that a service "does not work". What is the first step?
+    options:
+    - Define the failed operation, caller and expected result
+    - Restart everything
+    - Disable the firewall
+    answer: 0
+    explain: Without a clear failure you cannot tell when it is fixed.
+  - id: q-d9a8f9b6486e
+    q: Why change only one thing at a time?
+    options:
+    - So you know which change fixed it and what it weakened
+    - It is faster
+    - Rules forbid more
+    answer: 0
+    explain: Three changes at once hide the cause.
+  - id: q-e4e3b4949ada
+    q: curl gives 403, httpd is active, the firewall is fine. Which two places do you look?
+    options:
+    - The SELinux label and the mode/ACL of the content
+    - DNS and NTP
+    - The journal of sshd
+    answer: 0
+    explain: The server runs but may not read the file.
+  - id: q-7565e91a62d8
+    q: A page is served with code 200 but shows old text. What do you suspect?
+    options:
+    - 'Wrong or stale content: compare with the backup and the document root'
+    - The firewall
+    - The port label
+    answer: 0
+    explain: Transport success does not prove correct content.
+  - id: q-7820810640b6
+    q: httpd will not start after you added Listen 8090. What do you read first?
+    options:
+    - The journal for a bind or permission error
+    - The router
+    - The mail log
+    answer: 0
+    explain: A permission error on a port is the SELinux port label.
+  - id: q-5290ffbc7eb2
+    q: After the fix, what must you repeat?
+    options:
+    - The exact failing request, from the original caller
+    - Nothing
+    - A reboot only
+    answer: 0
+    explain: Then check the other requirements, and write it down.

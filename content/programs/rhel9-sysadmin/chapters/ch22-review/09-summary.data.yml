@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: The four kinds of proof?
+    back: Configuration (saved intent) · live inspection · a client operation · a lifecycle test after reload or reboot
+  - front: Build order?
+    back: Contract → identity and software → files, labels, service → network → persistence and recovery
+  - front: The diagnosis loop?
+    back: State the failure → narrow baseline → rank hypotheses → one change → repeat the failing request → record
+  - front: refused / no route / timeout?
+    back: Not listening / firewall reject / dropped
+  - front: 403 on the portal?
+    back: Mode and ACL for apache, the SELinux label (restorecon), the path
+  - front: Service will not bind a port?
+    back: semanage port -a -t http_port_t -p tcp PORT, then restart
+  - front: Label the content permanently?
+    back: semanage fcontext -a -t httpd_sys_content_t "/srv/portal(/.*)?" · restorecon -Rv /srv/portal
+  - front: One caller only?
+    back: Zone with --add-source=IP and --add-port=PORT/tcp, then --reload
+  - front: Scheduled backup?
+    back: oneshot service + timer with OnCalendar=daily, Persistent=true; tar --acls --selinux
+  - front: Safe restore?
+    back: Unpack to a staging directory · inspect · cp -a --preserve=all · restorecon -v · repeat the request
+  - front: Handover?
+    back: Purpose · changes · operation · recovery · known failures · limits
+  - front: Next?
+    back: Automate the manual state with Ansible

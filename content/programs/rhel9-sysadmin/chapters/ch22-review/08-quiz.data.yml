@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-ea7708ee9a78
+    q: What makes a requirement testable?
+    options:
+    - You can name the proof for it in advance
+    - It is written in capital letters
+    - It has an owner
+    answer: 0
+    explain: Configuration, live state, a client operation and a lifecycle test are four kinds of proof.
+  - id: q-dd6c066eb31f
+    q: A service answers locally but not from the partner. Which layer is the likely suspect?
+    options:
+    - The firewall zone for the partner address
+    - The SELinux boolean
+    - The package
+    answer: 0
+    explain: A local request bypasses the network path.
+  - id: q-f04431d1ae71
+    q: A page gives 403 and ls -Z shows var_t. What fixes it?
+    options:
+    - semanage fcontext (stored mapping) and restorecon
+    - chmod 777
+    - setenforce 0
+    answer: 0
+    explain: Change the stored mapping, then relabel.
+  - id: q-ee95d1229f5d
+    q: 'httpd fails to start after Listen 8090: "could not bind… Permission denied". What is missing?'
+    options:
+    - semanage port -a -t http_port_t -p tcp 8090
+    - A firewall rule
+    - A reboot
+    answer: 0
+    explain: The SELinux port label.
+  - id: q-688ccb8d87cc
+    q: Which command shows that only the intended caller is allowed?
+    options:
+    - firewall-cmd --list-all --zone=NAME plus requests from the partner and a stranger
+    - systemctl status firewalld
+    - ping
+    answer: 0
+    explain: Both a positive and a negative test.
+  - id: q-58610a6c105f
+    q: Which archive options keep ACLs and labels?
+    options:
+    - tar --acls --selinux
+    - tar -c only
+    - gzip -9
+    answer: 0
+    explain: Needed for web content with an ACL for apache.
+  - id: q-b889b060eade
+    q: A systemd timer must run a missed backup after the machine was off. Which setting?
+    options:
+    - Persistent=true
+    - Restart=always
+    - WantedBy=default.target
+    answer: 0
+    explain: The timer catches up at boot.
+  - id: q-ed1e45958403
+    q: You changed a firewall rule and a file label at once and the fault is gone. What is the problem?
+    options:
+    - You do not know which change fixed it
+    - None
+    - The fault was SELinux
+    answer: 0
+    explain: One change at a time.
+  - id: q-96cb9c6033cd
+    q: What is the best next step after a successful fix?
+    options:
+    - Repeat the original failing request and record what you found
+    - Close the ticket
+    - Reboot at once
+    answer: 0
+    explain: Then check that nothing else regressed.
+  - id: q-80d0134d6d7d
+    q: Where do you go after a stable manual build?
+    options:
+    - Automate it with Ansible, checking against the manual state
+    - Stop learning
+    - Disable SELinux
+    answer: 0
+    explain: You must know what correct looks like before you automate it.

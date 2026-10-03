@@ -1,4 +1,0 @@
-Deliver an internal status page on clean servera with enforcing security, persistent service startup and a managed operator identity. Back up the good page, introduce wrong content, restore it, and hand over verified local, remote and reboot evidence.
-
-Deliver a service with access, persistence and recovery evidence.
-Investigate one fault systematically and produce a usable handover.
