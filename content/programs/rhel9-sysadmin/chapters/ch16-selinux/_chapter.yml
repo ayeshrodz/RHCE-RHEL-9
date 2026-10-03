@@ -1,10 +1,8 @@
-title: "SELinux"
-goal: "Keep SELinux enforcing and fix the problems it reveals."
-status: planned
-topics:
-  - "Modes and making them persistent"
-  - "Contexts on files, processes and ports"
-  - "Restoring and changing contexts"
-  - "Booleans"
-  - "Reading denials and troubleshooting"
-  - "Allowing services on non-standard ports"
+title: SELinux
+goal: Keep SELinux enforcing and fix the problems it reveals.
+objectives:
+- Explain labels, modes, booleans and port policy.
+- Correct the cause of a denial while keeping SELinux enforcing.
+objectiveIds:
+- ch16.operations
+- ch16.verification

@@ -1,0 +1,4 @@
+Serve a custom document root on clean servera with SELinux enforcing. Intentionally mislabel it, observe the failed request and denial, then persist the correct context and prove successful access.
+
+Explain labels, modes, booleans and port policy.
+Correct the cause of a denial while keeping SELinux enforcing.

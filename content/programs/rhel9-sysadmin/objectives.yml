@@ -234,6 +234,22 @@
   labs:
   - ch15/lab
   challenges: []
+- id: ch16.operations
+  chapter: ch16
+  lessons:
+  - ch16/selinux-model
+  - ch16/selinux-troubleshooting
+  labs:
+  - ch16/lab
+  challenges: []
+- id: ch16.verification
+  chapter: ch16
+  lessons:
+  - ch16/selinux-model
+  - ch16/selinux-troubleshooting
+  labs:
+  - ch16/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
