@@ -136,8 +136,12 @@ with preview_server(BASE, ROOT):
         page.get_by_role('button', name='Program: Ansible automation on RHEL 9. Switch program').click()
         selector = page.get_by_role('dialog', name='Programs', exact=True); selector.wait_for()
         assert selector.evaluate('(e) => { const r = e.getBoundingClientRect(); return r.left >= -1 && r.right <= innerWidth + 1; }')
-        page.keyboard.press('Escape')
+        # It shares the header's overlay controller: opening search replaces it instead of stacking.
+        page.keyboard.press('Control+k')
+        page.get_by_role('dialog', name='Search', exact=True).wait_for()
         assert not page.get_by_role('dialog', name='Programs', exact=True).count()
+        page.keyboard.press('Escape')
+        assert not page.get_by_role('dialog', name='Search', exact=True).count()
         page.goto(BASE + '#/')
         page.get_by_role('heading', name='Learn Linux and automation by doing', level=1).wait_for()
         page.locator('.program-cards .chapter-card').first.wait_for()

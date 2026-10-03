@@ -362,3 +362,48 @@ test('a file that cannot be read is a content error with its file name, not a cr
   await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: a\ntitle: b\n' } });
   await rejects('text', /01-page\.md.*frontmatter cannot be read/, { front: 'title: [unclosed' });
 });
+
+test('symbolic links in content are refused, so nothing outside content can be published', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-link-'));
+  try {
+    fs.cpSync(path.join(import.meta.dirname, 'fixtures', 'second-program'), path.join(dir, 'programs', 'second-program'), {
+      recursive: true,
+    });
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms: [second-program]\n');
+    const chapter = path.join(dir, 'programs/second-program/chapters/ch01-first-steps');
+    fs.symlinkSync('/etc/hostname', path.join(chapter, '03-leak.md'));
+    const errors = await compile(dir, { now: NOW }).then(
+      () => [],
+      (e) => e.diagnostics.errors.map((x) => `${x.file} ${x.message}`),
+    );
+    assert.ok(
+      errors.some((e) => /03-leak\.md symbolic links are not allowed/.test(e)),
+      errors.join('\n'),
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('lab files with dotfile names are published under names static hosts serve', async () => {
+  const { errors, out } = await labErrors(
+    `${DEMO}starter: [.ansible-lint, files/.htaccess]\nsetup:\n  - { action: htpasswd, path: files/htpasswd, user: guest, password: redhat }\ncheckpoints:\n  final:\n    files: [site.yml]\n`,
+    { files: { 'starter/.ansible-lint': 'x\n', 'starter/files/.htaccess': 'Require valid-user\n' } },
+  );
+  assert.deepEqual(errors, []);
+  const published = [...out.files.keys()].filter((f) => f.startsWith('lab/demo/'));
+  assert.ok(
+    published.every((f) => !f.split('/').some((part) => part.startsWith('.'))),
+    published.join('\n'),
+  );
+  const manifest = out.files.get('lab/demo/MANIFEST');
+  assert.match(manifest, /^\.ansible-lint=_\.ansible-lint\.lab$/m);
+  assert.match(manifest, /^files\/\.htaccess=files\/_\.htaccess\.lab$/m);
+  assert.match(manifest, /^@lab-update-required$/m, 'an old lab command is told to update');
+  assert.match(out.files.get('lab/demo/lab-update-required'), /lab update/);
+  assert.ok(
+    (await labErrors(`${DEMO}starter: [_.x]\ncheckpoints:\n  final:\n    files: [a]\n`, { files: { 'starter/_.x': 'x' } })).errors.some(
+      (e) => /reserved/.test(e),
+    ),
+  );
+});

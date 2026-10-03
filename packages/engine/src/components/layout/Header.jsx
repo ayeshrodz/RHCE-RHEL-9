@@ -18,7 +18,17 @@ export default defineWidget('Header', (copy) => {
 
   const themeIcon = { light: Sun, dark: Moon, system: Monitor };
 
-  function Header({ platform = false, onMenu, onSearch, navigationOpen, progressOpen, onProgress, onProgressClose }) {
+  function Header({
+    platform = false,
+    onMenu,
+    onSearch,
+    navigationOpen,
+    progressOpen,
+    onProgress,
+    onProgressClose,
+    programsOpen,
+    onPrograms,
+  }) {
     const { pref, cycle } = useTheme();
     const ThemeIcon = themeIcon[pref] ?? Monitor;
     const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -41,7 +51,7 @@ export default defineWidget('Header', (copy) => {
           <Logo />
           <span className="brand-name">{site.site.name}</span>
         </RootLink>
-        {!platform && <ProgramMenu />}
+        {!platform && <ProgramMenu open={programsOpen} onToggle={onPrograms} onClose={onProgressClose} />}
 
         {platform ? (
           <span className="header-spacer" />

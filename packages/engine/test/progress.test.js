@@ -219,3 +219,20 @@ test('exports from before programs existed import into the current program', () 
   assert.throws(() => validateProgress({ app: 'kernel-path', version: 3, program: 'Bad Id', data: {} }), /valid program/);
   setProgramScope('rhel9-ansible');
 });
+
+test('reports from an earlier version of an exercise still import, so old backups keep working', () => {
+  const current = reportFor('system-archive');
+  const earlier = {
+    ...current,
+    exerciseVersion: current.exerciseVersion - 1,
+    checks: [{ id: 'renamed-check:servera.lab.example.com', status: 'pass', message: 'Old check', lesson: current.checks[0].lesson }],
+  };
+  assert.equal(validateLabReport(earlier, catalog), earlier);
+  assert.throws(() => validateLabReport({ ...earlier, checks: [] }, catalog), 'shape is still checked');
+  assert.throws(
+    () => validateLabReport({ ...current, exerciseVersion: current.exerciseVersion + 1 }, catalog),
+    'a future version is refused',
+  );
+  const backup = { app: 'kernel-path', version: 2, data: { labReports: [earlier] } };
+  assert.doesNotThrow(() => validateProgress(backup));
+});

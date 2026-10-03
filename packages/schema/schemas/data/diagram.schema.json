@@ -648,10 +648,6 @@
             "end"
           ]
         },
-        "select": {
-          "description": "Makes the element clickable; clicking it shows this view.",
-          "$ref": "#/$defs/viewKey"
-        },
         "active": {
           "description": "Highlighted in these views (or always).",
           "oneOf": [
@@ -818,10 +814,6 @@
         "mono": {
           "type": "boolean"
         },
-        "select": {
-          "description": "Makes the element clickable; clicking it shows this view.",
-          "$ref": "#/$defs/viewKey"
-        },
         "active": {
           "description": "Highlighted in these views (or always).",
           "oneOf": [
@@ -963,10 +955,6 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 99
-        },
-        "select": {
-          "description": "Makes the element clickable; clicking it shows this view.",
-          "$ref": "#/$defs/viewKey"
         },
         "active": {
           "description": "Highlighted in these views (or always).",
