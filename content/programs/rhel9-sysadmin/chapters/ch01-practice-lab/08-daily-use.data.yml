@@ -1,0 +1,88 @@
+access-paths:
+  title: Getting into the lab
+  caption: SSH to the host as usual, step into workstation with lxc exec, then work as you would on any server. The ssh rhce shortcut does the first two hops in one command.
+  height: 170
+  mode: static
+  elements:
+    - kind: node
+      x: 8
+      y: 50
+      w: 130
+      h: 60
+      tone: gray
+      title: Your computer
+      sub: laptop / desktop
+    - kind: arrow
+      points:
+        - - 138
+          - 80
+        - - 182
+          - 80
+      label: ssh
+    - kind: node
+      x: 184
+      y: 50
+      w: 130
+      h: 60
+      tone: purple
+      title: Ubuntu host
+      sub: rht-vmctl, lxc
+    - kind: arrow
+      points:
+        - - 314
+          - 80
+        - - 362
+          - 80
+      label: lxc exec
+    - kind: group
+      x: 364
+      y: 10
+      w: 308
+      h: 150
+      tone: green
+      label: Sealed lab
+    - kind: node
+      x: 380
+      y: 50
+      w: 120
+      h: 60
+      tone: green
+      title: workstation
+      sub: student
+    - kind: arrow
+      points:
+        - - 500
+          - 80
+        - - 540
+          - 80
+      label: ssh
+    - kind: node
+      x: 542
+      y: 36
+      w: 116
+      h: 40
+      tone: green
+      title: servera
+      titleSize: 12.5
+    - kind: node
+      x: 542
+      y: 84
+      w: 116
+      h: 40
+      tone: green
+      title: serverb…d
+      titleSize: 12.5
+    - kind: arrow
+      points:
+        - - 8
+          - 140
+        - - 8
+          - 150
+        - - 440
+          - 150
+        - - 440
+          - 112
+      label: ssh rhce  (RemoteCommand)
+      labelAt: 0.35
+      labelDy: -6
+      dashed: true

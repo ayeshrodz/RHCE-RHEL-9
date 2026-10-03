@@ -3,7 +3,7 @@ id: rhel9-sysadmin
 title: Linux system administration on RHEL 9
 label: SysAdmin
 tagline: "Learn core Linux administration by doing"
-summary: "A hands-on path through the core skills of a Red Hat Enterprise Linux 9 system administrator, from the command line to containers, built on the RHEL 9 documentation and the tasks administrators do every day. It is planned: the outline below shows what each chapter will cover."
+summary: "A hands-on path through the core skills of a Red Hat Enterprise Linux 9 system administrator, from the command line to containers, built on the RHEL 9 documentation and the tasks administrators do every day. It is still being written: chapter 1, which builds the practice lab, is ready, and the outline below shows what each remaining chapter will cover."
 platform:
   family: rhel
   version: "9"
