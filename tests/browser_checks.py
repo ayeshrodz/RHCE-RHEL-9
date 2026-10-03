@@ -222,7 +222,7 @@ def planned_program_is_listed(browser):
     cards = page.locator('.showcase .sc')
     cards.nth(1).wait_for()
     planned = cards.filter(has_text='Linux system administration on RHEL 9')
-    assert planned.count() == 1 and 'Planned' in planned.inner_text()
+    assert planned.count() == 1 and 'Growing' in planned.inner_text()
     planned.click()
     page.wait_for_url('**/#/rhel9-sysadmin')
     page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
