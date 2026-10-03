@@ -5,8 +5,11 @@ import Footer from './Footer';
 import { sharedInterface } from '@/lib/course';
 import { TeachingContentProvider } from '@/components/interactive/TeachingContent';
 
-/** The frame for pages that belong to the site rather than to one program: no sidebar, search or progress menu. */
-export default function PlatformShell() {
+/**
+ * The frame for pages that belong to the site rather than to one program: no sidebar, search or progress
+ * menu. Used as a route layout, or around a page passed as children (the 404 and load errors).
+ */
+export default function PlatformShell({ children }) {
   const { pathname } = useLocation();
   const previous = useRef(pathname);
   useEffect(() => {
@@ -31,7 +34,7 @@ export default function PlatformShell() {
         <Header platform />
         <div className="shell-body">
           <main id="main" className="shell-main" tabIndex={-1}>
-            <Outlet />
+            {children ?? <Outlet />}
             <Footer platform />
           </main>
         </div>

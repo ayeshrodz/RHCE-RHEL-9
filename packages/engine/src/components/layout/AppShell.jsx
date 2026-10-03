@@ -13,6 +13,7 @@ export default function AppShell() {
   const navOpen = overlay === 'navigation';
   const searchOpen = overlay === 'search';
   const progressOpen = overlay === 'progress';
+  const programsOpen = overlay === 'programs';
   const closeOverlay = useCallback(() => setOverlay(null), []);
   const [collapsed, setCollapsed] = useStored('sidebarCollapsed', false);
   const { pathname } = useLocation();
@@ -62,6 +63,8 @@ export default function AppShell() {
           progressOpen={progressOpen}
           onProgress={() => setOverlay((value) => (value === 'progress' ? null : 'progress'))}
           onProgressClose={closeOverlay}
+          programsOpen={programsOpen}
+          onPrograms={() => setOverlay((value) => (value === 'programs' ? null : 'programs'))}
           onSearch={() => setOverlay('search')}
         />
         <div className="shell-body">
