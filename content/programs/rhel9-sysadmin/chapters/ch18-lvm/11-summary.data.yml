@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: LVM layers?
+    back: Disk/partition → PV → VG → LV → file system (or swap).
+  - front: Show them?
+    back: pvs · vgs · lvs · lsblk -f · pvdisplay · vgdisplay · lvdisplay
+  - front: Build in five commands?
+    back: pvcreate · vgcreate · lvcreate -n NAME -L SIZE VG · mkfs.xfs /dev/VG/LV · mount
+  - front: Size options of lvcreate/lvextend?
+    back: -L 1G (size, +1G adds) · -l 50%FREE or +100%FREE (extents/percent)
+  - front: Grow an LV and its file system?
+    back: lvextend -r -L +512M /dev/VG/LV (xfs_growfs / resize2fs inside)
+  - front: Add a disk to a group?
+    back: pvcreate /dev/sdc1 · vgextend VG /dev/sdc1
+  - front: Shrink?
+    back: 'ext4 only: lvreduce -r -L SIZE LV (unmounted). XFS cannot shrink.'
+  - front: Replace a disk online?
+    back: vgextend (new) · pvmove OLD NEW · vgreduce VG OLD · pvremove OLD
+  - front: Rename, remove?
+    back: lvrename VG old new · lvremove VG/LV · vgremove VG · pvremove PV
+  - front: fstab for an LV?
+    back: /dev/VG/LV /mnt xfs defaults 0 0 (update after lvrename)
+  - front: LV does not exist for mount?
+    back: lvchange -ay VG/LV (check the a flag in lvs)
+  - front: Layout backups?
+    back: vgcfgbackup · /etc/lvm/backup · vgcfgrestore; data needs its own backup

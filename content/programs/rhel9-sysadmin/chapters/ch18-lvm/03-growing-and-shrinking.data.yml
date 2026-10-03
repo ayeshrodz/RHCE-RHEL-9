@@ -1,0 +1,279 @@
+grow-flow:
+  title: Growing a logical volume
+  caption: Step through enlarging a mounted file system.
+  height: 250
+  mode: steps
+  steps:
+  - title: How much is free in the group?
+    text: vgs shows VFree. If the free space covers the request, go to step 3.
+  - title: Not enough? Add a disk
+    text: Create a partition (set lvm on), then pvcreate and vgextend vgdata /dev/sdb2. The pool is bigger at once.
+  - title: Extend the LV, and its file system
+    text: lvextend -r -L +512M /dev/vgdata/lvapp. The -r option calls the right resize tool (xfs_growfs or resize2fs) as well. This works while the file system is mounted.
+  - title: Verify
+    text: df -h MOUNTPOINT and lvs show the new size. Check the data is still there.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: vgs
+    sub: free space?
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: vgextend
+    sub: add a PV
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: lvextend -r
+    sub: LV + file system
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: teal
+    title: df -h
+    sub: verify
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 3
+fs-resize:
+  title: Which file system can do what?
+  caption: Select a file system.
+  height: 240
+  mode: select
+  initial: xfs
+  info:
+    xfs:
+      tone: green
+      title: 'XFS: grow only'
+      text: 'Grow while mounted with xfs_growfs MOUNTPOINT (or lvextend -r). XFS can NOT be shrunk: lvreduce on an XFS volume is refused. To make it smaller, back up, recreate and restore.'
+    ext4:
+      tone: blue
+      title: 'ext4: grow and shrink'
+      text: 'Grow while mounted with resize2fs (or lvextend -r). Shrink only while unmounted, after a check: lvreduce -r -L 200M does the whole sequence (fsck, resize2fs, lvreduce).'
+    swap:
+      tone: amber
+      title: Swap
+      text: 'Swap areas are not resized: turn off (swapoff), lvextend, mkswap again, swapon. Or add a second swap LV.'
+    rule:
+      tone: coral
+      title: The golden rule when shrinking
+      text: The file system must shrink BEFORE the volume under it, or data at the end is lost. lvreduce -r takes care of the order; a bare lvreduce without -r does not. Always back up first.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: XFS
+    sub: xfs_growfs
+    mono: true
+    titleSize: 14
+    select: xfs
+    active:
+    - xfs
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: ext4
+    sub: resize2fs
+    mono: true
+    titleSize: 14
+    select: ext4
+    active:
+    - ext4
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: amber
+    title: swap
+    sub: recreate
+    mono: true
+    titleSize: 14
+    select: swap
+    active:
+    - swap
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: coral
+    title: shrinking
+    sub: back up first
+    titleSize: 14
+    select: rule
+    active:
+    - rule
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: growing and shrinking'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: lvextend -L +1G /dev/vgdata/lvapp
+      out: '  Insufficient free space: 256 extents needed, but only 64 available'
+    - cmd: vgs
+      out: "  VG     #PV #LV #SN Attr   VSize  VFree  \n  vgdata   1   2   0 wz--n- <1.50g 256.00m"
+    - cmd: pvcreate /dev/sdb2
+      out: '  Physical volume "/dev/sdb2" successfully created.'
+    - cmd: vgextend vgdata /dev/sdb2
+      out: '  Volume group "vgdata" successfully extended'
+    - cmd: vgs
+      out: "  VG     #PV #LV #SN Attr   VSize VFree \n  vgdata   2   2   0 wz--n- 2.99g <1.75g"
+    - cmd: lvextend -r -L +512M /dev/vgdata/lvapp
+      out: "  Size of logical volume vgdata/lvapp changed from 1.00 GiB (256 extents) to 1.50 GiB (384 extents).\n  Logical volume vgdata/lvapp successfully resized.\nmeta-data=/dev/mapper/vgdata-lvapp isize=512    agcount=4, agsize=65536 blks\n  Extended file system xfs on vgdata/lvapp."
+    - cmd: df -h /srv/app | tail -1
+      out: /dev/mapper/vgdata-lvapp  1.5G   43M  1.4G   3% /srv/app
+    - cmd: lvextend -r -l +100%FREE /dev/vgdata/lvapp | tail -2
+      out: "  Extended file system xfs on vgdata/lvapp.\n  Logical volume vgdata/lvapp successfully resized."
+    - cmd: lvreduce -r -L 200M /dev/vgdata/lvlog
+      out: "  Reduced file system ext4 on vgdata/lvlog.\n  Size of logical volume vgdata/lvlog changed from 508.00 MiB (127 extents) to 200.00 MiB (50 extents).\n  Logical volume vgdata/lvlog successfully resized."
+    - cmd: lvreduce -L 500M /dev/vgdata/lvapp
+      out: "  File system size (<2.50 GiB) is larger than the requested size (500.00 MiB).\n  File system reduce is required and not supported (xfs)."
+    tasks:
+    - text: Try to add 1 GiB to lvapp. What does LVM say?
+      commands:
+      - lvextend -L +1G /dev/vgdata/lvapp
+    - text: Turn sdb2 into a PV and add it to the volume group.
+      commands:
+      - pvcreate /dev/sdb2
+      - vgextend vgdata /dev/sdb2
+    - text: Grow lvapp by 512 MiB, with its file system.
+      commands:
+      - lvextend -r -L +512M /dev/vgdata/lvapp
+    - text: Give lvapp all remaining free space.
+      commands:
+      - lvextend -r -l +100%FREE /dev/vgdata/lvapp | tail -2
+    - text: Try to shrink the XFS volume.
+      commands:
+      - lvreduce -L 500M /dev/vgdata/lvapp
+quick:
+  questions:
+  - id: q-d2ac9af806fb
+    q: What does the -r option of lvextend do?
+    options:
+    - Also resizes the file system
+    - Reboots
+    - Reads only
+    answer: 0
+    explain: It calls xfs_growfs or resize2fs for you.
+  - id: q-2e97c70c67d6
+    q: 'lvextend fails: "Insufficient free space". What is the usual fix?'
+    options:
+    - Add a PV to the volume group with vgextend
+    - Reboot
+    - Run mkfs again
+    answer: 0
+    explain: Or extend a smaller amount, or free space by removing an unused LV.
+  - id: q-e9f97f2fd7a1
+    q: Which file system cannot be shrunk?
+    options:
+    - XFS
+    - ext4
+    - Neither
+    answer: 0
+    explain: Back up, recreate smaller, restore.
+  - id: q-02b105750519
+    q: Why must the file system be reduced before the LV?
+    options:
+    - Otherwise the end of the file system, with data, is cut off
+    - It is faster
+    - LVM requires nothing
+    answer: 0
+    explain: lvreduce -r handles the order.
+  - id: q-5cfe615051c3
+    q: How do you give an LV all the free space left in its group?
+    options:
+    - lvextend -r -l +100%FREE LV
+    - lvextend -L max LV
+    - vgextend LV
+    answer: 0
+    explain: +100%FREE counts extents.
+  - id: q-9aa6faa7fd85
+    q: After lvextend WITHOUT -r, df still shows the old size. What is missing?
+    options:
+    - xfs_growfs MOUNTPOINT (or resize2fs DEVICE)
+    - A reboot
+    - vgreduce
+    answer: 0
+    explain: The LV grew, the file system did not yet.

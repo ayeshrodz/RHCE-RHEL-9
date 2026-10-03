@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-5b9df9c75dcd
+    q: Which command creates a physical volume?
+    options:
+    - pvcreate
+    - vgcreate
+    - lvcreate
+    answer: 0
+    explain: Then vgcreate, lvcreate.
+  - id: q-44ef3c58a8e0
+    q: A VG has 2 GiB free. Which command gives an LV exactly 500 MiB?
+    options:
+    - lvcreate -n lv -L 500M vg
+    - lvcreate -n lv -l 500M vg
+    - lvcreate 500 vg
+    answer: 0
+    explain: -L size, -l extents or percentages.
+  - id: q-463d836eec85
+    q: Which command grows a mounted XFS LV by 1 GiB, including the file system?
+    options:
+    - lvextend -r -L +1G /dev/vg/lv
+    - lvextend -L 1G /dev/vg/lv
+    - xfs_growfs -L
+    answer: 0
+    explain: The + means "add"; without it the size is absolute.
+  - id: q-e261fa9038b8
+    q: Which file systems can be shrunk?
+    options:
+    - ext4 (unmounted), not XFS
+    - XFS only
+    - Both while mounted
+    answer: 0
+    explain: Use lvreduce -r for ext4.
+  - id: q-4688c02d3850
+    q: Which command shows the extent size of a group?
+    options:
+    - vgdisplay VG or vgs -v
+    - lvs
+    - pvs
+    answer: 0
+    explain: The default is 4 MiB.
+  - id: q-e5dff1feb344
+    q: How do you add a disk to an existing group?
+    options:
+    - pvcreate /dev/sdc1; vgextend VG /dev/sdc1
+    - vgcreate VG /dev/sdc1
+    - lvextend VG /dev/sdc1
+    answer: 0
+    explain: The new space is then free in the group.
+  - id: q-0ff80764f92a
+    q: Which command moves data off a PV so it can be removed?
+    options:
+    - pvmove
+    - pvremove
+    - vgsplit
+    answer: 0
+    explain: Then vgreduce and pvremove.
+  - id: q-e0f1c2eb906f
+    q: An LV is not active after a reboot. Which command activates it?
+    options:
+    - lvchange -ay VG/LV
+    - vgcreate
+    - mkfs
+    answer: 0
+    explain: Normally LVs activate automatically at boot.
+  - id: q-9376e4f3cd1b
+    q: What should an LV entry in /etc/fstab use?
+    options:
+    - /dev/VG/LV or UUID=…
+    - /dev/dm-0
+    - /dev/sdb1
+    answer: 0
+    explain: dm-N numbers are not stable.
+  - id: q-686d80aa7879
+    q: Which statement about backups is true?
+    options:
+    - vgcfgbackup saves only the layout, your data needs its own backup
+    - LVM snapshots replace backups entirely
+    - LVM mirrors every disk
+    answer: 0
+    explain: Layout is not data.

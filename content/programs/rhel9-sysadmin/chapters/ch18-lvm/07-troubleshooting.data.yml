@@ -1,0 +1,191 @@
+symptoms:
+  title: LVM problems and first checks
+  caption: Select a symptom.
+  height: 260
+  mode: select
+  initial: inactive
+  info:
+    inactive:
+      tone: amber
+      title: 'mount: special device /dev/vg/lv does not exist'
+      text: 'The LV exists but is not active (no device file). lvs shows - instead of a in the Attr column. Activate it: lvchange -ay VG/LV (or vgchange -ay VG), then mount.'
+    space:
+      tone: blue
+      title: Insufficient free space
+      text: The volume group has fewer free extents than the request. vgs shows VFree. Add a PV (pvcreate, vgextend), request less, or remove an LV you do not need.
+    nopv:
+      tone: purple
+      title: A PV or VG does not show up
+      text: 'pvs -a lists all devices LVM looks at. RHEL 9 uses a devices file, /etc/lvm/devices/system.devices: lvmdevices lists it, lvmdevices --adddev /dev/sdc adds a disk. vgscan and pvscan rescan.'
+    busy:
+      tone: coral
+      title: Logical volume … contains a filesystem in use / cannot deactivate
+      text: Something still has the volume mounted or open. umount first, find users with fuser -vm and lsof, then lvchange -an or lvremove.
+    meta:
+      tone: gray
+      title: Metadata backups
+      text: Every change is saved in /etc/lvm/archive and /etc/lvm/backup. vgcfgbackup makes one on demand, vgcfgrestore restores the layout (not the data). Backups of the layout are not backups of your data.
+  elements:
+  - kind: node
+    x: 10
+    y: 26
+    w: 200
+    h: 54
+    tone: amber
+    title: does not exist
+    sub: inactive LV
+    titleSize: 13
+    select: inactive
+    active:
+    - inactive
+  - kind: node
+    x: 220
+    y: 26
+    w: 200
+    h: 54
+    tone: blue
+    title: Insufficient space
+    sub: VG full
+    titleSize: 13
+    select: space
+    active:
+    - space
+  - kind: node
+    x: 430
+    y: 26
+    w: 240
+    h: 54
+    tone: purple
+    title: PV or VG missing
+    sub: devices file
+    titleSize: 13
+    select: nopv
+    active:
+    - nopv
+  - kind: node
+    x: 10
+    y: 92
+    w: 200
+    h: 54
+    tone: coral
+    title: in use
+    sub: busy
+    titleSize: 13
+    select: busy
+    active:
+    - busy
+  - kind: node
+    x: 220
+    y: 92
+    w: 200
+    h: 54
+    tone: gray
+    title: metadata
+    sub: backup · restore
+    titleSize: 13
+    select: meta
+    active:
+    - meta
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: LVM troubleshooting'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: lvs
+      out: "  LV      VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert\n  lvstore vgdata -wi-a----- 800.00m                                                    "
+    - cmd: umount /srv/data; lvchange -an vgdata/lvstore; lvs
+      out: "  LV      VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert\n  lvstore vgdata -wi------- 800.00m                                                    "
+    - cmd: mount /dev/vgdata/lvstore /srv/data
+      out: 'mount: /srv/data: special device /dev/vgdata/lvstore does not exist.'
+    - cmd: lvchange -ay vgdata/lvstore; lvs | tail -1
+      out: '  lvstore vgdata -wi-a----- 800.00m                                                    '
+    - cmd: mount /dev/vgdata/lvstore /srv/data; df -h /srv/data | tail -1
+      out: /dev/mapper/vgdata-lvstore  736M   38M  699M   6% /srv/data
+    - cmd: vgchange -an vgdata
+      out: '  Can''t deactivate volume group "vgdata" with 1 open logical volume(s)'
+    - cmd: lvs -o lv_name,lv_attr,lv_active
+      out: "  LV      Attr       Active\n  lvstore -wi-ao---- active"
+    - cmd: lvmdevices
+      out: '  Device /dev/sdb2 IDTYPE=sys_serial IDNAME=lxd_disk2 DEVNAME=/dev/sdb2 PVID=TE9QQZYSY9GIHgALd0VLJHgpgzQjW0Ql PART=2'
+    - cmd: vgcfgbackup vgdata
+      out: '  Volume group "vgdata" successfully backed up.'
+    tasks:
+    - text: Deactivate the volume and look at the Attr column.
+      commands:
+      - umount /srv/data; lvchange -an vgdata/lvstore; lvs
+    - text: Try to mount it. What does the error say?
+      commands:
+      - mount /dev/vgdata/lvstore /srv/data
+    - text: Activate it and mount again.
+      commands:
+      - lvchange -ay vgdata/lvstore; lvs | tail -1
+      - mount /dev/vgdata/lvstore /srv/data; df -h /srv/data | tail -1
+    - text: List the devices LVM is allowed to use.
+      commands:
+      - lvmdevices
+    - text: Save the layout of the volume group.
+      commands:
+      - vgcfgbackup vgdata
+quick:
+  questions:
+  - id: q-998dfb67f60b
+    q: '"special device /dev/vgdata/lvapp does not exist", but lvs lists the LV. What is wrong?'
+    options:
+    - 'The LV is inactive: lvchange -ay'
+    - The file system is corrupt
+    - The disk is full
+    answer: 0
+    explain: The a flag in lvs Attr is missing.
+  - id: q-7c3bdd897670
+    q: Which command lists PVs, including devices LVM sees without a label?
+    options:
+    - pvs -a
+    - lvs -a
+    - lsblk
+    answer: 0
+    explain: pvscan and vgscan rescan.
+  - id: q-3392a348e914
+    q: A new disk is not usable by LVM on RHEL 9. Which file may need an entry?
+    options:
+    - /etc/lvm/devices/system.devices (lvmdevices --adddev)
+    - /etc/fstab
+    - /etc/lvm.conf only
+    answer: 0
+    explain: pvcreate normally adds the device; a disk set up elsewhere may not be listed.
+  - id: q-9a5f9f14588b
+    q: What does vgcfgbackup save?
+    options:
+    - The layout (metadata) of a volume group, not your data
+    - All files
+    - The partition table of sda
+    answer: 0
+    explain: Restore the layout with vgcfgrestore; data needs real backups.
+  - id: q-fb3cbbf83278
+    q: vgchange -an VG fails with "open logical volume". Why?
+    options:
+    - A LV is still mounted or in use
+    - LVM is broken
+    - The VG is full
+    answer: 0
+    explain: Unmount, check fuser -vm, then deactivate.
+  - id: q-ea196c9e90b5
+    q: Which command shows how full a group is?
+    options:
+    - vgs
+    - lvdisplay
+    - df -i
+    answer: 0
+    explain: VFree.

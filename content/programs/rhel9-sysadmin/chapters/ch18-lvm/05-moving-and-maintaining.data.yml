@@ -1,0 +1,187 @@
+pvmove:
+  title: Replace a disk without downtime
+  caption: Step through moving data off an old disk while it is in use.
+  height: 260
+  mode: steps
+  steps:
+  - title: The situation
+    text: lvdata lives on /dev/sdb1 and is mounted. The disk is old or too small and must go. The service must keep running.
+  - title: Add the new disk
+    text: pvcreate /dev/sdb2, then vgextend vgdata /dev/sdb2. The new PV must have at least as much free space as the data on the old one.
+  - title: Move the extents
+    text: pvmove /dev/sdb1 /dev/sdb2 copies every extent of the LVs from the old PV to the new one while they are mounted. It prints progress and can be restarted if interrupted.
+  - title: Remove the old disk from the group
+    text: vgreduce vgdata /dev/sdb1 takes it out of the pool, and pvremove /dev/sdb1 wipes the LVM label. Now the disk can be pulled or reused.
+  - title: Check
+    text: lvs -o +devices shows the LV now on /dev/sdb2, and the data is intact (compare checksums).
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: coral
+    title: old PV
+    sub: sdb1 · lvdata
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+    - 2
+    overrides:
+      sub:
+        '0': sdb1 · lvdata
+        '1': sdb1 · lvdata
+        '2': moving …
+        '3': empty
+        '4': removed
+  - kind: node
+    x: 520
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: new PV
+    sub: sdb2
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    - 2
+    - 4
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    overrides:
+      sub:
+        '0': ''
+        '1': sdb2 · empty
+        '2': sdb2 · receiving
+        '3': sdb2 · lvdata
+        '4': sdb2 · lvdata
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 520
+      - 48
+    label: pvmove
+    labelDy: -6
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 110
+    w: 380
+    h: 44
+    tone: gray
+    title: the file system stays mounted the whole time
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: moving and maintaining'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: lvs -o lv_name,devices vgdata
+      out: "  LV     Devices     \n  lvdata /dev/sdb1(0)"
+    - cmd: pvcreate /dev/sdb2; vgextend vgdata /dev/sdb2
+      out: '  Volume group "vgdata" successfully extended'
+    - cmd: pvmove /dev/sdb1 /dev/sdb2
+      out: "  /dev/sdb1: Moved: 30.50%\n  /dev/sdb1: Moved: 100.00%"
+    - cmd: lvs -o lv_name,devices vgdata
+      out: "  LV     Devices     \n  lvdata /dev/sdb2(0)"
+    - cmd: vgreduce vgdata /dev/sdb1; pvremove /dev/sdb1
+      out: "  Removed \"/dev/sdb1\" from volume group \"vgdata\"\n  Labels on physical volume \"/dev/sdb1\" successfully wiped."
+    - cmd: lvrename vgdata lvdata lvstore
+      out: '  Renamed "lvdata" to "lvstore" in volume group "vgdata"'
+    - cmd: lvs -o +devices,lv_path vgdata
+      out: "  LV      VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert Devices      Path               \n  lvstore vgdata -wi-ao---- 800.00m                                                     /dev/sdb2(0) /dev/vgdata/lvstore"
+    - cmd: lvremove vgdata/lvswap
+      out: "Do you really want to remove active logical volume vgdata/lvswap? [y/n]: n\n  Logical volume vgdata/lvswap not removed."
+    tasks:
+    - text: Show on which PV each LV lives.
+      commands:
+      - lvs -o lv_name,devices vgdata
+    - text: Add the new disk to the group, then move everything off sdb1.
+      commands:
+      - pvcreate /dev/sdb2; vgextend vgdata /dev/sdb2
+      - pvmove /dev/sdb1 /dev/sdb2
+    - text: Remove the old disk from the group and wipe its label.
+      commands:
+      - vgreduce vgdata /dev/sdb1; pvremove /dev/sdb1
+    - text: Rename the volume lvdata to lvstore.
+      commands:
+      - lvrename vgdata lvdata lvstore
+quick:
+  questions:
+  - id: q-eb151f73a150
+    q: Which command moves the data of one PV to another while mounted?
+    options:
+    - pvmove
+    - lvmove
+    - vgextend
+    answer: 0
+    explain: The target needs enough free extents.
+  - id: q-c78c4b5d08b1
+    q: What must you do before pulling a disk out of a volume group?
+    options:
+    - pvmove its data away, then vgreduce and pvremove
+    - Just unplug it
+    - lvreduce
+    answer: 0
+    explain: Otherwise LVs spanning it lose data.
+  - id: q-1b7cee9c7ce7
+    q: Which fstab device name stays valid when you rename an LV?
+    options:
+    - 'None: update the line, or use the UUID of the file system'
+    - Any
+    - /dev/sdb1
+    answer: 0
+    explain: After lvrename, edit /etc/fstab (a UUID= entry is not affected by the rename).
+  - id: q-c2f8b714df4a
+    q: lvremove asks to confirm. Why?
+    options:
+    - It destroys the data on the LV
+    - Because it is slow
+    - It is a bug
+    answer: 0
+    explain: Unmount first; -y answers yes for scripts.
+  - id: q-81b1b6d645b2
+    q: How do you use an LV as swap?
+    options:
+    - mkswap /dev/vg/lv, swapon, and an fstab line of type swap
+    - mkfs.swap
+    - lvcreate -t swap
+    answer: 0
+    explain: Same as a swap partition.
+  - id: q-756eba3bda3a
+    q: Which command removes a PV from a volume group?
+    options:
+    - vgreduce VG PV
+    - pvremove PV
+    - lvreduce
+    answer: 0
+    explain: pvremove then wipes the LVM label.
