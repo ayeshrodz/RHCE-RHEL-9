@@ -33,7 +33,14 @@ export default function ProgramLanding() {
           <p className="hero-sub">{program.summary}</p>
           <div className="hero-actions">
             {planned ? (
-              <span className="pill">Planned: the chapters below are the outline</span>
+              <>
+                {pages.length > 0 && (
+                  <Link className="btn btn-primary btn-lg" to={start.path}>
+                    Build the practice lab <ArrowRight size={16} />
+                  </Link>
+                )}
+                <span className="pill">Planned: the chapters below are the outline</span>
+              </>
             ) : (
               <>
                 <Link className="btn btn-primary btn-lg" to={(started ? resume : start).path}>

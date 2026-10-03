@@ -1,10 +1,13 @@
-title: "Build a practice lab"
+title: Build Your Practice Lab
 setup: true
-goal: "Set up virtual machines you can break and repair safely, so every later exercise has somewhere to run."
-status: planned
-topics:
-  - "Choose a host machine and virtualisation tool"
-  - "Create RHEL 9-compatible virtual machines"
-  - "Install the system and apply updates"
-  - "Take and restore snapshots between exercises"
-  - "Reach machines over SSH and a console"
+goal: Build a sealed practice lab at home, with Rocky Linux 9 VMs on LXD, so every exercise in this path has a safe place to run and a fast way to reset.
+objectives:
+  - Prepare an Ubuntu host with LXD and create a private lab network that nothing outside can connect into.
+  - Build workstation and servera to serverd with a cloud-init profile that creates the lab users and installs the tools a RHEL server has.
+  - Set up workstation as the machine you work from, with everyday tools and SSH access to every server.
+  - Reset machines between exercises with snapshots and the rht-vmctl command.
+objectiveIds:
+  - ch01.lab-network
+  - ch01.lab-machines
+  - ch01.lab-tools
+  - ch01.lab-reset

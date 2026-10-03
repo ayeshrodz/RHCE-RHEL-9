@@ -89,7 +89,7 @@ def content_from_another_origin(browser):
             page.goto(base + '#/' + PROGRAM + '/ch03/inventory')
             page.locator('h1').first.wait_for()
             assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
-            assert page.locator('pre.shiki').count() > 3
+            wait_until(page, "document.querySelectorAll('pre.shiki').length > 3")
             assert any(url.startswith(origin + 'p/') for url in requested), 'pages came from the content origin'
             assert not any(url.startswith(base + 'content/') for url in requested), 'nothing came from this site'
             context.close()
@@ -215,7 +215,7 @@ def programs_stay_separate(browser):
 
 
 def planned_program_is_listed(browser):
-    """A planned program shows up on the site home with its outline, and has no lessons to open yet."""
+    """A planned program shows up on the site home with its outline: the practice lab is written, every other chapter is an outline entry."""
     context = browser.new_context()
     page = context.new_page()
     page.goto(BASE + '#/')
@@ -226,8 +226,9 @@ def planned_program_is_listed(browser):
     planned.click()
     page.wait_for_url('**/#/rhel9-sysadmin')
     page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
-    assert page.locator('.chapter-card.is-soon').count() == 22, 'every chapter is an outline entry'
-    page.locator('.chapter-card.is-soon').nth(15).click()
+    assert page.locator('.chapter-card.is-soon').count() == 21, 'every chapter after the practice lab is an outline entry'
+    assert page.get_by_role('link', name='Build the practice lab').count() == 1
+    page.locator('.chapter-card.is-soon').nth(14).click()
     page.get_by_role('heading', name='SELinux').first.wait_for()
     assert 'Allowing services on non-standard ports' in page.locator('main').inner_text()
     context.close()
