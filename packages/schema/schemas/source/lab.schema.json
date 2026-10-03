@@ -795,6 +795,10 @@
             "symlink"
           ]
         },
+        "checksumsVerify": {
+          "description": "The file is a SHA-256 checksum list that sha256sum -c accepts, run from the file's own directory. Host checks only.",
+          "type": "boolean"
+        },
         "acl": {
           "description": "Access ACL entries the path must have, as getfacl prints them without comments, for example user:auditor:r-- or default:group::rwx. Host checks only.",
           "type": "array",
@@ -885,6 +889,24 @@
             "zip"
           ],
           "default": "tar.gz"
+        },
+        "members": {
+          "description": "Member names, exactly as tar -t (or unzip -Z1) lists them, that must be in the archive.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._/-]{1,200}$"
+          }
+        },
+        "absentMembers": {
+          "description": "Member names that must not be in the archive.",
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._/-]{1,200}$"
+          }
         }
       },
       "type": "object"

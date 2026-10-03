@@ -108,6 +108,8 @@ def file_conditions(c, path):
         out.append('test %s -ef %s' % (p, word(c['sameFileAs'])))
     if 'resolvesTo' in c:
         out.append('[ "$(readlink -f %s)" = %s ]' % (p, word(c['resolvesTo'])))
+    if c.get('checksumsVerify'):
+        out.append('( cd "$(dirname %s)" && sha256sum --status -c "$(basename %s)" )' % (p, p))
     for entry in c.get('acl', []):
         out.append("getfacl -cp -- %s 2>/dev/null | sed 's/[[:space:]]*#.*//' | grep -qxF -- %s" % (p, shlex.quote(entry)))
     return out
@@ -157,7 +159,13 @@ def conditions_file_compare(c):
 def conditions_archive(c):
     p = word(c['path'])
     lister = {'tar.gz': 'tar -tzf', 'tar.bz2': 'tar -tjf', 'tar.xz': 'tar -tJf', 'tar': 'tar -tf', 'zip': 'unzip -tq'}[c.get('format', 'tar.gz')]
-    return ['test -s ' + p, '%s %s >/dev/null' % (lister, p)]
+    out = ['test -s ' + p, '%s %s >/dev/null' % (lister, p)]
+    listing = {'tar.gz': 'tar -tzf', 'tar.bz2': 'tar -tjf', 'tar.xz': 'tar -tJf', 'tar': 'tar -tf', 'zip': 'unzip -Z1'}[c.get('format', 'tar.gz')]
+    for member in c.get('members', []):
+        out.append('%s %s | grep -qxF -- %s' % (listing, p, shlex.quote(member)))
+    for member in c.get('absentMembers', []):
+        out.append('! %s %s | grep -qxF -- %s' % (listing, p, shlex.quote(member)))
+    return out
 
 
 def conditions_user(c):

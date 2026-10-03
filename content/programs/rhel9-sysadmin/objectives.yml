@@ -393,20 +393,36 @@
   - ch13/exercise-modules
   - ch13/lab
   challenges: []
-- id: ch14.operations
+- id: ch14.tar
   chapter: ch14
   lessons:
-  - ch14/archives-and-checksums
-  - ch14/rsync-and-restore
+  - ch14/tar
   labs:
+  - ch14/exercise-tar
   - ch14/lab
   challenges: []
-- id: ch14.verification
+- id: ch14.checksums
   chapter: ch14
   lessons:
-  - ch14/archives-and-checksums
-  - ch14/rsync-and-restore
+  - ch14/compression-and-checksums
   labs:
+  - ch14/exercise-checksums
+  - ch14/lab
+  challenges: []
+- id: ch14.backups
+  chapter: ch14
+  lessons:
+  - ch14/backups
+  labs:
+  - ch14/exercise-backups
+  - ch14/lab
+  challenges: []
+- id: ch14.transfer
+  chapter: ch14
+  lessons:
+  - ch14/moving-data
+  labs:
+  - ch14/exercise-moving
   - ch14/lab
   challenges: []
 - id: ch15.operations

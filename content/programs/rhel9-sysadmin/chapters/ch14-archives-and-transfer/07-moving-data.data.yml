@@ -1,0 +1,184 @@
+methods:
+  title: Moving data between hosts
+  caption: Select a method.
+  height: 250
+  mode: select
+  initial: rsync
+  info:
+    scp:
+      tone: blue
+      title: scp
+      text: Simple one-off copy of files or a directory (-r). Always copies everything. Fine for small jobs.
+    rsync:
+      tone: green
+      title: rsync -a
+      text: Copies only what changed, can resume, keeps permissions and times, can mirror with --delete. The default choice for directory trees and repeated copies. Add -A -X for ACLs and extended attributes (-H for hard links).
+    pipe:
+      tone: purple
+      title: tar over ssh
+      text: 'tar -czf - dir | ssh host "tar -xzf - -C dest": streams an archive without creating a temporary file. Keeps whatever tar keeps, and works when rsync is missing.'
+    check:
+      tone: amber
+      title: Verify afterwards
+      text: sha256sum on both sides (or rsync -c --dry-run) proves the copy is identical. Trust, but verify.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: scp
+    sub: simple
+    mono: true
+    titleSize: 15
+    select: scp
+    active:
+    - scp
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: rsync -a
+    sub: only changes
+    mono: true
+    titleSize: 15
+    select: rsync
+    active:
+    - rsync
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: purple
+    title: tar | ssh
+    sub: a stream
+    mono: true
+    titleSize: 15
+    select: pipe
+    active:
+    - pipe
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: amber
+    title: verify
+    sub: sha256sum · rsync -c
+    mono: true
+    titleSize: 12
+    select: check
+    active:
+    - check
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: moving data (from workstation)'
+    prompt: '[student@workstation ~]$'
+    commands:
+    - cmd: ssh root@servera 'cd /tmp/arch && tar -czf - work' | ssh root@serverb 'mkdir -p /tmp/recv && tar -xzf - -C /tmp/recv && find /tmp/recv -type f | sort'
+      out: '/tmp/recv/work/docs/a.txt
+
+        /tmp/recv/work/docs/c.txt
+
+        /tmp/recv/work/docs/d.txt'
+    - cmd: ssh root@servera 'cd /tmp/arch/work && sha256sum docs/*' > sums.txt; cut -c1-40 sums.txt
+      out: '710605b946281e2b995d6e4f6bb9d88b9f72ba51
+
+        f6936912184481f5edd4c304ce27c5a1a827804f
+
+        ab929fcd5594037960792ea0b98caf5fdaf6b606'
+    - cmd: ssh root@serverb 'cd /tmp/recv/work && sha256sum -c -' < sums.txt
+      out: 'docs/a.txt: OK
+
+        docs/c.txt: OK
+
+        docs/d.txt: OK'
+    - cmd: rsync -aHAX root@servera:/tmp/arch/work/ ~/xfer/work/
+      out: ''
+    - cmd: rsync -avc --dry-run root@servera:/tmp/arch/work/ ~/xfer/work/ | tail -3
+      out: '
+
+        sent 21 bytes  received 185 bytes  412.00 bytes/sec
+
+        total size is 23  speedup is 0.11 (DRY RUN)'
+    tasks:
+    - text: Stream a directory from servera to serverb through a pipe, without a temporary file.
+      commands:
+      - ssh root@servera 'cd /tmp/arch && tar -czf - work' | ssh root@serverb 'mkdir -p /tmp/recv && tar -xzf - -C /tmp/recv && find /tmp/recv -type f | sort'
+    - text: Compute checksums on the source, and verify them on the destination.
+      commands:
+      - ssh root@servera 'cd /tmp/arch/work && sha256sum docs/*' > sums.txt; cut -c1-40 sums.txt
+      - ssh root@serverb 'cd /tmp/recv/work && sha256sum -c -' < sums.txt
+    - text: Pull a copy to workstation with rsync keeping ACLs and attributes.
+      commands:
+      - rsync -aHAX root@servera:/tmp/arch/work/ ~/xfer/work/
+    - text: Check with a dry run that nothing differs.
+      commands:
+      - rsync -avc --dry-run root@servera:/tmp/arch/work/ ~/xfer/work/ | tail -3
+quick:
+  questions:
+  - id: q-ef0cd89c7e5f
+    q: Which method sends only the changes on a second run?
+    options:
+    - rsync
+    - scp
+    - tar | ssh
+    answer: 0
+    explain: rsync compares and transfers differences.
+  - id: q-59a6b276b026
+    q: What does ssh host "tar -xzf - -C /dest" read from?
+    options:
+    - Standard input, which the pipe provides
+    - A file called -
+    - The keyboard only
+    answer: 0
+    explain: The dash means standard input.
+  - id: q-962ad1f268c3
+    q: How can you verify that a copy is identical without sending the data again?
+    options:
+    - Compare sha256sum output on both sides
+    - Compare ls -l sizes only
+    - Re-copy and look
+    answer: 0
+    explain: Equal checksums mean equal content.
+  - id: q-9f15fb062836
+    q: Which rsync options keep ACLs and extended attributes?
+    options:
+    - -A and -X (with -a)
+    - -v
+    - -n
+    answer: 0
+    explain: -aHAX is a common archive set.
+  - id: q-1769804d02ff
+    q: Which option shows what rsync would do without doing it?
+    options:
+    - -n or --dry-run
+    - -q
+    - -z
+    answer: 0
+    explain: Always preview --delete.
+  - id: q-14d4a42a8ce3
+    q: You copy a tree with scp -r as root. What may be lost?
+    options:
+    - Hard links, some metadata and efficiency
+    - The files
+    - The names
+    answer: 0
+    explain: rsync -aHAX or tar keeps more.

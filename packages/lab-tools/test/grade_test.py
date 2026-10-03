@@ -125,6 +125,28 @@ class ScriptTests(unittest.TestCase):
             child.kill()
             child.wait()
 
+    def test_archive_members_and_checksum_lists(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / 'src').mkdir()
+            (root / 'src' / 'a.txt').write_text('alpha\n')
+            (root / 'src' / 'b.txt').write_text('beta\n')
+            archive = root / 'src.tar.gz'
+            subprocess.run(['tar', '-czf', str(archive), '-C', str(root), 'src'], check=True)
+            sums = root / 'src.sha256'
+            sums.write_text(subprocess.run(['sha256sum', 'src.tar.gz'], cwd=root, capture_output=True, text=True).stdout)
+            cases = [
+                ({'kind': 'archive', 'path': str(archive), 'members': ['src/a.txt', 'src/b.txt']}, True),
+                ({'kind': 'archive', 'path': str(archive), 'members': ['/src/a.txt']}, False),
+                ({'kind': 'archive', 'path': str(archive), 'absentMembers': ['src/c.txt']}, True),
+                ({'kind': 'archive', 'path': str(archive), 'absentMembers': ['src/a.txt']}, False),
+                ({'kind': 'file', 'paths': [str(sums)], 'checksumsVerify': True}, True),
+            ]
+            for check, expected in cases:
+                self.assertEqual(self.run_script(check) == 0, expected, check)
+            archive.write_bytes(b'corrupt')
+            self.assertNotEqual(self.run_script({'kind': 'file', 'paths': [str(sums)], 'checksumsVerify': True}), 0)
+
     def test_acl_entries_are_matched_exactly_ignoring_effective_comments(self):
         with tempfile.TemporaryDirectory() as temp:
             bin_dir = Path(temp) / 'bin'

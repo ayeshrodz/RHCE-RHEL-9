@@ -1,0 +1,82 @@
+name: sa-archives-review
+title: Archives and transfer
+page: ch14/lab
+transport: ssh
+version: 1
+starter:
+- README
+checkpoints:
+  final:
+    files:
+    - README
+    checks:
+    - id: archive
+      kind: archive
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: /srv/backup/project.tar.xz is a readable xz archive with the project and without the cache
+      path: /srv/backup/project.tar.xz
+      format: tar.xz
+      members:
+      - project/docs/readme.txt
+      - project/data/records.csv
+      - project/secret.txt
+      absentMembers:
+      - project/cache/tmp.bin
+    - id: sums-a
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: project.tar.xz.sha256 verifies the archive on servera
+      paths:
+      - /srv/backup/project.tar.xz.sha256
+      checksumsVerify: true
+    - id: sums-b
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The archive arrived on serverb and its checksum verifies
+      paths:
+      - /srv/restore/project.tar.xz.sha256
+      checksumsVerify: true
+    - id: secret
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: secret.txt was restored with mode 640
+      paths:
+      - /srv/restore/project/secret.txt
+      mode: '0640'
+      owner: root
+    - id: acl
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: secret.txt kept its ACL for student
+      paths:
+      - /srv/restore/project/secret.txt
+      acl:
+      - user:student:r--
+    - id: records
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: records.csv was restored
+      paths:
+      - /srv/restore/project/data/records.csv
+      line: 1,record
+    - id: nocache
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The cache directory was not restored
+      paths:
+      - /srv/restore/project/cache
+      exists: false

@@ -1,8 +1,12 @@
 title: Archives and file transfer
-goal: Bundle, compress and move data between systems.
+goal: Bundle and compress data with tar, prove it with checksums, make backups that restore with their metadata, and move data between hosts safely.
 objectives:
-- Create and inspect archives with explicit metadata policy.
-- Prove restored data and synchronize safely.
+  - Create, list and extract tar archives and choose the compression.
+  - Compress and compare formats, and verify files with SHA-256 checksums.
+  - Make full and incremental backups that keep ACLs, labels and attributes, and test restores.
+  - Move data between hosts with rsync and tar over ssh, and verify the copy.
 objectiveIds:
-- ch14.operations
-- ch14.verification
+  - ch14.tar
+  - ch14.checksums
+  - ch14.backups
+  - ch14.transfer

@@ -1,0 +1,341 @@
+metadata:
+  title: What a backup must keep
+  caption: Select an item; the flag tells tar to keep it.
+  height: 260
+  mode: select
+  initial: acl
+  info:
+    perm:
+      tone: green
+      title: Permissions and owners
+      text: Kept by default when tar runs as root (-p is the default for root). As an ordinary user, owners cannot be restored to other accounts.
+    links:
+      tone: green
+      title: Symbolic and hard links
+      text: Kept as links, not as copies of the target. Check restored links with ls -l.
+    acl:
+      tone: amber
+      title: 'ACLs: --acls'
+      text: NOT kept unless you add --acls when creating AND when extracting. Without it, the extra access entries silently disappear.
+    sel:
+      tone: amber
+      title: 'SELinux labels: --selinux'
+      text: Kept only with --selinux on both sides. Without it, restored files get the default label for where they land (and may need restorecon).
+    xattr:
+      tone: amber
+      title: 'Extended attributes: --xattrs'
+      text: Other metadata attached to files, for example capabilities. --xattrs keeps them.
+    sparse:
+      tone: gray
+      title: Special cases
+      text: Sparse files (-S) and device files need care. Do not archive /proc, /sys, /dev or the backup file itself.
+  elements:
+  - kind: node
+    x: 10
+    y: 26
+    w: 200
+    h: 46
+    tone: green
+    title: owners · permissions
+    sub: default (as root)
+    titleSize: 12.5
+    select: perm
+    active:
+    - perm
+  - kind: node
+    x: 220
+    y: 26
+    w: 200
+    h: 46
+    tone: green
+    title: symbolic · hard links
+    sub: default
+    titleSize: 12.5
+    select: links
+    active:
+    - links
+  - kind: node
+    x: 10
+    y: 80
+    w: 200
+    h: 46
+    tone: amber
+    title: ACLs
+    sub: --acls
+    mono: true
+    titleSize: 13
+    select: acl
+    active:
+    - acl
+  - kind: node
+    x: 220
+    y: 80
+    w: 200
+    h: 46
+    tone: amber
+    title: SELinux labels
+    sub: --selinux
+    mono: true
+    titleSize: 13
+    select: sel
+    active:
+    - sel
+  - kind: node
+    x: 430
+    y: 80
+    w: 200
+    h: 46
+    tone: amber
+    title: xattrs
+    sub: --xattrs
+    mono: true
+    titleSize: 13
+    select: xattr
+    active:
+    - xattr
+  - kind: node
+    x: 430
+    y: 26
+    w: 240
+    h: 46
+    tone: gray
+    title: sparse · devices · /proc
+    sub: special cases
+    titleSize: 12.5
+    select: sparse
+    active:
+    - sparse
+incremental:
+  title: Full and incremental backups
+  caption: Step through backups with a state file (tar --listed-incremental).
+  height: 250
+  mode: steps
+  steps:
+  - title: Full backup
+    text: tar --listed-incremental=state.snar -czf full.tar.gz work. The state file records what existed. All files are archived.
+  - title: Things change
+    text: a.txt is edited, c.txt is created, b.txt is deleted.
+  - title: Incremental backup
+    text: 'The same command with a new name (incr1.tar.gz) and the same state file archives only what changed since: a.txt and c.txt.'
+  - title: Restore in order
+    text: 'Extract full.tar.gz first, then each incremental, always with --listed-incremental=/dev/null. tar also applies the deletions: b.txt is removed again.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 140
+    h: 56
+    tone: green
+    title: full.tar.gz
+    sub: a b
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+    - 3
+  - kind: node
+    x: 10
+    y: 86
+    w: 140
+    h: 50
+    tone: gray
+    title: state.snar
+    sub: what exists
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    - 2
+  - kind: node
+    x: 180
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: changes
+    sub: a edited · c new · b gone
+    titleSize: 11.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 360
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: incr1.tar.gz
+    sub: a c
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 540
+    y: 20
+    w: 130
+    h: 56
+    tone: teal
+    title: restored
+    sub: a c (no b)
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 150
+      - 48
+    - - 180
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 330
+      - 48
+    - - 360
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 510
+      - 48
+    - - 540
+      - 48
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: backups that keep metadata'
+    prompt: '[root@servera arch]#'
+    commands:
+    - cmd: getfacl -cp project/docs/notes.md
+      out: 'user::rw-
+
+        user:student:r--
+
+        group::r--
+
+        mask::r--
+
+        other::r--'
+    - cmd: tar -czf plain.tar.gz project; mkdir -p out1; tar -xzf plain.tar.gz -C out1; getfacl -cp out1/project/docs/notes.md
+      out: 'user::rw-
+
+        group::r--
+
+        other::r--'
+    - cmd: tar -czf acl.tar.gz --acls --selinux --xattrs project
+      out: ''
+    - cmd: mkdir -p out3; tar -xzf acl.tar.gz -C out3 --acls --selinux --xattrs; getfacl -cp out3/project/docs/notes.md
+      out: 'user::rw-
+
+        user:student:r--
+
+        group::r--
+
+        mask::r--
+
+        other::r--'
+    - cmd: tar --listed-incremental=bk/state.snar -czf bk/full.tar.gz work; ls bk
+      out: full.tar.gz  state.snar
+    - cmd: tar --listed-incremental=bk/state.snar -czf bk/incr1.tar.gz work; tar -tzf bk/incr1.tar.gz
+      out: 'work/
+
+        work/docs/
+
+        work/docs/a.txt
+
+        work/docs/c.txt'
+    - cmd: rsync -a --link-dest=/tmp/arch/bk/snap1 work/ bk/snap2/; ls -i bk/snap1/docs/a.txt bk/snap2/docs/a.txt
+      out: 262001 bk/snap1/docs/a.txt  262001 bk/snap2/docs/a.txt
+    tasks:
+    - text: Create an archive that keeps ACLs, SELinux labels and extended attributes.
+      commands:
+      - tar -czf acl.tar.gz --acls --selinux --xattrs project
+    - text: Extract it keeping them, and check the ACL.
+      commands:
+      - mkdir -p out3; tar -xzf acl.tar.gz -C out3 --acls --selinux --xattrs; getfacl -cp out3/project/docs/notes.md
+    - text: Make a full backup with a state file.
+      commands:
+      - tar --listed-incremental=bk/state.snar -czf bk/full.tar.gz work; ls bk
+    - text: Make an incremental backup and see that it holds only the changes.
+      commands:
+      - tar --listed-incremental=bk/state.snar -czf bk/incr1.tar.gz work; tar -tzf bk/incr1.tar.gz
+quick:
+  questions:
+  - id: q-6e22a27d25df
+    q: You restore a backup and the extra ACL entries are gone. What was missing?
+    options:
+    - --acls on both creating and extracting
+    - -v
+    - a bigger disk
+    answer: 0
+    explain: tar does not keep ACLs unless asked.
+  - id: q-002c6ad174af
+    q: Where must you run an incremental restore from?
+    options:
+    - Extract the full backup first, then each incremental in order
+    - Only the last incremental
+    - Any order
+    answer: 0
+    explain: Each incremental builds on the previous state.
+  - id: q-2ff01903b300
+    q: Which paths must you never include in a backup of a running system?
+    options:
+    - /proc, /sys, /dev and the backup file itself
+    - /home
+    - /etc
+    answer: 0
+    explain: They are virtual or change while the backup runs.
+  - id: q-14c7ea480b2d
+    q: What makes an rsync --link-dest snapshot small?
+    options:
+    - Unchanged files are hard links to the previous snapshot
+    - It compresses the files
+    - It skips big files
+    answer: 0
+    explain: 'Same inode: the data is stored once.'
+  - id: q-36ee57f145c4
+    q: Why test-restore a backup into a new empty directory?
+    options:
+    - To prove it works without touching the originals
+    - It is faster
+    - tar requires it
+    answer: 0
+    explain: Compare with diff -r.
+  - id: q-0f412a55565f
+    q: As an ordinary user, what limits restoring a backup?
+    options:
+    - You cannot give files to other owners
+    - tar refuses
+    - ACLs are not supported
+    answer: 0
+    explain: Ownership restoration needs root.

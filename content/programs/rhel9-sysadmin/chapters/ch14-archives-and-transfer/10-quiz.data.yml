@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-604361b0fc9f
+    q: Which command creates an xz-compressed archive?
+    options:
+    - tar -cJf a.tar.xz dir
+    - tar -czf a.tar.xz dir
+    - tar -xJf a.tar.xz dir
+    answer: 0
+    explain: J = xz, z = gzip, j = bzip2.
+  - id: q-c2de34c18b26
+    q: Which option extracts into a chosen directory?
+    options:
+    - -C DIR
+    - -d DIR
+    - -o DIR
+    answer: 0
+    explain: The directory must exist.
+  - id: q-2b39ca4e1640
+    q: What does tar -tvf do?
+    options:
+    - Lists the archive with details
+    - Verifies the archive
+    - Extracts verbosely
+    answer: 0
+    explain: t lists; v adds permissions, owner and size.
+  - id: q-38e85a888f3c
+    q: Which option keeps ACLs in an archive?
+    options:
+    - --acls
+    - -p
+    - --perms
+    answer: 0
+    explain: Also --selinux and --xattrs.
+  - id: q-c552297c1d27
+    q: How do you check that an archive extracted correctly?
+    options:
+    - diff -r original restored
+    - ls -l
+    - tar -c
+    answer: 0
+    explain: No output means identical.
+  - id: q-7023ae0702bf
+    q: Which command verifies a list of SHA-256 checksums?
+    options:
+    - sha256sum -c LIST
+    - sha256sum LIST
+    - cksum LIST
+    answer: 0
+    explain: OK or FAILED for each file.
+  - id: q-a28fd36757c5
+    q: What is an incremental backup?
+    options:
+    - Only what changed since the previous backup
+    - A compressed backup
+    - A copy to another disk
+    answer: 0
+    explain: Restore the full backup, then the incrementals in order.
+  - id: q-2038e4e3b1e6
+    q: Which method streams a directory to another host without temporary files?
+    options:
+    - tar -czf - dir | ssh host "tar -xzf - -C /dest"
+    - scp -r
+    - rsync -n
+    answer: 0
+    explain: The archive travels through the pipe.
+  - id: q-c1e1583874ab
+    q: Which compression is fastest?
+    options:
+    - gzip
+    - xz
+    - bzip2
+    answer: 0
+    explain: At the price of a bigger result.
+  - id: q-5ca843fb0a4c
+    q: A backup you never test-restored is ...
+    options:
+    - An unproven backup
+    - Safe
+    - Compressed
+    answer: 0
+    explain: Practice the restore.

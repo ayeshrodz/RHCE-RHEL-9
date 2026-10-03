@@ -1,0 +1,315 @@
+compression:
+  title: Compression trade-offs
+  caption: Select a tool. Sizes are for the 22.5 MB tar archive of /etc.
+  height: 250
+  mode: select
+  initial: xz
+  info:
+    gzip:
+      tone: green
+      title: 'gzip: 4.9 MB, fast'
+      text: 'Suffix .gz, tar option z. The common default: quick to compress and to expand, understood everywhere. Good for daily backups and logs.'
+    bzip2:
+      tone: blue
+      title: 'bzip2: 4.1 MB, slower'
+      text: Suffix .bz2, tar option j. Smaller than gzip, noticeably slower. It is a separate package (bzip2) that may need installing.
+    xz:
+      tone: purple
+      title: 'xz: 3.0 MB, slowest to compress'
+      text: Suffix .xz, tar option J. The smallest result, but it took about 8 seconds here against about 1 for gzip. Best for archives that are made once and downloaded often.
+    zip:
+      tone: amber
+      title: 'zip: for sharing'
+      text: Suffix .zip. Compresses each file separately and is understood on every operating system, but does not keep Linux permissions and owners well. Use it when the receiver is not Linux.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: gzip
+    sub: 4.9 MB · fast
+    titleSize: 14
+    select: gzip
+    active:
+    - gzip
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: bzip2
+    sub: 4.1 MB · slower
+    titleSize: 14
+    select: bzip2
+    active:
+    - bzip2
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: purple
+    title: xz
+    sub: 3.0 MB · slowest
+    titleSize: 14
+    select: xz
+    active:
+    - xz
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: amber
+    title: zip
+    sub: portable
+    titleSize: 14
+    select: zip
+    active:
+    - zip
+  - kind: label
+    x: 340
+    y: 124
+    text: 'original (tar, uncompressed): 22.5 MB'
+    size: 12.5
+    muted: true
+checksum-flow:
+  title: Prove that a copy is identical
+  caption: Step through a checksum check.
+  height: 240
+  mode: steps
+  steps:
+  - title: Compute a checksum at the source
+    text: sha256sum file > file.sha256 turns the entire content into a 64-character fingerprint. Change one bit of the file and the fingerprint is completely different.
+  - title: Transfer the file and the fingerprint
+    text: 'Copy both to the destination by any means: scp, rsync, a USB stick, a download.'
+  - title: Check at the destination
+    text: sha256sum -c file.sha256 recomputes the checksum and compares. OK means the content is identical. FAILED means it is not.
+  - title: Trust the fingerprint
+    text: The check is only as good as the fingerprint. For downloads, take the checksum from a different, trusted place than the file itself.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: source file
+    sub: checksum A
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: copy
+    sub: transfer
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: teal
+    title: checksum B
+    sub: sha256sum -c
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: A = B ?
+    sub: OK / FAILED
+    titleSize: 13
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 150
+    y: 110
+    w: 400
+    h: 44
+    tone: gray
+    title: one changed byte changes the whole checksum
+    titleSize: 12.5
+    active:
+    - 0
+    - 3
+    visible:
+    - 0
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: compression and checksums'
+    prompt: '[root@servera arch]#'
+    commands:
+    - cmd: ls -l etc.tar*
+      out: '-rw-r--r--. 1 root root 22538240 Oct  3 17:37 etc.tar
+
+        -rw-r--r--. 1 root root  4056807 Oct  3 17:37 etc.tar.bz2
+
+        -rw-r--r--. 1 root root  4904479 Oct  3 17:37 etc.tar.gz
+
+        -rw-r--r--. 1 root root  2993256 Oct  3 17:37 etc.tar.xz'
+    - cmd: gzip -l t.tar.gz
+      out: "         compressed        uncompressed  ratio uncompressed_name\n            4904485            22538240  78.2% t.tar"
+    - cmd: zip -r proj.zip project | tail -2
+      out: "  adding: project/src/data3.txt (deflated 59%)\n  adding: project/src/data1.txt (deflated 59%)"
+    - cmd: unzip -l proj.zip | tail -3
+      out: "---------                     -------\n   326710                     9 files"
+    - cmd: sha256sum project/src/*.txt > SHA256SUMS
+      out: ''
+    - cmd: sha256sum -c SHA256SUMS
+      out: 'project/src/data1.txt: OK
+
+        project/src/data2.txt: OK
+
+        project/src/data3.txt: OK'
+    - cmd: echo tamper >> project/src/data2.txt
+      out: ''
+    - cmd: sha256sum -c SHA256SUMS
+      out: 'project/src/data1.txt: OK
+
+        project/src/data2.txt: FAILED
+
+        project/src/data3.txt: OK
+
+        sha256sum: WARNING: 1 computed checksum did NOT match'
+    - cmd: diff -r project out/project
+      out: 'diff -r project/src/data2.txt out/project/src/data2.txt
+
+        20001d20000
+
+        < tamper'
+    tasks:
+    - text: Compare the size of the same data in four formats.
+      commands:
+      - ls -l etc.tar*
+    - text: Zip a directory and list the archive.
+      commands:
+      - zip -r proj.zip project | tail -2
+      - unzip -l proj.zip | tail -3
+    - text: Record the checksums of three files.
+      commands:
+      - sha256sum project/src/*.txt > SHA256SUMS
+    - text: Verify them.
+      commands:
+      - sha256sum -c SHA256SUMS
+    - text: Change a file, then verify again.
+      commands:
+      - echo tamper >> project/src/data2.txt
+      - sha256sum -c SHA256SUMS
+quick:
+  questions:
+  - id: q-19c4b8105696
+    q: Which tool gives the smallest result but takes the longest to compress?
+    options:
+    - xz
+    - gzip
+    - zip
+    answer: 0
+    explain: Roughly, xz gives the smallest files, then bzip2, then gzip, and the order of speed is the reverse.
+  - id: q-b7be6081fe7c
+    q: A file ends in .tar.gz. How do you view its contents?
+    options:
+    - tar -tzf file.tar.gz
+    - gunzip file.tar.gz only
+    - zip -l
+    answer: 0
+    explain: Or plain tar -tf; modern tar detects gzip itself.
+  - id: q-8bdcb68c89a0
+    q: sha256sum -c lists.sha256 prints "FAILED" for one file. What does it mean?
+    options:
+    - The file content differs from when the checksum was made
+    - The file is encrypted
+    - The checksum file is empty
+    answer: 0
+    explain: The file was modified, corrupted or damaged in transfer.
+  - id: q-49e19a3d6881
+    q: Why take a download's checksum from a different place than the download?
+    options:
+    - An attacker who replaces the file could replace its checksum too
+    - It is faster
+    - It saves disk
+    answer: 0
+    explain: A checksum only proves identity with something you trust.
+  - id: q-de42d27a4d62
+    q: Which command leaves the original and creates file.xz next to it?
+    options:
+    - xz -k file
+    - xz file
+    - gzip -d file
+    answer: 0
+    explain: -k keeps the input; by default the original is removed.
+  - id: q-d979ab8faef7
+    q: Which statement about zip is true?
+    options:
+    - It is understood by Windows and macOS, but does not preserve Linux owners and ACLs well
+    - It is the best backup format for Linux
+    - It cannot compress
+    answer: 0
+    explain: Use tar for Linux-to-Linux backups; zip for sharing.

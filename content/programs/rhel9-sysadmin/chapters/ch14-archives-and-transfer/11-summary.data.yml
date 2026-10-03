@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Create, list, extract with tar?
+    back: tar -czf A.tar.gz -C DIR NAME  ·  tar -tzf A.tar.gz  ·  tar -xzf A.tar.gz -C DEST
+  - front: Which letters pick the compression?
+    back: 'z gzip · j bzip2 · J xz (no letter when extracting: tar detects it)'
+  - front: Why f last?
+    back: Because the next word is the archive name.
+  - front: Keep ACLs, SELinux labels and extended attributes?
+    back: --acls --selinux --xattrs when creating and extracting
+  - front: Exclude files; extract one member?
+    back: tar --exclude='*.tmp' -czf ...  ·  tar -xzf A.tar.gz path/in/archive
+  - front: Compare sizes of gzip, bzip2 and xz?
+    back: gzip fast and biggest, bzip2 smaller, xz smallest and slowest.
+  - front: Zip and unzip?
+    back: zip -r A.zip DIR  ·  unzip -l A.zip  ·  unzip A.zip
+  - front: Make and check checksums?
+    back: sha256sum FILES > SUMS  ·  sha256sum -c SUMS
+  - front: Incremental backup?
+    back: tar --listed-incremental=state.snar -czf incrN.tar.gz DIR; restore full then incrementals
+  - front: Test a restore?
+    back: Extract into an empty directory; diff -r original restored
+  - front: Stream a directory to another host?
+    back: tar -czf - DIR | ssh host "tar -xzf - -C DEST"
+  - front: Mirror with metadata; preview?
+    back: rsync -aHAX SRC/ host:DEST/  ·  add -n to preview, -c to compare by checksum
