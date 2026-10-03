@@ -1,0 +1,20 @@
+Exercise: sa-network-review (chapter 12 lab)
+
+Work on servera, with sudo or as root. Do not change the connection that
+carries your SSH session (System enp5s0).
+
+A static interface
+ 1. A NetworkManager connection named dummy1, type dummy, for the interface
+    dummy1, with the static addresses 10.50.60.1/24 and 10.50.60.2/24, no
+    IPv6, and the DNS server 10.50.60.53. Both addresses must be active now
+    and stored in the profile.
+
+Names
+ 2. A line in /etc/hosts that maps 10.50.60.1 to appnet.lab.example.com with
+    the short alias appnet. Check it with getent hosts appnet.
+
+On workstation
+ 3. Fill in answers.txt using what you see on servera (ip route, ss, and
+    /etc/nsswitch.conf).
+
+Then, on workstation:  lab grade sa-network-review

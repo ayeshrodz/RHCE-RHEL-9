@@ -1,0 +1,78 @@
+name: sa-network-review
+title: Networking
+page: ch12/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: addr1
+      kind: address
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: dummy1 has 10.50.60.1/24, stored in its profile
+      interface: dummy1
+      cidr: 10.50.60.1/24
+    - id: addr2
+      kind: address
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: dummy1 has the second address 10.50.60.2/24
+      interface: dummy1
+      cidr: 10.50.60.2/24
+    - id: profile
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The dummy1 profile is static and has the DNS server 10.50.60.53
+      paths:
+      - /etc/NetworkManager/system-connections/dummy1.nmconnection
+      contains:
+      - method=manual
+      - dns=10.50.60.53;
+    - id: hosts
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: /etc/hosts maps appnet to 10.50.60.1
+      paths:
+      - /etc/hosts
+      matches: ^10\.50\.60\.1[[:space:]]+appnet\.lab\.example\.com[[:space:]]+appnet[[:space:]]*$
+    - id: answer-gateway
+      kind: file
+      'on': control
+      message: 'answers.txt: an IPv4 address as the default gateway of servera'
+      paths:
+      - answers.txt
+      matches: ^GATEWAY=([0-9]{1,3}\.){3}[0-9]{1,3}[ \t]*$
+    - id: answer-prefix
+      kind: file
+      'on': control
+      message: 'answers.txt: the prefix length of servera''s network'
+      paths:
+      - answers.txt
+      matches: ^PREFIX=24[ \t]*$
+    - id: answer-listen-tool
+      kind: file
+      'on': control
+      message: 'answers.txt: the command that lists listening ports'
+      paths:
+      - answers.txt
+      matches: ^LISTEN_TOOL=ss[ \t]*$
+    - id: answer-name-order
+      kind: file
+      'on': control
+      message: 'answers.txt: the order of the name sources'
+      paths:
+      - answers.txt
+      matches: ^NAME_ORDER=files dns[ \t]*$

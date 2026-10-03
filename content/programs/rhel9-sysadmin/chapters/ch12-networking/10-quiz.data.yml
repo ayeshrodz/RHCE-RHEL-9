@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-bb8ef57dc5bd
+    q: Which command shows IP addresses in a short, readable form?
+    options:
+    - ip -br addr
+    - ifconfig -a
+    - ip route
+    answer: 0
+    explain: ip -br addr prints one line per interface.
+  - id: q-c8a58a914dc0
+    q: What does a host need in order to reach other networks?
+    options:
+    - A default route via a gateway
+    - A second NIC
+    - A hosts file
+    answer: 0
+    explain: ip route shows it.
+  - id: q-4bdcc25045c8
+    q: Which nmcli command creates a static address on a profile?
+    options:
+    - nmcli connection modify NAME ipv4.method manual ipv4.addresses ADDR/PREFIX
+    - nmcli device set
+    - ip addr persist
+    answer: 0
+    explain: Then nmcli connection up NAME applies it.
+  - id: q-21d915392e7b
+    q: Why does ip addr set by hand disappear after a reboot?
+    options:
+    - It is not stored in a NetworkManager profile
+    - ip addr always fails
+    - The kernel forgets
+    answer: 0
+    explain: Use nmcli connection so the setting persists.
+  - id: q-d25c95e05e6a
+    q: Which file maps names to addresses locally and is consulted first?
+    options:
+    - /etc/hosts
+    - /etc/resolv.conf
+    - /etc/hostname
+    answer: 0
+    explain: 'hosts: files dns in nsswitch.conf.'
+  - id: q-c7684c59c214
+    q: Which command shows the resolution a program would get?
+    options:
+    - getent hosts NAME
+    - dig NAME
+    - nslookup NAME
+    answer: 0
+    explain: getent follows nsswitch.conf.
+  - id: q-2c0693bd6fc5
+    q: hostnamectl set-hostname web1.lab.example.com changes ...
+    options:
+    - /etc/hostname, immediately
+    - only the prompt
+    - DNS records
+    answer: 0
+    explain: DNS records are changed on the DNS server, not by this command.
+  - id: q-a909c5ce4820
+    q: Which command lists listening TCP ports with the owning program?
+    options:
+    - ss -tlnp
+    - ip -s link
+    - ping -t
+    answer: 0
+    explain: Run it as root to see all process names.
+  - id: q-aa84c3d23c9c
+    q: '"Connection refused" means ...'
+    options:
+    - The host is reachable but nothing listens on that port
+    - The network cable is loose
+    - The name did not resolve
+    answer: 0
+    explain: A closed port answers refusal immediately.
+  - id: q-697ee59d93fb
+    q: What is a 169.254.x.x address on an interface set to DHCP?
+    options:
+    - A sign that DHCP did not answer
+    - The gateway
+    - A DNS server
+    answer: 0
+    explain: It is a link-local fallback address.

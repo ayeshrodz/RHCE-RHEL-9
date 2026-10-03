@@ -329,20 +329,36 @@
   - ch11/exercise-diagnosing
   - ch11/lab
   challenges: []
-- id: ch12.operations
+- id: ch12.basics
   chapter: ch12
   lessons:
-  - ch12/network-model
-  - ch12/networkmanager-profiles
+  - ch12/network-basics
   labs:
+  - ch12/exercise-inspect
   - ch12/lab
   challenges: []
-- id: ch12.verification
+- id: ch12.networkmanager
   chapter: ch12
   lessons:
-  - ch12/network-model
-  - ch12/networkmanager-profiles
+  - ch12/networkmanager
   labs:
+  - ch12/exercise-nmcli
+  - ch12/lab
+  challenges: []
+- id: ch12.names
+  chapter: ch12
+  lessons:
+  - ch12/names-and-dns
+  labs:
+  - ch12/exercise-names
+  - ch12/lab
+  challenges: []
+- id: ch12.troubleshooting
+  chapter: ch12
+  lessons:
+  - ch12/troubleshooting
+  labs:
+  - ch12/exercise-troubleshooting
   - ch12/lab
   challenges: []
 - id: ch13.operations

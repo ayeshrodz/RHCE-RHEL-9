@@ -1,0 +1,10 @@
+# Write each answer after the = sign, with no spaces.
+
+# The default gateway of servera (an IPv4 address; see ip route):
+GATEWAY=
+# The prefix length of servera's own network (the number after the slash):
+PREFIX=
+# The command that lists listening TCP and UDP ports:
+LISTEN_TOOL=
+# The two name sources in nsswitch.conf, in order (two words, one space):
+NAME_ORDER=

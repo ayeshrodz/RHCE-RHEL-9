@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: What do address, prefix and gateway mean?
+    back: 'Address: this interface. Prefix: how many bits are the network (/24 = 255.255.255.0). Gateway: the router for other networks.'
+  - front: Show addresses, routes, listeners?
+    back: ip -br addr  ·  ip route  ·  ss -tulpn
+  - front: List devices and connection profiles?
+    back: nmcli device status  ·  nmcli connection show
+  - front: Create a static profile on a dummy interface?
+    back: nmcli con add type dummy ifname dummy0 con-name dummy0 ipv4.method manual ipv4.addresses 10.20.30.1/24
+  - front: Change a profile and apply it?
+    back: nmcli con modify NAME +ipv4.addresses A/24  ·  nmcli con up NAME
+  - front: Where are NetworkManager profiles stored?
+    back: /etc/NetworkManager/system-connections/*.nmconnection
+  - front: Show or set the host name?
+    back: hostnamectl  ·  hostnamectl set-hostname NAME
+  - front: Order of name sources?
+    back: 'nsswitch.conf: files (/etc/hosts), then dns (resolv.conf), then myhostname.'
+  - front: See what programs resolve a name to, and ask DNS directly?
+    back: getent hosts NAME  ·  dig +short NAME
+  - front: '"No route to host" with a working ping?'
+    back: A firewall rejects the port.
+  - front: '"Connection refused"?'
+    back: 'Nothing listens on that port or address: check ss -tlnp on the server.'
+  - front: Troubleshooting order?
+    back: Link, address, gateway, target IP, name, port.
