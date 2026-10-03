@@ -6,7 +6,7 @@ course:
 track:
   id: rhel9
   label: RHEL 9
-  exam: RHCE
+  exam: DevOps
   rhel: "9"
   aap: 2.2 (classroom reference)
   ansibleCore: 2.14 (home lab)
