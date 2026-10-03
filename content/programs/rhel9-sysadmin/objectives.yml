@@ -218,6 +218,22 @@
   labs:
   - ch14/lab
   challenges: []
+- id: ch15.operations
+  chapter: ch15
+  lessons:
+  - ch15/bash-scripts
+  - ch15/cron-and-timers
+  labs:
+  - ch15/lab
+  challenges: []
+- id: ch15.verification
+  chapter: ch15
+  lessons:
+  - ch15/bash-scripts
+  - ch15/cron-and-timers
+  labs:
+  - ch15/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:

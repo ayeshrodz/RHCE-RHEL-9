@@ -1,0 +1,11 @@
+recall:
+  cards:
+  - front: A timer is enabled. What proves its task ran successfully?
+    back: The service result and expected output after activation. Trigger configuration and completed
+      work are distinct evidence.
+  - front: A script receives a path with spaces. What preserves it as one argument?
+    back: Quote "$1" when passing it onward. Quoted expansions preserve argument boundaries without executing
+      their contents.
+  - front: A user crontab works interactively but fails unattended. What should you inspect?
+    back: PATH, working directory, identity and output. Scheduled execution lacks much of the interactive
+      session environment.

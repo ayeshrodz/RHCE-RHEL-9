@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: A timer is enabled. What proves its task ran successfully?
+    options:
+    - The service result and expected output after activation.
+    - The timer filename alone.
+    - A successful daemon-reload alone.
+    answer: 0
+    explain: Trigger configuration and completed work are distinct evidence.
+    id: q-b91b3c0bc4fa
+  - q: A script receives a path with spaces. What preserves it as one argument?
+    options:
+    - Use eval on it.
+    - Remove every space from the path.
+    - Quote "$1" when passing it onward.
+    answer: 2
+    explain: Quoted expansions preserve argument boundaries without executing their contents.
+    id: q-d6e58acbb896
+  - q: A user crontab works interactively but fails unattended. What should you inspect?
+    options:
+    - Only the account comment.
+    - PATH, working directory, identity and output.
+    - Only terminal colors.
+    answer: 1
+    explain: Scheduled execution lacks much of the interactive session environment.
+    id: q-0fe8530d2a4b

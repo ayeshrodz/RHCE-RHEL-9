@@ -1,10 +1,8 @@
-title: "Scripts and scheduling"
-goal: "Automate small jobs with shell scripts and run them on a schedule."
-status: planned
-topics:
-  - "Writing simple Bash scripts: variables, arguments and exit codes"
-  - "Conditionals and loops"
-  - "Making scripts robust"
-  - "Recurring jobs with cron and anacron"
-  - "One-off jobs with at"
-  - "Timers with systemd"
+title: Scripts and scheduling
+goal: Automate small jobs with shell scripts and run them on a schedule.
+objectives:
+- Write small scripts with explicit input and failure behavior.
+- Choose and verify cron, at or systemd timer scheduling.
+objectiveIds:
+- ch15.operations
+- ch15.verification

@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: A timer is enabled. What proves its task ran successfully?
+    options:
+    - The service result and expected output after activation.
+    - The timer filename alone.
+    - A successful daemon-reload alone.
+    answer: 0
+    explain: Trigger configuration and completed work are distinct evidence.
+    id: q-f0c733ced69e
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Script contract
+    text: Validate input and define useful success and failure outputs.
+    tone: purple
+  - id: part1
+    title: Trigger
+    text: Choose user cron, one-off at or a timer according to timing and catch-up needs.
+    tone: teal
+  - id: part2
+    title: Execution evidence
+    text: Inspect the task result, output and behavior across reboot.
+    tone: green
