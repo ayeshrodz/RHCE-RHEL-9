@@ -106,3 +106,19 @@
   labs:
   - ch06/lab
   challenges: []
+- id: ch07.operations
+  chapter: ch07
+  lessons:
+  - ch07/modes-and-ownership
+  - ch07/access-control-lists
+  labs:
+  - ch07/lab
+  challenges: []
+- id: ch07.verification
+  chapter: ch07
+  lessons:
+  - ch07/modes-and-ownership
+  - ch07/access-control-lists
+  labs:
+  - ch07/lab
+  challenges: []
