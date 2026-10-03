@@ -1,8 +1,12 @@
 title: Services and the boot process
-goal: Manage services and understand what happens from power-on to login.
+goal: Manage services with systemd, write your own units, understand the boot sequence and targets, and recover a system that will not boot normally.
 objectives:
-- Separate live service state from boot activation policy.
-- Diagnose unit failures and rehearse console-based recovery.
+  - Start, stop, enable, disable and mask services, and separate "running now" from "starts at boot".
+  - Write a service unit, override it with a drop-in, and diagnose a unit that will not start.
+  - Describe the boot sequence, set the default target, read boot timing and change kernel arguments.
+  - Recover from a lost root password or a bad /etc/fstab using console access.
 objectiveIds:
-- ch09.operations
-- ch09.verification
+  - ch09.services
+  - ch09.units
+  - ch09.boot
+  - ch09.recovery

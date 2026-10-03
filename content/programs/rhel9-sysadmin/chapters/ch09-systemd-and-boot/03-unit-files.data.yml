@@ -1,0 +1,263 @@
+unit-anatomy:
+  title: Anatomy of a service unit file
+  caption: Select a section to see what it holds.
+  height: 250
+  mode: select
+  initial: service
+  info:
+    unit:
+      tone: purple
+      title: '[Unit]'
+      text: 'Describes the unit and its place in the ordering: Description= for humans, After= and Requires= or Wants= for dependencies.'
+    service:
+      tone: green
+      title: '[Service]'
+      text: 'How to run it: ExecStart= is the command (a full path), Restart= says when to restart it, User= the account to run as, Environment= variables.'
+    install:
+      tone: blue
+      title: '[Install]'
+      text: 'What happens on systemctl enable: WantedBy=multi-user.target makes the service start with that target.'
+    path:
+      tone: gray
+      title: Where the file lives
+      text: /etc/systemd/system/NAME.service is yours and wins. Packages ship theirs in /usr/lib/systemd/system. Never edit those; override them.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 200
+    h: 44
+    tone: purple
+    title: '[Unit]'
+    sub: Description · After
+    mono: true
+    titleSize: 13
+    select: unit
+    active:
+    - unit
+  - kind: node
+    x: 10
+    y: 74
+    w: 200
+    h: 56
+    tone: green
+    title: '[Service]'
+    sub: ExecStart · Restart · User
+    mono: true
+    titleSize: 13
+    select: service
+    active:
+    - service
+  - kind: node
+    x: 10
+    y: 140
+    w: 200
+    h: 44
+    tone: blue
+    title: '[Install]'
+    sub: WantedBy
+    mono: true
+    titleSize: 13
+    select: install
+    active:
+    - install
+  - kind: node
+    x: 250
+    y: 20
+    w: 420
+    h: 36
+    tone: gray
+    title: /etc/systemd/system/reporter.service
+    mono: true
+    titleSize: 12.5
+    select: path
+    active:
+    - path
+  - kind: group
+    x: 250
+    y: 66
+    w: 420
+    h: 118
+    tone: gray
+    label: the file content
+  - kind: label
+    x: 460
+    y: 116
+    text: ExecStart=/usr/local/bin/reporter.sh
+    mono: true
+    size: 12.5
+  - kind: label
+    x: 460
+    y: 140
+    text: Restart=on-failure
+    mono: true
+    size: 12.5
+  - kind: label
+    x: 460
+    y: 164
+    text: WantedBy=multi-user.target
+    mono: true
+    size: 12.5
+edit-flow:
+  title: Changing a unit
+  caption: Step through the safe routine every time you edit a unit file.
+  height: 220
+  mode: steps
+  steps:
+  - title: Edit the file
+    text: Create or change /etc/systemd/system/NAME.service, or an override in /etc/systemd/system/NAME.service.d/ (systemctl edit NAME does this for you).
+  - title: Reload systemd
+    text: systemctl daemon-reload makes systemd read the files again. Forget it, and systemd keeps using the old copy (and warns you).
+  - title: Start and enable
+    text: systemctl enable --now NAME starts it now and at every boot.
+  - title: Check
+    text: systemctl status NAME for the state, journalctl -u NAME for what it printed. Fix and repeat.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 60
+    tone: purple
+    title: edit
+    sub: NAME.service
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 60
+    tone: blue
+    title: daemon-reload
+    sub: read the files
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 60
+    tone: green
+    title: enable --now
+    sub: start + boot
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 60
+    tone: amber
+    title: status
+    sub: journalctl -u
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 50
+    - - 190
+      - 50
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 50
+    - - 370
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 50
+    - - 550
+      - 50
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 610
+      - 80
+    - - 610
+      - 130
+    - - 85
+      - 130
+    - - 85
+      - 80
+    label: fix and repeat
+    labelDy: -6
+    visible:
+    - 3
+quick:
+  questions:
+  - id: q-73a04c52f207
+    q: You edited reporter.service but systemctl still runs the old command. What is missing?
+    options:
+    - systemctl daemon-reload
+    - a reboot
+    - chmod +x on the unit
+    answer: 0
+    explain: systemd caches unit files. daemon-reload re-reads them; then restart the service.
+  - id: q-643e3b8020f7
+    q: Which section makes a service start at boot when enabled?
+    options:
+    - '[Install] WantedBy='
+    - '[Unit] After='
+    - '[Service] Restart='
+    answer: 0
+    explain: enable creates a symlink according to WantedBy=.
+  - id: q-f568d8d12892
+    q: What does Restart=on-failure do?
+    options:
+    - Restarts the service if it exits with an error or is killed
+    - Restarts it every minute
+    - Restarts it at boot
+    answer: 0
+    explain: Clean exits (status 0) are not restarted; crashes, non-zero exits and signals are.
+  - id: q-ef2a091056ba
+    q: Why use a drop-in (/etc/systemd/system/NAME.service.d/*.conf) instead of editing the packaged file?
+    options:
+    - Package updates would overwrite your edit; the drop-in survives
+    - Drop-ins are faster
+    - Packaged files are read-only to root
+    answer: 0
+    explain: Keep changes small and in /etc, so updates to /usr/lib/systemd/system do not undo them.
+  - id: q-fc65c44e0724
+    q: Where do you see what a service wrote to its output and errors?
+    options:
+    - journalctl -u NAME
+    - /var/log/NAME.log always
+    - systemctl list-units
+    answer: 0
+    explain: systemd captures stdout and stderr of services into the journal.
+  - id: q-1302ab6d482a
+    q: The service fails with status=203/EXEC. What is the most likely cause?
+    options:
+    - The ExecStart program is missing or not executable
+    - The network is down
+    - SELinux is disabled
+    answer: 0
+    explain: '203/EXEC means systemd could not execute the command: check the path and the permissions.'

@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Start, stop, restart and reload a service?
+    back: systemctl start | stop | restart | reload NAME
+  - front: Boot policy versus current state?
+    back: enable/disable change boot; start/stop change now. is-enabled and is-active ask.
+  - front: Make a service start now and at boot?
+    back: systemctl enable --now NAME
+  - front: Forbid a service completely?
+    back: systemctl mask NAME (undo with unmask)
+  - front: See a service in detail, and its log?
+    back: systemctl status NAME  ·  journalctl -u NAME
+  - front: List failed units?
+    back: systemctl --failed
+  - front: Where are your unit files, and what after editing?
+    back: /etc/systemd/system/  ·  systemctl daemon-reload
+  - front: Three sections of a service unit?
+    back: '[Unit] description and ordering · [Service] what to run · [Install] what enable does'
+  - front: Show and change the default target?
+    back: systemctl get-default  ·  systemctl set-default multi-user.target
+  - front: Boot order in six words?
+    back: Firmware, GRUB, kernel, initramfs, systemd, target.
+  - front: Add a kernel argument permanently, and for one boot?
+    back: grubby --update-kernel=ALL --args=...  ·  press e in GRUB
+  - front: Reset root password with console access?
+    back: rd.break, remount /sysroot rw, chroot, passwd root, touch /.autorelabel, exit twice.

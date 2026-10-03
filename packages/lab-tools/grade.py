@@ -126,6 +126,8 @@ def conditions_service(c):
             out.append(('' if c['active'] else '! ') + 'systemctl is-active --quiet ' + n)
         if 'enabled' in c:
             out.append(('' if c['enabled'] else '! ') + 'systemctl is-enabled --quiet ' + n)
+        if 'masked' in c:
+            out.append(('' if c['masked'] else '! ') + '[ "$(systemctl is-enabled %s 2>/dev/null)" = masked ]' % n)
     return out
 
 

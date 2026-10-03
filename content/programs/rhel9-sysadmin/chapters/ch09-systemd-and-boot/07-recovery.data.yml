@@ -1,0 +1,294 @@
+root-reset:
+  title: Reset a lost root password
+  caption: Step through the standard recovery on a machine you have console access to.
+  height: 250
+  mode: steps
+  steps:
+  - title: Reboot and interrupt GRUB
+    text: At the GRUB menu, highlight the default entry and press e to edit it.
+  - title: Add rd.break
+    text: 'Find the line that starts with linux, go to its end and add: rd.break. This stops the boot inside the initramfs, before the real root is switched in.'
+  - title: Boot with Ctrl+X
+    text: You get a root shell at switch_root:/# with no password. The real root file system is mounted read-only at /sysroot.
+  - title: Make it writable and enter it
+    text: mount -o remount,rw /sysroot, then chroot /sysroot. Now / is the real system.
+  - title: Set the password
+    text: passwd root sets the new password.
+  - title: Schedule an SELinux relabel
+    text: touch /.autorelabel. The edited /etc/shadow has no correct SELinux label; the relabel at the next boot fixes it (and takes a while).
+  - title: Leave twice
+    text: exit leaves the chroot, exit again continues the boot. Log in as root with the new password.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: 1 · GRUB
+    sub: press e
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 144
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: 2 · edit
+    sub: add rd.break
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: node
+    x: 278
+    y: 20
+    w: 120
+    h: 56
+    tone: coral
+    title: 3 · shell
+    sub: switch_root:/#
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: node
+    x: 412
+    y: 20
+    w: 120
+    h: 56
+    tone: purple
+    title: 4 · chroot
+    sub: /sysroot
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: node
+    x: 546
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: 5 · passwd
+    sub: root
+    mono: true
+    titleSize: 12.5
+    active:
+    - 4
+    visible:
+    - 4
+    - 5
+    - 6
+  - kind: node
+    x: 144
+    y: 120
+    w: 160
+    h: 56
+    tone: blue
+    title: 6 · autorelabel
+    sub: touch /.autorelabel
+    mono: true
+    titleSize: 11.5
+    active:
+    - 5
+    visible:
+    - 5
+    - 6
+  - kind: node
+    x: 340
+    y: 120
+    w: 160
+    h: 56
+    tone: teal
+    title: 7 · exit, exit
+    sub: boot continues
+    mono: true
+    titleSize: 12.5
+    active:
+    - 6
+    visible:
+    - 6
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 144
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: arrow
+    points:
+    - - 264
+      - 48
+    - - 278
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: arrow
+    points:
+    - - 398
+      - 48
+    - - 412
+      - 48
+    visible:
+    - 3
+    - 4
+    - 5
+    - 6
+  - kind: arrow
+    points:
+    - - 532
+      - 48
+    - - 546
+      - 48
+    visible:
+    - 4
+    - 5
+    - 6
+  - kind: arrow
+    points:
+    - - 604
+      - 76
+    - - 604
+      - 98
+    - - 224
+      - 98
+    - - 224
+      - 120
+    visible:
+    - 5
+    - 6
+  - kind: arrow
+    points:
+    - - 304
+      - 148
+    - - 340
+      - 148
+    visible:
+    - 6
+practice:
+  text:
+    hint: This replay shows the commands you would type at the rd.break prompt, with the answers a real system gives. It cannot boot your lab.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: That is the whole recovery. Practice it on a disposable machine, never on a real server you are not allowed to change.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Replay: the rd.break session'
+    prompt: switch_root:/#
+    commands:
+    - cmd: mount -o remount,rw /sysroot
+      out: ''
+    - cmd: chroot /sysroot
+      out: ''
+    - cmd: passwd root
+      out: 'Changing password for user root.
+
+        New password:
+
+        Retype new password:
+
+        passwd: all authentication tokens updated successfully.'
+    - cmd: touch /.autorelabel
+      out: ''
+    - cmd: exit
+      out: exit
+    tasks:
+    - text: Make the real root writable.
+      commands:
+      - mount -o remount,rw /sysroot
+    - text: Enter the real root.
+      commands:
+      - chroot /sysroot
+    - text: Set the new root password.
+      commands:
+      - passwd root
+    - text: Make SELinux relabel the files at the next boot.
+      commands:
+      - touch /.autorelabel
+quick:
+  questions:
+  - id: q-a47af5a4d7b7
+    q: What does rd.break do?
+    options:
+    - Stops the boot in the initramfs, before the real root is switched in
+    - Resets the root password by itself
+    - Disables SELinux
+    answer: 0
+    explain: It gives you an early shell with the real root at /sysroot, mounted read-only.
+  - id: q-18aa6516d534
+    q: Why mount /sysroot read-write?
+    options:
+    - It is read-only by default, and passwd must write to /etc/shadow
+    - To speed up the boot
+    - To run fsck
+    answer: 0
+    explain: The initramfs mounts it read-only; remount,rw lets you change files.
+  - id: q-55dc66e28c37
+    q: Why touch /.autorelabel after changing the password?
+    options:
+    - The changed /etc/shadow has the wrong SELinux label
+    - To reset the clock
+    - To rebuild the initramfs
+    answer: 0
+    explain: The relabel at the next boot restores the correct labels. Without it, logins can fail under SELinux.
+  - id: q-82b2fcdcc394
+    q: Anyone with console access can do this. How is it limited in practice?
+    options:
+    - By physical and console security, and by encrypted disks or a GRUB password
+    - It is impossible on RHEL
+    - Only root can press e in GRUB
+    answer: 0
+    explain: Recovery is a feature of local access. Protect the console, and encrypt disks if physical access is a threat.
+  - id: q-f56b7bf795ba
+    q: A bad /etc/fstab entry stops the boot in emergency mode. What do you do first?
+    options:
+    - Enter the root password, remount / read-write and fix or comment out the line
+    - Reinstall
+    - Delete /etc/fstab
+    answer: 0
+    explain: Emergency mode needs the root password; use mount -o remount,rw / and then edit the file.
+  - id: q-2519e1515ead
+    q: Which fstab option lets the system boot even if a file system is missing?
+    options:
+    - nofail
+    - noauto
+    - ro
+    answer: 0
+    explain: nofail turns a missing device from a boot-stopping error into a warning.

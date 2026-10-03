@@ -1,0 +1,89 @@
+name: sa-systemd-review
+title: Services and boot
+page: ch09/lab
+transport: ssh
+version: 1
+starter:
+- README
+checkpoints:
+  final:
+    files:
+    - README
+    checks:
+    - id: script
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: reporter.sh is an executable script (mode 755)
+      paths:
+      - /usr/local/bin/reporter.sh
+      fileType: regular
+      mode: '0755'
+      nonEmpty: true
+    - id: unit
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: reporter.service runs the script and restarts on failure
+      paths:
+      - /etc/systemd/system/reporter.service
+      matches: ^ExecStart=/usr/local/bin/reporter\.sh[[:space:]]*$
+      contains:
+      - Restart=on-failure
+      - WantedBy=multi-user.target
+    - id: dropin
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: A drop-in sets INTERVAL=2 for reporter
+      paths:
+      - /etc/systemd/system/reporter.service.d/10-interval.conf
+      matches: ^Environment=INTERVAL=2[[:space:]]*$
+    - id: running
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: reporter is running and starts at boot
+      names:
+      - reporter.service
+      active: true
+      enabled: true
+    - id: log
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: reporter has written to its log
+      paths:
+      - /var/log/reporter.log
+      nonEmpty: true
+    - id: masked
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: bluetooth is masked
+      names:
+      - bluetooth.service
+      masked: true
+    - id: mdmonitor
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: mdmonitor is stopped and disabled
+      names:
+      - mdmonitor.service
+      active: false
+      enabled: false
+    - id: target
+      kind: boot-target
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The default target is multi-user.target
+      target: multi-user.target

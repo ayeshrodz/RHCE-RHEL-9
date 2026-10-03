@@ -1,0 +1,234 @@
+unit-states:
+  title: Two separate questions
+  caption: Select a combination to see what it means.
+  height: 250
+  mode: select
+  initial: run-on
+  info:
+    run-on:
+      tone: green
+      title: Running and enabled
+      text: 'The normal state of a service: it is running now and will start at every boot (systemctl enable --now).'
+    run-off:
+      tone: amber
+      title: Running, not enabled
+      text: Started by hand (systemctl start). It works now but will not come back after a reboot.
+    stop-on:
+      tone: blue
+      title: Stopped, enabled
+      text: Stopped by hand (systemctl stop) but still set to start at the next boot.
+    stop-off:
+      tone: gray
+      title: Stopped and disabled
+      text: Neither running nor starting at boot (systemctl disable --now). It can still be started by hand, or by another unit that needs it.
+    masked:
+      tone: coral
+      title: Masked
+      text: Linked to /dev/null. Nothing can start it, by hand or as a dependency, until it is unmasked. Use it for services that must never run.
+  elements:
+  - kind: label
+    x: 170
+    y: 16
+    text: active now?
+    size: 12
+    muted: true
+  - kind: node
+    x: 20
+    y: 28
+    w: 150
+    h: 50
+    tone: green
+    title: running
+    sub: active
+    titleSize: 13
+  - kind: node
+    x: 190
+    y: 28
+    w: 150
+    h: 50
+    tone: gray
+    title: stopped
+    sub: inactive
+    titleSize: 13
+  - kind: label
+    x: 520
+    y: 16
+    text: starts at boot?
+    size: 12
+    muted: true
+  - kind: node
+    x: 10
+    y: 100
+    w: 150
+    h: 50
+    tone: green
+    title: start + enable
+    sub: running · enabled
+    titleSize: 12.5
+    select: run-on
+    active:
+    - run-on
+  - kind: node
+    x: 170
+    y: 100
+    w: 160
+    h: 50
+    tone: amber
+    title: start only
+    sub: running · not enabled
+    titleSize: 12.5
+    select: run-off
+    active:
+    - run-off
+  - kind: node
+    x: 340
+    y: 100
+    w: 150
+    h: 50
+    tone: blue
+    title: enable only
+    sub: stopped · enabled
+    titleSize: 12.5
+    select: stop-on
+    active:
+    - stop-on
+  - kind: node
+    x: 500
+    y: 100
+    w: 170
+    h: 50
+    tone: gray
+    title: neither
+    sub: stopped · disabled
+    titleSize: 12.5
+    select: stop-off
+    active:
+    - stop-off
+  - kind: node
+    x: 240
+    y: 170
+    w: 200
+    h: 44
+    tone: coral
+    title: mask
+    sub: cannot start at all
+    titleSize: 12.5
+    select: masked
+    active:
+    - masked
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: managing a service'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: systemctl is-active crond
+      out: active
+    - cmd: systemctl is-enabled crond
+      out: enabled
+    - cmd: systemctl status crond
+      out: "● crond.service - Command Scheduler\n     Loaded: loaded (/usr/lib/systemd/system/crond.service; enabled; preset: enabled)\n     Active: active (running) since Sat 2026-10-03 16:36:40 UTC; 4s ago\n   Main PID: 642 (crond)\n      Tasks: 1 (limit: 5820)\n     Memory: 1.0M (peak: 1.3M)\n        CPU: 6ms\n     CGroup: /system.slice/crond.service\n             └─642 /usr/sbin/crond -n"
+    - cmd: systemctl stop crond
+      out: ''
+    - cmd: systemctl status crond | head -3
+      out: "○ crond.service - Command Scheduler\n     Loaded: loaded (/usr/lib/systemd/system/crond.service; enabled; preset: enabled)\n     Active: inactive (dead) since Sat 2026-10-03 16:36:45 UTC; 10ms ago"
+    - cmd: systemctl start crond
+      out: ''
+    - cmd: systemctl disable crond
+      out: Removed "/etc/systemd/system/multi-user.target.wants/crond.service".
+    - cmd: systemctl enable crond
+      out: Created symlink /etc/systemd/system/multi-user.target.wants/crond.service → /usr/lib/systemd/system/crond.service.
+    - cmd: systemctl enable --now crond
+      out: Created symlink /etc/systemd/system/multi-user.target.wants/crond.service → /usr/lib/systemd/system/crond.service.
+    - cmd: systemctl mask bluetooth
+      out: Created symlink /etc/systemd/system/bluetooth.service → /dev/null.
+    - cmd: systemctl start bluetooth
+      out: 'Failed to start bluetooth.service: Unit bluetooth.service is masked.'
+    - cmd: systemctl unmask bluetooth
+      out: Removed "/etc/systemd/system/bluetooth.service".
+    - cmd: systemctl --failed
+      out: '  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+        0 loaded units listed.'
+    tasks:
+    - text: Ask whether crond is running.
+      commands:
+      - systemctl is-active crond
+    - text: Ask whether it starts at boot.
+      commands:
+      - systemctl is-enabled crond
+    - text: Stop crond, then start it again.
+      commands:
+      - systemctl stop crond
+      - systemctl start crond
+    - text: Make crond start at boot and start it now, in one command.
+      commands:
+      - systemctl enable --now crond
+    - text: Mask the bluetooth service.
+      commands:
+      - systemctl mask bluetooth
+    - text: List any failed units.
+      commands:
+      - systemctl --failed
+quick:
+  questions:
+  - id: q-801ef54f90da
+    q: A service is running, but after a reboot it is gone. What was missing?
+    options:
+    - systemctl enable
+    - systemctl restart
+    - systemctl reload
+    answer: 0
+    explain: start affects now; enable affects boot. systemctl enable --now does both.
+  - id: q-c46260c6f64a
+    q: Which command shows whether a unit is currently running?
+    options:
+    - systemctl is-active NAME
+    - systemctl is-enabled NAME
+    - systemctl list-unit-files
+    answer: 0
+    explain: is-active is about now; is-enabled is about boot.
+  - id: q-3a7920ea39df
+    q: What is the difference between restart and reload?
+    options:
+    - reload asks the program to re-read its configuration without stopping
+    - restart is faster
+    - There is none
+    answer: 0
+    explain: reload keeps the process (and its connections) running if the service supports it; restart stops and starts it.
+  - id: q-7143911f690b
+    q: A masked service ...
+    options:
+    - cannot be started by hand or as a dependency
+    - starts earlier at boot
+    - is hidden from systemctl status
+    answer: 0
+    explain: Masking links the unit to /dev/null.
+  - id: q-a2b335d222e7
+    q: Which command lists every unit that failed?
+    options:
+    - systemctl --failed
+    - systemctl list-units --all
+    - journalctl --failed
+    answer: 0
+    explain: systemctl --failed (or list-units --state=failed) lists them.
+  - id: q-85aa3b637f18
+    q: Where do administrator-created and modified unit files belong?
+    options:
+    - /etc/systemd/system
+    - /usr/lib/systemd/system
+    - /var/lib/systemd
+    answer: 0
+    explain: Package files live in /usr/lib/systemd/system; /etc/systemd/system overrides them and is yours.
