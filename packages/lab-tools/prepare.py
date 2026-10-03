@@ -300,7 +300,7 @@ def owner_args(a, path):
 
 def label_args(a, path):
     if 'selinuxType' not in a:
-        return []
+        return ['restorecon -R %s 2>/dev/null || true' % path]
     if not re.match(r'^[a-z_]+_t$', a['selinuxType']):
         raise SetupError('unsafe SELinux type')
     return ['chcon -t %s %s' % (q(a['selinuxType']), path)]
@@ -339,25 +339,29 @@ def script_firewall(a):
     out = []
     if a.get('deleteZone'):
         z = q(name(a['zone']))
-        out.append(('%s --new-zone=%s' % (fc, z)) if present else ('%s --delete-zone=%s' % (fc, z)))
+        out.append(('%s --new-zone=%s 2>/dev/null || true' % (fc, z)) if present else ('%s --delete-zone=%s 2>/dev/null || true' % (fc, z)))
     elif a.get('deleteService'):
         s = q(a['service'])
-        out.append(('%s --new-service=%s' % (fc, s)) if present else ('%s --delete-service=%s' % (fc, s)))
+        out.append(('%s --new-service=%s 2>/dev/null || true' % (fc, s)) if present else ('%s --delete-service=%s 2>/dev/null || true' % (fc, s)))
     else:
         verb = 'add' if present else 'remove'
         for key, option in (('service', 'service'), ('port', 'port'), ('source', 'source'), ('forwardPort', 'forward-port')):
             if key in a:
-                out.append('%s%s --%s-%s=%s' % (fc, zone, verb, option, q(a[key])))
+                value = q(a[key])
+                if key == 'source' and re.match(r'^@server[a-d]$', a[key]):
+                    value = '"$(getent ahostsv4 %s.lab.example.com | awk \'NR==1{print $1}\')"' % a[key][1:]
+                out.append('%s%s --%s-%s=%s%s' % (fc, zone, verb, option, value, '' if present else ' >/dev/null 2>&1 || true'))
     out.append('firewall-cmd --reload >/dev/null')
     return '\n'.join(out)
 
 
 def script_selinux(a):
     present = a.get('state', 'present') == 'present'
+    tail = '' if present else ' >/dev/null 2>&1 || true'
     if a['kind'] == 'port':
-        return 'semanage port %s -t %s -p %s %d' % ('-a' if present else '-d', q(a['type']), a['proto'], a['port'])
+        return 'semanage port %s -t %s -p %s %d%s' % ('-a' if present else '-d', q(a['type']), a['proto'], a['port'], tail)
     if a['kind'] == 'fcontext':
-        return 'semanage fcontext %s -t %s %s' % ('-a' if present else '-d', q(a['type']), q(a['path'])) if present else 'semanage fcontext -d %s' % q(a['path'])
+        return ('semanage fcontext -a -t %s %s' % (q(a['type']), q(a['path']))) if present else ('semanage fcontext -d %s%s' % (q(a['path']), tail))
     return 'setsebool -P %s %s' % (q(a['name']), 'on' if a.get('value', True) else 'off')
 
 
@@ -386,8 +390,14 @@ def script_linger(a):
 
 def script_container_reset(a):
     user = q(name(a['user']))
-    return ('id %(u)s >/dev/null 2>&1 && { runuser -l %(u)s -c "systemctl --user stop \'*.service\' 2>/dev/null; podman system reset -f" >/dev/null 2>&1; '
-            'rm -rf /home/%(n)s/.config/containers/systemd; }; true') % {'u': user, 'n': name(a['user'])}
+    n = name(a['user'])
+    if a.get('keepImages'):
+        inner = ("systemctl --user stop '*.service' 2>/dev/null; podman rm -af -t 1; podman volume rm -af; "
+                 "podman images --format '{{.Repository}}:{{.Tag}}' | grep '^localhost/' | xargs -r podman rmi -f")
+    else:
+        inner = "systemctl --user stop '*.service' 2>/dev/null; podman system reset -f"
+    return ('id %(u)s >/dev/null 2>&1 && { runuser -l %(u)s -c %(c)s >/dev/null 2>&1 || true; rm -rf /home/%(n)s/.config/containers/systemd; '
+            'runuser -l %(u)s -c "systemctl --user daemon-reload" >/dev/null 2>&1 || true; }; true') % {'u': user, 'n': n, 'c': q(inner)}
 
 
 def script_restore_skel(a):
@@ -512,11 +522,22 @@ def script_unmount(a):
     return 'umount -l %s 2>/dev/null || true' % q(safe_path(a['path']))
 
 
+def script_acl(a):
+    path = q(safe_path(a['path']))
+    out = []
+    for entry in a['entries']:
+        if not re.match(r'^(?:d:)?[ug]:[a-z_][a-z0-9_-]*:[rwxX-]{1,3}$', entry):
+            raise SetupError('unsafe ACL entry')
+        out.append('setfacl %s-m %s %s' % ('-d ' if entry.startswith('d:') else '', q(entry[2:] if entry.startswith('d:') else entry), path))
+    return '\n'.join(out)
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
     verb = {'podman-pull': 'podman pull', 'podman-rmi': 'podman rmi -f'}[a['tool']]
-    return 'runuser -l %s -c %s >/dev/null 2>&1' % (user, q('%s %s' % (verb, image)))
+    run = 'runuser -l %s -c %s >/dev/null 2>&1' % (user, q('%s %s' % (verb, image)))
+    return run if a['tool'] != 'podman-pull' else '%s || { sleep 5; %s; }' % (run, run)
 
 
 HOST_SCRIPTS = {
@@ -526,7 +547,7 @@ HOST_SCRIPTS = {
     'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
     'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module, 'crontab': script_crontab,
     'partition-disk': script_partition_disk, 'format': script_format, 'append-line': script_append_line, 'mount-all': script_mount_all,
-    'lvm-build': script_lvm_build, 'unmount': script_unmount,
+    'lvm-build': script_lvm_build, 'unmount': script_unmount, 'acl': script_acl,
 }
 
 
