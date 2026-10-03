@@ -76,8 +76,8 @@ def stat_is(path, fmt, expected):
 def file_conditions(c, path):
     p = word(path)
     if c.get('exists', True) is False:
-        return ['test ! -e ' + p]
-    out = ['test -s ' + p if c.get('nonEmpty') else 'test -e ' + p]
+        return ['test ! -e %s && test ! -L %s' % (p, p)]
+    out = ['test -L ' + p] if 'symlinkTo' in c else ['test -s ' + p if c.get('nonEmpty') else 'test -e ' + p]
     for literal in c.get('contains', []):
         out.append('grep -qF -- %s %s' % (word(literal), p))
     for literal in c.get('lacks', []):
