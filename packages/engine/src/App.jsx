@@ -43,7 +43,7 @@ function ProgramGate() {
     if (!known) return undefined;
     let live = true;
     activateProgram(programId).then(
-      () => live && setState({ id: programId, error: null }),
+      (installed) => live && installed && setState({ id: programId, error: null }),
       (error) => live && setState({ id: programId, error }),
     );
     return () => {

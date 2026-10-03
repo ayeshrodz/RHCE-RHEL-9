@@ -64,6 +64,34 @@ def serve_bundle(directory):
     return server, f'http://127.0.0.1:{server.server_address[1]}/'
 
 
+def slow_program_switch(browser, origin, base=None):
+    """Moving A → B → A while B is still loading leaves A in charge: B's late data is not installed."""
+    base = base or BASE
+    context = browser.new_context()
+    page = context.new_page()
+    if base == BASE:
+        page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
+    held = []
+    page.route('**/p/second-program/manifest.*.json', lambda route: held.append(route))
+    page.goto(base + '#/rhel9-ansible/ch02/why-automate')
+    page.locator('h1').first.wait_for()
+    page.evaluate("location.hash = '#/second-program/ch01/hello'")
+    for _ in range(100):
+        if held:
+            break
+        page.wait_for_timeout(50)
+    assert held, 'the second program started loading'
+    page.evaluate("location.hash = '#/rhel9-ansible/ch03/inventory'")
+    page.get_by_role('heading', name='Building an Ansible inventory').first.wait_for()
+    held[0].continue_()
+    page.wait_for_timeout(800)
+    assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
+    page.get_by_role('button', name='Mark this section complete').click()
+    assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed') || '[]')") == ['ch03/inventory']
+    assert page.evaluate("localStorage.getItem('rhce:second-program@completed')") is None, 'progress went to the program on screen'
+    context.close()
+
+
 def programs_stay_separate(browser):
     """A second program has its own pages, search and progress; old addresses still open the first."""
     import shutil, subprocess, tempfile
@@ -117,6 +145,7 @@ def programs_stay_separate(browser):
             page.goto(BASE + '#/no-such-program/ch01/x')
             page.get_by_role('heading', name="That page isn't here").wait_for()
             context.close()
+            slow_program_switch(browser, origin)
         finally:
             server.shutdown()
 
