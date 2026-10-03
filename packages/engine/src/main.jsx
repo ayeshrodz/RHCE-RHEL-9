@@ -28,6 +28,10 @@ bootContent().then(
     ),
   (error) => {
     console.error(error);
-    root.render(<BootError error={error} />);
+    root.render(
+      <main>
+        <BootError error={error} />
+      </main>,
+    );
   },
 );

@@ -4,12 +4,30 @@
 //   lab/<name>/MANIFEST         the starter file list (read by the lab command and the exercise page)
 //   lab/<name>/<file>.lab       starter files, and lab/<name>/_trees/<tree>/<file>.lab for setup actions
 // Starter and tree files are published with a .lab suffix so a browser can never render them
-// as a page; the lab tools save them under their real names.
+// as a page, and a name part that starts with a dot gets a "_" in front, because static hosts
+// (GitHub Pages among them) leave dotfiles out. The lab tools save files under their real names.
+//
+// An exercise with setup actions also lists "@lab-update-required" in its MANIFEST. Version 5 of the
+// lab command ignores that line; version 4 runs it as a hook, and the published file only tells the
+// learner to run `lab update`, so an old lab command can never prepare an exercise half-way.
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseYaml } from './yaml.js';
 
 const MAX_FILE_BYTES = 200_000;
+
+/** Where a project file is published: "files/.htaccess" → "files/_.htaccess.lab". Mirrored in prepare.py. */
+export const publishedPath = (relative) =>
+  `${relative
+    .split('/')
+    .map((part) => (part.startsWith('.') ? `_${part}` : part))
+    .join('/')}.lab`;
+
+const UPDATE_REQUIRED = `# Published by Kernel Path for lab commands older than version 5.
+echo "  This exercise is prepared by a newer lab command."
+echo "  Run:  lab update   then start the exercise again with --force."
+exit 1
+`;
 const CONTROL_ONLY = new Set(['git', 'lint']);
 
 /** Every file under `dir` as paths relative to it, sorted. */
@@ -45,6 +63,8 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
     else if (tagged !== def.page) fail(`the exercise is taught on ${tagged} but its definition says ${def.page}`);
 
     const publish = (relative, source, subject) => {
+      if (relative.split('/').some((part) => part.startsWith('_.')))
+        return fail(`${subject} '${relative}': a name part may not start with "_." (that form is reserved for published dotfiles)`);
       const target = path.join(dir, source, relative);
       if (!fs.existsSync(target) || !fs.statSync(target).isFile())
         return fail(`${subject} '${relative}' is missing from ${path.relative(path.dirname(path.dirname(file)), path.join(dir, source))}`);
@@ -64,11 +84,15 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
     // Starter files
     for (const relative of def.starter ?? []) {
       const bytes = publish(relative, 'starter', 'starter file');
-      if (bytes) files.set(`lab/${name}/${relative}.lab`, bytes);
+      if (bytes) files.set(`lab/${name}/${publishedPath(relative)}`, bytes);
     }
     const listing = [`# ${def.title}${def.note ? ` (${def.note})` : ''}`];
-    if ((def.setup ?? []).length) listing.push('# generated: some files are created on your workstation');
-    for (const relative of def.starter ?? []) listing.push(`${relative}=${relative}.lab`);
+    if ((def.setup ?? []).length) {
+      listing.push('# generated: some files are created on your workstation');
+      listing.push('@lab-update-required');
+      files.set(`lab/${name}/lab-update-required`, UPDATE_REQUIRED);
+    }
+    for (const relative of def.starter ?? []) listing.push(`${relative}=${publishedPath(relative)}`);
     files.set(`lab/${name}/MANIFEST`, `${listing.join('\n')}\n`);
 
     // Setup actions: file trees are listed and published so the setup program can fetch them.
@@ -79,7 +103,7 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
         if (!list.length) fail(`tree '${relative}' is empty or missing in ${name}/trees`);
         for (const f of list) {
           const bytes = publish(`${relative}/${f}`, 'trees', 'tree file');
-          if (bytes) files.set(`lab/${name}/_trees/${relative}/${f}.lab`, bytes);
+          if (bytes) files.set(`lab/${name}/_trees/${publishedPath(`${relative}/${f}`)}`, bytes);
         }
         trees.set(relative, list);
       }

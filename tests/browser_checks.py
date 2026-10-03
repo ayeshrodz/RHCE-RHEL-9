@@ -103,6 +103,34 @@ def serve_bundle(directory):
     return server, f'http://127.0.0.1:{server.server_address[1]}/'
 
 
+def slow_program_switch(browser, origin, base=None):
+    """Moving A → B → A while B is still loading leaves A in charge: B's late data is not installed."""
+    base = base or BASE
+    context = browser.new_context()
+    page = context.new_page()
+    if base == BASE:
+        page.route('**/kernel.config.json', lambda route: route.fulfill(json={'contentBase': origin}))
+    held = []
+    page.route('**/p/second-program/manifest.*.json', lambda route: held.append(route))
+    page.goto(base + '#/rhel9-ansible/ch02/why-automate')
+    page.locator('h1').first.wait_for()
+    page.evaluate("location.hash = '#/second-program/ch01/hello'")
+    for _ in range(100):
+        if held:
+            break
+        page.wait_for_timeout(50)
+    assert held, 'the second program started loading'
+    page.evaluate("location.hash = '#/rhel9-ansible/ch03/inventory'")
+    page.get_by_role('heading', name='Building an Ansible inventory').first.wait_for()
+    held[0].continue_()
+    page.wait_for_timeout(800)
+    assert page.locator('h1').first.inner_text().endswith('Building an Ansible inventory')
+    page.get_by_role('button', name='Mark this section complete').click()
+    assert page.evaluate("JSON.parse(localStorage.getItem('rhce:rhel9-ansible@completed') || '[]')") == ['ch03/inventory']
+    assert page.evaluate("localStorage.getItem('rhce:second-program@completed')") is None, 'progress went to the program on screen'
+    context.close()
+
+
 def programs_stay_separate(browser):
     """A second program has its own pages, search and progress; old addresses still open the first."""
     with tempfile.TemporaryDirectory() as temp:
@@ -177,7 +205,9 @@ def programs_stay_separate(browser):
             page.wait_for_url('**/#/rhel9-ansible/ch03/inventory')
             page.goto(base + '#/no-such-program/ch01/x')
             page.get_by_role('heading', name="That page isn't here").wait_for()
+            assert page.locator('.site-footer').count() == 1, 'the 404 page has the site frame'
             context.close()
+            slow_program_switch(browser, origin, base)
         finally:
             site.__exit__(None, None, None)
             server.shutdown()
@@ -456,6 +486,13 @@ with preview_server(BASE, ROOT):
         assert figure.locator('.dg-info-title').count() == 1 and figure.locator('.dg-node.is-active').count() == 1
         figure.locator('.dg-node.is-clickable').first.click()
         assert figure.locator('.dg-node.is-active').count() == 0 and figure.locator('.dg-info-hint').count() == 1
+        # A selectable group works from the keyboard too.
+        go(page, '/ch02/automation-platform')
+        group = page.locator('figure.diagram .dg-group-select').first
+        group.focus(); page.keyboard.press('Enter')
+        assert group.get_attribute('aria-pressed') == 'true'
+        assert 'execution environment' in page.locator('figure.diagram .dg-info-title').first.inner_text().lower()
+        go(page, '/ch02/architecture')
         stepped = page.locator('figure.diagram').nth(1)
         before = stepped.locator('.dg-arrow.is-hot').count()
         stepped.get_by_role('button', name='Next').click()

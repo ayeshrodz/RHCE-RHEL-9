@@ -45,6 +45,11 @@ def inside(project, relative):
     return target
 
 
+def published(relative):
+    """Where the compiler publishes a project file: dotfile name parts gain a "_", and ".lab" is added."""
+    return '/'.join('_' + part if part.startswith('.') else part for part in relative.split('/')) + '.lab'
+
+
 def fetch(base, relative):
     if '..' in relative.split('/') or relative.startswith('/'):
         raise SetupError('unsafe download path')
@@ -124,7 +129,7 @@ def build_collection(a, ctx):
         for relative in a['files']:
             destination = source / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(fetch(ctx.base, '%s/_trees/%s/%s.lab' % (ctx.name, a['source'], relative)))
+            destination.write_bytes(fetch(ctx.base, '%s/_trees/%s' % (ctx.name, published('%s/%s' % (a['source'], relative)))))
         tool(['ansible-galaxy', 'collection', 'build', str(source), '--output-path', str(ctx.project)])
     produced = sorted(p.name for p in ctx.project.glob('*.tar.gz'))
     say('created ' + ', '.join(produced))
@@ -167,7 +172,7 @@ def git_seed_remote(a, ctx):
                 for relative in commit['files']:
                     destination = work / relative
                     destination.parent.mkdir(parents=True, exist_ok=True)
-                    destination.write_bytes(fetch(ctx.base, '%s/_trees/%s/%s.lab' % (ctx.name, commit['tree'], relative)))
+                    destination.write_bytes(fetch(ctx.base, '%s/_trees/%s' % (ctx.name, published('%s/%s' % (commit['tree'], relative)))))
                 git('add', '-A')
                 git('commit', '-q', '-m', commit['message'])
                 if 'tag' in commit:

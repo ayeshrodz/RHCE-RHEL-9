@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { Link, RootLink } from '@/lib/router';
@@ -18,13 +18,16 @@ function byPlatform(programs) {
   return [...groups];
 }
 
-/** The header's program selector: shows the open program and lists every program with its status and progress. */
-export default function ProgramMenu() {
-  const [open, setOpen] = useState(false);
+/**
+ * The header's program selector: shows the open program and lists every program with its status and
+ * progress. Its open state belongs to the shell's overlay controller, so it never stacks with the
+ * navigation drawer, search or the progress panel.
+ */
+export default function ProgramMenu({ open, onToggle, onClose }) {
   const rootRef = useRef(null);
   const panelRef = useRef(null);
   const mobile = useMediaQuery('(max-width: 960px)');
-  const close = () => setOpen(false);
+  const close = onClose;
   useDialogFocus(panelRef, open && !mobile, close);
   useOverlay(panelRef, open && mobile, close);
 
@@ -38,7 +41,7 @@ export default function ProgramMenu() {
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, close]);
 
   const panel = open ? (
     <div
@@ -108,7 +111,7 @@ export default function ProgramMenu() {
     <div className="program-menu" ref={rootRef}>
       <button
         className="brand-pill"
-        onClick={() => setOpen((value) => !value)}
+        onClick={onToggle}
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label={`Program: ${program.title}. Switch program`}

@@ -18,6 +18,9 @@ export let pages = [];
 /** Practice questions across the program, for the learning dashboard. */
 export let challenges = [];
 let manifest = null;
+// The program the reader asked for most recently. A slower, earlier request must not install itself
+// after the reader has moved on (A → B → A would otherwise show B's data under A's address).
+let requested = null;
 
 export const kindLabel = {
   lesson: 'Lesson',
@@ -48,12 +51,17 @@ export function defaultProgramId() {
 
 export const hasProgram = (id) => site.programs.some((p) => p.id === id);
 
-/** Load a program's manifest and interface copy, then make it the active program. */
+/**
+ * Load a program's manifest and interface copy, then make it the active program. Resolves to null,
+ * installing nothing, when another program was requested while this one was loading.
+ */
 export async function activateProgram(id) {
+  requested = id;
   if (program?.id === id) return program;
   const entry = site.programs.find((p) => p.id === id);
   const loaded = await loadManifest(entry.manifest);
   const legacy = loaded.legacy ? await loadLegacy(loaded.legacy) : null;
+  if (requested !== id) return null;
   manifest = loaded;
   program = manifest.program;
   setProgramScope(program.id);
