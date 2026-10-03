@@ -99,6 +99,27 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     for (const problem of validator.check(id, value)) diagnostics.error(file, null, `${what}: ${problem}`);
   };
 
+  /** Parse, convert and check one page; returns the page object ready to emit. */
+  const buildPage = (key, { file, source: src, dataFile, dataSource }, frontDefaults) => {
+    const parsed = readPage(src, dataSource, file, dataFile, diagnostics);
+    const { tree, data, toc } = convertPage(parsed, { file, dataFile, diagnostics, validator });
+    const front = { ...frontDefaults, ...parsed.front };
+    const page = {
+      apiVersion: 1,
+      key,
+      title: front.title,
+      kind: front.kind,
+      ...(front.minutes ? { minutes: front.minutes } : {}),
+      ...(front.eyebrow ? { eyebrow: front.eyebrow } : {}),
+      ...(front.description ? { description: front.description } : {}),
+      toc,
+      data,
+      tree,
+    };
+    expect(validator.ids.bundle.page, page, file, 'compiled page');
+    return { page, tree, data };
+  };
+
   const programs = [];
   expect(validator.ids.site, source.site, source.siteFile, 'site');
   for (const { id, dir, program, chapters, objectives, details, legacy } of source.programs) {
@@ -109,23 +130,8 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     const pages = {};
     const search = [];
 
-    const compilePage = (key, { file, source: src, dataFile, dataSource }, frontDefaults) => {
-      const parsed = readPage(src, dataSource, file, dataFile, diagnostics);
-      const { tree, data, toc } = convertPage(parsed, { file, dataFile, diagnostics, validator });
-      const front = { ...frontDefaults, ...parsed.front };
-      const page = {
-        apiVersion: 1,
-        key,
-        title: front.title,
-        kind: front.kind,
-        ...(front.minutes ? { minutes: front.minutes } : {}),
-        ...(front.eyebrow ? { eyebrow: front.eyebrow } : {}),
-        ...(front.description ? { description: front.description } : {}),
-        toc,
-        data,
-        tree,
-      };
-      expect(validator.ids.bundle.page, page, file, 'compiled page');
+    const compilePage = (key, sourcePage, frontDefaults) => {
+      const { page, tree, data } = buildPage(key, sourcePage, frontDefaults);
       pages[key] = emit(`${base}/pages`, key.replace('/', '-'), page);
       search.push(...searchEntries(key, tree));
       return { tree, data };
@@ -195,7 +201,24 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   }
 
   const { programs: order, apiVersion, ...siteMeta } = source.site;
-  const site = { apiVersion, generatedAt: now.toISOString(), site: siteMeta, programs };
+  let home;
+  if (source.home) {
+    const front = readPage(source.home.source, null, source.home.file, null, diagnostics).front;
+    expect(validator.ids.section, front, source.home.file, 'frontmatter');
+    home = emit('site', 'home', buildPage('site-home', source.home, { kind: front.layout === 'landing' ? 'landing' : front.kind }).page);
+  }
+  let shared;
+  if (source.interface) {
+    expect(validator.ids.bundle.interface, source.interface, path.join(root, 'interface.json'), 'interface copy');
+    shared = emit('site', 'interface', source.interface);
+  }
+  const site = {
+    apiVersion,
+    generatedAt: now.toISOString(),
+    site: { ...siteMeta, ...(home ? { home } : {}) },
+    ...(shared ? { interface: shared } : {}),
+    programs,
+  };
   expect(validator.ids.bundle.site, site, null, 'site index');
   files.set('site.json', JSON.stringify(site));
 

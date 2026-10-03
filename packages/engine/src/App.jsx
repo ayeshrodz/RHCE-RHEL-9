@@ -1,15 +1,23 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { HashRouter, Link as RootLink, Navigate, Outlet, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import AppShell from '@/components/layout/AppShell';
+import PlatformShell from '@/components/layout/PlatformShell';
+import PlatformHome from '@/pages/PlatformHome';
 import HomePage from '@/pages/HomePage';
 import ChapterPage from '@/pages/ChapterPage';
 import SectionPage from '@/pages/SectionPage';
 import NotFound from '@/pages/NotFound';
 import BootError from '@/pages/BootError';
-import { activateProgram, defaultProgramId, hasProgram, track } from '@/lib/course';
+import ProgramLanding from '@/pages/ProgramLanding';
+import ProgramProgress from '@/pages/ProgramProgress';
+import { activateProgram, defaultProgramId, hasProgram, interfaceContent, track } from '@/lib/course';
 
 const ReferencePage = lazy(() => import('@/pages/ReferencePage'));
 const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
+
+// A program shows its authored landing page and dashboard when its content has them, and simple built-in ones otherwise.
+const ProgramHome = () => (interfaceContent.HomePage ? <HomePage /> : <ProgramLanding />);
+const ProgressRoute = () => (interfaceContent.ProgressPage ? <ProgressPage /> : <ProgramProgress />);
 
 // Addresses from before programs existed ("#/ch03/inventory") still open the default program.
 const OLD_ADDRESS = /^\/(ch\d{2}|progress|platform)(\/|$)/;
@@ -52,7 +60,13 @@ function ProgramGate() {
   }, [programId, known]);
 
   if (!known) {
-    return OLD_ADDRESS.test(pathname) ? <Navigate to={`/${defaultProgramId()}${pathname}${search}${hash}`} replace /> : <RootNotFound />;
+    return OLD_ADDRESS.test(pathname) ? (
+      <Navigate to={`/${defaultProgramId()}${pathname}${search}${hash}`} replace />
+    ) : (
+      <PlatformShell>
+        <RootNotFound />
+      </PlatformShell>
+    );
   }
   if (state.id !== programId)
     return (
@@ -60,7 +74,12 @@ function ProgramGate() {
         Loading…
       </p>
     );
-  if (state.error) return <BootError error={state.error} />;
+  if (state.error)
+    return (
+      <PlatformShell>
+        <BootError error={state.error} />
+      </PlatformShell>
+    );
   return <Outlet key={programId} />;
 }
 
@@ -70,15 +89,17 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route index element={<Navigate to={`/${defaultProgramId()}`} replace />} />
+        <Route element={<PlatformShell />}>
+          <Route index element={<PlatformHome />} />
+        </Route>
         <Route path=":programId" element={<ProgramGate />}>
           <Route element={<AppShell />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<ProgramHome />} />
             <Route
               path="progress"
               element={
                 <Suspense fallback={<p role="status">Loading your learning…</p>}>
-                  <ProgressPage />
+                  <ProgressRoute />
                 </Suspense>
               }
             />
@@ -95,7 +116,14 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
-        <Route path="*" element={<RootNotFound />} />
+        <Route
+          path="*"
+          element={
+            <PlatformShell>
+              <RootNotFound />
+            </PlatformShell>
+          }
+        />
       </Routes>
     </HashRouter>
   );

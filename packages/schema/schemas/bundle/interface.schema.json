@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/bundle/interface.schema.json",
+  "title": "Shared interface copy",
+  "description": "Transitional: the interface text shared by every program (header, footer, search, sidebar), compiled from content/interface.json. Replaced by engine string defaults with content overrides.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "interface"
+  ],
+  "properties": {
+    "apiVersion": {
+      "$ref": "../common.schema.json#/$defs/apiVersion"
+    },
+    "interface": {
+      "description": "Copy catalogs by component name: text strings and structured data.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

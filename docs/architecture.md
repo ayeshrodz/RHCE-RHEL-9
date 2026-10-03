@@ -151,7 +151,7 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 3. **Engine renders from the compiled bundle**, and moves into `packages/engine` (done). Rendering is identical on 129 of 130 routes; the remaining one replaces a raw-HTML box with a callout.
 4. **Markdoc migration** (done): MDX becomes `.md` files plus `.data.yml`. The compiled bundle is identical, and all 130 routes render identically.
 5. **Programs** (done): `content/programs/<id>/`, program routing (`#/<program>/…`), progress and search kept per program. Variants, reader variables and UI-string overrides stay with the program definition; the interface text still comes from the program's transitional files.
-6. **Platform home and program selector.**
+6. **Platform home and program selector** (done): `#/` is the site home, compiled from `content/site/home.md` with the `program-cards` tag; the header's program menu replaces the track badge; programs without landing or dashboard copy get built-in pages. Shared interface text moved to `content/interface.json`.
 7. **Generic components replace the bespoke widgets.**
 8. **Typed labs.**
 9. **Security hardening:** CSP, SRI, signing, fuzzing.

@@ -47,6 +47,7 @@ Kernel Path is being turned into a data-only learning platform (see [docs/archit
 - **The contract** (`packages/schema`): JSON schemas for content and for the compiled bundle, the catalog of tags content may use, and generated browser validators.
 - **The compiler** (`packages/compiler`, the `kernel` command): validates `content/` against the contract and compiles it into a static, content-hashed bundle. Code is highlighted at build time.
 - **The engine** (`packages/engine`): a React 19 + Vite 8 player. At startup it fetches the bundle from the location in `kernel.config.json`, validates every file, and renders pages through its own components. It contains no course text and never renders raw HTML.
+- **A site home and program selector.** `#/` lists every program with the reader's progress, from `content/site/home.md`; the header's program menu switches between programs. A program without authored landing or dashboard copy gets built-in ones.
 - **No backend.** Routing lives in the URL hash (`#/rhel9-ansible/ch03/inventory`: program, chapter, section). Progress is kept separately for each program. Progress, lab checklists, quiz answers and the last page read are stored in the reader's `localStorage`, sync across tabs, and can be exported or imported from the progress menu.
 
 ```

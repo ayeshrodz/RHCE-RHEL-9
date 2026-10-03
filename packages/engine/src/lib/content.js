@@ -3,6 +3,7 @@
 import {
   validateFlashcardsData,
   validateFlowMapData,
+  validateInterface,
   validateLegacy,
   validateLegacyWidgetData,
   validateManifest,
@@ -98,6 +99,7 @@ function validatePageData(page) {
 
 export const loadSite = () => load('site.json', validateSite, 'site index', { fresh: true });
 export const loadManifest = (file) => load(file, validateManifest, 'program manifest');
+export const loadInterface = (file) => load(file, validateInterface, 'shared interface copy');
 export const loadLegacy = (file) => load(file, validateLegacy, 'interface copy');
 export const loadSearch = (file) => load(file, validateSearch, 'search index');
 export const loadPage = async (file) => validatePageData(await load(file, validatePage, 'page'));

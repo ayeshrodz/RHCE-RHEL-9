@@ -2,52 +2,77 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kernelpath.dev/schema/v1/bundle/legacy.schema.json",
   "title": "Legacy interface bundle",
-  "description": "Transitional: the interface copy, course and track metadata that the pre-platform layout keeps in content/_interface.json, home.json, progress.json, _course.yml and tracks/. Replaced by engine string defaults with content overrides and program.yml (phase 5).",
+  "description": "Transitional: the course and track metadata and the program-specific interface copy (landing page, dashboard). Replaced by engine string defaults with content overrides.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["apiVersion", "course", "track", "interface"],
+  "required": [
+    "apiVersion",
+    "course",
+    "track",
+    "interface"
+  ],
   "properties": {
-    "apiVersion": { "$ref": "../common.schema.json#/$defs/apiVersion" },
+    "apiVersion": {
+      "$ref": "../common.schema.json#/$defs/apiVersion"
+    },
     "course": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["title", "tagline"],
+      "required": [
+        "title",
+        "tagline"
+      ],
       "properties": {
-        "title": { "$ref": "../common.schema.json#/$defs/shortText" },
-        "tagline": { "$ref": "../common.schema.json#/$defs/shortText" },
-        "repo": { "$ref": "../common.schema.json#/$defs/url" }
+        "title": {
+          "$ref": "../common.schema.json#/$defs/shortText"
+        },
+        "tagline": {
+          "$ref": "../common.schema.json#/$defs/shortText"
+        },
+        "repo": {
+          "$ref": "../common.schema.json#/$defs/url"
+        }
       }
     },
     "track": {
       "type": "object",
-      "additionalProperties": { "type": "string", "maxLength": 200 },
-      "required": ["id", "label", "platform"],
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "required": [
+        "id",
+        "label",
+        "platform"
+      ],
       "properties": {
         "platform": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["title", "path"],
+          "required": [
+            "title",
+            "path"
+          ],
           "properties": {
-            "title": { "$ref": "../common.schema.json#/$defs/shortText" },
-            "eyebrow": { "$ref": "../common.schema.json#/$defs/shortText" },
-            "description": { "$ref": "../common.schema.json#/$defs/text" },
-            "path": { "const": "/platform" }
+            "title": {
+              "$ref": "../common.schema.json#/$defs/shortText"
+            },
+            "eyebrow": {
+              "$ref": "../common.schema.json#/$defs/shortText"
+            },
+            "description": {
+              "$ref": "../common.schema.json#/$defs/text"
+            },
+            "path": {
+              "const": "/platform"
+            }
           }
         }
       }
     },
     "interface": {
-      "description": "Copy catalogs by component name: text strings and structured data.",
-      "type": "object",
-      "propertyNames": { "pattern": "^[A-Z][A-Za-z0-9]*$" },
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "text": { "type": "object", "additionalProperties": { "type": "string", "maxLength": 4000 } },
-          "data": { "type": "object" }
-        }
-      }
+      "description": "Copy catalogs that belong to this program (landing page, dashboard), by component name.",
+      "$ref": "interface.schema.json#/properties/interface"
     }
   }
 }

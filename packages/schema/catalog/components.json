@@ -679,15 +679,12 @@
       "data": "data/practice.schema.json"
     },
     "program-cards": {
-      "summary": "All programs as cards, generated from the site catalog.",
-      "status": "planned",
+      "summary": "A card for each program on the site, with its platform, status and the reader's progress.",
+      "status": "stable",
       "since": 1,
       "placement": "block",
       "children": "none",
-      "attributes": {},
-      "parents": [
-        "page"
-      ]
+      "attributes": {}
     },
     "program-path": {
       "summary": "The program's stages as a path, generated from program.yml.",

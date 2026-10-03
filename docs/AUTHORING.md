@@ -9,13 +9,15 @@ The `content/` folder is the single source of truth. It holds only data: Markdoc
 ```
 content/
   site.yml                         site name, tagline, repository, program order
+  site/home.md                     the site home page
+  interface.json                   interface text shared by every program
   programs/rhel9-ansible/
     program.yml                    id, title, platform, stages, variants, reader variables
     objectives.yml                 skills mapped to lessons, practice and labs
     details.md                     platform page: explanations, diagrams
     details.data.yml               data for that page's tags
-    legacy.yml, interface.json, home.json, progress.json
-                                   interface text (until the platform home replaces it)
+    legacy.yml, home.json, progress.json
+                                   optional landing page and dashboard copy (built-in pages are used without them)
     chapters/
       ch03-implementing-playbooks/
         _chapter.yml               title, goal, objectives
@@ -68,7 +70,7 @@ journey:
 
 Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in content or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
 
-To add a program, create `content/programs/<id>/` with a `program.yml` and `chapters/`, then list the id in `site.yml`. Each program has its own navigation, search index and progress.
+The site's own home page is `content/site/home.md`; use `{% program-cards /%}` to list the programs. To add a program, create `content/programs/<id>/` with a `program.yml` and `chapters/`, then list the id in `site.yml`. Each program has its own navigation, search index and progress.
 
 ## 2. Page shape
 
@@ -319,7 +321,7 @@ inventory-explorer:
 
 This is a shortened illustration. Copy the complete entry from an existing page using the same widget, then edit its data and wording. A widget that renders another widget inside itself lists that widget's copy under `dependencies`. `npm run validate:content` checks every required key and composed widget dependency. Keep field names stable; update the component contract when a new field is needed. Widget data is not indexed as lesson prose.
 
-`PageTree` supplies each widget's copy through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in the program's `interface.json`; the landing page owns `home.json`, and the dashboard owns `progress.json`.
+`PageTree` supplies each widget's copy through `TeachingContentProvider`. Components use `defineWidget(name, createRenderer)` to bind that data; state and evaluation stay in the reusable renderer. A normal shell or theme update retains the renderer and the learner's input. A composed widget also needs its child widget's catalog on the page. Shared interface labels live in `content/interface.json`; a program's landing page owns `home.json`, and its dashboard owns `progress.json`.
 
 Use `{value0}`, `{value1}`, and so on for wording that contains calculated values. The component calls `formatCopy` with the corresponding values. Keep algorithms, state keys, semantic enum values, selectors, and styling in code; keep teaching sentences and example datasets in content. A future content track can supply its own catalogs to the same components.
 

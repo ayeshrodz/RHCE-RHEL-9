@@ -440,3 +440,84 @@ button.header-progress[aria-expanded='true'] {
 .progress-message.is-error {
   color: var(--fail);
 }
+
+/* ---------- Program selector and site pages ---------- */
+
+.header-spacer {
+  flex: 1;
+}
+.program-menu {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+}
+button.brand-pill {
+  align-items: center;
+  color: inherit;
+}
+.brand-pill svg {
+  margin: 0 6px 0 2px;
+  color: var(--text-3);
+}
+.program-panel {
+  right: auto;
+  left: 0;
+  width: min(360px, calc(100vw - 24px));
+}
+.program-group-title {
+  margin: 14px 0 6px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.program-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.program-item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.program-item:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+.program-item.is-current {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.program-item-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.program-item-meta {
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+.program-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+.platform-home {
+  grid-template-columns: minmax(0, calc(var(--content-w) + 160px));
+}

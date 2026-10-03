@@ -2,10 +2,12 @@
 // bootContent loads the site index once; activateProgram installs one program's data.
 // Components import the bindings below. They change only when the reader moves to another
 // program, and the program route remounts everything beneath it when that happens.
-import { loadLegacy, loadManifest, loadPage, loadSearch, loadSite } from './content';
-import { setProgramScope } from './storage';
+import { loadInterface, loadLegacy, loadManifest, loadPage, loadSearch, loadSite } from './content';
+import { readProgramCompleted, setProgramScope } from './storage';
 
 export let site = null;
+/** Interface text shared by every program (header, footer, search, sidebar). */
+export let sharedInterface = {};
 export let program = null;
 export let course = null;
 export let track = null;
@@ -30,6 +32,16 @@ export const kindLabel = {
 /** Load the site index. Programs load one at a time, when the reader opens them. */
 export async function bootContent() {
   site = await loadSite();
+  sharedInterface = site.interface ? (await loadInterface(site.interface)).interface : {};
+}
+
+/** The site home page, or null when the content has none. */
+export const loadSiteHome = () => (site.site.home ? loadPage(site.site.home) : null);
+
+/** The percentage of a program's pages the reader has completed, from the site index alone. */
+export function programPercent(entry) {
+  if (!entry.sections) return 0;
+  return Math.min(100, Math.round((readProgramCompleted(entry.id).length / entry.sections) * 100));
 }
 
 /** The program a bare address opens: the first active one. */
@@ -54,8 +66,12 @@ export async function activateProgram(id) {
   program = manifest.program;
   setProgramScope(program.id);
   course = legacy?.course ?? { title: site.site.name, tagline: program.tagline ?? site.site.tagline, repo: site.site.repo };
-  track = legacy?.track ?? { id: program.platform.family, label: program.platform.label, platform: { path: '/platform' } };
-  interfaceContent = legacy?.interface ?? {};
+  track = legacy?.track ?? {
+    id: program.platform.family,
+    label: program.platform.label,
+    platform: { title: 'Platform and versions', path: '/platform' },
+  };
+  interfaceContent = { ...sharedInterface, ...(legacy?.interface ?? {}) };
   objectives = manifest.objectives;
   chapters = manifest.chapters.map((chapter) => ({
     ...chapter,
@@ -95,6 +111,9 @@ export function loaderFor(page) {
   const file = manifest.pages[page.key];
   return file ? () => loadPage(file) : null;
 }
+
+/** Whether the program has a "platform and versions" page. */
+export const hasDetails = () => Boolean(manifest?.pages.details);
 
 /** A loader for the program's details ("platform and versions") page. */
 export function referenceLoaderFor() {
