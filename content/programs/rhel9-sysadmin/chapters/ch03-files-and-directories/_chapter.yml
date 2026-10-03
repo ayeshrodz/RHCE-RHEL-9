@@ -1,10 +1,8 @@
-title: "Files and directories"
-goal: "Find your way around the file system and manage files with confidence."
-status: planned
-topics:
-  - "The file system hierarchy and what lives where"
-  - "Navigating, listing and inspecting files"
-  - "Creating, copying, moving and removing files and directories"
-  - "Hard links and symbolic links"
-  - "Finding files with find and locate"
-  - "Timestamps, sizes and comparing files"
+title: Files and directories
+goal: Find your way around the file system and manage files with confidence.
+objectives:
+- Navigate and manipulate files without confusing names with contents.
+- Diagnose links, timestamps and file searches.
+objectiveIds:
+- ch03.operations
+- ch03.verification

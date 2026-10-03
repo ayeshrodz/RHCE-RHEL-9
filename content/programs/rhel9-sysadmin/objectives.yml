@@ -42,3 +42,19 @@
   labs:
   - ch02/lab
   challenges: []
+- id: ch03.operations
+  chapter: ch03
+  lessons:
+  - ch03/paths-and-files
+  - ch03/links-and-searches
+  labs:
+  - ch03/lab
+  challenges: []
+- id: ch03.verification
+  chapter: ch03
+  lessons:
+  - ch03/paths-and-files
+  - ch03/links-and-searches
+  labs:
+  - ch03/lab
+  challenges: []
