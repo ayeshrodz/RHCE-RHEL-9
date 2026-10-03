@@ -200,7 +200,7 @@ def ssh_keypairs(a, ctx):
 # ---------------------------------------------------------------------------------------
 # Host actions: fixed scripts, built from validated values, run as root on lab servers.
 
-SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
+SAFE_PATH = re.compile(r'^/(?:srv|opt|mnt|data|backup|tmp|root|home|var/www|var/tmp|var/log|usr/local|etc/(?:billing\.conf|httpd/conf\.d|systemd|auto\.master\.d|auto\.[a-z0-9_-]+|cron\.d|exports\.d|sudoers\.d|profile\.d|ssh/sshd_config\.d|chrony\.d|yum\.repos\.d|logrotate\.d|rsyslog\.d|security/limits\.d|sysctl\.d|NetworkManager/system-connections|containers|firewalld/(?:services|zones)))(?:/[A-Za-z0-9_.@%+=:, -]+)*$')
 PROTECTED = {'/srv', '/opt', '/mnt', '/tmp', '/root', '/home', '/var/www', '/var/tmp', '/var/log', '/usr/local', '/etc/systemd', '/etc/containers'}
 NAME = re.compile(r'^[a-z_][a-z0-9_-]{0,31}$')
 SSH = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR']
@@ -396,6 +396,12 @@ def script_boot(a):
     return '\n'.join(out) or 'true'
 
 
+def script_timezone(a):
+    if not re.match(r'^[A-Za-z]+(?:/[A-Za-z_+-]+)*$', a['zone']):
+        raise SetupError('unsafe time zone')
+    return 'timedatectl set-timezone %s' % q(a['zone'])
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -407,7 +413,7 @@ HOST_SCRIPTS = {
     'package': script_package, 'service': script_service, 'group': script_group, 'user': script_user, 'directory': script_directory,
     'file': script_file, 'remove-lines': script_remove_lines, 'firewall': script_firewall, 'selinux': script_selinux,
     'wipe-disk': script_wipe_disk, 'systemd': script_systemd, 'linger': script_linger, 'container-reset': script_container_reset,
-    'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot,
+    'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
 }
 
 
@@ -434,13 +440,69 @@ def host_action(a, ctx):
         say('%s: %s%s' % (host, label.strip(), '' if ok else ' (skipped: nothing to undo)'))
 
 
+# ---------------------------------------------------------------------------------------
+# Actions on workstation outside the project folder: only the learner's own home, with a deny list.
+
+HOME_PATH = re.compile(r'^[A-Za-z0-9_.-][A-Za-z0-9_. -]*(?:/[A-Za-z0-9_.-][A-Za-z0-9_. -]*)*$')
+HOME_DENIED = {'.ssh', '.ssh/authorized_keys', '.ssh/known_hosts', '.ssh/config', '.bashrc', '.bash_profile', '.bash_logout', '.profile',
+               '.ssh/id_rsa', '.ssh/id_rsa.pub', '.ssh/id_ed25519', '.ssh/id_ed25519.pub', '.ssh/id_ecdsa', '.ssh/id_ecdsa.pub', '.ssh/id_dsa', '.ssh/id_dsa.pub'}
+
+
+def home_dir():
+    return Path(os.environ.get('LAB_HOME') or Path.home())
+
+
+def home_remove(a, ctx):
+    for relative in a['paths']:
+        clean = relative.rstrip('/')
+        if not HOME_PATH.match(clean) or '..' in clean.split('/') or clean in HOME_DENIED or clean.startswith('lab-archive'):
+            raise SetupError('this version of lab will not remove ~/' + relative)
+        target = home_dir() / clean
+        if target.is_dir() and not target.is_symlink():
+            shutil.rmtree(target, ignore_errors=True)
+        elif target.exists() or target.is_symlink():
+            target.unlink()
+    say('removed ' + ', '.join('~/' + p for p in a['paths']))
+
+
+def ssh_config_block(a, ctx):
+    path = home_dir() / '.ssh' / 'config'
+    if not path.exists():
+        return
+    kept, skipping = [], False
+    for line in path.read_text().splitlines():
+        words = line.split()
+        if words[:1] and words[0].lower() == 'host':
+            skipping = a['host'] in words[1:]
+        if not skipping:
+            kept.append(line)
+    path.write_text('\n'.join(kept).rstrip('\n') + '\n' if kept else '')
+    say('removed the ssh alias ' + a['host'])
+
+
+def ssh_identity(a, ctx):
+    key = home_dir() / '.ssh' / a['name']
+    (home_dir() / '.ssh').mkdir(mode=0o700, exist_ok=True)
+    for old in (key, Path(str(key) + '.pub')):
+        old.unlink(missing_ok=True)
+    tool(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'student@workstation (%s)' % a['user'], '-f', str(key)])
+    public = Path(str(key) + '.pub').read_text().strip()
+    user = name(a['user'])
+    script = ('install -d -m 700 -o %(u)s -g %(u)s ~%(u)s/.ssh\necho %(k)s >> ~%(u)s/.ssh/authorized_keys\n'
+              'chown %(u)s:%(u)s ~%(u)s/.ssh/authorized_keys; chmod 600 ~%(u)s/.ssh/authorized_keys') % {'u': user, 'k': q(public)}
+    for host in a['hosts']:
+        run_on_host(host, script, False)
+    say('created ~/.ssh/%s and installed it for %s on %s' % (a['name'], user, ', '.join(a['hosts'])))
+
+
 ACTIONS = {
     'self-signed-cert': self_signed_cert, 'htpasswd': htpasswd, 'password-hash-var': password_hash_var, 'vault-encrypt': vault_encrypt,
     'pack-installed-collection': pack_installed_collection, 'build-collection': build_collection,
     'collection-requirements': collection_requirements, 'git-seed-remote': git_seed_remote, 'ssh-keypairs': ssh_keypairs,
 }
+ACTIONS.update({'home-remove': home_remove, 'ssh-config-block': ssh_config_block, 'ssh-identity': ssh_identity})
 ACTIONS.update({kind: host_action for kind in HOST_SCRIPTS})
-CONTROL_ACTIONS = set(ACTIONS) - set(HOST_SCRIPTS)
+CONTROL_ACTIONS = set(ACTIONS) - set(HOST_SCRIPTS) - {'home-remove', 'ssh-config-block', 'ssh-identity'}
 
 
 class Context:

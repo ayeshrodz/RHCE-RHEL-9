@@ -32,7 +32,7 @@ const CONTROL_ONLY = new Set(['git', 'lint']);
 // Setup and cleanup actions that run as root on the lab servers; the rest work on the workstation.
 const HOST_ACTIONS = new Set([
   'package', 'service', 'group', 'user', 'directory', 'file', 'remove-lines', 'firewall', 'selinux', 'wipe-disk', 'systemd', 'linger',
-  'container-reset', 'run-as', 'restore-skel', 'boot',
+  'container-reset', 'run-as', 'restore-skel', 'boot', 'timezone',
 ]);
 
 /** Every file under `dir` as paths relative to it, sorted. */
