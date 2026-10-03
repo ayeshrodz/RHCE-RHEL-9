@@ -166,6 +166,7 @@ def programs_stay_separate(browser):
             page.wait_for_url('**/#/rhel9-ansible/ch03/inventory')
             page.goto(BASE + '#/no-such-program/ch01/x')
             page.get_by_role('heading', name="That page isn't here").wait_for()
+            assert page.locator('.site-footer').count() == 1, 'the 404 page has the site frame'
             context.close()
             slow_program_switch(browser, origin)
         finally:
