@@ -1,0 +1,12 @@
+name: control-handlers
+title: "Implementing handlers"
+page: ch05/lab-handlers
+version: 2
+starter: ["ansible.cfg", "inventory", "configure_webapp.yml", "files/nginx.conf.standard", "files/php-fpm.conf.standard"]
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml"]
+    checks:
+      - {"id": "services", "kind": "service", "on": "webapp", "message": "Nginx and PHP-FPM are running and enabled", "targets": ["servera.lab.example.com"], "names": ["nginx", "php-fpm"], "active": true, "enabled": true}
+      - {"id": "nginx-config", "kind": "file", "on": "webapp", "message": "The Nginx configuration is deployed", "targets": ["servera.lab.example.com"], "paths": ["/etc/nginx/nginx.conf"], "nonEmpty": true}
+      - {"id": "php-fpm-config", "kind": "file", "on": "webapp", "message": "The PHP-FPM configuration is deployed", "targets": ["servera.lab.example.com"], "paths": ["/etc/php-fpm.conf"], "nonEmpty": true}

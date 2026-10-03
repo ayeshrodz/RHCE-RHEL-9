@@ -1,6 +1,0 @@
-# Managing Ansible configuration files
-ping-myself.yml
-ping-intranetweb.yml
-ping-internetweb.yml
-ping-web.yml
-ping-all.yml

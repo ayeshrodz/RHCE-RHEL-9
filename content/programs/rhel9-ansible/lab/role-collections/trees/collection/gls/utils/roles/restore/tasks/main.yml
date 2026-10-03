@@ -1,0 +1,4 @@
+---
+- name: Ensure the backup is restored
+  ansible.builtin.command:
+    cmd: "tar xzf {{ backup_dir }}/{{ backup_id }}.tar.gz -C /"

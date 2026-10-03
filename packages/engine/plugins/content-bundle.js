@@ -49,6 +49,15 @@ export default function contentBundle({ dir = 'content' } = {}) {
         res.setHeader('Cache-Control', 'no-cache');
         res.end(body);
       });
+      // The lab tree (starter files, the lab command and its tools) is published at the site root.
+      server.middlewares.use('/lab', (req, res, next) => {
+        const key = 'lab/' + decodeURIComponent((req.url ?? '').split('?')[0]).replace(/^\/+/, '');
+        const body = files.get(key);
+        if (body === undefined) return next();
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.end(body);
+      });
     },
   };
 }

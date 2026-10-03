@@ -1,0 +1,18 @@
+---
+- name: put away .bashrc
+  ansible.builtin.template:
+    src: _bashrc.j2
+    dest: /etc/skel/.bashrc
+    mode: "0644"
+
+- name: put away .bash_profile
+  ansible.builtin.template:
+    src: _bash_profile.j2
+    dest: /etc/skel/.bash_profile
+    mode: "0644"
+
+- name: put away .vimrc
+  ansible.builtin.template:
+    src: _vimrc.j2
+    dest: /etc/skel/.vimrc
+    mode: "0644"

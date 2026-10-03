@@ -1,0 +1,13 @@
+name: playbook-inventory
+title: "Building an inventory"
+note: "empty project: you write the inventory"
+page: ch03/lab-inventory
+version: 2
+checkpoints:
+  final:
+    files: ["inventory"]
+    groups:
+      webservers: ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"]
+      us: ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com"]
+      production: ["serverc.lab.example.com", "serverd.lab.example.com"]
+      ungrouped: []

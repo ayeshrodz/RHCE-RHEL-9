@@ -1,6 +1,0 @@
-# Chapter lab: Managing variables and facts
-ansible.cfg
-inventory
-files/httpd.conf
-files/.htaccess=files/htaccess
-@setup.sh

@@ -1,0 +1,3 @@
+---
+# The shell prompt new users get.
+default_prompt: '[\u@\h \W]\$ '

@@ -1,0 +1,11 @@
+name: file-template
+title: "Deploying custom files with Jinja2 templates"
+page: ch06/lab-templates
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "motd.j2", "motd.yml"]
+    checks:
+      - {"id": "motd", "kind": "file", "on": "all", "message": "Rendered message includes host identity and contains no Jinja placeholders", "targets": ["servera.lab.example.com", "workstation.lab.example.com"], "paths": ["/etc/motd"], "nonEmpty": true, "contains": ["{hostShort}"], "lacks": ["{{"]}
+      - {"id": "mode", "kind": "file", "on": "all", "message": "Message of the day is root-owned with mode 0644", "targets": ["servera.lab.example.com", "workstation.lab.example.com"], "paths": ["/etc/motd"], "mode": "0644", "owner": "root", "group": "root"}

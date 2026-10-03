@@ -1,0 +1,30 @@
+---
+- name: Apache Package is installed
+  ansible.builtin.dnf:
+    name: "{{ apache_packages }}"
+    state: present
+
+- name: Apache Service is started
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Firewall Service is started
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: http is allowed
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    state: enabled
+  notify: restart firewalld
+
+- name: Production page is in place
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"

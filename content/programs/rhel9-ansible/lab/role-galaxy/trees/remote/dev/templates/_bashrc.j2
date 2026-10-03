@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+[ -f /etc/bashrc ] && . /etc/bashrc
+{% set colors = {'black': 30, 'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36, 'white': 37} %}
+PS1='\[\e[{{ colors[prompt_color] | default(32) }}m\]{{ default_prompt }}\[\e[0m\]'

@@ -1,0 +1,12 @@
+name: role-create
+title: "Creating roles"
+page: ch08/lab-role-create
+version: 2
+starter: ["ansible.cfg", "inventory", "vhost.conf.j2", "verify-httpd.yml", "verify-config.yml", "verify-content.yml"]
+checkpoints:
+  final:
+    files: ["inventory", "roles/myvhost/tasks/main.yml", "roles/myvhost/handlers/main.yml", "roles/myvhost/templates/vhost.conf.j2", "files/html/index.html", "use-vhost-role.yml"]
+    checks:
+      - {"id": "vhost-config", "kind": "file", "on": "webservers", "message": "Virtual-host configuration exists", "targets": ["servera.lab.example.com"], "paths": ["/etc/httpd/conf.d/vhost.conf"], "nonEmpty": true}
+      - {"id": "vhost-content", "kind": "file", "on": "webservers", "message": "Per-host content exists", "targets": ["servera.lab.example.com"], "paths": ["/var/www/vhosts/{hostShort}/index.html"], "nonEmpty": true}
+      - {"id": "service", "kind": "service", "on": "webservers", "message": "Apache is running and enabled", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}

@@ -1,8 +1,0 @@
-# Chapter lab: Implementing task control
-ansible.cfg
-inventory
-playbook.yml
-vars.yml
-ssl.conf
-index.html
-@setup.sh

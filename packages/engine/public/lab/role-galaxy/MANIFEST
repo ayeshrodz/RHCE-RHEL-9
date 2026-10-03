@@ -1,4 +1,0 @@
-# Deploying roles from external content sources
-ansible.cfg
-inventory
-@setup.sh

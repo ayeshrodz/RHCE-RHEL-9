@@ -1,0 +1,20 @@
+name: file-manage
+title: "Modifying and copying files to hosts"
+page: ch06/lab-file-modules
+version: 2
+starter: ["ansible.cfg", "inventory", "files/users.txt"]
+checkpoints:
+  final:
+    files: ["add_block.yml", "add_line.yml", "copy_file.yml", "inventory", "remove_file.yml", "secure_log_backups.yml", "selinux_defaults.yml"]
+    checks:
+      - {"id": "removed", "kind": "file", "on": "all", "message": "Exercise file is removed at the final checkpoint", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/home/devops/users.txt"], "exists": false}
+      - {"id": "fetched-a", "kind": "file", "on": "control", "message": "servera log was fetched", "paths": ["secure-backups/servera.lab.example.com/var/log/secure"], "nonEmpty": true}
+      - {"id": "fetched-b", "kind": "file", "on": "control", "message": "serverb log was fetched", "paths": ["secure-backups/serverb.lab.example.com/var/log/secure"], "nonEmpty": true}
+  copied:
+    files: ["add_block.yml", "add_line.yml", "copy_file.yml", "inventory", "remove_file.yml", "secure_log_backups.yml", "selinux_defaults.yml"]
+    checks:
+      - {"id": "copied", "kind": "file", "on": "all", "message": "Copied file has devops ownership and the requested SELinux type", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/home/devops/users.txt"], "owner": "devops", "group": "devops", "selinuxType": "samba_share_t"}
+  edited:
+    files: ["add_block.yml", "add_line.yml", "copy_file.yml", "inventory", "remove_file.yml", "secure_log_backups.yml", "selinux_defaults.yml"]
+    checks:
+      - {"id": "edited", "kind": "file", "on": "all", "message": "Managed line and block exist with the default home SELinux type", "targets": ["servera.lab.example.com", "serverb.lab.example.com"], "paths": ["/home/devops/users.txt"], "contains": ["This line was added", "They have been added"], "selinuxType": "user_home_t"}

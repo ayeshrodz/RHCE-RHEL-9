@@ -1,6 +1,6 @@
 # Local lab feedback
 
-Run `lab update` on workstation to install the current helper. Grade before `lab finish`, while the project and host state still exist:
+Run `lab update` on workstation to install the current helper (version 5 or later reads the typed exercise catalog). Grade before `lab finish`, while the project and host state still exist:
 
 ```sh
 lab grade system-storage
@@ -8,7 +8,7 @@ lab grade file-manage --checkpoint copied
 lab grade system-archive --json > system-archive-result.json
 ```
 
-The grader reads project files, resolves inventory with Ansible, and sends maintained read-only probes through Ansible's `raw` module. It does not run your playbook or repair the managed hosts. Run your playbooks again yourself and perform the reboot checks requested by each exercise.
+The grader reads project files, resolves inventory with Ansible, and sends fixed, read-only checks through Ansible's `raw` module. Each check is a typed description from the exercise catalog; the grader builds the command from the check's values, quoted, and never runs text from the catalog as a command. It does not run your playbook or repair the managed hosts. Run your playbooks again yourself and perform the reboot checks requested by each exercise.
 
 - **PASS**: the named requirement was observed.
 - **FAIL**: a file, host, or resulting state does not meet the requirement.
@@ -42,10 +42,10 @@ The web-release assessment now teaches the Kernel Path page text and `/etc/kerne
 
 ## Contributing checks
 
-Edit `packages/engine/public/lab/graders.json`. Every published starter manifest needs an exercise entry with a version, lesson link, and `final` checkpoint. Keep prerequisites, the challenge brief, verification guidance, and independent variations in the lesson’s `lab-notes` and `lab-challenge` tags; see [authoring](AUTHORING.md). List required project files and add narrowly scoped, read-only probes for the resulting host state. Every probe must declare its required inventory host names in `targets`; omitting a host must not turn a partial result into a pass.
+Exercises are defined in `content/programs/<program>/lab/<name>.yml`; see the authoring guide ([exercises](AUTHORING.md)). The compiler turns them into the `graders.json` catalog that the grader reads. List required project files, then add `checks` of the typed kinds for the resulting host state. Every check on managed hosts must declare its required inventory host names in `targets`; omitting a host must not turn a partial result into a pass. Prefer several small checks to one large one, so a failure points at one requirement.
 
-Add a named checkpoint when later tasks remove or replace earlier results. Keep intentionally broken troubleshooting starters identified in `intentionalFaults`. Never call a learner playbook from the grader. Avoid output containing passwords, private keys, or password hashes.
+Add a named checkpoint when later tasks remove or replace earlier results. Mark intentionally broken troubleshooting starters with `intentionalFaults: true`. A new kind of check is added to `packages/lab-tools/grade.py` and the lab schema together, with a test that runs the generated command against this machine.
 
-Run `python3 -m unittest discover -s tests -p '*_test.py'`. The fixture tests exercise report handling across passing, failing, and unreachable responses. They do not replace actual VM validation of probe commands and lesson solutions. Record real runs, repeat runs, broken states, reset behavior, and reboot persistence in `docs/VALIDATION.md`.
+Run `npm run test:labs`. The tests compile the real exercises and exercise every check against passing, failing and unreachable responses, run the generated commands for real where they only read local facts, and prove that hostile values stay inside quotes. They do not replace validation on real VMs: run each exercise's solution, a deliberate broken state, repeat execution, reset behavior and reboot persistence, and record the tested stack in `docs/VALIDATION.md`.
 
-Starter downloads are prepared before existing work is archived. Setup failures leave `.lab-not-ready`, return an error, and prevent grading until the exercise has been prepared successfully.
+Starter downloads and setup run in a staging step before existing work is archived. A setup failure leaves `.lab-not-ready`, returns an error, and prevents grading until the exercise has been prepared successfully. No exercise downloads or runs a script of its own.

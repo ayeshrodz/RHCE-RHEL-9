@@ -1,0 +1,9 @@
+namespace: gls
+name: utils
+version: 0.0.1
+readme: README.md
+authors:
+  - Curriculum Developer
+description: Backup and restore roles, and a connection test module
+license:
+  - MIT

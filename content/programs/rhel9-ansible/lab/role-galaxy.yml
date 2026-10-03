@@ -1,0 +1,16 @@
+name: role-galaxy
+title: "Deploying roles from external content sources"
+page: ch08/lab-role-galaxy
+version: 2
+starter: ["ansible.cfg", "inventory"]
+setup:
+  - {"action": "git-seed-remote", "remote": "student/bash_env.git", "author": {"name": "Lab", "email": "lab@lab.example.com"}, "branches": [{"name": "main", "commits": [{"message": "bash_env role", "tree": "remote/main"}]}, {"name": "dev", "from": "main", "commits": [{"message": "Add prompt_color", "tree": "remote/dev"}]}]}
+checkpoints:
+  final:
+    files: ["ansible.cfg", "inventory", "roles/requirements.yml", "use-bash_env-role.yml", "roles/student.bash_env/tasks/main.yml"]
+    checks:
+      - {"id": "cleanup", "kind": "user", "on": "devservers", "message": "Temporary student2 account is removed at the end", "targets": ["servera.lab.example.com"], "names": ["student2"], "exists": false}
+  applied:
+    files: ["ansible.cfg", "inventory", "roles/requirements.yml", "use-bash_env-role.yml", "roles/student.bash_env/tasks/main.yml"]
+    checks:
+      - {"id": "role-user", "kind": "user", "on": "devservers", "message": "Role-created student2 has its shell configuration", "targets": ["servera.lab.example.com"], "names": ["student2"], "homeFile": ".bashrc"}

@@ -1,0 +1,16 @@
+name: troubleshoot-review
+title: "Chapter lab: Troubleshooting Ansible"
+page: ch09/chapter-lab
+version: 3
+intentionalFaults: true
+starter: ["ansible.cfg", "inventory", "index.html", "secure-web.yml", "vhosts.conf"]
+checkpoints:
+  final:
+    files: ["inventory", "secure-web.yml"]
+    groups:
+      webservers: ["serverb.lab.example.com"]
+    checks:
+      - {"id": "secure-web", "kind": "service", "on": "webservers", "message": "Correct host runs Apache", "targets": ["serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "secure-web-firewall", "kind": "firewall", "on": "webservers", "message": "HTTPS is open now and persistently", "targets": ["serverb.lab.example.com"], "service": "https"}
+      - {"id": "correct-host", "kind": "hostname", "on": "webservers", "message": "The connection must reach serverb; check ansible_host if this resolves to a different managed host.", "targets": ["serverb.lab.example.com"], "short": "serverb"}
+      - {"id": "tls-content", "kind": "http", "on": "webservers", "message": "The self-signed practice TLS site must serve the provided page; check its certificate, virtual host, content, and service.", "targets": ["serverb.lab.example.com"], "url": "https://serverb.lab.example.com/", "resolveToLocalhost": true, "insecure": true, "containsAny": ["This is the secure web site on serverb."]}

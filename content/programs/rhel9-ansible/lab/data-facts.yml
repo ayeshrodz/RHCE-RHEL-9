@@ -1,0 +1,11 @@
+name: data-facts
+title: "Managing facts"
+page: ch04/lab-facts
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["check_httpd.yml", "display_facts.yml", "display_specific_facts.yml", "inventory", "playbook.yml"]
+    checks:
+      - {"id": "custom-fact", "kind": "file", "on": "webserver", "message": "Custom fact file defines the Apache package", "targets": ["servera.lab.example.com"], "paths": ["/etc/ansible/facts.d/custom.fact"], "matches": "^package *= *httpd"}
+      - {"id": "service", "kind": "service", "on": "webserver", "message": "Fact-driven Apache is running", "targets": ["servera.lab.example.com"], "names": ["httpd"], "active": true}

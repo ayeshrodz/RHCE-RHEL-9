@@ -1,0 +1,16 @@
+name: system-process
+title: "Managing the boot process and scheduled processes"
+page: ch10/lab-boot-and-scheduling
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["create_crontab_file.yml", "inventory", "reboot_hosts.yml", "remove_cron_job.yml", "schedule_at_task.yml", "set_default_boot_target_graphical.yml"]
+    checks:
+      - {"id": "cron-removed", "kind": "cron", "on": "webservers", "message": "The practice cron entry is removed", "targets": ["servera.lab.example.com"], "file": "add-date-time", "matches": "date >> /home/devops/my_date_time_cron_job", "present": false}
+      - {"id": "at-completed", "kind": "file", "on": "webservers", "message": "The one-off date output exists", "targets": ["servera.lab.example.com"], "paths": ["/home/devops/my_at_date_time"], "nonEmpty": true}
+      - {"id": "target", "kind": "boot-target", "on": "webservers", "message": "Home-lab boot target was returned to graphical.target", "targets": ["servera.lab.example.com"], "target": "graphical.target"}
+  scheduled:
+    files: ["create_crontab_file.yml", "inventory", "reboot_hosts.yml", "remove_cron_job.yml", "schedule_at_task.yml", "set_default_boot_target_graphical.yml"]
+    checks:
+      - {"id": "cron-created", "kind": "cron", "on": "webservers", "message": "The requested cron schedule exists", "targets": ["servera.lab.example.com"], "file": "add-date-time", "matches": "^\\*/2 9-16 \\* \\* 1-5 devops date >> /home/devops/my_date_time_cron_job"}

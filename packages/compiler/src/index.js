@@ -13,6 +13,8 @@ import { createValidator } from './validator.js';
 import { initHighlighter } from './highlight.js';
 import { readPage, convertPage } from './tree.js';
 import { readContent } from './source.js';
+import { compileLabs, indexText } from './lab.js';
+import { toolFiles } from '@kernel-path/lab';
 
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
 
@@ -69,11 +71,18 @@ function activitiesOf(tree, data) {
 /** Content is data: Markdoc pages, YAML and JSON. Images and other assets arrive with the asset pipeline. */
 const DATA_FILE = /\.(md|ya?ml|json)$/;
 
+/** Starter files and file trees of lab exercises are the learner's own project files, in any text format. */
+const LAB_FILES = /[\\/]programs[\\/][^\\/]+[\\/]lab[\\/][^\\/]+[\\/](starter|trees)[\\/]/;
+
 function checkFileTypes(dir, diagnostics) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const file = path.join(dir, entry.name);
-    if (entry.isDirectory()) checkFileTypes(file, diagnostics);
-    else if (!DATA_FILE.test(entry.name)) diagnostics.error(file, null, 'only Markdoc, YAML, JSON files are allowed in content');
+    // A link could pull in a file from outside content (for example the build machine's environment)
+    // and publish it, so content is plain files only.
+    if (entry.isSymbolicLink()) diagnostics.error(file, null, 'symbolic links are not allowed in content');
+    else if (entry.isDirectory()) checkFileTypes(file, diagnostics);
+    else if (!DATA_FILE.test(entry.name) && !LAB_FILES.test(file))
+      diagnostics.error(file, null, 'only Markdoc, YAML, JSON files are allowed in content');
   }
 }
 
@@ -121,8 +130,12 @@ export async function compile(contentDir, { now = new Date() } = {}) {
   };
 
   const programs = [];
+  const labNames = new Set();
+  const allExercises = {};
+  const labIndex = [];
+  let hasLabs = false;
   expect(validator.ids.site, source.site, source.siteFile, 'site');
-  for (const { id, dir, program, chapters, objectives, details, legacy } of source.programs) {
+  for (const { id, dir, program, chapters, objectives, details, legacy, labs } of source.programs) {
     const base = `p/${program.id}`;
     expect(validator.ids.program, program, path.join(dir, 'program.yml'), 'program');
     if (program.id !== id) diagnostics.error(path.join(dir, 'program.yml'), null, `id '${program.id}' must match the folder name '${id}'`);
@@ -137,12 +150,21 @@ export async function compile(contentDir, { now = new Date() } = {}) {
       return { tree, data };
     };
 
+    const sectionPages = new Map();
+    const labReferences = new Map();
     const manifestChapters = chapters.map((chapter) => {
       expect(validator.ids.chapter, chapter.meta, path.join(chapter.dir, '_chapter.yml'), 'chapter');
       const sections = chapter.sections.map((section) => {
         expect(validator.ids.section, section.front, section.file, 'frontmatter');
         const key = `${chapter.id}/${section.slug}`;
         const { tree, data } = compilePage(key, section, { kind: section.kind, minutes: section.minutes });
+        sectionPages.set(key, { number: `${chapter.number}.${chapter.sections.indexOf(section) + 1}` });
+        (function visit(nodes) {
+          for (const node of nodes ?? []) {
+            if (node.t === 'tag' && node.name === 'lab' && node.attrs?.exercise) labReferences.set(node.attrs.exercise, key);
+            visit(node.c);
+          }
+        })(tree);
         return {
           slug: section.slug,
           title: section.front.title,
@@ -167,6 +189,18 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     });
 
     if (details) compilePage('details', details, { kind: 'reference' });
+
+    if (labs.length) {
+      const compiled = compileLabs({ labs, pages: sectionPages, references: labReferences, seen: labNames, validator, diagnostics });
+      for (const [file, content] of compiled.files) files.set(file, content);
+      Object.assign(allExercises, compiled.exercises);
+      labIndex.push(...compiled.index);
+      hasLabs = true;
+    }
+    // Exercises a lesson names must exist.
+    for (const name of labReferences.keys())
+      if (!labs.some((l) => l.file_name === name))
+        diagnostics.error(null, null, `a lab tag uses the exercise '${name}', which has no definition in ${id}/lab`);
 
     const searchFile = emit(base, 'search', { apiVersion: 1, entries: search });
     expect(validator.ids.bundle.search, JSON.parse(files.get(searchFile)), null, 'search index');
@@ -212,11 +246,24 @@ export async function compile(contentDir, { now = new Date() } = {}) {
     expect(validator.ids.bundle.interface, source.interface, path.join(root, 'interface.json'), 'interface copy');
     shared = emit('site', 'interface', source.interface);
   }
+  if (hasLabs) {
+    files.set(
+      'lab/graders.json',
+      JSON.stringify(
+        { version: 2, exercises: Object.fromEntries(Object.entries(allExercises).sort(([a], [b]) => a.localeCompare(b))) },
+        null,
+        2,
+      ) + '\n',
+    );
+    files.set('lab/INDEX', indexText(labIndex.sort((a, b) => a.name.localeCompare(b.name))));
+    for (const [name, content] of toolFiles()) files.set(`lab/${name}`, content);
+  }
   const site = {
     apiVersion,
     generatedAt: now.toISOString(),
     site: { ...siteMeta, ...(home ? { home } : {}) },
     ...(shared ? { interface: shared } : {}),
+    ...(hasLabs ? { lab: 'lab/' } : {}),
     programs,
   };
   expect(validator.ids.bundle.site, site, null, 'site index');

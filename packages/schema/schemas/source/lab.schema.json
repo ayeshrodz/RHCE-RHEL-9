@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kernelpath.dev/schema/v1/source/lab.schema.json",
   "title": "Lab exercise",
-  "description": "programs/<id>/lab/<exercise>.yml. Describes an exercise as data: starter files, setup actions and graded checkpoints. Every action and check is implemented by the platform's lab tools; content supplies values only, never commands. String values may contain the placeholders {host}, {hostShort} and {user}, which the lab tools substitute and quote themselves.",
+  "description": "programs/<id>/lab/<exercise>.yml. Describes an exercise as data: starter files, setup actions and graded checkpoints. Every action and check is implemented by the platform's lab tools; content supplies values only, never commands. String values may contain the placeholders {host} (the inventory name) and {hostShort} (its first label), which the lab tools substitute and quote themselves.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -28,21 +28,8 @@
       "type": "integer",
       "minimum": 1
     },
-    "inventoryGroups": {
-      "description": "Groups the learner's inventory must define, with the hosts each must contain.",
-      "type": "object",
-      "propertyNames": {
-        "$ref": "#/$defs/name"
-      },
-      "additionalProperties": {
-        "type": "array",
-        "items": {
-          "$ref": "#/$defs/hostName"
-        }
-      }
-    },
     "starter": {
-      "description": "Files copied into ~/NAME from lab/<exercise>/files. Paths are relative and never leave the project.",
+      "description": "Files copied into ~/NAME. They are kept in lab/<exercise>/starter/ and never leave the project folder.",
       "type": "array",
       "maxItems": 200,
       "items": {
@@ -69,6 +56,14 @@
       "additionalProperties": {
         "$ref": "#/$defs/checkpoint"
       }
+    },
+    "intentionalFaults": {
+      "description": "The starter files contain deliberate faults for the learner to find, so content checks do not parse them.",
+      "type": "boolean"
+    },
+    "note": {
+      "description": "A short remark shown beside the title in the exercise list, for example that the project starts empty.",
+      "$ref": "../common.schema.json#/$defs/shortText"
     }
   },
   "$defs": {
@@ -81,9 +76,9 @@
       "maxLength": 253
     },
     "hostPattern": {
-      "description": "An inventory host or group name, or 'control' for the control node (the learner's project directory).",
+      "description": "An Ansible host pattern made of inventory host or group names joined with ':', or 'control' for the control node (the learner's project directory).",
       "type": "string",
-      "pattern": "^(?:control|[a-z0-9][a-z0-9._-]{0,252})$"
+      "pattern": "^(?:control|[a-z0-9][a-z0-9._-]{0,100}(?::[a-z0-9][a-z0-9._-]{0,100}){0,4})$"
     },
     "relativePath": {
       "type": "string",
@@ -91,13 +86,13 @@
       "maxLength": 240
     },
     "absolutePath": {
-      "description": "An absolute path on a managed host. Placeholders {host}, {hostShort} and {user} are allowed.",
+      "description": "An absolute path on a managed host. Placeholders {host} and {hostShort} are allowed.",
       "type": "string",
       "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._@+{}-]*(?:/[A-Za-z0-9._@+{}-]+)*$",
       "maxLength": 240
     },
     "literal": {
-      "description": "Text compared literally. Placeholders {host}, {hostShort} and {user} are allowed.",
+      "description": "Text compared literally. Placeholders {host} and {hostShort} are allowed.",
       "type": "string",
       "minLength": 1,
       "maxLength": 400,
@@ -138,9 +133,7 @@
     "checkpoint": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "checks"
-      ],
+      "required": [],
       "properties": {
         "description": {
           "$ref": "../common.schema.json#/$defs/shortText"
@@ -159,8 +152,42 @@
           "items": {
             "$ref": "#/$defs/check"
           }
+        },
+        "inventory": {
+          "description": "The learner's inventory file, if it is not called 'inventory'.",
+          "$ref": "#/$defs/relativePath"
+        },
+        "groups": {
+          "description": "Groups the learner's inventory must define, with the hosts each must contain.",
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/groupName"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/hostName"
+            }
+          }
         }
-      }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "files"
+          ]
+        },
+        {
+          "required": [
+            "groups"
+          ]
+        },
+        {
+          "required": [
+            "checks"
+          ]
+        }
+      ]
     },
     "checkBase": {
       "type": "object",
@@ -341,6 +368,18 @@
             "salt": {
               "type": "string",
               "pattern": "^[A-Za-z0-9./]{1,16}$"
+            },
+            "commented": {
+              "description": "Write the variable as a YAML comment.",
+              "type": "boolean"
+            },
+            "before": {
+              "description": "Literal lines written before the variable.",
+              "type": "array",
+              "maxItems": 5,
+              "items": {
+                "$ref": "#/$defs/literal"
+              }
             }
           }
         },
@@ -474,6 +513,11 @@
                         "tree": {
                           "description": "A folder among the lab's files whose contents become the commit's tree.",
                           "$ref": "#/$defs/relativePath"
+                        },
+                        "tag": {
+                          "description": "A lightweight tag placed on this commit.",
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9._-]{1,60}$"
                         }
                       }
                     }
@@ -504,6 +548,33 @@
               "maxItems": 20,
               "items": {
                 "$ref": "#/$defs/name"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "path",
+            "archives"
+          ],
+          "properties": {
+            "action": {
+              "const": "collection-requirements"
+            },
+            "path": {
+              "$ref": "#/$defs/relativePath"
+            },
+            "archives": {
+              "description": "File name prefixes of collection archives already in the project, such as 'redhat-rhel_system_roles-'. The requirements file lists each by its absolute path.",
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+-[a-z0-9_]+-$"
               }
             }
           }
@@ -692,6 +763,15 @@
         },
         "symlinkTo": {
           "$ref": "#/$defs/absolutePath"
+        },
+        "lines": {
+          "description": "Whole lines that must all be present.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/literal"
+          }
         }
       },
       "type": "object"
@@ -1201,6 +1281,11 @@
         }
       },
       "type": "object"
+    },
+    "groupName": {
+      "description": "An Ansible inventory group name.",
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"
     }
   }
 }

@@ -48,9 +48,9 @@ The dashboard combines these independent signals into a next lesson, review queu
 
 ## Local lab tooling
 
-`packages/engine/public/lab/lab` downloads an exercise into a staging directory, validates downloads and setup hooks, then moves it into place. Failed preparation is explicit and preserves existing work. Starter folders use `MANIFEST`; the index and grading catalog cover every published exercise.
+The lab tools live in `packages/lab-tools`: the `lab` command, the grader and the setup program. They run on the learner's own machine, and the compiler publishes them with the exercises. `lab start` downloads an exercise into a staging directory, moves it into place, and then `prepare.py` runs the typed setup actions named in the catalog. Failed preparation is explicit and preserves existing work. Each exercise has a `MANIFEST` of starter files; the index and the catalog cover every published exercise.
 
-`grade.py` checks project files, inventory groups, and read-only host probes defined in `graders.json`. It uses the learner's Ansible connection settings. Checks report PASS, FAIL, or SKIP and link to the lesson. Grading does not run playbooks or repair systems. See [lab grading](LAB-GRADING.md) for report and exit-code contracts.
+`grade.py` checks project files, inventory groups, and the typed read-only checks defined in `graders.json`. It uses the learner's Ansible connection settings. Checks report PASS, FAIL, or SKIP and link to the lesson. Grading does not run playbooks or repair systems. See [lab grading](LAB-GRADING.md) for report and exit-code contracts.
 
 ## Build and checks
 

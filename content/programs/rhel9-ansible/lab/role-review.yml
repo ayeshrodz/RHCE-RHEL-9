@@ -1,0 +1,14 @@
+name: role-review
+title: "Chapter lab: Simplifying playbooks with roles and content collections"
+page: ch08/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory", "developer_tasks.yml", "developer.conf.j2", "web_developers.yml", "selinux.yml"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+  - {"action": "git-seed-remote", "remote": "infra/apache.git", "author": {"name": "Infrastructure team", "email": "infra@lab.example.com"}, "branches": [{"name": "main", "commits": [{"message": "apache role", "tree": "remote/v1.3", "tag": "v1.3"}, {"message": "Document the handlers", "tree": "remote/v1.4", "tag": "v1.4"}]}]}
+checkpoints:
+  final:
+    files: ["group_vars/dev_webserver/selinux.yml", "inventory", "roles/apache.developer_configs/meta/main.yml", "roles/requirements.yml", "web_dev_server.yml", "web_developers.yml"]
+    checks:
+      - {"id": "selinux", "kind": "selinux", "on": "dev_webserver", "message": "SELinux is enforcing with persistent enforcing configuration", "targets": ["servera.lab.example.com"], "mode": "enforcing", "persistent": true}
+      - {"id": "developer", "kind": "user", "on": "dev_webserver", "message": "Developer accounts exist", "targets": ["servera.lab.example.com"], "names": ["jdoe", "jdoe2"]}

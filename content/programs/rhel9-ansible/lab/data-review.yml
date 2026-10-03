@@ -1,0 +1,16 @@
+name: data-review
+title: "Chapter lab: Managing variables and facts"
+page: ch04/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory", "files/httpd.conf", "files/.htaccess"]
+setup:
+  - {"action": "htpasswd", "path": "files/htpasswd", "user": "guest", "password": "redhat"}
+checkpoints:
+  final:
+    files: ["inventory", "playbook.yml", "vars/secret.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webserver", "message": "Apache is running and enabled", "targets": ["serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webserver", "message": "Web traffic is permitted now and persistently", "targets": ["serverb.lab.example.com"], "service": "https"}
+      - {"id": "content", "kind": "file", "on": "webserver", "message": "Web content is present", "targets": ["serverb.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}
+      - {"id": "secret-permissions", "kind": "file", "on": "webserver", "message": "Password file is protected and owned by Apache", "targets": ["serverb.lab.example.com"], "paths": ["/etc/httpd/secrets/htpasswd"], "mode": "0400", "owner": "apache", "group": "apache"}
+      - {"id": "auth-config", "kind": "file", "on": "webserver", "message": "Access rules require authentication", "targets": ["serverb.lab.example.com"], "paths": ["/var/www/html/.htaccess"], "contains": ["Require valid-user"]}

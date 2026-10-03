@@ -16,6 +16,7 @@ export const textOf = (nodes) =>
 
 export async function readBundle(dir = 'content') {
   const { files } = await compile(dir);
+  const lab = files.has('lab/graders.json') ? JSON.parse(files.get('lab/graders.json')) : { exercises: {} };
   const json = (file) => JSON.parse(files.get(file));
   const site = json('site.json');
   const manifest = json(site.programs[0].manifest);
@@ -31,5 +32,5 @@ export async function readBundle(dir = 'content') {
           practice.push(...page.data[node.attrs.ref].questions.map((q) => ({ ...q, chapter: chapter.id })));
       });
     }
-  return { site, manifest, pages, legacy, interface: { ...shared, ...legacy?.interface }, practice };
+  return { site, manifest, pages, legacy, lab, files, interface: { ...shared, ...legacy?.interface }, practice };
 }

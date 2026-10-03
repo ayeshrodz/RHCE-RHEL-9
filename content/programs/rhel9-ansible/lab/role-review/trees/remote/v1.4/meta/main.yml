@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: Infrastructure team
+  description: The production Apache web server configuration
+  license: MIT
+  min_ansible_version: "2.14"
+dependencies: []

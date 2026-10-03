@@ -251,3 +251,152 @@ test('diagram data is checked: unknown kinds, properties and out-of-range values
   await rejects('{% diagram ref="d" /%}', /diagram data/, { data: spec('{ kind: node, x: 0, y: 0, w: 10, h: 10, tone: "red; x:y" }') });
   await rejects('{% diagram ref="d" /%}', /diagram data/, { data: spec('{ kind: arrow, points: [[0, 0]] }') });
 });
+
+// ---------- Lab exercises ----------
+
+/** Compile a one-page program that teaches an exercise whose definition is `labYaml`; `files` adds starter files. */
+async function labErrors(
+  labYaml,
+  {
+    files = {},
+    lab = '{% lab id="x" title="X" exercise="demo" objectives=["ch01.demo"] %}\n{% task id="t" title="T" %}x{% /task %}\n{% /lab %}',
+  } = {},
+) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-lab-'));
+  try {
+    const program = path.join(dir, 'programs', 'p');
+    const chapter = path.join(program, 'chapters', 'ch01-x');
+    fs.mkdirSync(path.join(program, 'lab', 'demo', 'starter'), { recursive: true });
+    fs.mkdirSync(chapter, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms: [p]\n');
+    fs.writeFileSync(
+      path.join(program, 'program.yml'),
+      'apiVersion: 1\nid: p\ntitle: T\nlabel: T\nsummary: S\nplatform: { family: linux, version: "1", label: L }\nstatus: active\n',
+    );
+    fs.writeFileSync(path.join(program, 'objectives.yml'), '[]\n');
+    fs.writeFileSync(path.join(chapter, '_chapter.yml'), 'title: C\n');
+    fs.writeFileSync(path.join(chapter, '01-lab.md'), `---\ntitle: "Exercise: Demo"\nkind: lab\nminutes: 5\n---\n\n${lab}\n`);
+    fs.writeFileSync(path.join(program, 'lab', 'demo.yml'), labYaml);
+    for (const [name, text] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(program, 'lab', 'demo', name)), { recursive: true });
+      fs.writeFileSync(path.join(program, 'lab', 'demo', name), text);
+    }
+    try {
+      const out = await compile(dir, { now: NOW });
+      return { errors: [], out };
+    } catch (e) {
+      if (!(e instanceof CompileError)) throw e;
+      return { errors: e.diagnostics.errors.map((x) => x.message) };
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+const DEMO = 'name: demo\ntitle: Demo\npage: ch01/lab\n';
+const check = (c) => `${DEMO}checkpoints:\n  final:\n    checks:\n      - ${c}\n`;
+
+test('an exercise compiles into published starter files, a manifest, an index and a typed catalog', async () => {
+  const { errors, out } = await labErrors(
+    `${DEMO}starter: [inventory, files/index.html]\nsetup: []\ncheckpoints:\n  final:\n    files: [site.yml]\n    checks:\n      - { id: web, kind: service, on: web, targets: [servera.lab.example.com], message: Apache runs, names: [httpd], active: true }\n`,
+    { files: { 'starter/inventory': 'localhost\n', 'starter/files/index.html': '<h1>Hello</h1>\n' } },
+  );
+  assert.deepEqual(errors, []);
+  assert.equal(out.files.get('lab/demo/MANIFEST'), '# Demo\ninventory=inventory.lab\nfiles/index.html=files/index.html.lab\n');
+  assert.ok(out.files.has('lab/demo/files/index.html.lab'), 'starter files are published inert, with a .lab suffix');
+  assert.ok(![...out.files.keys()].some((f) => f.endsWith('.html')), 'no page a browser could render');
+  assert.match(out.files.get('lab/INDEX'), /demo\s+1\.1\s+Demo/);
+  const catalog = JSON.parse(out.files.get('lab/graders.json'));
+  assert.equal(catalog.version, 2);
+  assert.equal(catalog.exercises.demo.lesson, '#/ch01/lab');
+  assert.ok(out.files.has('lab/grade.py') && out.files.has('lab/prepare.py') && out.files.has('lab/lab'), 'the lab tools are published');
+});
+
+test('lab checks hold values, never commands', async () => {
+  const web = 'on: web, targets: [servera.lab.example.com], message: m';
+  const bad = (c, pattern) =>
+    labErrors(check(c)).then(({ errors }) =>
+      assert.ok(
+        errors.some((e) => pattern.test(e)),
+        `${pattern}: ${errors.join('\n') || 'no errors'}`,
+      ),
+    );
+  await bad(`{ id: a, kind: shell, ${web}, command: "rm -rf /" }`, /exercise/);
+  await bad(`{ id: a, kind: service, ${web}, names: ["httpd; reboot"] }`, /exercise/);
+  await bad(`{ id: a, kind: file, ${web}, paths: ["/etc/../../root/x"] }`, /exercise/);
+  await bad(`{ id: a, kind: file, ${web}, paths: ["/tmp/$(id)"] }`, /exercise/);
+  await bad(`{ id: a, kind: http, ${web}, url: "http://evil.example.org/" }`, /exercise/);
+  await bad(`{ id: a, kind: service, on: web, message: m, names: [httpd] }`, /needs targets/);
+  await bad(`{ id: a, kind: git, ${web}, clean: true }`, /exercise|control node/);
+  const dup = `${DEMO}checkpoints:\n  final:\n    checks:\n      - { id: a, kind: commands, on: control, message: m, names: [ls] }\n      - { id: a, kind: commands, on: control, message: m, names: [ls] }\n`;
+  assert.ok((await labErrors(dup)).errors.some((e) => /two checks named 'a'/.test(e)));
+});
+
+test('an exercise must be taught, defined once, and have its starter files', async () => {
+  const ok = check('{ id: a, kind: commands, on: control, message: m, names: [ls] }');
+  assert.ok(
+    (await labErrors(ok.replace('page: ch01/lab', 'page: ch01/other'))).errors.some((e) => /page 'ch01\/other' does not exist/.test(e)),
+  );
+  assert.ok(
+    (await labErrors(`${ok.replace('checkpoints:', 'starter: [missing.yml]\ncheckpoints:')}`)).errors.some((e) =>
+      /starter file 'missing.yml' is missing/.test(e),
+    ),
+  );
+  assert.ok((await labErrors(ok, { lab: 'No lab tag here.' })).errors.some((e) => /no lab tag on any page uses exercise 'demo'/.test(e)));
+  assert.ok(
+    (
+      await labErrors(ok, {
+        lab: '{% lab id="x" title="X" exercise="ghost" objectives=["ch01.demo"] %}\n{% task id="t" title="T" %}x{% /task %}\n{% /lab %}',
+      })
+    ).errors.some((e) => /exercise 'ghost', which has no definition/.test(e)),
+  );
+  assert.ok(
+    (
+      await labErrors(`${ok.replace('checkpoints:', 'starter: [a.yml]\ncheckpoints:')}`, { files: { 'starter/a.yml': 'a: [unclosed\n' } })
+    ).errors.some((e) => /not valid YAML/.test(e)),
+  );
+});
+
+test('symbolic links in content are refused, so nothing outside content can be published', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-link-'));
+  try {
+    fs.cpSync(path.join(import.meta.dirname, 'fixtures', 'second-program'), path.join(dir, 'programs', 'second-program'), {
+      recursive: true,
+    });
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms: [second-program]\n');
+    const chapter = path.join(dir, 'programs/second-program/chapters/ch01-first-steps');
+    fs.symlinkSync('/etc/hostname', path.join(chapter, '03-leak.md'));
+    const errors = await compile(dir, { now: NOW }).then(
+      () => [],
+      (e) => e.diagnostics.errors.map((x) => `${x.file} ${x.message}`),
+    );
+    assert.ok(
+      errors.some((e) => /03-leak\.md symbolic links are not allowed/.test(e)),
+      errors.join('\n'),
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('lab files with dotfile names are published under names static hosts serve', async () => {
+  const { errors, out } = await labErrors(
+    `${DEMO}starter: [.ansible-lint, files/.htaccess]\nsetup:\n  - { action: htpasswd, path: files/htpasswd, user: guest, password: redhat }\ncheckpoints:\n  final:\n    files: [site.yml]\n`,
+    { files: { 'starter/.ansible-lint': 'x\n', 'starter/files/.htaccess': 'Require valid-user\n' } },
+  );
+  assert.deepEqual(errors, []);
+  const published = [...out.files.keys()].filter((f) => f.startsWith('lab/demo/'));
+  assert.ok(
+    published.every((f) => !f.split('/').some((part) => part.startsWith('.'))),
+    published.join('\n'),
+  );
+  const manifest = out.files.get('lab/demo/MANIFEST');
+  assert.match(manifest, /^\.ansible-lint=_\.ansible-lint\.lab$/m);
+  assert.match(manifest, /^files\/\.htaccess=files\/_\.htaccess\.lab$/m);
+  assert.match(manifest, /^@lab-update-required$/m, 'an old lab command is told to update');
+  assert.match(out.files.get('lab/demo/lab-update-required'), /lab update/);
+  assert.ok(
+    (await labErrors(`${DEMO}starter: [_.x]\ncheckpoints:\n  final:\n    files: [a]\n`, { files: { 'starter/_.x': 'x' } })).errors.some(
+      (e) => /reserved/.test(e),
+    ),
+  );
+});

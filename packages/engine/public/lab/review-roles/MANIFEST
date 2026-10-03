@@ -1,6 +1,0 @@
-# Review lab: Creating roles
-ansible.cfg
-inventory
-ansible-httpd.yml
-templates/httpd.conf.j2
-files/index.html

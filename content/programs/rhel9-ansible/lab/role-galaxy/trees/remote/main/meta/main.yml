@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: Lab
+  description: Default shell environment for new users
+  license: MIT
+  min_ansible_version: "2.14"
+dependencies: []

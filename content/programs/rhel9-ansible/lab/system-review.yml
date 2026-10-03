@@ -1,0 +1,19 @@
+name: system-review
+title: "Chapter lab: Automating Linux administration tasks"
+page: ch10/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+checkpoints:
+  final:
+    files: ["create_crontab_file.yml", "inventory", "network_playbook.yml", "repo_playbook.yml", "storage.yml", "users.yml"]
+    checks:
+      - {"id": "content-mount", "kind": "mount", "on": "webservers", "message": "/var/www: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/www", "fstype": "xfs", "persistent": true}
+      - {"id": "content-volume", "kind": "logical-volume", "on": "webservers", "message": "apache-vg/content-lv: at least 512 MiB", "targets": ["servera.lab.example.com"], "vg": "apache-vg", "lv": "content-lv", "minSizeMiB": 512}
+      - {"id": "logs-mount", "kind": "mount", "on": "webservers", "message": "/var/log/httpd: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/log/httpd", "fstype": "xfs", "persistent": true}
+      - {"id": "logs-volume", "kind": "logical-volume", "on": "webservers", "message": "apache-vg/logs-lv: at least 768 MiB", "targets": ["servera.lab.example.com"], "vg": "apache-vg", "lv": "logs-lv", "minSizeMiB": 768}
+      - {"id": "address", "kind": "address", "on": "webservers", "message": "Dummy eth1 has 192.0.2.40/24 and a persistent NetworkManager profile", "targets": ["servera.lab.example.com"], "interface": "eth1", "cidr": "192.0.2.40/24"}
+      - {"id": "operators", "kind": "user", "on": "webservers", "message": "Both operators belong to webadmin", "targets": ["servera.lab.example.com"], "names": ["ops1", "ops2"], "groups": ["webadmin"]}
+      - {"id": "cron", "kind": "cron", "on": "webservers", "message": "Disk-usage schedule has the requested weekdays and hours", "targets": ["servera.lab.example.com"], "file": "disk_usage", "matches": "^\\*/2 9-16 \\* \\* 1-5 devops df >> /home/devops/disk_usage"}
+      - {"id": "package", "kind": "package", "on": "webservers", "message": "Signed-repository practice package is installed", "targets": ["servera.lab.example.com"], "names": ["libyaml-devel"]}

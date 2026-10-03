@@ -1,5 +1,0 @@
-# Managing users and authentication
-ansible.cfg
-inventory
-vars/users_vars.yml
-@setup.sh

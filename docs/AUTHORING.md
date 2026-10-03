@@ -212,25 +212,67 @@ Readers follow the guide either in the Red Hat classroom or on the home lab from
 | --- | --- |
 | `variant-group` containing `variant name="classroom"` and `variant name="homelab"` | Two versions of a command, file or output. A switch shows one at a time. |
 | `variant name="homelab" title="…"` on its own | An always-visible note for home-lab readers (teal callout). |
-| `lab exercise="NAME"` | Adds the "Before you begin" box with both environments. At home it lists the starter files of `packages/engine/public/lab/NAME/`. Add `starter=false` if there are none. |
+| `lab exercise="NAME"` | Adds the "Before you begin" box with both environments. At home it lists the starter files of the exercise's `starter/` folder. Add `starter=false` if there are none. |
 | `lab exercise="NAME" ownExercise=true` | For an exercise that exists only in this guide: the classroom tab then tells readers to create the folder themselves. |
 | `lab-setup variant="homelab"` inside `lab` | Extra home-lab preparation notes for that exercise. |
 | `lab-finish exercise="NAME" /` (add `grade=true` for chapter labs) | The body of an exercise's last task, for both environments. |
 
 Keep the classroom commands as the default text of an exercise, and use these only where the home lab really differs (no execution environment, Rocky facts, firewalld running, `sdb` for `vdb`).
 
-### Exercise starter files
+### Exercises: starter files, setup and checks
 
-Every exercise with `exercise="NAME"` needs a folder `packages/engine/public/lab/NAME/`:
+An exercise is data. Everything it needs lives in `content/programs/<program>/lab/`:
 
 ```text
-packages/engine/public/lab/NAME/
-  MANIFEST        first line "# title"; then one path per line; "dest=src" to rename (for dotfiles); "@setup.sh" runs a script
-  ansible.cfg, inventory, files/…
-  setup.sh        optional: generates files on the reader's workstation (certificates, Vault files)
+lab/
+  system-users.yml            the definition (below)
+  system-users/
+    starter/                  files copied into ~/system-users by `lab start`
+      ansible.cfg
+      inventory
+      vars/users_vars.yml
+    trees/                    file trees that setup actions use, for example the commits of a Git remote
 ```
 
-Add the exercise to `packages/engine/public/lab/INDEX`. The home-lab `lab` command (`packages/engine/public/lab/lab`, installed in section 1.6) downloads these into `~/NAME`. Test with `LAB_URL=file://$PWD/packages/engine/public/lab bash packages/engine/public/lab/lab start NAME`, and run the exercise's solution against the lab before you publish it.
+```yaml
+name: system-users                  # what learners type: lab start system-users
+title: Managing users and authentication
+page: ch10/lab-users                # the section that teaches it; it must contain {% lab exercise="system-users" %}
+version: 2                          # raise it whenever the checks change
+starter: [ansible.cfg, inventory, vars/users_vars.yml]
+setup:
+  - { action: ssh-keypairs, dir: files, names: [user1, user2] }
+checkpoints:
+  final:                            # more checkpoints are allowed (see the grading guide)
+    files: [users.yml]              # project files that must exist and be non-empty
+    groups:                         # inventory groups the learner's inventory must define
+      webservers: [servera.lab.example.com]
+    checks:
+      - { id: sudo, kind: sudoers, on: webservers, targets: [servera.lab.example.com], message: The policy is valid and protected, path: /etc/sudoers.d/webadmin, mode: "0440", valid: true }
+```
+
+**Content supplies values, never commands.** The compiler checks every exercise against the lab schema, and the lab tools (`packages/lab-tools`) own what each action and check does. A check that needs something the tools cannot do is a request for a new kind, not a shell line.
+
+| Check `kind` | Values it takes |
+| --- | --- |
+| `service` | `names`, `active`, `enabled` |
+| `firewall` | `service` or `port`, `allowed`, `runtime`, `permanent` |
+| `package` | `names`, `installed` |
+| `file` | `paths` (any one may satisfy), `exists`, `nonEmpty`, `contains`, `lacks`, `line`, `lines`, `matches`, `contentEquals`, `mode`, `owner`, `group`, `selinuxType`, `symlinkTo` |
+| `file-compare` | `a`, `b` |
+| `archive` | `path`, `format` |
+| `user` | `names`, `exists`, `groups`, `passwordSet`, `authorizedKeys`, `homeFile` |
+| `mount`, `logical-volume` | `path`, `fstype`, `persistent`; `vg`, `lv`, `minSizeMiB` |
+| `http` | `url` (to the managed host itself), `insecure`, `resolveToLocalhost`, `containsAny` |
+| `selinux`, `sudoers`, `sshd`, `cron`, `boot-target`, `address`, `hostname`, `commands` | see the lab schema |
+| `git`, `lint` | on `control` only: the project's Git state, and `ansible-lint` in a container |
+
+- `on` is an inventory host or group pattern (groups joined with `:`), or `control` for the learner's project folder. A check on managed hosts must list its `targets`; a missing target fails instead of passing silently.
+- `{host}` and `{hostShort}` in paths and text are replaced with the inventory name and its first label.
+- Setup actions: `self-signed-cert`, `htpasswd`, `password-hash-var`, `vault-encrypt`, `ssh-keypairs`, `pack-installed-collection`, `build-collection`, `collection-requirements` and `git-seed-remote`.
+- Starter and tree files are published with a `.lab` suffix so a browser never renders them; the lab command saves them under their real names.
+
+The compiler publishes the lab tree (the `lab` command, the grader, starter files, `INDEX`, and a `MANIFEST` per exercise) with the rest of the site, and the build also places it at `/lab/`. Try an exercise end to end with `npm run build`, then `LAB_URL=file://$PWD/dist/lab bash dist/lab/lab start NAME`, and run its solution against the lab before you publish it.
 
 ## 6. Code font
 
@@ -302,13 +344,13 @@ Guided mode renders tasks normally. Challenge mode renders the authored requirem
 
 The grading catalog contains only machine-check contracts and intentionally broken fixture declarations. Teaching text is not fetched from it.
 
-For a new exercise, add a starter manifest and index entry plus a `graders.json` entry. Each probe needs stable IDs, required target hosts, read-only commands, and a useful failure explanation. Use named checkpoints where later tasks intentionally remove earlier results. Increment the exercise version when the grading contract changes and regenerate the browser report schema:
+For a new exercise, add its definition to `lab/` as described above. Use named checkpoints where later tasks intentionally remove earlier results. Raise the exercise version when the grading contract changes, then regenerate the browser report schema:
 
 ```bash
 node scripts/generate-report-schema.mjs
 ```
 
-Never treat a mocked passing probe as real host validation. Test the published solution, a deliberate broken state, repeat execution, reset behavior, and reboot persistence where relevant. Record the tested stack and limitations in `docs/VALIDATION.md`.
+Never treat a mocked passing check as real host validation. Test the published solution, a deliberate broken state, repeat execution, reset behavior, and reboot persistence where relevant. Record the tested stack and limitations in `docs/VALIDATION.md`.
 
 ## 8. Before you commit
 

@@ -1,0 +1,21 @@
+name: review-admin
+title: "Review lab: Managing Linux hosts and using system roles"
+page: ch11/lab-review-admin
+version: 2
+starter: ["ansible.cfg", "inventory"]
+setup:
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+  - {"action": "password-hash-var", "path": "pass-vault.yml", "variable": "pwhash", "password": "redhat", "salt": "reviewsalt"}
+  - {"action": "vault-encrypt", "path": "pass-vault.yml", "password": "redhat"}
+checkpoints:
+  final:
+    files: ["dev-users.yml", "group_vars/webservers/network.yml", "inventory", "log-rotate.yml", "network.yml", "site.yml", "storage.yml"]
+    checks:
+      - {"id": "address", "kind": "address", "on": "webservers", "message": "Dummy eth1 has 192.0.2.45/24 and a persistent NetworkManager profile", "targets": ["servera.lab.example.com"], "interface": "eth1", "cidr": "192.0.2.45/24"}
+      - {"id": "content-mount", "kind": "mount", "on": "webservers", "message": "/var/www/html/content: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/www/html/content", "fstype": "xfs", "persistent": true}
+      - {"id": "content-volume", "kind": "logical-volume", "on": "webservers", "message": "vg_web/lv_content: at least 768 MiB", "targets": ["servera.lab.example.com"], "vg": "vg_web", "lv": "lv_content", "minSizeMiB": 768}
+      - {"id": "uploads-mount", "kind": "mount", "on": "webservers", "message": "/var/www/html/uploads: XFS file system mounted and listed in fstab", "targets": ["servera.lab.example.com"], "path": "/var/www/html/uploads", "fstype": "xfs", "persistent": true}
+      - {"id": "uploads-volume", "kind": "logical-volume", "on": "webservers", "message": "vg_web/lv_uploads: at least 1024 MiB", "targets": ["servera.lab.example.com"], "vg": "vg_web", "lv": "lv_uploads", "minSizeMiB": 1024}
+      - {"id": "admin-user", "kind": "user", "on": "webservers", "message": "webdev belongs to webdev", "targets": ["servera.lab.example.com"], "names": ["webdev"], "groups": ["webdev"]}
+      - {"id": "admin-sudo", "kind": "sudoers", "on": "webservers", "message": "webdev has a protected sudo policy that validates", "targets": ["servera.lab.example.com"], "path": "/etc/sudoers.d/webdev", "mode": "0440", "valid": true}
+      - {"id": "rotation", "kind": "cron", "on": "webservers", "message": "Daily logrotate entry exists", "targets": ["servera.lab.example.com"], "file": "rotate_web", "matches": "^0 0 \\* \\* \\* devops logrotate -f /etc/logrotate.d/httpd"}

@@ -73,7 +73,8 @@ export function HomeLab({ title = 'On the home lab', children }) {
 
 function parseManifest(text) {
   const files = [];
-  let hook = false;
+  // The exercise page notes that some files are created on the workstation when a header comment says so.
+  let hook = /^#\s*generated:/m.test(text);
   for (const raw of text.split('\n')) {
     const line = raw.replace(/#.*/, '').trim();
     if (!line) continue;

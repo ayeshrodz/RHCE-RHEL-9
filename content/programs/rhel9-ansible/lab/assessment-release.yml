@@ -1,0 +1,21 @@
+name: assessment-release
+title: "Integrated practice: Release a web service"
+page: ch11/assessment-release
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["ansible.cfg", "inventory", "site.yml", "vault.yml", "group_vars/release_hosts/main.yml", "roles/release_web/defaults/main.yml", "roles/release_web/tasks/main.yml", "roles/release_web/handlers/main.yml", "roles/release_web/templates/index.html.j2"]
+    groups:
+      release_hosts: ["serverb.lab.example.com"]
+    checks:
+      - {"id": "services", "kind": "service", "on": "serverb.lab.example.com", "message": "Both services are active and enabled", "targets": ["serverb.lab.example.com"], "names": ["httpd", "firewalld"], "active": true, "enabled": true}
+      - {"id": "http", "kind": "http", "on": "serverb.lab.example.com", "message": "HTTP serves release-2 and the inventory host name", "targets": ["serverb.lab.example.com"], "url": "http://localhost/", "containsAny": ["Kernel Path release-2 on {host}", "Playbook Path release-2 on {host}"]}
+      - {"id": "firewall", "kind": "firewall", "on": "serverb.lab.example.com", "message": "HTTP is open now and after reboot", "targets": ["serverb.lab.example.com"], "service": "http"}
+      - {"id": "config", "kind": "file", "on": "serverb.lab.example.com", "message": "Apache release configuration contains both directives", "targets": ["serverb.lab.example.com"], "paths": ["/etc/httpd/conf.d/release.conf"], "lines": ["ServerTokens Prod", "ServerSignature Off"]}
+      - {"id": "token", "kind": "file", "on": "serverb.lab.example.com", "message": "Deployed token is protected and nonempty", "targets": ["serverb.lab.example.com"], "paths": ["/etc/kernel-path/release-token", "/etc/playbook-path/release-token"], "nonEmpty": true, "mode": "0600", "owner": "root", "group": "root"}
+      - {"id": "recovery-archive", "kind": "archive", "on": "serverb.lab.example.com", "message": "The release archive is readable", "targets": ["serverb.lab.example.com"], "path": "/srv/release-site.tar.gz", "format": "tar.gz"}
+      - {"id": "recovery-page", "kind": "file-compare", "on": "serverb.lab.example.com", "message": "The recovered page matches the served page", "targets": ["serverb.lab.example.com"], "a": "/var/www/html/index.html", "b": "/srv/site-recovered/index.html"}
+      - {"id": "permissions-served", "kind": "file", "on": "serverb.lab.example.com", "message": "The served page is root-owned with mode 0644", "targets": ["serverb.lab.example.com"], "paths": ["/var/www/html/index.html"], "mode": "0644", "owner": "root", "group": "root"}
+      - {"id": "permissions-recovered", "kind": "file", "on": "serverb.lab.example.com", "message": "The recovered page is root-owned with mode 0644", "targets": ["serverb.lab.example.com"], "paths": ["/srv/site-recovered/index.html"], "mode": "0644", "owner": "root", "group": "root"}
+      - {"id": "encrypted-token", "kind": "file", "on": "control", "message": "vault.yml is encrypted with Ansible Vault", "paths": ["vault.yml"], "nonEmpty": true, "contains": ["$ANSIBLE_VAULT;"]}

@@ -1,0 +1,11 @@
+name: projects-host
+title: "Selecting hosts with host patterns"
+page: ch07/lab-host-patterns
+version: 2
+starter: ["ansible.cfg", "inventory1", "inventory2", "playbook.yml"]
+checkpoints:
+  final:
+    files: ["inventory1", "inventory2", "playbook.yml"]
+    inventory: "inventory2"
+    groups:
+      europe: ["servera.lab.example.com", "serverb.lab.example.com"]

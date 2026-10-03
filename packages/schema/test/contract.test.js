@@ -70,7 +70,9 @@ test('content holds no code, markup or style files', () => {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) scan(p);
-      else assert.doesNotMatch(e.name, /\.(mdx|jsx?|tsx?|mjs|css|html?)$/, `${path.relative(ROOT, p)} is not data`);
+      // Starter files and trees of lab exercises are the learner's own project files; they are published inert, as *.lab.
+      else if (!/[\\/]lab[\\/][^\\/]+[\\/](starter|trees)[\\/]/.test(p))
+        assert.doesNotMatch(e.name, /\.(mdx|jsx?|tsx?|mjs|css|html?)$/, `${path.relative(ROOT, p)} is not data`);
     }
   })(CONTENT);
 });

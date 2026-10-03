@@ -1,0 +1,12 @@
+name: playbook-review
+title: "Chapter lab: Implementing an Ansible Playbook"
+page: ch03/chapter-lab
+version: 2
+starter: ["ansible.cfg", "inventory", "index.php"]
+checkpoints:
+  final:
+    files: ["internet.yml", "inventory"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "serverb.lab.example.com", "message": "Apache is running and enabled", "targets": ["serverb.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "serverb.lab.example.com", "message": "Web traffic is permitted now and persistently", "targets": ["serverb.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "serverb.lab.example.com", "message": "Web content is present", "targets": ["serverb.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

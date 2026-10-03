@@ -1,0 +1,21 @@
+name: assessment-operations
+title: "Integrated practice: Prepare an operations host"
+page: ch11/assessment-operations
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["ansible.cfg", "inventory", "site.yml", "host.txt.j2", "files/reporter.pub"]
+    groups:
+      operations: ["serverc.lab.example.com"]
+    checks:
+      - {"id": "reports-mount", "kind": "mount", "on": "operations", "message": "/srv/reports: XFS file system mounted and listed in fstab", "targets": ["serverc.lab.example.com"], "path": "/srv/reports", "fstype": "xfs", "persistent": true}
+      - {"id": "reports-volume", "kind": "logical-volume", "on": "operations", "message": "vg_practice/reports: at least 768 MiB", "targets": ["serverc.lab.example.com"], "vg": "vg_practice", "lv": "reports", "minSizeMiB": 768}
+      - {"id": "account", "kind": "user", "on": "operations", "message": "Reporter belongs to reporting and has an SSH public key", "targets": ["serverc.lab.example.com"], "names": ["reporter"], "groups": ["reporting"], "homeFile": ".ssh/authorized_keys"}
+      - {"id": "directory", "kind": "file", "on": "operations", "message": "Report directory belongs to reporter:reporting with mode 0750", "targets": ["serverc.lab.example.com"], "paths": ["/srv/reports"], "mode": "0750", "owner": "reporter", "group": "reporting"}
+      - {"id": "policy", "kind": "sudoers", "on": "operations", "message": "The limited sudo policy is exact, valid and protected", "targets": ["serverc.lab.example.com"], "path": "/etc/sudoers.d/reporter", "mode": "0440", "owner": "root", "group": "root", "valid": true, "rules": ["reporter ALL=(root) NOPASSWD: /usr/bin/du -sh /srv/reports"]}
+      - {"id": "selinux", "kind": "selinux", "on": "operations", "message": "SELinux is enforcing now and persistently", "targets": ["serverc.lab.example.com"], "mode": "enforcing", "persistent": true}
+      - {"id": "schedule", "kind": "cron", "on": "operations", "message": "Usage report schedule runs at minute 15 every six hours", "targets": ["serverc.lab.example.com"], "file": "report-usage", "matches": "15 \\*/6 \\* \\* \\* reporter /usr/bin/df -h /srv/reports > /srv/reports/usage.txt"}
+      - {"id": "address", "kind": "address", "on": "operations", "message": "Secondary interface has 198.51.100.20/24 and a persistent NetworkManager profile", "targets": ["serverc.lab.example.com"], "interface": "practice0", "cidr": "198.51.100.20/24"}
+      - {"id": "summary", "kind": "file", "on": "operations", "message": "Rendered host summary has the expected contents and access", "targets": ["serverc.lab.example.com"], "paths": ["/srv/reports/host.txt"], "contains": ["{host}", "/srv/reports"], "mode": "0640", "owner": "reporter", "group": "reporting"}
+      - {"id": "report", "kind": "file", "on": "operations", "message": "A usage report was verified by the learner", "targets": ["serverc.lab.example.com"], "paths": ["/srv/reports/usage.txt"], "nonEmpty": true}

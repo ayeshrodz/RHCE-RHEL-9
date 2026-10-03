@@ -1,0 +1,4 @@
+---
+# The shell prompt new users get, and its colour.
+default_prompt: '[\u@\h \W]\$ '
+prompt_color: green

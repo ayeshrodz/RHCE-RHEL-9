@@ -1,0 +1,12 @@
+name: review-roles
+title: "Review lab: Creating roles"
+page: ch11/lab-review-roles
+version: 2
+starter: ["ansible.cfg", "inventory", "ansible-httpd.yml", "templates/httpd.conf.j2", "files/index.html"]
+checkpoints:
+  final:
+    files: ["ansible-httpd.yml", "inventory", "roles/ansible-httpd/handlers/main.yml", "roles/ansible-httpd/tasks/main.yml", "roles/ansible-httpd/vars/main.yml", "site.yml"]
+    checks:
+      - {"id": "httpd", "kind": "service", "on": "webdev", "message": "Apache is running and enabled", "targets": ["serverb.lab.example.com", "serverc.lab.example.com"], "names": ["httpd"], "active": true, "enabled": true}
+      - {"id": "firewall", "kind": "firewall", "on": "webdev", "message": "Web traffic is permitted now and persistently", "targets": ["serverb.lab.example.com", "serverc.lab.example.com"], "service": "http"}
+      - {"id": "content", "kind": "file", "on": "webdev", "message": "Web content is present", "targets": ["serverb.lab.example.com", "serverc.lab.example.com"], "paths": ["/var/www/html/index.html", "/var/www/html/index.php"], "nonEmpty": true}

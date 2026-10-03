@@ -1,0 +1,11 @@
+---
+- name: Ensure the backup directory exists
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Ensure the backup exists
+  ansible.builtin.command:
+    cmd: "tar czf {{ backup_dir }}/{{ backup_id }}.tar.gz {{ backup_files | join(' ') }}"
+    creates: "{{ backup_dir }}/{{ backup_id }}.tar.gz"

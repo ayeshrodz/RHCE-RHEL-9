@@ -1,0 +1,15 @@
+name: role-collections
+title: "Getting roles and modules from content collections"
+page: ch08/lab-role-collections
+version: 2
+starter: ["ansible.cfg", "inventory", "bck.yml", "new_system.yml"]
+setup:
+  - {"action": "build-collection", "source": "collection/gls/utils"}
+  - {"action": "pack-installed-collection", "namespace": "redhat", "name": "rhel_system_roles"}
+  - {"action": "pack-installed-collection", "namespace": "community", "name": "general"}
+  - {"action": "collection-requirements", "path": "requirements.yml", "archives": ["redhat-rhel_system_roles-", "community-general-"]}
+checkpoints:
+  final:
+    files: ["inventory", "requirements.yml", "bck.yml"]
+    checks:
+      - {"id": "backup", "kind": "archive", "on": "servera.lab.example.com", "message": "The configuration archive exists and is readable", "targets": ["servera.lab.example.com"], "path": "/var/backups/gls/backup_etc.tar.gz", "format": "tar.gz"}

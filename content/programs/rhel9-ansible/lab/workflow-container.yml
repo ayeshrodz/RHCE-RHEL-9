@@ -1,0 +1,13 @@
+name: workflow-container
+title: "Running a project in a development container"
+page: ch12/lab-development-containers
+version: 2
+starter: ["ansible.cfg", "inventory", "site.yml"]
+checkpoints:
+  final:
+    files: ["site.yml", "inventory", ".devcontainer/devcontainer.json", "ansible-navigator.yml"]
+    checks:
+      - {"id": "devcontainer-image", "kind": "file", "on": "control", "message": "The development container uses the Ansible tools image", "paths": [".devcontainer/devcontainer.json"], "nonEmpty": true, "contains": ["community-ansible-dev-tools"]}
+      - {"id": "ee-image", "kind": "file", "on": "control", "message": "ansible-navigator uses the minimal execution environment", "paths": ["ansible-navigator.yml"], "nonEmpty": true, "contains": ["community-ee-minimal"]}
+      - {"id": "lint", "kind": "lint", "on": "control", "message": "site.yml passes ansible-lint in the development container", "tool": "ansible-lint", "image": "ghcr.io/ansible/community-ansible-dev-tools:latest", "files": ["site.yml"]}
+      - {"id": "kernel-record", "kind": "file", "on": "web", "message": "/opt/tools/kernel.txt records the running kernel", "targets": ["servera.lab.example.com"], "paths": ["/opt/tools/kernel.txt"], "contentEquals": "kernel-release"}

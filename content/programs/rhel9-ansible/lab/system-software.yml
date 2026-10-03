@@ -1,0 +1,15 @@
+name: system-software
+title: "Managing software and subscriptions"
+page: ch10/lab-software
+version: 2
+starter: ["ansible.cfg", "inventory"]
+checkpoints:
+  final:
+    files: ["inventory", "repo_playbook.yml"]
+    checks:
+      - {"id": "repo", "kind": "file", "on": "webservers", "message": "Signed CRB repository configuration remains after package cleanup", "targets": ["servera.lab.example.com"], "paths": ["/etc/yum.repos.d/lab-crb.repo"], "matches": "^gpgcheck *= *1"}
+      - {"id": "removed", "kind": "package", "on": "webservers", "message": "Practice package has been removed", "targets": ["servera.lab.example.com"], "names": ["python3-pyxattr"], "installed": false}
+  installed:
+    files: ["inventory", "repo_playbook.yml"]
+    checks:
+      - {"id": "installed", "kind": "package", "on": "webservers", "message": "Practice package was installed", "targets": ["servera.lab.example.com"], "names": ["python3-pyxattr"]}
