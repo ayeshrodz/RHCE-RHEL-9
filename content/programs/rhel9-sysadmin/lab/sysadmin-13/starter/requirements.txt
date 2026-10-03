@@ -1,4 +1,0 @@
-On clean servera, review repository access, install tree, query its provenance, and distinguish running kernel state from installed packages. Create an installation and maintenance checklist without reinstalling an existing VM.
-
-Manage trusted repositories and package transactions.
-Plan a reproducible RHEL 9 installation and safe update.

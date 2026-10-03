@@ -1,9 +1,0 @@
-recall:
-  cards:
-  - front: DNF check-update exits 100. What does that mean?
-    back: Updates are available. 100 is the command documented update-available status.
-  - front: An update installed a new kernel. What establishes which kernel currently runs?
-    back: uname -r Installed packages and the running kernel are different states.
-  - front: A Kickstart validates. What still needs real deployment testing?
-    back: Disk selection, repository access and resulting system behavior. A validator cannot prove that
-      the target environment matches the intended installation.

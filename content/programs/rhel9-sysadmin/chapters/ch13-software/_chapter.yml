@@ -1,8 +1,12 @@
 title: Software management
-goal: Install, update and remove software, and manage where it comes from.
+goal: Query and verify installed packages with rpm, manage software with dnf, work with repositories and signatures, build a local repository, and choose module streams and updates.
 objectives:
-- Manage trusted repositories and package transactions.
-- Plan a reproducible RHEL 9 installation and safe update.
+  - Read package names and query and verify installed packages with rpm.
+  - Search for, install, remove and update packages with dnf and review or undo transactions.
+  - Read repository definitions, explain gpgcheck, and build and use a local repository.
+  - Enable module streams and apply updates, deciding when a reboot is needed.
 objectiveIds:
-- ch13.operations
-- ch13.verification
+  - ch13.rpm
+  - ch13.dnf
+  - ch13.repositories
+  - ch13.updates

@@ -1,0 +1,213 @@
+streams:
+  title: Module streams
+  caption: Step through choosing a version of nginx.
+  height: 240
+  mode: steps
+  steps:
+  - title: Several versions, one name
+    text: 'The AppStream repository can carry several versions of a program as module streams: nginx 1.22, 1.24, 1.26. Without a stream, the plain package (an older, non-modular nginx 1.20) is what dnf offers.'
+  - title: Enable a stream
+    text: dnf module enable nginx:1.24 selects it. From now on dnf offers nginx 1.24.x and its updates, and no other version.
+  - title: Install from it
+    text: dnf install nginx (or dnf module install nginx:1.24/common to take a profile) installs that version. Updates stay within the stream.
+  - title: 'Switching: reset first'
+    text: A stream cannot simply be switched. Remove the installed content, dnf module reset nginx, and enable the new stream. This prevents silent major-version jumps.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 200
+    h: 56
+    tone: gray
+    title: nginx streams
+    sub: 1.22 · 1.24 · 1.26
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 240
+    y: 20
+    w: 200
+    h: 56
+    tone: green
+    title: 'enabled: 1.24'
+    sub: /etc/dnf/modules.d/nginx.module
+    mono: true
+    titleSize: 11
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 470
+    y: 20
+    w: 200
+    h: 56
+    tone: blue
+    title: 'installed: 1.24.0'
+    sub: updates within 1.24
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 210
+      - 48
+    - - 240
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 440
+      - 48
+    - - 470
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 240
+    y: 110
+    w: 280
+    h: 44
+    tone: amber
+    title: reset → enable another stream
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: modules and updates'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: dnf module list nginx
+      out: 'Name  Stream Profiles   Summary
+
+        nginx 1.22   common [d] nginx webserver
+
+        nginx 1.24   common [d] nginx webserver
+
+        nginx 1.26   common [d] nginx webserver'
+    - cmd: dnf list available nginx
+      out: 'Available Packages
+
+        nginx.x86_64               2:1.20.1-28.el9_8.6.rocky.0.1               appstream'
+    - cmd: dnf module enable -y nginx:1.24
+      out: "Enabling module streams:\n nginx                              1.24\n\nComplete!"
+    - cmd: dnf list available nginx
+      out: 'Available Packages
+
+        nginx.x86_64   1:1.24.0-7.module+el9.8.0+40319+5de55ea3.5.rocky.0.1    appstream'
+    - cmd: cat /etc/dnf/modules.d/nginx.module
+      out: '[nginx]
+
+        name=nginx
+
+        stream=1.24
+
+        profiles=
+
+        state=enabled'
+    - cmd: dnf module reset -y nginx
+      out: "Resetting modules:\n nginx\n\nComplete!"
+    - cmd: dnf updateinfo summary
+      out: No security updates needed, but 4 updates available
+    - cmd: dnf upgrade --security
+      out: 'Nothing to do.
+
+        Complete!'
+    - cmd: dnf needs-restarting -r
+      out: 'No core libraries or services have been updated since boot-up.
+
+        Reboot should not be necessary.'
+    tasks:
+    - text: List the available streams of nginx.
+      commands:
+      - dnf module list nginx
+    - text: Enable the nginx 1.24 stream and see which version dnf now offers.
+      commands:
+      - dnf module enable -y nginx:1.24
+      - dnf list available nginx
+    - text: Reset the module so that no stream is selected.
+      commands:
+      - dnf module reset -y nginx
+    - text: Check for security updates.
+      commands:
+      - dnf updateinfo summary
+    - text: Check whether a reboot is advised.
+      commands:
+      - dnf needs-restarting -r
+quick:
+  questions:
+  - id: q-42aae2dd83fd
+    q: What is a module stream?
+    options:
+    - One version line of a program offered by the AppStream repository
+    - A log stream
+    - A kernel parameter
+    answer: 0
+    explain: For example nginx:1.24 versus nginx:1.26.
+  - id: q-2e67b7c16b83
+    q: You enabled nginx:1.24 and now want 1.26. What is the safe route?
+    options:
+    - Remove installed content, dnf module reset nginx, enable 1.26
+    - dnf module enable nginx:1.26 straight away
+    - Edit the .module file by hand
+    answer: 0
+    explain: dnf refuses to switch an enabled stream silently.
+  - id: q-94e78952ccef
+    q: Which command applies only security updates?
+    options:
+    - dnf upgrade --security
+    - dnf upgrade --bugfix-only
+    - dnf upgrade -s
+    answer: 0
+    explain: Also dnf updateinfo lists them.
+  - id: q-0c380eab0062
+    q: Why does a kernel update need a reboot?
+    options:
+    - The running kernel stays until you boot the new one
+    - dnf deletes the old one
+    - It does not
+    answer: 0
+    explain: Several kernels are kept; GRUB boots the newest by default. dnf needs-restarting -r tells you if a reboot is advisable.
+  - id: q-aae643f57251
+    q: Which command shows what a past transaction changed?
+    options:
+    - dnf history info ID
+    - rpm -qa --last
+    - dnf list
+    answer: 0
+    explain: history info lists the packages altered.
+  - id: q-d1a62efaa20e
+    q: Why avoid installing .rpm files from unknown websites?
+    options:
+    - They run scripts as root and bypass the repository's signature checks
+    - They are slower
+    - dnf cannot read them
+    answer: 0
+    explain: Use trusted repositories, or verify signatures with rpm -K first.

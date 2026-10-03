@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-394497cc7754
+    q: Which command lists the files a package installed?
+    options:
+    - rpm -ql NAME
+    - rpm -qf NAME
+    - dnf provides NAME
+    answer: 0
+    explain: -ql = list.
+  - id: q-05e51844ba8d
+    q: Which command tells you which installed package owns a file?
+    options:
+    - rpm -qf /path
+    - rpm -ql /path
+    - dnf search /path
+    answer: 0
+    explain: query file.
+  - id: q-578201418bfc
+    q: Which command shows what changed in a file compared to its package?
+    options:
+    - rpm -V NAME
+    - rpm -K NAME
+    - rpm -qa NAME
+    answer: 0
+    explain: Flags such as S, 5 and T mark differences.
+  - id: q-c3cb90a14a39
+    q: dnf install httpd — what comes after the dependency list?
+    options:
+    - A prompt to confirm; then download, signature check, install
+    - A reboot
+    - Nothing
+    answer: 0
+    explain: Use -y only when you have read the plan.
+  - id: q-d621f334d658
+    q: Which command undoes the last dnf transaction?
+    options:
+    - dnf history undo last
+    - dnf remove last
+    - rpm -e --last
+    answer: 0
+    explain: The history lets you see and reverse changes.
+  - id: q-378b15026177
+    q: What does gpgcheck=1 protect against?
+    options:
+    - Packages that were modified or do not come from the signing key
+    - Slow mirrors
+    - Disk errors
+    answer: 0
+    explain: Keep it on.
+  - id: q-4a79a175acf3
+    q: How do you create a repository from a directory of .rpm files?
+    options:
+    - createrepo_c DIR, then a .repo file with baseurl
+    - rpm --import DIR
+    - dnf init DIR
+    answer: 0
+    explain: The repodata catalogue plus a definition.
+  - id: q-9758c3a8ccdc
+    q: How do you prove that a package came from your repository?
+    options:
+    - dnf info NAME shows From repo
+    - rpm -V NAME
+    - ls /var/cache
+    answer: 0
+    explain: Also use --disablerepo="*" --enablerepo=ID while installing.
+  - id: q-27d0902e6097
+    q: What does dnf module reset nginx do?
+    options:
+    - Clears the enabled stream so another can be chosen
+    - Reinstalls nginx
+    - Deletes the repository
+    answer: 0
+    explain: Needed before switching streams.
+  - id: q-c570813ac973
+    q: Which command lists available updates without installing them?
+    options:
+    - dnf check-update
+    - dnf upgrade -y
+    - rpm -U
+    answer: 0
+    explain: dnf upgrade then applies them.

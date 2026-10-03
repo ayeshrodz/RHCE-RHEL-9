@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: How is a package name read?
+    back: name-version-release.architecture, for example tree-1.8.0-10.el9.x86_64.
+  - front: Ask rpm about an installed package?
+    back: rpm -q NAME · rpm -qi NAME · rpm -ql NAME · rpm -qc NAME · rpm -qd NAME
+  - front: Which package owns a file?
+    back: rpm -qf /path (installed) · dnf provides "*/file" (any repository)
+  - front: Check a package for changed files?
+    back: rpm -V NAME
+  - front: Search, show, install, remove with dnf?
+    back: dnf search · dnf info · dnf install · dnf remove
+  - front: See and undo transactions?
+    back: dnf history  ·  dnf history info ID  ·  dnf history undo ID|last
+  - front: List updates and apply security ones only?
+    back: dnf check-update  ·  dnf upgrade --security
+  - front: Where are repositories defined?
+    back: '/etc/yum.repos.d/*.repo: id, name, baseurl, enabled, gpgcheck, gpgkey'
+  - front: Use one repository only?
+    back: dnf --disablerepo="*" --enablerepo=ID install NAME
+  - front: Build a local repository?
+    back: dnf download --resolve --destdir DIR NAME · createrepo_c DIR · add a .repo file
+  - front: Choose a version of a program?
+    back: dnf module list NAME · dnf module enable NAME:STREAM · dnf module reset NAME
+  - front: Check a downloaded .rpm?
+    back: rpm -K FILE.rpm (digests and signatures OK)

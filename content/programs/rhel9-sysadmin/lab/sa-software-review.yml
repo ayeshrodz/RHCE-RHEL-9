@@ -1,0 +1,93 @@
+name: sa-software-review
+title: Software
+page: ch13/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: repodata
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: /srv/localrepo has repository metadata
+      paths:
+      - /srv/localrepo/repodata/repomd.xml
+      nonEmpty: true
+    - id: repofile
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: local.repo points at the directory and keeps signature checking on
+      paths:
+      - /etc/yum.repos.d/local.repo
+      matches: ^baseurl=file:///srv/localrepo[[:space:]]*$
+      contains:
+      - enabled=1
+      - gpgcheck=1
+    - id: zip
+      kind: package
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: zip and unzip are installed
+      names:
+      - zip
+      - unzip
+    - id: module
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The nginx module stream 1.24 is enabled
+      paths:
+      - /etc/dnf/modules.d/nginx.module
+      contains:
+      - stream=1.24
+      - state=enabled
+    - id: wget
+      kind: package
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: wget is installed
+      names:
+      - wget
+    - id: tree
+      kind: package
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: tree is removed
+      names:
+      - tree
+      installed: false
+    - id: answer-passwd-package
+      kind: file
+      'on': control
+      message: 'answers.txt: the package that owns /usr/bin/passwd'
+      paths:
+      - answers.txt
+      matches: ^PASSWD_PACKAGE=passwd/?[ \t]*$
+    - id: answer-checksum-flag
+      kind: file
+      'on': control
+      message: 'answers.txt: the rpm -V flag for a changed checksum'
+      paths:
+      - answers.txt
+      matches: ^CHECKSUM_FLAG=5/?[ \t]*$
+    - id: answer-repo-dir
+      kind: file
+      'on': control
+      message: 'answers.txt: the directory that holds repository definitions'
+      paths:
+      - answers.txt
+      matches: ^REPO_DIR=/etc/yum\.repos\.d/?[ \t]*$

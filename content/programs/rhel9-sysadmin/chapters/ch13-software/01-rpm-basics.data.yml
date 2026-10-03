@@ -1,0 +1,336 @@
+nvra:
+  title: Reading a package name
+  caption: Select a part of tree-1.8.0-10.el9.x86_64.
+  height: 240
+  mode: select
+  initial: name
+  info:
+    name:
+      tone: blue
+      title: 'Name: tree'
+      text: What the software is called. rpm -q tree asks for exactly this name.
+    version:
+      tone: purple
+      title: 'Version: 1.8.0'
+      text: The version published by the upstream project.
+    release:
+      tone: teal
+      title: 'Release: 10.el9'
+      text: The distributor's build number for that version (10th packaging of 1.8.0), plus the distribution tag (el9 = Enterprise Linux 9). Bug fixes that keep the upstream version raise the release.
+    arch:
+      tone: amber
+      title: 'Architecture: x86_64'
+      text: The CPU type it was built for. noarch means it works on any (scripts, data, docs).
+    ext:
+      tone: gray
+      title: .rpm
+      text: The file form of a package. An installed package lives in the RPM database (/var/lib/rpm), not as a file.
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 100
+    h: 56
+    tone: blue
+    title: tree
+    sub: name
+    mono: true
+    titleSize: 16
+    select: name
+    active:
+    - name
+  - kind: node
+    x: 116
+    y: 28
+    w: 100
+    h: 56
+    tone: purple
+    title: 1.8.0
+    sub: version
+    mono: true
+    titleSize: 16
+    select: version
+    active:
+    - version
+  - kind: node
+    x: 222
+    y: 28
+    w: 130
+    h: 56
+    tone: teal
+    title: 10.el9
+    sub: release
+    mono: true
+    titleSize: 16
+    select: release
+    active:
+    - release
+  - kind: node
+    x: 358
+    y: 28
+    w: 130
+    h: 56
+    tone: amber
+    title: x86_64
+    sub: architecture
+    mono: true
+    titleSize: 16
+    select: arch
+    active:
+    - arch
+  - kind: node
+    x: 494
+    y: 28
+    w: 70
+    h: 56
+    tone: gray
+    title: .rpm
+    sub: file
+    mono: true
+    titleSize: 16
+    select: ext
+    active:
+    - ext
+  - kind: label
+    x: 340
+    y: 126
+    text: name - version - release . architecture
+    size: 12.5
+    muted: true
+verify-flags:
+  title: Reading rpm -V
+  caption: Select a letter of S.5....T.
+  height: 240
+  mode: select
+  initial: s
+  info:
+    s:
+      tone: coral
+      title: 'S: size'
+      text: The file size differs from the one in the package.
+    dot:
+      tone: gray
+      title: . (dot)
+      text: This property is fine. rpm -V prints only files that have something different, and a dot for each property that is unchanged.
+    five:
+      tone: coral
+      title: '5: checksum'
+      text: The contents differ from the package (the MD5/SHA digest does not match). This is the clearest sign a file was edited.
+    t:
+      tone: amber
+      title: 'T: time'
+      text: The modification time differs. A config file you edited shows this, and that is normal; a program that changed was probably modified.
+    other:
+      tone: gray
+      title: M, U, G, L, D, P
+      text: Mode (permissions), User, Group, symbolic Link, Device, caPabilities. A c in the column after the flags marks a configuration file.
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 60
+    h: 56
+    tone: coral
+    title: S
+    sub: size
+    mono: true
+    titleSize: 20
+    select: s
+    active:
+    - s
+  - kind: node
+    x: 76
+    y: 28
+    w: 50
+    h: 56
+    tone: gray
+    title: .
+    sub: mode
+    mono: true
+    titleSize: 20
+    select: dot
+    active:
+    - dot
+  - kind: node
+    x: 132
+    y: 28
+    w: 60
+    h: 56
+    tone: coral
+    title: '5'
+    sub: digest
+    mono: true
+    titleSize: 20
+    select: five
+    active:
+    - five
+  - kind: node
+    x: 198
+    y: 28
+    w: 200
+    h: 56
+    tone: gray
+    title: '....'
+    sub: L D U G
+    mono: true
+    titleSize: 20
+    select: other
+    active:
+    - other
+  - kind: node
+    x: 404
+    y: 28
+    w: 60
+    h: 56
+    tone: amber
+    title: T
+    sub: time
+    mono: true
+    titleSize: 20
+    select: t
+    active:
+    - t
+  - kind: label
+    x: 340
+    y: 126
+    text: S.5....T.    /usr/bin/tree      ← the binary was modified
+    mono: true
+    size: 12.5
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: asking rpm'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: rpm -q tree
+      out: tree-1.8.0-10.el9.x86_64
+    - cmd: rpm -qi tree | head -6
+      out: 'Name        : tree
+
+        Version     : 1.8.0
+
+        Release     : 10.el9
+
+        Architecture: x86_64
+
+        Install Date: Sat Oct  3 09:28:00 2026
+
+        Group       : Unspecified'
+    - cmd: rpm -ql tree
+      out: '/usr/bin/tree
+
+        /usr/lib/.build-id
+
+        /usr/lib/.build-id/d0
+
+        /usr/lib/.build-id/d0/a010245f25272aff8e82aa32809790125b7f0b
+
+        /usr/share/doc/tree
+
+        /usr/share/doc/tree/README
+
+        /usr/share/licenses/tree
+
+        /usr/share/licenses/tree/LICENSE
+
+        /usr/share/man/man1/tree.1.gz'
+    - cmd: rpm -qf /usr/bin/tree
+      out: tree-1.8.0-10.el9.x86_64
+    - cmd: rpm -qf /usr/bin/passwd
+      out: passwd-0.80-12.el9.x86_64
+    - cmd: rpm -qd tree
+      out: '/usr/share/doc/tree/README
+
+        /usr/share/man/man1/tree.1.gz'
+    - cmd: rpm -V tree
+      out: ''
+    - cmd: echo x >> /usr/bin/tree
+      out: ''
+    - cmd: rpm -V tree
+      out: S.5....T.    /usr/bin/tree
+    - cmd: rpm -qa | wc -l
+      out: '375'
+    - cmd: rpm -qa --last | head -2
+      out: 'python3-systemd-234-19.el9.x86_64             Sat Oct  3 17:26:10 2026
+
+        python3-dnf-plugins-core-4.3.0-26.el9.noarch  Sat Oct  3 17:26:10 2026'
+    tasks:
+    - text: Show whether tree is installed, with its exact version.
+      commands:
+      - rpm -q tree
+    - text: List the files that the tree package installed.
+      commands:
+      - rpm -ql tree
+    - text: Find which package owns /usr/bin/passwd.
+      commands:
+      - rpm -qf /usr/bin/passwd
+    - text: Verify the files of tree against the package.
+      commands:
+      - rpm -V tree
+    - text: Modify the binary and verify again.
+      commands:
+      - echo x >> /usr/bin/tree
+      - rpm -V tree
+quick:
+  questions:
+  - id: q-4d6391e406a6
+    q: In tree-1.8.0-10.el9.x86_64, what is 10.el9?
+    options:
+    - 'The release: the distributor''s build of that version'
+    - The version
+    - The architecture
+    answer: 0
+    explain: Name, version, release, architecture.
+  - id: q-a1231a8241c5
+    q: Which command shows which package installed /etc/ssh/sshd_config?
+    options:
+    - rpm -qf /etc/ssh/sshd_config
+    - rpm -ql /etc/ssh/sshd_config
+    - rpm -qi sshd_config
+    answer: 0
+    explain: -qf = query file. -ql lists the files of a package.
+  - id: q-74bdf75db531
+    q: rpm -V prints S.5....T. /usr/bin/tree. What does it tell you?
+    options:
+    - The file size, checksum and time differ from the package
+    - The package is missing
+    - The file is a config file
+    answer: 0
+    explain: Something modified the file after installation.
+  - id: q-33fb780093ad
+    q: Which command lists configuration files of a package?
+    options:
+    - rpm -qc NAME
+    - rpm -qd NAME
+    - rpm -qs NAME
+    answer: 0
+    explain: -qc config files, -qd documentation files.
+  - id: q-cbba16fa4330
+    q: Where does rpm keep the record of installed packages?
+    options:
+    - The RPM database in /var/lib/rpm
+    - /etc/rpm.list
+    - Nowhere
+    answer: 0
+    explain: rpm -qa reads it.
+  - id: q-e1af7c4583b6
+    q: A package is noarch. What does that mean?
+    options:
+    - It works on any CPU architecture
+    - It has no files
+    - It is unsigned
+    answer: 0
+    explain: Typically scripts, data or documentation.

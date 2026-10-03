@@ -1,0 +1,22 @@
+Exercise: sa-software-review (chapter 13 lab)
+
+Work on servera, with sudo or as root.
+
+A local repository
+ 1. A repository in /srv/localrepo holding the packages zip and unzip,
+    downloaded with dnf download --resolve, with metadata built by
+    createrepo_c.
+ 2. /etc/yum.repos.d/local.repo for it: id localrepo, baseurl
+    file:///srv/localrepo, enabled=1, gpgcheck=1 and the same gpgkey line
+    as your distribution's repositories.
+ 3. zip (and its dependency unzip) installed using only that repository.
+
+Other changes
+ 4. wget installed from the normal repositories.
+ 5. The package tree removed.
+ 6. The nginx module stream 1.24 enabled (do not install nginx).
+
+On workstation
+ 7. Fill in answers.txt. Use rpm and ls on servera to find the answers.
+
+Then, on workstation:  lab grade sa-software-review
