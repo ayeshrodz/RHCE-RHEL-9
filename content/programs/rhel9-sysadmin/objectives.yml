@@ -154,6 +154,22 @@
   labs:
   - ch10/lab
   challenges: []
+- id: ch11.operations
+  chapter: ch11
+  lessons:
+  - ch11/journals-and-logs
+  - ch11/time-and-chrony
+  labs:
+  - ch11/lab
+  challenges: []
+- id: ch11.verification
+  chapter: ch11
+  lessons:
+  - ch11/journals-and-logs
+  - ch11/time-and-chrony
+  labs:
+  - ch11/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:

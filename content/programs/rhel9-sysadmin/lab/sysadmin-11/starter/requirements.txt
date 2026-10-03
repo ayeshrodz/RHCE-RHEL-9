@@ -1,0 +1,4 @@
+Make servera journal storage persistent, emit a tagged event, and retrieve it after a reboot. Inspect chrony independently and report whether it has actually selected a source.
+
+Filter logs by host, boot, service and time.
+Make log retention and time synchronization observable.

@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: chronyd is active, but no source is selected. What can you conclude?
+    options:
+    - The daemon runs, but synchronization is not established.
+    - The clock is definitely accurate.
+    - The timezone must be UTC.
+    answer: 0
+    explain: Daemon health and synchronization health are separate observations.
+    id: q-7f8e6525bd4a
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Event
+    text: Carries source, boot and timestamp context; generate a known marker.
+    tone: purple
+  - id: part1
+    title: Retention
+    text: Keeps selected evidence across restart or reboot according to storage policy.
+    tone: teal
+  - id: part2
+    title: Correlation
+    text: Use synchronized clocks and explicit offsets to compare hosts.
+    tone: green
