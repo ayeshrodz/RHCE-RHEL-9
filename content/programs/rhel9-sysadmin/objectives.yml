@@ -58,3 +58,19 @@
   labs:
   - ch03/lab
   challenges: []
+- id: ch04.operations
+  chapter: ch04
+  lessons:
+  - ch04/manual-pages
+  - ch04/documentation-workflow
+  labs:
+  - ch04/lab
+  challenges: []
+- id: ch04.verification
+  chapter: ch04
+  lessons:
+  - ch04/manual-pages
+  - ch04/documentation-workflow
+  labs:
+  - ch04/lab
+  challenges: []

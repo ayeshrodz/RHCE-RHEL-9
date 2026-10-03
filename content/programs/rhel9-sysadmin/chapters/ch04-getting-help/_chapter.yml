@@ -1,9 +1,8 @@
-title: "Getting help"
-goal: "Find the answer yourself using the documentation that is already on the system."
-status: planned
-topics:
-  - "Manual pages and their sections"
-  - "info pages, --help and /usr/share/doc"
-  - "Searching documentation with apropos and man -k"
-  - "Reading option and configuration references"
-  - "Using system documentation when the network is not available"
+title: Getting help
+goal: Find the answer yourself using the documentation that is already on the system.
+objectives:
+- Find installed command and configuration documentation.
+- Use version-matched evidence when diagnosing an unfamiliar option.
+objectiveIds:
+- ch04.operations
+- ch04.verification
