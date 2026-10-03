@@ -1,0 +1,4 @@
+Create an isolated dummy-interface profile on clean servera using 192.0.2.10/24 and no default route. Prove the profile and live address independently, then diagnose the existing path to serverb.
+
+Distinguish live addresses from persistent NetworkManager profiles.
+Diagnose reachability in layers without breaking management access.
