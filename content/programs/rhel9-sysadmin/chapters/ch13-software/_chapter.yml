@@ -1,10 +1,8 @@
-title: "Software management"
-goal: "Install, update and remove software, and manage where it comes from."
-status: planned
-topics:
-  - "Repositories: configuring and using dnf repos"
-  - "Installing, updating and removing packages and groups"
-  - "Modules and streams"
-  - "Querying and verifying packages with rpm"
-  - "Signature checking"
-  - "Building a local repository"
+title: Software management
+goal: Install, update and remove software, and manage where it comes from.
+objectives:
+- Manage trusted repositories and package transactions.
+- Plan a reproducible RHEL 9 installation and safe update.
+objectiveIds:
+- ch13.operations
+- ch13.verification

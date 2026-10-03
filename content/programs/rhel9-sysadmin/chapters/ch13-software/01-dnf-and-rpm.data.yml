@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: DNF check-update exits 100. What does that mean?
+    options:
+    - Updates are available.
+    - No repository exists.
+    - The database must be deleted.
+    answer: 0
+    explain: 100 is the command documented update-available status.
+    id: q-cb85abdafdb7
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Trusted source
+    text: Approved repositories, transport and signing keys define package provenance.
+    tone: purple
+  - id: part1
+    title: Transaction
+    text: DNF resolves dependencies; review intended changes and rollback limits.
+    tone: teal
+  - id: part2
+    title: Runtime
+    text: Verify binaries, running kernel and application after required restarts.
+    tone: green

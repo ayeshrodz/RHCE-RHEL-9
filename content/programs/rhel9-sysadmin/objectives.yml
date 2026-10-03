@@ -186,6 +186,22 @@
   labs:
   - ch12/lab
   challenges: []
+- id: ch13.operations
+  chapter: ch13
+  lessons:
+  - ch13/dnf-and-rpm
+  - ch13/installation-and-maintenance
+  labs:
+  - ch13/lab
+  challenges: []
+- id: ch13.verification
+  chapter: ch13
+  lessons:
+  - ch13/dnf-and-rpm
+  - ch13/installation-and-maintenance
+  labs:
+  - ch13/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
