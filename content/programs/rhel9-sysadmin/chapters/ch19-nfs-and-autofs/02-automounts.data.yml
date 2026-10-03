@@ -1,0 +1,10 @@
+quick:
+  questions:
+  - q: Why does root_squash matter?
+    options:
+    - It prevents client root from automatically acting as server root.
+    - It encrypts NFS traffic.
+    - It provides a backup.
+    answer: 0
+    explain: Root mapping constrains identity; it is not encryption or retention.
+    id: q-8c07ea37cef1

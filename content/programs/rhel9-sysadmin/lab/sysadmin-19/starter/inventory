@@ -1,0 +1,3 @@
+[practice]
+servera.lab.example.com ansible_user=devops
+serverb.lab.example.com ansible_user=devops

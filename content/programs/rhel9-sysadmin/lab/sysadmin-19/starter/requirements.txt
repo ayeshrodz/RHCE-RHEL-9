@@ -1,0 +1,4 @@
+On clean serverb, export a read-only fixture to the lab subnet. On clean servera, mount it through an indirect autofs map and prove the content comes from an NFS child mount.
+
+Mount a defined NFS export with suitable access policy.
+Configure and diagnose direct, indirect and wildcard automounts.
