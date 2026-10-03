@@ -93,7 +93,7 @@ RHEL 9 administration gives your playbooks a concrete goal: packages installed w
 
 For each exercise, check the required state, run the playbook again, and explain any remaining changes. Perform reboot checks when the task requires persistence. Try Challenge mode once you can complete the guided procedure.
 
-For certification planning, read the RHCE exam's published objectives on the Red Hat website, and check which product version applies when you book. This independent community platform provides practice evidence, without guaranteeing an exam result.
+If you are planning a Red Hat certification, read its published objectives on the Red Hat website, and check which product version applies when you book. This independent community platform provides practice evidence, without guaranteeing an exam result.
 
 ## Choose your next step
 

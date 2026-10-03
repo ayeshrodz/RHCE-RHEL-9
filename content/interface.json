@@ -2,7 +2,7 @@
   "Footer": {
     "data": {},
     "text": {
-      "p": ": a free, community-made course written by learners for learners, focused on the RHCE exam objectives. Free to read, free to reuse, open to contributions.",
+      "p": ": a free, community-made course written by learners for learners, focused on Ansible automation for DevOps and system administration. Free to read, free to reuse, open to contributions.",
       "label": "Project",
       "siteFooterHead": "Project",
       "link": "Course overview",
@@ -20,7 +20,7 @@
       "a6": "RHEL 9 documentation",
       "strong": "An independent, community-made study companion. Not affiliated with, sponsored by, or endorsed by Red Hat, Inc.",
       "siteFooterDisclaimer": "This is not official training material and is no substitute for Red Hat's courses, documentation or exam objectives, which remain the authoritative sources.",
-      "p2": "Red Hat, Red Hat Enterprise Linux, RHCE and Ansible are trademarks or registered trademarks of Red Hat, Inc. or its subsidiaries in the United States and other countries. Linux is a registered trademark of Linus Torvalds. All other trademarks belong to their respective owners. These names are used only to describe what the guide is about.",
+      "p2": "Red Hat, Red Hat Enterprise Linux and Ansible are trademarks or registered trademarks of Red Hat, Inc. or its subsidiaries in the United States and other countries. Linux is a registered trademark of Linus Torvalds. All other trademarks belong to their respective owners. These names are used only to describe what the guide is about.",
       "p3": "\u00a9 ",
       "p4": " contributors. Text and diagrams are licensed under",
       "href4": "https://creativecommons.org/licenses/by/4.0/",
