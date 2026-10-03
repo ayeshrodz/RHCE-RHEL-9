@@ -1,6 +1,6 @@
 # Kernel Path
 
-[![Deploy](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/playbook-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
+[![Deploy](https://github.com/ayeshrodz/kernel-path/actions/workflows/deploy.yml/badge.svg)](https://github.com/ayeshrodz/kernel-path/actions/workflows/deploy.yml) [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE) [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT)
 
 **Read it online: https://kernelpath.dev/**
 
