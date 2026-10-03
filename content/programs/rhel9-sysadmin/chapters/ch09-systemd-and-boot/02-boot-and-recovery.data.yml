@@ -1,0 +1,10 @@
+quick:
+  questions:
+  - q: You edited a unit file. What tells systemd to reread it?
+    options:
+    - systemctl daemon-reload
+    - Reloading only the application configuration.
+    - Changing the file owner.
+    answer: 0
+    explain: Manager unit definitions and daemon configuration are distinct layers.
+    id: q-b806173e6cb5

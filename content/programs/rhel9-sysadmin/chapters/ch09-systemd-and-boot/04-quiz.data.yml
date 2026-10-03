@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: A service is enabled but failed. What does enable establish?
+    options:
+    - Startup policy, not successful runtime behavior.
+    - That its application is healthy.
+    - That no dependencies exist.
+    answer: 0
+    explain: Enable and runtime status answer different questions.
+    id: q-dc27e29a1b4b
+  - q: You edited a unit file. What tells systemd to reread it?
+    options:
+    - Reloading only the application configuration.
+    - Changing the file owner.
+    - systemctl daemon-reload
+    answer: 2
+    explain: Manager unit definitions and daemon configuration are distinct layers.
+    id: q-1d69d94560cc
+  - q: Where do rd.break recovery commands belong?
+    options:
+    - In any remote SSH session.
+    - In the disposable VM console break environment.
+    - In a normal workstation shell.
+    answer: 1
+    explain: The paths refer to the early boot environment, and console preparation is essential.
+    id: q-889fc720176a
