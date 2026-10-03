@@ -17,7 +17,7 @@ const NOW = new Date('2026-01-01T00:00:00Z');
 const result = await compile(CONTENT, { now: NOW });
 const json = (file) => JSON.parse(result.files.get(file));
 const site = json('site.json');
-const manifest = json(site.programs[0].manifest);
+const manifest = json(site.programs.find((p) => p.id === 'rhel9-ansible').manifest);
 
 test('the manifest lists every chapter folder and section file in order', () => {
   const dirs = fs

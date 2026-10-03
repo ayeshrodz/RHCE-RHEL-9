@@ -260,7 +260,7 @@ test('known attack strings in content become inert text or are refused', async (
 
 const bundle = await compile('content', { now: new Date('2026-01-01T00:00:00Z') });
 const site = JSON.parse(bundle.files.get('site.json'));
-const manifestFile = site.programs[0].manifest;
+const manifestFile = site.programs.find((p) => p.id === 'rhel9-ansible').manifest;
 const manifest = JSON.parse(bundle.files.get(manifestFile));
 const samples = {
   page: Object.values(manifest.pages).map((f) => JSON.parse(bundle.files.get(f))),

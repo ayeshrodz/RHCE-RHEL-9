@@ -71,3 +71,6 @@ showcase:
   art: automation
   tone: coral
   highlights: [Playbooks, Variables, Roles, Vault, Templates, Troubleshooting]
+  title: Ansible automation on RHEL
+  label: RHEL
+  summary: A hands-on path from your first playbook to automating real Linux administration. Every idea is drawn as a diagram, every exercise runs on a practice lab you build yourself, and every chapter ends with a quiz and a cheat sheet.

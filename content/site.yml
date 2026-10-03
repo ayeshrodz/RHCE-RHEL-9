@@ -4,5 +4,5 @@ tagline: Learn Linux and automation by doing
 description: Free, open learning paths for Linux and automation. Short lessons, browser activities and real exercises on a practice lab you build yourself.
 repo: https://github.com/ayeshrodz/kernel-path
 programs:
-  - rhel9-ansible
   - rhel9-sysadmin
+  - rhel9-ansible
