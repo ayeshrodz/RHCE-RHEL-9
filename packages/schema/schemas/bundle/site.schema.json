@@ -134,6 +134,9 @@
     "interface": {
       "description": "Shared interface copy file.",
       "$ref": "#/$defs/hashedUrl"
+    },
+    "legacyProgram": {
+      "$ref": "../common.schema.json#/$defs/id"
     }
   },
   "$defs": {

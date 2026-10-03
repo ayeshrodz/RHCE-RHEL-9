@@ -91,8 +91,28 @@ function readLabs(dir) {
 /** Interface copy that the engine still reads from content (course, track and UI text). */
 function readInterface(dir) {
   const legacyFile = path.join(dir, 'legacy.yml');
-  if (!fs.existsSync(legacyFile)) return null;
-  const { course, track } = readYaml(legacyFile);
+  if (!fs.existsSync(legacyFile) && !fs.existsSync(path.join(dir, 'progress.json')) && !fs.existsSync(path.join(dir, 'home.json')))
+    return null;
+  const program = readYaml(path.join(dir, 'program.yml'));
+  const detailsFile = path.join(dir, 'details.md');
+  const reference = fs.existsSync(detailsFile)
+    ? parseFile(detailsFile, (source) => parseYaml(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? ''), {})
+    : {};
+  const { course, track } = fs.existsSync(legacyFile)
+    ? readYaml(legacyFile)
+    : {
+        course: { title: program.title, tagline: program.tagline ?? program.summary },
+        track: {
+          id: program.id,
+          label: program.platform.label,
+          platform: {
+            title: reference.title ?? 'Environment and practice',
+            ...(reference.eyebrow ? { eyebrow: reference.eyebrow } : {}),
+            ...(reference.description ? { description: reference.description } : {}),
+            path: '/platform',
+          },
+        },
+      };
   const optional = (name) => (fs.existsSync(path.join(dir, name)) ? readJson(path.join(dir, name)) : null);
   const home = optional('home.json');
   const progress = optional('progress.json');
@@ -138,6 +158,7 @@ export function readContent(contentDir, diagnostics) {
         ? { file: detailsFile, source: fs.readFileSync(detailsFile, 'utf8'), ...readData(detailsFile) }
         : null,
       legacy: readInterface(dir),
+      legacyRoutes: fs.existsSync(path.join(dir, 'legacy.yml')),
       labs: readLabs(dir),
     });
   }

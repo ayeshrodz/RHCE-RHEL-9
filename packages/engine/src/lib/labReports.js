@@ -1,5 +1,12 @@
 import reportSchema from '../data/labReportSchema.json' with { type: 'json' };
 
+let activeCatalog = reportSchema;
+
+/** Install the validated manifest contract when the active program changes. */
+export function setLabReportCatalog(catalog) {
+  activeCatalog = catalog ?? reportSchema;
+}
+
 const record = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const id = (value) => typeof value === 'string' && /^[a-z0-9][a-z0-9:._/-]{0,199}$/.test(value);
 // Exercises that no longer exist. Reports saved for them remain the learner's evidence,
@@ -7,7 +14,7 @@ const id = (value) => typeof value === 'string' && /^[a-z0-9][a-z0-9:._/-]{0,199
 const RETIRED = new Set(['bridge-archive', 'bridge-security']);
 
 /** Validate before saving. Imported reports are the learner's own practice evidence. */
-export function validateLabReport(report, catalog = reportSchema) {
+export function validateLabReport(report, catalog = activeCatalog) {
   if (
     !record(report) ||
     !['kernel-path-lab', 'playbook-path-lab'].includes(report.app) ||
