@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: lvs reports growth but df does not. Which layer may still need expansion?
+    options:
+    - The file system inside the enlarged LV.
+    - The username database.
+    - The journal timezone.
+    answer: 0
+    explain: Block capacity and filesystem capacity are distinct layers.
+    id: q-5a8c6d35dd3d
+  - q: What is the difference between -L +512M and -L 1536M?
+    options:
+    - Both always set the final size to 512 MiB.
+    - Neither changes allocation.
+    - The first adds capacity; the second requests an absolute final size.
+    answer: 2
+    explain: Interpret additive and absolute sizes before applying them.
+    id: q-c77ff360463a
+  - q: Why is lvreduce not a casual rollback for XFS growth?
+    options:
+    - XFS shrinks automatically.
+    - XFS cannot shrink, and reducing its block device can destroy data.
+    - LVs have no filesystems.
+    answer: 1
+    explain: A smaller block layer can truncate data regardless of LVM metadata validity.
+    id: q-df77749aa660
