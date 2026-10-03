@@ -1,0 +1,46 @@
+name: sysadmin-18
+title: Logical volume management
+page: ch18/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: logical-volume
+      'on': servera.lab.example.com
+      vg: vgpractice
+      lv: data
+      minSizeMiB: 1536
+      id: check-1
+      message: Verify logical-volume requirement 1 for Logical volume management
+      targets:
+      - servera.lab.example.com
+    - kind: mount
+      'on': servera.lab.example.com
+      path: /srv/data
+      fstype: xfs
+      persistent: true
+      id: check-2
+      message: Verify mount requirement 2 for Logical volume management
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /srv/data/marker.txt
+      line: lvm-ready
+      id: check-3
+      message: Verify file requirement 3 for Logical volume management
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': control
+      paths:
+      - observations.txt
+      nonEmpty: true
+      id: check-4
+      message: Verify file requirement 4 for Logical volume management

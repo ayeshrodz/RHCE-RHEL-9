@@ -1,10 +1,8 @@
-title: "Logical volume management"
-goal: "Build flexible storage with physical volumes, volume groups and logical volumes."
-status: planned
-topics:
-  - "Physical volumes, volume groups and logical volumes"
-  - "Creating and mounting logical volumes"
-  - "Extending volume groups and logical volumes"
-  - "Extending a file system together with its volume"
-  - "Swap on a logical volume"
-  - "Inspecting and troubleshooting LVM"
+title: Logical volume management
+goal: Build flexible storage with physical volumes, volume groups and logical volumes.
+objectives:
+- Create and inspect PV, VG and LV storage layers.
+- Grow a logical volume and its file system with independent verification.
+objectiveIds:
+- ch18.operations
+- ch18.verification

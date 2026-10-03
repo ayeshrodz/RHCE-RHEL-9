@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: lvs reports growth but df does not. Which layer may still need expansion?
+    options:
+    - The file system inside the enlarged LV.
+    - The username database.
+    - The journal timezone.
+    answer: 0
+    explain: Block capacity and filesystem capacity are distinct layers.
+    id: q-411ba4de5d07
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: PV / VG
+    text: Physical extents enter a capacity pool; inspect free space before allocation.
+    tone: purple
+  - id: part1
+    title: Logical volume
+    text: Allocates block capacity to a named device without implying filesystem growth.
+    tone: teal
+  - id: part2
+    title: File system
+    text: Uses the device; grow with its format-specific tool and verify retained data.
+    tone: green
