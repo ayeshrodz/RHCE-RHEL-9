@@ -1,0 +1,26 @@
+questions:
+  questions:
+  - q: Load is high while CPU usage is low. What should you investigate?
+    options:
+    - Only the number of user accounts.
+    - I/O waits and blocked work as well as CPU.
+    - Only CPU priority.
+    answer: 1
+    explain: Load includes more than CPU execution; high load can accompany blocked I/O.
+    id: q-283ac64ce73e
+  - q: Which nice value gives lower ordinary CPU priority?
+    options:
+    - '15'
+    - '-10'
+    - '-20'
+    answer: 0
+    explain: Higher nice values mean lower scheduling preference, not a fixed usage limit.
+    id: q-c5048823e3e9
+  - q: A killed daemon immediately returns. What is a likely explanation?
+    options:
+    - PIDs never change.
+    - kill always means reboot.
+    - Its service manager has a restart policy.
+    answer: 2
+    explain: A supervised service can create a new process after an unexpected exit.
+    id: q-be03c20cbb1e

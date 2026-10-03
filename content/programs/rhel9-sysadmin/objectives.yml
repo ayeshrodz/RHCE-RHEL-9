@@ -122,3 +122,19 @@
   labs:
   - ch07/lab
   challenges: []
+- id: ch08.operations
+  chapter: ch08
+  lessons:
+  - ch08/process-control
+  - ch08/performance-evidence
+  labs:
+  - ch08/lab
+  challenges: []
+- id: ch08.verification
+  chapter: ch08
+  lessons:
+  - ch08/process-control
+  - ch08/performance-evidence
+  labs:
+  - ch08/lab
+  challenges: []
