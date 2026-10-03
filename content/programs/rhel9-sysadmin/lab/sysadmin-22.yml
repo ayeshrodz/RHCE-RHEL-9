@@ -1,0 +1,80 @@
+name: sysadmin-22
+title: Review and practice
+page: ch22/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: user
+      'on': servera.lab.example.com
+      names:
+      - statusowner
+      groups:
+      - statusops
+      id: check-1
+      message: Verify user requirement 1 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: service
+      'on': servera.lab.example.com
+      names:
+      - httpd
+      active: true
+      enabled: true
+      id: check-2
+      message: Verify service requirement 2 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /var/www/html/index.html
+      line: operations-ready
+      owner: root
+      selinuxType: httpd_sys_content_t
+      id: check-3
+      message: Verify file requirement 3 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: firewall
+      'on': servera.lab.example.com
+      service: http
+      allowed: true
+      runtime: true
+      permanent: true
+      id: check-4
+      message: Verify firewall requirement 4 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: selinux
+      'on': servera.lab.example.com
+      mode: enforcing
+      persistent: true
+      id: check-5
+      message: Verify selinux requirement 5 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: http
+      'on': servera.lab.example.com
+      url: http://127.0.0.1/
+      containsAny:
+      - operations-ready
+      id: check-6
+      message: Verify http requirement 6 for Review and practice
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': control
+      paths:
+      - handover.txt
+      contains:
+      - reboot
+      - restore
+      - SELinux
+      id: check-7
+      message: Verify file requirement 7 for Review and practice

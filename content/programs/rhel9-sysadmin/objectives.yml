@@ -298,6 +298,22 @@
   labs:
   - ch20/lab
   challenges: []
+- id: ch22.operations
+  chapter: ch22
+  lessons:
+  - ch22/operational-review
+  - ch22/incident-and-handover
+  labs:
+  - ch22/lab
+  challenges: []
+- id: ch22.verification
+  chapter: ch22
+  lessons:
+  - ch22/operational-review
+  - ch22/incident-and-handover
+  labs:
+  - ch22/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
