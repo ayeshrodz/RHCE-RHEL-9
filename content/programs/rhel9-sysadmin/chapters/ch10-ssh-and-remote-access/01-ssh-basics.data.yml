@@ -1,0 +1,342 @@
+first-connection:
+  title: Trust on first use
+  caption: Step through your first connection to a new server, and a later one.
+  height: 250
+  mode: steps
+  steps:
+  - title: You connect
+    text: ssh ops@servera. The server answers by presenting its host key, which proves which machine it is.
+  - title: Unknown host
+    text: The key is not in ~/.ssh/known_hosts, so ssh shows its fingerprint and asks whether to trust it. This is the one moment where you must check the fingerprint against a trusted source.
+  - title: You answer yes
+    text: ssh stores the key in ~/.ssh/known_hosts and carries on to the login. Later connections do not ask.
+  - title: 'Next time: same key'
+    text: ssh compares what the server presents with the stored copy. They match, so you go straight to the login, silently.
+  - title: 'Next time: different key'
+    text: 'If the key differs, ssh refuses with WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED. It may be a rebuilt server, or an attacker pretending to be it. Find out which before you touch known_hosts.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: workstation
+    sub: ssh client
+    titleSize: 13
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 520
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: servera
+    sub: sshd · host key
+    titleSize: 13
+    active:
+    - 0
+    - 1
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 520
+      - 48
+    label: connect
+    labelDy: -6
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 110
+    w: 200
+    h: 56
+    tone: amber
+    title: known_hosts
+    sub: no entry yet
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    - 2
+    - 3
+    - 4
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    overrides:
+      sub:
+        '0': checked next
+        '1': no entry yet
+        '2': key saved
+        '3': key matches
+        '4': stored key differs
+  - kind: node
+    x: 390
+    y: 110
+    w: 250
+    h: 56
+    tone: gray
+    title: Are you sure (yes/no)?
+    sub: compare the fingerprint
+    titleSize: 12.5
+    active:
+    - 1
+    - 2
+    - 3
+    - 4
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+    overrides:
+      title:
+        '0': the outcome
+        '1': Are you sure (yes/no)?
+        '2': login prompt
+        '3': login prompt
+        '4': Host key verification failed
+      sub:
+        '0': depends on known_hosts
+        '1': compare the fingerprint
+        '2': after yes, silent
+        '3': silent when they match
+        '4': refused for your safety
+  - kind: arrow
+    points:
+    - - 350
+      - 138
+    - - 390
+      - 138
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+ssh-files:
+  title: The files behind SSH
+  caption: Select a file to see its job.
+  height: 250
+  mode: select
+  initial: known
+  info:
+    known:
+      tone: amber
+      title: ~/.ssh/known_hosts (client)
+      text: 'The servers you have trusted: one line per host, with its public host key. A mismatch here is the "host key changed" warning.'
+    priv:
+      tone: coral
+      title: ~/.ssh/id_ed25519 (client)
+      text: Your PRIVATE key. Mode 600, never copied anywhere. Whoever holds it can log in as you everywhere the public half is installed.
+    pub:
+      tone: green
+      title: ~/.ssh/id_ed25519.pub (client)
+      text: Your PUBLIC key. Safe to share and to put on servers.
+    config:
+      tone: blue
+      title: ~/.ssh/config (client)
+      text: 'Your shortcuts and defaults per host: user name, key to use, port.'
+    auth:
+      tone: purple
+      title: ~/.ssh/authorized_keys (server)
+      text: 'On the server, in the home of the account you log in to: the public keys allowed to log in as that account. Mode 600, in a 700 directory.'
+    hostkey:
+      tone: gray
+      title: /etc/ssh/ssh_host_* (server)
+      text: The server's own identity keys. They are what clients put in known_hosts. Do not copy them to other machines.
+  elements:
+  - kind: group
+    x: 8
+    y: 6
+    w: 330
+    h: 150
+    tone: gray
+    label: workstation (client)
+  - kind: node
+    x: 20
+    y: 30
+    w: 150
+    h: 40
+    tone: amber
+    title: known_hosts
+    mono: true
+    titleSize: 12
+    select: known
+    active:
+    - known
+  - kind: node
+    x: 178
+    y: 30
+    w: 150
+    h: 40
+    tone: blue
+    title: config
+    mono: true
+    titleSize: 12
+    select: config
+    active:
+    - config
+  - kind: node
+    x: 20
+    y: 78
+    w: 150
+    h: 40
+    tone: coral
+    title: id_ed25519
+    mono: true
+    titleSize: 12
+    select: priv
+    active:
+    - priv
+  - kind: node
+    x: 178
+    y: 78
+    w: 150
+    h: 40
+    tone: green
+    title: id_ed25519.pub
+    mono: true
+    titleSize: 12
+    select: pub
+    active:
+    - pub
+  - kind: group
+    x: 350
+    y: 6
+    w: 322
+    h: 150
+    tone: gray
+    label: server
+  - kind: node
+    x: 362
+    y: 30
+    w: 298
+    h: 40
+    tone: purple
+    title: ~/.ssh/authorized_keys
+    mono: true
+    titleSize: 12.5
+    select: auth
+    active:
+    - auth
+  - kind: node
+    x: 362
+    y: 78
+    w: 298
+    h: 40
+    tone: gray
+    title: /etc/ssh/ssh_host_*
+    mono: true
+    titleSize: 12.5
+    select: hostkey
+    active:
+    - hostkey
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on workstation.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on workstation.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on workstation.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: SSH basics'
+    prompt: '[student@workstation ~]$'
+    commands:
+    - cmd: ssh ops@servera hostname
+      out: servera.lab.example.com
+    - cmd: ssh -V
+      out: OpenSSH_9.9p1, OpenSSL 3.5.8 25 Aug 2026
+    - cmd: ssh-keygen -F servera
+      out: "# Host servera found: line 4 \nservera ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEq/gysqG3foWRTSyKuVl0kS/q29bH2U6TkZqKd6dIKr"
+    - cmd: ssh-keygen -lF servera
+      out: "# Host servera found: line 4 \nservera ED25519 SHA256:FiQsZBEl3IPrcGlIbHS4VrVteB5aT0PVAD5VNj91+Hk"
+    - cmd: ssh root@servera ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+      out: 256 SHA256:FiQsZBEl3IPrcGlIbHS4VrVteB5aT0PVAD5VNj91+Hk root@servera (ED25519)
+    - cmd: ssh-keyscan -t ed25519 servera
+      out: '# servera:22 SSH-2.0-OpenSSH_9.9
+
+        servera ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEq/gysqG3foWRTSyKuVl0kS/q29bH2U6TkZqKd6dIKr'
+    - cmd: ssh -o StrictHostKeyChecking=accept-new ops@servera hostname
+      out: 'Warning: Permanently added ''servera'' (ED25519) to the list of known hosts.
+
+        servera.lab.example.com'
+    tasks:
+    - text: Run one command on servera as ops and come back.
+      commands:
+      - ssh ops@servera hostname
+    - text: Show the fingerprint of servera in your known_hosts.
+      commands:
+      - ssh-keygen -lF servera
+    - text: Ask servera for the fingerprint of its own key, to compare.
+      commands:
+      - ssh root@servera ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+quick:
+  questions:
+  - id: q-93e735c83757
+    q: What does ssh check against ~/.ssh/known_hosts?
+    options:
+    - The identity of the server
+    - Your password
+    - Your private key
+    answer: 0
+    explain: known_hosts holds the server keys you trust, so ssh can tell if you are talking to the same machine as before.
+  - id: q-f16069ead8b0
+    q: When is the best moment to verify a host fingerprint?
+    options:
+    - At the first "Are you sure?" prompt, against a trusted source
+    - After logging in
+    - Never; it is automatic
+    answer: 0
+    explain: Trust on first use only works if you actually check the first time (for example by comparing with what the server shows locally).
+  - id: q-0058305f6430
+    q: 'You see "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED". What do you do first?'
+    options:
+    - Find out why the key changed (rebuild?) before removing the old entry
+    - Delete known_hosts
+    - Retry with StrictHostKeyChecking=no
+    answer: 0
+    explain: A changed key may be a rebuilt machine or an attack. Confirm with the owner, then ssh-keygen -R HOST.
+  - id: q-cd7e4dce64a6
+    q: Which command runs one command on a remote host without opening a shell?
+    options:
+    - ssh user@host command
+    - ssh -c user@host
+    - ssh --run command
+    answer: 0
+    explain: Everything after the host is run remotely, and its output comes back.
+  - id: q-2ec9aa528cc2
+    q: Which file must stay private?
+    options:
+    - ~/.ssh/id_ed25519
+    - ~/.ssh/id_ed25519.pub
+    - ~/.ssh/known_hosts
+    answer: 0
+    explain: The private key proves who you are. The .pub file is meant to be shared.
+  - id: q-1bc50c1dfcc4
+    q: Which command shows the fingerprint of a public key file?
+    options:
+    - ssh-keygen -lf FILE
+    - ssh-keygen -p FILE
+    - ssh-add -d FILE
+    answer: 0
+    explain: -l prints the fingerprint; -f names the file.

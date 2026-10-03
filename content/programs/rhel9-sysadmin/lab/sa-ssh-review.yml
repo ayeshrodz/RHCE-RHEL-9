@@ -1,0 +1,121 @@
+name: sa-ssh-review
+title: Secure remote access
+page: ch10/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+- inventory.txt
+- reports/a.txt
+- reports/b.txt
+- reports/c.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    - inventory.txt
+    checks:
+    - id: ops
+      kind: user
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: ops exists and has a key installed with correct permissions
+      names:
+      - ops
+      authorizedKeys: true
+    - id: nopass
+      kind: sshd
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: Password logins are disabled
+      setting: passwordauthentication
+      value: 'no'
+    - id: nox11
+      kind: sshd
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: X11 forwarding is disabled
+      setting: x11forwarding
+      value: 'no'
+    - id: tries
+      kind: sshd
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: At most 3 authentication attempts
+      setting: maxauthtries
+      value: '3'
+    - id: grace
+      kind: sshd
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The login grace time is 30 seconds
+      setting: logingracetime
+      value: '30'
+    - id: dropin
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The settings live in /etc/ssh/sshd_config.d/10-hardening.conf
+      paths:
+      - /etc/ssh/sshd_config.d/10-hardening.conf
+      contains:
+      - PasswordAuthentication no
+    - id: inventory
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: inventory.txt was copied to the home of ops
+      paths:
+      - /home/ops/inventory.txt
+      owner: ops
+      line: web1 10.0.0.11
+    - id: mirror-a
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: mirror/a.txt exists on servera
+      paths:
+      - /home/ops/mirror/a.txt
+      owner: ops
+    - id: mirror-c
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: mirror/c.txt exists on servera
+      paths:
+      - /home/ops/mirror/c.txt
+      owner: ops
+    - id: mirror-b
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: mirror/b.txt was removed by the mirror run
+      paths:
+      - /home/ops/mirror/b.txt
+      exists: false
+    - id: fingerprint
+      kind: file
+      'on': control
+      message: 'answers.txt: the SHA256 fingerprint of the server key'
+      paths:
+      - answers.txt
+      matches: ^HOSTKEY_FINGERPRINT=SHA256:[A-Za-z0-9+/]{43}[ \t]*$
+    - id: keytype
+      kind: file
+      'on': control
+      message: 'answers.txt: the type of that key'
+      paths:
+      - answers.txt
+      matches: ^HOSTKEY_TYPE=ED25519[ \t]*$

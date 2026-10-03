@@ -1,8 +1,12 @@
 title: Secure remote access
-goal: Log in to other machines safely and move work between them.
+goal: Log in to other machines safely with SSH, authenticate with keys, move files between hosts, and harden the SSH server without locking yourself out.
 objectives:
-- Verify remote-host identity and use key authentication.
-- Validate SSH policy and transfer data without losing access.
+  - Connect with ssh, verify host keys, and handle a changed key correctly.
+  - Create a key pair, install it with ssh-copy-id, and fix permission problems that block key logins.
+  - Copy files with scp, sftp and rsync, and define host aliases in ~/.ssh/config.
+  - Configure sshd through drop-ins, check it with sshd -t and sshd -T, and change it safely.
 objectiveIds:
-- ch10.operations
-- ch10.verification
+  - ch10.basics
+  - ch10.keys
+  - ch10.transfer
+  - ch10.hardening

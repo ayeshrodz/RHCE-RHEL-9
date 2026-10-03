@@ -1,0 +1,7 @@
+# Fill in after the = sign, with no spaces.
+
+# The SHA256 fingerprint of servera's Ed25519 host key (copy it from
+# ssh-keygen -lF servera, or from the server itself):
+HOSTKEY_FINGERPRINT=
+# The type of that key, in capitals (the word in brackets in the listing):
+HOSTKEY_TYPE=

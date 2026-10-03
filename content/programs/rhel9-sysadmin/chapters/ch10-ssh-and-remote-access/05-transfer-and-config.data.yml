@@ -1,0 +1,201 @@
+tools:
+  title: Choosing a transfer tool
+  caption: Select a tool to see when it fits.
+  height: 230
+  mode: select
+  initial: rsync
+  info:
+    scp:
+      tone: blue
+      title: scp
+      text: 'The quick copy: scp file host:path or scp host:path . . Add -r for directories. Simple and everywhere, but it always copies everything.'
+    sftp:
+      tone: teal
+      title: sftp
+      text: An interactive session (ls, cd, get, put, bye), handy when you want to browse the remote side before choosing a file.
+    rsync:
+      tone: green
+      title: rsync
+      text: Copies only what changed, can preserve permissions and times (-a), shows progress, and can mirror with --delete. The best tool for repeated copies and backups.
+    config:
+      tone: purple
+      title: ~/.ssh/config
+      text: 'Gives a host a short alias with its user and key, and all three tools above honour it: scp file opsa: .'
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: blue
+    title: scp
+    sub: copy once
+    mono: true
+    titleSize: 16
+    select: scp
+    active:
+    - scp
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: teal
+    title: sftp
+    sub: browse and get
+    mono: true
+    titleSize: 16
+    select: sftp
+    active:
+    - sftp
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: rsync
+    sub: sync changes
+    mono: true
+    titleSize: 16
+    select: rsync
+    active:
+    - rsync
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: purple
+    title: ~/.ssh/config
+    sub: aliases
+    mono: true
+    titleSize: 13
+    select: config
+    active:
+    - config
+  - kind: label
+    x: 340
+    y: 130
+    text: all of them travel inside an SSH connection
+    size: 12.5
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on workstation.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on workstation.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on workstation.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: aliases and transfers'
+    prompt: '[student@workstation ~]$'
+    commands:
+    - cmd: ssh opsa 'echo hello from $(hostname) as $USER'
+      out: hello from servera.lab.example.com as ops
+    - cmd: 'scp inventory.txt opsa:'
+      out: ''
+    - cmd: scp -r reports opsa:/tmp/
+      out: ''
+    - cmd: scp opsa:/etc/hostname ./servera-hostname.txt
+      out: ''
+    - cmd: cat servera-hostname.txt
+      out: servera.lab.example.com
+    - cmd: rsync -av reports/ opsa:rsyncdir/
+      out: 'sending incremental file list
+
+        created directory rsyncdir
+
+        ./
+
+        a.txt
+
+        b.txt
+
+
+        sent 191 bytes  received 88 bytes  558.00 bytes/sec
+
+        total size is 6  speedup is 0.02'
+    - cmd: rsync -av reports/ opsa:rsyncdir/
+      out: 'sending incremental file list
+
+
+        sent 117 bytes  received 19 bytes  272.00 bytes/sec
+
+        total size is 6  speedup is 0.04'
+    - cmd: ssh opsa ls -l
+      out: 'total 8
+
+        -rw-r--r--. 1 ops ops   15 Oct  3 16:49 inventory.txt
+
+        drwxr-xr-x. 2 ops ops 4096 Oct  3 16:49 rsyncdir'
+    tasks:
+    - text: Run a command through the alias opsa.
+      commands:
+      - ssh opsa 'echo hello from $(hostname) as $USER'
+    - text: Copy inventory.txt to the home directory of ops on servera.
+      commands:
+      - 'scp inventory.txt opsa:'
+    - text: Copy the whole reports directory to /tmp on servera.
+      commands:
+      - scp -r reports opsa:/tmp/
+    - text: Synchronise reports/ into rsyncdir on servera, in archive mode.
+      commands:
+      - rsync -av reports/ opsa:rsyncdir/
+quick:
+  questions:
+  - id: q-03104d7817f4
+    q: Which command copies the file notes.txt to ops's home directory on servera?
+    options:
+    - 'scp notes.txt ops@servera:'
+    - scp ops@servera notes.txt
+    - ssh notes.txt ops@servera
+    answer: 0
+    explain: The remote side is user@host:path; an empty path means the home directory.
+  - id: q-847b2a1ad5d5
+    q: What does rsync do that scp does not?
+    options:
+    - Copies only the differences between source and target
+    - Encrypts data
+    - Needs no SSH
+    answer: 0
+    explain: On repeated runs it transfers only what changed, which is faster and safer for backups.
+  - id: q-0c90377bebbe
+    q: In rsync, what is the difference between reports and reports/ as the source?
+    options:
+    - reports copies the directory itself; reports/ copies its contents
+    - None
+    - reports/ skips hidden files
+    answer: 0
+    explain: The trailing slash means "the contents of".
+  - id: q-249cc67e1e8a
+    q: What is ~/.ssh/config used for?
+    options:
+    - Host aliases with user, key and options
+    - Storing host keys
+    - Listing allowed keys
+    answer: 0
+    explain: Host opsa / HostName servera / User ops / IdentityFile ~/.ssh/id_ops
+  - id: q-1c0fd43e3340
+    q: Which command starts an interactive file transfer session?
+    options:
+    - sftp
+    - scp -i
+    - rsync -i
+    answer: 0
+    explain: sftp gives you ls, cd, get and put.
+  - id: q-7642ab117f99
+    q: rsync -avn --delete a/ host:b/ does what?
+    options:
+    - Shows what would change, including deletions, without doing it
+    - Deletes b
+    - Copies silently
+    answer: 0
+    explain: '-n is a dry run: always check it before using --delete for real.'

@@ -265,20 +265,36 @@
   - ch09/exercise-fstab
   - ch09/lab
   challenges: []
-- id: ch10.operations
+- id: ch10.basics
   chapter: ch10
   lessons:
-  - ch10/ssh-identity
-  - ch10/ssh-policy-and-transfer
+  - ch10/ssh-basics
   labs:
+  - ch10/exercise-hostkeys
   - ch10/lab
   challenges: []
-- id: ch10.verification
+- id: ch10.keys
   chapter: ch10
   lessons:
-  - ch10/ssh-identity
-  - ch10/ssh-policy-and-transfer
+  - ch10/keys
   labs:
+  - ch10/exercise-keys
+  - ch10/lab
+  challenges: []
+- id: ch10.transfer
+  chapter: ch10
+  lessons:
+  - ch10/transfer-and-config
+  labs:
+  - ch10/exercise-transfer
+  - ch10/lab
+  challenges: []
+- id: ch10.hardening
+  chapter: ch10
+  lessons:
+  - ch10/hardening
+  labs:
+  - ch10/exercise-hardening
   - ch10/lab
   challenges: []
 - id: ch11.operations
