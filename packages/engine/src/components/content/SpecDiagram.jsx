@@ -72,12 +72,21 @@ export default function SpecDiagram({ spec }) {
             dim={dim}
           />
         );
-        return element.select ? (
-          <g {...common} onClick={choose(element.select)} style={{ cursor: 'pointer' }}>
+        if (!element.select) return group;
+        const select = choose(element.select);
+        return (
+          <g
+            {...common}
+            className="dg-group-select"
+            role="button"
+            tabIndex={0}
+            aria-pressed={active}
+            aria-label={pick(element, 'label', view)}
+            onClick={select}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), select())}
+          >
             {group}
           </g>
-        ) : (
-          group
         );
       }
       case 'arrow': {
