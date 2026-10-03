@@ -1,0 +1,9 @@
+title: "Secure remote access"
+goal: "Log in to other machines safely and move work between them."
+status: planned
+topics:
+  - "Connecting with ssh"
+  - "Key-based authentication: generating and distributing keys"
+  - "Configuring and hardening the SSH server"
+  - "Copying files with scp, sftp and rsync"
+  - "Running commands on remote systems"

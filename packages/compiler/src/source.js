@@ -26,8 +26,19 @@ function readData(file) {
   return { dataFile, dataSource: fs.existsSync(dataFile) ? fs.readFileSync(dataFile, 'utf8') : null };
 }
 
-const readYaml = (file, fallback = {}) => (fs.existsSync(file) ? (parseYaml(fs.readFileSync(file, 'utf8')) ?? fallback) : fallback);
-const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+// A file that cannot be parsed is reported against that file, like any other content error, and read as
+// empty so that the rest of the problems are still found.
+let problems = null;
+function parseFile(file, parse, fallback) {
+  try {
+    return parse(fs.readFileSync(file, 'utf8')) ?? fallback;
+  } catch (error) {
+    problems.error(file, null, `cannot be read: ${error.message}`);
+    return fallback;
+  }
+}
+const readYaml = (file, fallback = {}) => (fs.existsSync(file) ? parseFile(file, parseYaml, fallback) : fallback);
+const readJson = (file) => parseFile(file, JSON.parse, {});
 
 function readChapters(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -47,7 +58,12 @@ function readChapters(dir) {
         .map((file) => {
           const full = path.join(chapterDir, file);
           const source = fs.readFileSync(full, 'utf8');
-          const front = parseYaml(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? '') ?? {};
+          let front = {};
+          try {
+            front = parseYaml(source.match(FRONTMATTER)?.[0].replace(/^---\r?\n|\r?\n---\r?\n?$/g, '') ?? '') ?? {};
+          } catch (error) {
+            problems.error(full, null, `frontmatter cannot be read: ${error.message}`);
+          }
           const slug = front.slug ?? file.replace(/\.md$/, '').replace(/^\d+-/, '');
           return { file: full, source, ...readData(full), front, slug, kind: front.kind, minutes: front.minutes };
         })
@@ -94,6 +110,7 @@ function readInterface(dir) {
 
 /** The source model the compiler works on: one site and its programs, in site order. */
 export function readContent(contentDir, diagnostics) {
+  problems = diagnostics;
   const siteFile = path.join(contentDir, 'site.yml');
   if (!fs.existsSync(siteFile)) {
     diagnostics.error(siteFile, null, 'missing site.yml');

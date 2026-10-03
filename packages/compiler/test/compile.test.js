@@ -355,3 +355,10 @@ test('an exercise must be taught, defined once, and have its starter files', asy
     ).errors.some((e) => /not valid YAML/.test(e)),
   );
 });
+
+test('a file that cannot be read is a content error with its file name, not a crash', async () => {
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: [unclosed\n' } });
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: !!js/function "x"\n' } });
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: a\ntitle: b\n' } });
+  await rejects('text', /01-page\.md.*frontmatter cannot be read/, { front: 'title: [unclosed' });
+});

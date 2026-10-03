@@ -1,0 +1,30 @@
+apiVersion: 1
+id: rhel9-sysadmin
+title: Linux system administration on RHEL 9
+label: SysAdmin
+tagline: "Learn core Linux administration by doing"
+summary: "A hands-on path through the core skills of a Red Hat Enterprise Linux 9 system administrator, from the command line to containers, built on the published certification objectives and the RHEL 9 documentation. It is planned: the outline below shows what each chapter will cover."
+platform:
+  family: rhel
+  version: "9"
+  label: RHEL 9
+status: planned
+stages:
+  - title: Foundations
+    chapters: [2, 3, 4, 5]
+    text: "The shell, files, built-in help and text tools."
+  - title: Users and access
+    chapters: [6, 7, 10]
+    text: "Accounts, permissions and secure remote access."
+  - title: Running systems
+    chapters: [8, 9, 11, 15]
+    text: "Processes, services, boot, logs and scheduled work."
+  - title: Network and security
+    chapters: [12, 16, 20]
+    text: "Addressing, SELinux and the firewall."
+  - title: Software and storage
+    chapters: [13, 14, 17, 18, 19]
+    text: "Packages, archives, disks, LVM and network file systems."
+  - title: Containers and review
+    chapters: [21, 22]
+    text: "Podman, then everything together."

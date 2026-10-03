@@ -1,0 +1,10 @@
+title: "SELinux"
+goal: "Keep SELinux enforcing and fix the problems it reveals."
+status: planned
+topics:
+  - "Modes and making them persistent"
+  - "Contexts on files, processes and ports"
+  - "Restoring and changing contexts"
+  - "Booleans"
+  - "Reading denials and troubleshooting"
+  - "Allowing services on non-standard ports"
