@@ -254,7 +254,7 @@ practice:
       - ss -tulpn
 quick:
   questions:
-  - id: q-84f51b214960
+  - id: q-1c24f298c970
     q: A host has 172.25.250.10/24. Which address is on the SAME network?
     options:
     - 172.25.250.77
@@ -262,7 +262,7 @@ quick:
     - 172.26.250.10
     answer: 0
     explain: With /24, only the last number differs inside the network.
-  - id: q-a0b01d11d845
+  - id: q-5e5b0b3b6620
     q: What does the default gateway do?
     options:
     - It forwards traffic for networks the host is not directly on
@@ -270,7 +270,7 @@ quick:
     - It assigns addresses
     answer: 0
     explain: It is a router on the local network, used for everything else.
-  - id: q-d2f955321daa
+  - id: q-e7041820ac6c
     q: Which command shows the routing table?
     options:
     - ip route
@@ -278,7 +278,7 @@ quick:
     - ss -r
     answer: 0
     explain: default via GATEWAY dev INTERFACE is the line to look for.
-  - id: q-331a4716bdaa
+  - id: q-1baf75459bc2
     q: What does /24 mean as a netmask?
     options:
     - 255.255.255.0
@@ -286,7 +286,7 @@ quick:
     - 255.0.0.0
     answer: 0
     explain: 24 one-bits, written as four bytes.
-  - id: q-525b9c9318b9
+  - id: q-9e2624a1d973
     q: Which command lists open listening ports and the programs using them?
     options:
     - ss -tulpn
@@ -294,7 +294,7 @@ quick:
     - ping -l
     answer: 0
     explain: t tcp, u udp, l listening, p process, n numbers.
-  - id: q-263ec984eea9
+  - id: q-b072e3822b15
     q: ping works but a web page does not load. Which layer is the likely problem?
     options:
     - The port or the service (firewall or not listening), not the address

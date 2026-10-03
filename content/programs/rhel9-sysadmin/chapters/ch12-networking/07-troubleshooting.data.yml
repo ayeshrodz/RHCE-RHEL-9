@@ -203,7 +203,7 @@ practice:
         --- serverb.lab.example.com ping statistics ---
 
         1 packets transmitted, 1 received, 0% packet loss, time 0ms'
-    - cmd: ssh serverb ss -tlnp | grep 8080
+    - cmd: ss -tlnp | grep 8080
       out: LISTEN 0      5          127.0.0.1:8080      0.0.0.0:*    users:(("python3",pid=679,fd=3))
     - cmd: curl -sS -m 5 http://serverb:8080/
       out: 'curl: (7) Failed to connect to serverb port 8080: Connection refused'
@@ -218,12 +218,12 @@ practice:
     - text: Check that serverb itself answers a ping.
       commands:
       - ping -c 1 serverb
-    - text: See on serverb what is listening on port 8080, and on which address.
+    - text: On serverb, show what listens on port 8080 and on which address.
       commands:
-      - ssh serverb ss -tlnp | grep 8080
+      - ss -tlnp | grep 8080
 quick:
   questions:
-  - id: q-a17ac401fd54
+  - id: q-67f305df9dc4
     q: ping to the server works, but curl says "No route to host". What is the most likely cause?
     options:
     - A firewall on the server rejects the port
@@ -231,7 +231,7 @@ quick:
     - DNS is down
     answer: 0
     explain: The address is reachable; the specific port is rejected.
-  - id: q-543dad979b7d
+  - id: q-864182f0b06c
     q: curl says "Connection refused". What does it mean?
     options:
     - The host answered, but nothing listens on that port
@@ -239,7 +239,7 @@ quick:
     - DNS failed
     answer: 0
     explain: Check ss -tlnp on the server; the service may be stopped or bound to another address.
-  - id: q-f027043a6bf5
+  - id: q-b81de55522a3
     q: ss -tlnp shows 127.0.0.1:8080 for a service. Who can reach it?
     options:
     - Only programs on the same host
@@ -247,7 +247,7 @@ quick:
     - Nobody
     answer: 0
     explain: It listens on the loopback address only. 0.0.0.0 means every address.
-  - id: q-e8944862a3f3
+  - id: q-b56b8a036a57
     q: A name does not resolve but pinging the IP address works. Which layer is broken?
     options:
     - Name resolution
@@ -255,7 +255,7 @@ quick:
     - The link
     answer: 0
     explain: Check getent hosts, /etc/hosts and /etc/resolv.conf.
-  - id: q-45de6702a43c
+  - id: q-772470f1a23e
     q: Which command traces the path to a destination and shows each hop?
     options:
     - tracepath
@@ -263,7 +263,7 @@ quick:
     - hostnamectl
     answer: 0
     explain: tracepath (or traceroute) lists the routers on the way.
-  - id: q-267bc11b5f1a
+  - id: q-8980a1797f1c
     q: Which first step suits a connectivity problem best?
     options:
     - 'Work up from the link: link, address, gateway, target, name, port'

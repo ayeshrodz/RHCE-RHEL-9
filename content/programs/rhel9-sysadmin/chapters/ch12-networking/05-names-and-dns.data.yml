@@ -199,7 +199,7 @@ practice:
       - getent hosts fake
 quick:
   questions:
-  - id: q-76b3b324f67b
+  - id: q-39a3e7fe2d13
     q: A name resolves differently with dig and with getent. Which one shows what programs will see?
     options:
     - getent hosts
@@ -207,7 +207,7 @@ quick:
     - host
     answer: 0
     explain: dig talks to DNS only. getent follows nsswitch.conf, so it includes /etc/hosts.
-  - id: q-7e24b6a12856
+  - id: q-e00839634d57
     q: Where do you set the host name permanently?
     options:
     - hostnamectl set-hostname NAME
@@ -215,7 +215,7 @@ quick:
     - ip link set name
     answer: 0
     explain: It writes /etc/hostname and applies it at once.
-  - id: q-561f9f76af73
+  - id: q-9b5fa6e2c120
     q: /etc/hosts and DNS disagree about a name. Which wins on a default RHEL?
     options:
     - /etc/hosts (files come first)
@@ -223,7 +223,7 @@ quick:
     - The one listed last
     answer: 0
     explain: 'nsswitch.conf says: files dns.'
-  - id: q-d0b9d321775c
+  - id: q-af5e1efde67c
     q: Which file lists the DNS servers?
     options:
     - /etc/resolv.conf
@@ -231,7 +231,7 @@ quick:
     - /etc/hostname
     answer: 0
     explain: NetworkManager writes it from the connection profile. To change DNS permanently, change the profile.
-  - id: q-b6b9d506e29f
+  - id: q-db4b44305712
     q: What does the search domain do?
     options:
     - It is appended to short names such as serverb
@@ -239,7 +239,7 @@ quick:
     - It lists mail servers
     answer: 0
     explain: serverb is tried as serverb.lab.example.com.
-  - id: q-390f131c3c2a
+  - id: q-e21c3ae0b320
     q: Which command shows the A record only, briefly?
     options:
     - dig +short NAME
