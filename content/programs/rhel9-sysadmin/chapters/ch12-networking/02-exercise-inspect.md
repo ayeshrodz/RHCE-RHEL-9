@@ -102,15 +102,15 @@ tcp   LISTEN 0      128             [::]:22           [::]:*   users:(("sshd",pi
   {% /task %}
 
   {% task id="task-7b311d5beaf0" title="Compare with serverb" %}
-    Run the same `ip -br addr` and `ip route` on serverb. What is the same, and what differs?
+    Run the same `ip -br addr` and `ip route` on serverb (from workstation: the servers have no ssh key for each other). What is the same, and what differs?
 
     {% reveal title="Show solution" %}
 
 ```console
-[student@servera ~]$ ssh serverb 'ip -br addr show enp5s0; ip route | head -1'
+[student@servera ~]$ exit
+[student@workstation ~]$ ssh student@serverb 'ip -br addr show enp5s0; ip route | head -1'
 enp5s0           UP             172.25.250.11/24 fe80::216:3eff:fe04:a5a7/64
 default via 172.25.250.254 dev enp5s0 proto dhcp src 172.25.250.11 metric 100
-[student@servera ~]$ exit
 ```
 
     Same network and gateway; different host part of the address (.11) and a different MAC address.

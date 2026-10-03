@@ -51,10 +51,10 @@ success
 curl: (7) Failed to connect to serverb port 8080: Connection refused
 ```
 
-Now the packet arrives, and the server says no. Look at the server side:
+Now the packet arrives, and the server says no. Look at the server side, on serverb itself:
 
 ```console
-[root@servera ~]# ssh serverb ss -tlnp | grep 8080
+[root@serverb ~]# ss -tlnp | grep 8080
 LISTEN 0      5          127.0.0.1:8080      0.0.0.0:*    users:(("python3",pid=679,fd=3))
 ```
 
