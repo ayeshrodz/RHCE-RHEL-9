@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: You need the fields in /etc/passwd, not the password-changing command. What do you open?
+    options:
+    - man 5 passwd
+    - man 1 passwd
+    - A latest-version password reset tutorial.
+    answer: 0
+    explain: Manual sections disambiguate command references from file formats.
+    id: q-25d4697792f8
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Question
+    text: Describe the expected and observed behavior, including the host and exact version.
+    tone: purple
+  - id: part1
+    title: Reference
+    text: Use the command section, configuration section or vendor guide that answers the question.
+    tone: teal
+  - id: part2
+    title: Experiment
+    text: Test one hypothesis on a fixture and record evidence, limits and rollback.
+    tone: green
