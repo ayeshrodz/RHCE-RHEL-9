@@ -138,6 +138,22 @@
   labs:
   - ch08/lab
   challenges: []
+- id: ch10.operations
+  chapter: ch10
+  lessons:
+  - ch10/ssh-identity
+  - ch10/ssh-policy-and-transfer
+  labs:
+  - ch10/lab
+  challenges: []
+- id: ch10.verification
+  chapter: ch10
+  lessons:
+  - ch10/ssh-identity
+  - ch10/ssh-policy-and-transfer
+  labs:
+  - ch10/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:

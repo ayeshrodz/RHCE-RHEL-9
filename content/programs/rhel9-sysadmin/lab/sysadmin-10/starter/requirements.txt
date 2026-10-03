@@ -1,0 +1,4 @@
+Set up a passphrase-protected practice key from workstation to clean servera, transfer a report, and deny root SSH login while keeping the student access path working.
+
+Verify remote-host identity and use key authentication.
+Validate SSH policy and transfer data without losing access.

@@ -1,9 +1,8 @@
-title: "Secure remote access"
-goal: "Log in to other machines safely and move work between them."
-status: planned
-topics:
-  - "Connecting with ssh"
-  - "Key-based authentication: generating and distributing keys"
-  - "Configuring and hardening the SSH server"
-  - "Copying files with scp, sftp and rsync"
-  - "Running commands on remote systems"
+title: Secure remote access
+goal: Log in to other machines safely and move work between them.
+objectives:
+- Verify remote-host identity and use key authentication.
+- Validate SSH policy and transfer data without losing access.
+objectiveIds:
+- ch10.operations
+- ch10.verification
