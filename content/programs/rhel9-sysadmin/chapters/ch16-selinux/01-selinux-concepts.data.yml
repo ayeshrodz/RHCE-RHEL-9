@@ -1,0 +1,380 @@
+context:
+  title: A security context
+  caption: Select a part of system_u:object_r:httpd_sys_content_t:s0.
+  height: 260
+  mode: select
+  initial: type
+  info:
+    user:
+      tone: gray
+      title: 'SELinux user: system_u'
+      text: The SELinux identity. Not the same as a Linux account name. Rarely needed in the targeted policy.
+    role:
+      tone: gray
+      title: 'Role: object_r'
+      text: Roles group what a user may do. Files always have object_r. In the targeted policy you rarely deal with roles.
+    type:
+      tone: green
+      title: 'Type: httpd_sys_content_t'
+      text: 'The part that matters in everyday administration. The policy is written as rules between types: "processes of type httpd_t may read files of type httpd_sys_content_t". The type name usually ends in _t.'
+    level:
+      tone: gray
+      title: 'Level: s0'
+      text: A sensitivity level (and categories) used by MLS/MCS policies, for example to separate containers or virtual machines from each other. Leave it alone for now.
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 150
+    h: 60
+    tone: gray
+    title: system_u
+    sub: user
+    mono: true
+    titleSize: 14
+    select: user
+    active:
+    - user
+  - kind: node
+    x: 176
+    y: 28
+    w: 130
+    h: 60
+    tone: gray
+    title: object_r
+    sub: role
+    mono: true
+    titleSize: 14
+    select: role
+    active:
+    - role
+  - kind: node
+    x: 322
+    y: 28
+    w: 230
+    h: 60
+    tone: green
+    title: httpd_sys_content_t
+    sub: type  ← the one that matters
+    mono: true
+    titleSize: 14
+    select: type
+    active:
+    - type
+  - kind: node
+    x: 568
+    y: 28
+    w: 102
+    h: 60
+    tone: gray
+    title: s0
+    sub: level
+    mono: true
+    titleSize: 14
+    select: level
+    active:
+    - level
+two-locks:
+  title: Two locks on every door
+  caption: Step through httpd reading /srv/web/index.html.
+  height: 260
+  mode: steps
+  steps:
+  - title: The request
+    text: httpd (process type httpd_t, running as the user apache) wants to read /srv/web/index.html, a file labelled var_t.
+  - title: 'Lock 1: ordinary permissions'
+    text: 'First the familiar check: owner, group and mode (chapter 7). The file is readable by everyone, so this lock opens.'
+  - title: 'Lock 2: SELinux policy'
+    text: 'Then the kernel asks the SELinux policy: may httpd_t read a file of type var_t? There is no such rule, so the answer is NO. The access is denied, and an AVC message is logged.'
+  - title: Fix the label, not the permissions
+    text: 'Relabel the file to httpd_sys_content_t, which the policy does allow httpd_t to read. Now both locks open. chmod 777 would not have helped: the second lock never looks at permission bits.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 130
+    h: 56
+    tone: blue
+    title: httpd
+    sub: httpd_t
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 170
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: permissions
+    sub: rwx · owner · group
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 350
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: SELinux policy
+    sub: type rules
+    titleSize: 12.5
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 530
+    y: 20
+    w: 140
+    h: 56
+    tone: coral
+    title: index.html
+    sub: var_t
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+    - 2
+    - 3
+    overrides:
+      sub:
+        '0': var_t
+        '1': var_t
+        '2': var_t
+        '3': httpd_sys_content_t
+  - kind: arrow
+    points:
+    - - 140
+      - 48
+    - - 170
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 320
+      - 48
+    - - 350
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 500
+      - 48
+    - - 530
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 150
+    y: 120
+    w: 380
+    h: 44
+    tone: gray
+    title: both must say yes
+    titleSize: 12.5
+    active:
+    - 1
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+modes:
+  title: SELinux modes
+  caption: Select a mode.
+  height: 240
+  mode: select
+  initial: enforcing
+  info:
+    enforcing:
+      tone: green
+      title: Enforcing
+      text: 'The policy is applied: forbidden accesses are blocked and logged. The right setting for every production system.'
+    permissive:
+      tone: amber
+      title: Permissive
+      text: 'The policy is evaluated but nothing is blocked: violations are only logged. Use it briefly to test "is SELinux the cause?", then switch back. setenforce 0 sets it until reboot.'
+    disabled:
+      tone: coral
+      title: Disabled
+      text: No SELinux. Re-enabling later requires relabelling the whole file system. Do not use it to make a problem go away.
+    persist:
+      tone: gray
+      title: Where the mode is set
+      text: 'Right now: setenforce 1|0 (temporary). Permanently: SELINUX=enforcing in /etc/selinux/config. getenforce and sestatus show the current mode.'
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: Enforcing
+    sub: block + log
+    titleSize: 14
+    select: enforcing
+    active:
+    - enforcing
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: amber
+    title: Permissive
+    sub: log only
+    titleSize: 14
+    select: permissive
+    active:
+    - permissive
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: coral
+    title: Disabled
+    sub: 'off'
+    titleSize: 14
+    select: disabled
+    active:
+    - disabled
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: gray
+    title: config
+    sub: /etc/selinux/config
+    mono: true
+    titleSize: 11.5
+    select: persist
+    active:
+    - persist
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: reading SELinux contexts'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: getenforce
+      out: Enforcing
+    - cmd: sestatus | head -4
+      out: 'SELinux status:                 enabled
+
+        SELinuxfs mount:                /sys/fs/selinux
+
+        SELinux root directory:         /etc/selinux
+
+        Loaded policy name:             targeted'
+    - cmd: id -Z
+      out: unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+    - cmd: ls -dZ /etc/ssh /home/student /tmp /usr/bin/passwd /var/log/messages
+      out: "          system_u:object_r:etc_t:s0 /etc/ssh\nsystem_u:object_r:user_home_dir_t:s0 /home/student\n          unconfined_u:object_r:user_tmp_t:s0 /tmp\n  system_u:object_r:passwd_exec_t:s0 /usr/bin/passwd\n      system_u:object_r:var_log_t:s0 /var/log/messages"
+    - cmd: ps -eZ | grep -E "sshd|chronyd" | head -2
+      out: 'system_u:system_r:chronyd_t:s0      464 ?        00:00:00 chronyd
+
+        system_u:system_r:sshd_t:s0-s0:c0.c1023 641 ?    00:00:00 sshd'
+    - cmd: ls -Z /usr/sbin/sshd /usr/sbin/chronyd
+      out: "system_u:object_r:chronyd_exec_t:s0 /usr/sbin/chronyd\n   system_u:object_r:sshd_exec_t:s0 /usr/sbin/sshd"
+    - cmd: grep -v "^#" /etc/selinux/config | grep -v "^$"
+      out: 'SELINUX=enforcing
+
+        SELINUXTYPE=targeted'
+    tasks:
+    - text: Show the current SELinux mode.
+      commands:
+      - getenforce
+    - text: Show your own security context.
+      commands:
+      - id -Z
+    - text: Show the context of some directories and files.
+      commands:
+      - ls -dZ /etc/ssh /home/student /tmp /usr/bin/passwd /var/log/messages
+    - text: Show the context of running services.
+      commands:
+      - ps -eZ | grep -E "sshd|chronyd" | head -2
+    - text: Show where the permanent mode is configured.
+      commands:
+      - grep -v "^#" /etc/selinux/config | grep -v "^$"
+quick:
+  questions:
+  - id: q-08f7547d440f
+    q: Which part of a context matters most in everyday SELinux administration?
+    options:
+    - The type (the _t name)
+    - The user
+    - The level
+    answer: 0
+    explain: The targeted policy is a set of rules between types.
+  - id: q-9fe3dd8b0d3b
+    q: A web server gets 403 even though the file is world-readable. SELinux could be the cause. Why do file permissions not help?
+    options:
+    - SELinux is a second check that ignores mode bits
+    - chmod is disabled
+    - The file is encrypted
+    answer: 0
+    explain: Both the ordinary permissions and the SELinux policy must allow the access.
+  - id: q-ab1a02c43fd4
+    q: Which command shows the current mode?
+    options:
+    - getenforce
+    - ls -Z
+    - id -u
+    answer: 0
+    explain: sestatus gives more detail.
+  - id: q-647aa0ecbb32
+    q: What does setenforce 0 do?
+    options:
+    - Switches to permissive mode until the next reboot
+    - Disables SELinux permanently
+    - Deletes the policy
+    answer: 0
+    explain: Permanent changes go in /etc/selinux/config.
+  - id: q-5f9ce1385e8a
+    q: Which option of ls shows security contexts?
+    options:
+    - -Z
+    - -z
+    - -s
+    answer: 0
+    explain: ps -Z and id -Z do the same for processes and users.
+  - id: q-feebd4a824f4
+    q: Why is switching to disabled a bad answer to a denial?
+    options:
+    - It removes protection for the whole system and needs a relabel to undo
+    - It is not allowed
+    - It slows the boot
+    answer: 0
+    explain: Find the label, boolean or port that is wrong instead.

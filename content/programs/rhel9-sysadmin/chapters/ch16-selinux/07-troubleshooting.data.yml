@@ -1,0 +1,339 @@
+workflow:
+  title: From denial to fix
+  caption: Step through diagnosing an SELinux problem.
+  height: 260
+  mode: steps
+  steps:
+  - title: 1 · Is it SELinux?
+    text: 'Switch to permissive for one test: setenforce 0, repeat the action, setenforce 1. If it now works, SELinux was blocking it. If not, look elsewhere (permissions, service, firewall).'
+  - title: 2 · Read the denial
+    text: Denials are logged as AVC records in /var/log/audit/audit.log (grep AVC), and sealert -a /var/log/audit/audit.log explains them in words. The record names the process (scontext), the target (tcontext) and what was refused.
+  - title: 3 · Decide which kind
+    text: A file with the wrong type → relabel (semanage fcontext + restorecon). A feature the policy has a switch for → setsebool -P. A service on a non-standard port → semanage port. Otherwise, think before writing a module.
+  - title: 4 · Apply the smallest fix
+    text: Change one thing. Do not set the system permissive or disabled to "fix" it.
+  - title: 5 · Test again with enforcing
+    text: Repeat the original action in enforcing mode, and check that no new denials appeared.
+  elements:
+  - kind: node
+    x: 8
+    y: 24
+    w: 128
+    h: 56
+    tone: coral
+    title: is it SELinux?
+    sub: setenforce 0 / 1
+    titleSize: 11.5
+    active:
+    - 0
+  - kind: node
+    x: 144
+    y: 24
+    w: 128
+    h: 56
+    tone: purple
+    title: read denial
+    sub: audit.log · sealert
+    titleSize: 11.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 280
+    y: 24
+    w: 128
+    h: 56
+    tone: amber
+    title: which kind?
+    sub: label · bool · port
+    titleSize: 11.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 416
+    y: 24
+    w: 128
+    h: 56
+    tone: blue
+    title: smallest fix
+    sub: one change
+    titleSize: 11.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 552
+    y: 24
+    w: 118
+    h: 56
+    tone: green
+    title: test enforcing
+    sub: no new AVC
+    titleSize: 11.5
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 136
+      - 52
+    - - 144
+      - 52
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 272
+      - 52
+    - - 280
+      - 52
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 408
+      - 52
+    - - 416
+      - 52
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 544
+      - 52
+    - - 552
+      - 52
+    visible:
+    - 4
+  - kind: node
+    x: 150
+    y: 120
+    w: 380
+    h: 44
+    tone: gray
+    title: never leave the system permissive
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+avc:
+  title: Reading an AVC record
+  caption: Select a part of the log line.
+  height: 260
+  mode: select
+  initial: denied
+  info:
+    denied:
+      tone: coral
+      title: 'avc: denied { open }'
+      text: 'What happened: the action that was refused (open, read, getattr, write, name_bind …). denied means blocked; permissive=1 at the end would mean it was only logged.'
+    comm:
+      tone: blue
+      title: comm="httpd"
+      text: Which program tried it. path="/srv/web/moved.html" is the file it tried to reach.
+    s:
+      tone: purple
+      title: scontext=…httpd_t…
+      text: 'The SOURCE context: the process. Its type httpd_t is the "who".'
+    t:
+      tone: amber
+      title: tcontext=…user_tmp_t…
+      text: 'The TARGET context: the file. Its type user_tmp_t is the problem: httpd_t has no rule allowing access to it.'
+    class:
+      tone: gray
+      title: tclass=file
+      text: 'What kind of object: file, dir, tcp_socket, … The fix is usually to make tcontext''s type what the policy allows for that scontext.'
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 170
+    h: 56
+    tone: coral
+    title: 'avc:  denied  { open }'
+    sub: the refused action
+    mono: true
+    titleSize: 12
+    select: denied
+    active:
+    - denied
+  - kind: node
+    x: 190
+    y: 28
+    w: 150
+    h: 56
+    tone: blue
+    title: comm="httpd"
+    sub: the program
+    mono: true
+    titleSize: 12
+    select: comm
+    active:
+    - comm
+  - kind: node
+    x: 350
+    y: 28
+    w: 150
+    h: 56
+    tone: purple
+    title: …httpd_t…
+    sub: scontext
+    mono: true
+    titleSize: 13
+    select: s
+    active:
+    - s
+  - kind: node
+    x: 510
+    y: 28
+    w: 160
+    h: 56
+    tone: amber
+    title: …user_tmp_t…
+    sub: tcontext
+    mono: true
+    titleSize: 13
+    select: t
+    active:
+    - t
+  - kind: node
+    x: 190
+    y: 100
+    w: 150
+    h: 50
+    tone: gray
+    title: tclass=file
+    sub: object
+    mono: true
+    titleSize: 12
+    select: class
+    active:
+    - class
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: finding the cause'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" http://localhost/moved.html
+      out: '403'
+    - cmd: setenforce 0; getenforce
+      out: Permissive
+    - cmd: curl -s -o /dev/null -w "%{http_code}\n" http://localhost/moved.html
+      out: '200'
+    - cmd: setenforce 1; getenforce
+      out: Enforcing
+    - cmd: grep AVC /var/log/audit/audit.log | tail -1 | cut -c1-260
+      out: 'type=AVC msg=audit(1791050803.921:146): avc:  denied  { open } for  pid=2279 comm="httpd" path="/srv/web/moved.html" dev="sda2" ino=32383 scontext=system_u:system_r:httpd_t:s0 tcontext=unconfined_u:object_r:user_tmp_t:s0 tclass=file permissive=0'
+    - cmd: sealert -a /var/log/audit/audit.log | head -6
+      out: 'found 2 alerts in /var/log/audit/audit.log
+
+        --------------------------------------------------------------------------------
+
+
+        SELinux is preventing /usr/sbin/httpd from open access on the file /srv/web/moved.html.
+
+
+        *****  Plugin catchall_labels (83.8 confidence) suggests   *******************'
+    - cmd: ls -Z /srv/web/moved.html
+      out: unconfined_u:object_r:user_tmp_t:s0 /srv/web/moved.html
+    - cmd: restorecon -v /srv/web/moved.html
+      out: Relabeled /srv/web/moved.html from unconfined_u:object_r:user_tmp_t:s0 to system_u:object_r:httpd_sys_content_t:s0
+    tasks:
+    - text: Reproduce the symptom with curl.
+      commands:
+      - curl -s -o /dev/null -w "%{http_code}\n" http://localhost/moved.html
+    - text: 'Test whether SELinux is the cause: permissive, retry, enforcing.'
+      commands:
+      - setenforce 0; getenforce
+      - curl -s -o /dev/null -w "%{http_code}\n" http://localhost/moved.html
+      - setenforce 1; getenforce
+    - text: Find the denial in the audit log.
+      commands:
+      - grep AVC /var/log/audit/audit.log | tail -1 | cut -c1-260
+    - text: Check the file label, then repair it.
+      commands:
+      - ls -Z /srv/web/moved.html
+      - restorecon -v /srv/web/moved.html
+quick:
+  questions:
+  - id: q-3411a12ad977
+    q: What is the first test for "is SELinux the cause"?
+    options:
+    - setenforce 0, retry, then setenforce 1
+    - Reinstall the service
+    - Reboot
+    answer: 0
+    explain: If it works in permissive mode, SELinux was denying.
+  - id: q-d86ab9db8e4d
+    q: Where are SELinux denials recorded?
+    options:
+    - /var/log/audit/audit.log (AVC records)
+    - /var/log/dnf.log
+    - /etc/selinux/config
+    answer: 0
+    explain: Needs auditd running; sealert and ausearch read the same file.
+  - id: q-44520d1b6a63
+    q: In an AVC record, what does tcontext describe?
+    options:
+    - The object being accessed (the target)
+    - The process (source)
+    - The user
+    answer: 0
+    explain: scontext is the process, tcontext the target.
+  - id: q-bba91d5861c0
+    q: The denial shows tcontext type var_t for a web file. What is the likely fix?
+    options:
+    - Give the file the right type with semanage fcontext + restorecon
+    - chmod 777
+    - setsebool -P httpd_enable_homedirs on
+    answer: 0
+    explain: A wrong label is the most common cause.
+  - id: q-182e564b28ca
+    q: Which command gives a plain-English explanation of the denials?
+    options:
+    - sealert -a /var/log/audit/audit.log
+    - getenforce
+    - ls -Z
+    answer: 0
+    explain: It comes from the setroubleshoot-server package.
+  - id: q-cde008b88f4d
+    q: After fixing the problem, what must you check?
+    options:
+    - The action works in enforcing mode, with no new denials
+    - Nothing
+    - That SELinux is disabled
+    answer: 0
+    explain: Never leave the machine permissive.

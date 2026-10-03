@@ -1,0 +1,9 @@
+# Write each answer after the = sign, with no spaces.
+# Use what you see on servera (ps -eZ, the manual pages and the logs).
+
+# The SELinux type of the running httpd processes:
+PROCESS_TYPE=
+# The command that applies the file-context rules to files:
+RESTORE_CMD=
+# The full path of the audit log that records SELinux denials:
+AUDIT_LOG=
