@@ -79,28 +79,136 @@ data-explorer:
       - bjones
       - first_name
 register-flow:
-  text:
-    title: Capturing a task result with register
-    caption: Every module returns a JSON result. register saves it as a variable, so later tasks can print it, test it or reuse it.
-    label: Task 1
-    title2: ansible.builtin.dnf
-    sub: "name: httpd"
-    title3: "register: install_result"
-    label2: returns
-    title4: install_result
-    sub2: "changed: false"
-    sub3: "rc: 0"
-    sub4: 'msg: ""'
-    sub5: "results: [ … ]"
-    label3: Later tasks
-    title5: debug
-    sub6: "var: install_result"
-    title6: "when:"
-    sub7: install_result.changed
-    title7: "msg:"
-    sub8: "{{ install_result.rc }}"
-    label4: "(when: is covered in chapter 5)"
-  data: {}
+  title: Capturing a task result with register
+  caption: Every module returns a JSON result. register saves it as a variable, so later tasks can print it, test it or reuse it.
+  height: 250
+  mode: static
+  elements:
+    - kind: group
+      x: 8
+      y: 8
+      w: 220
+      h: 234
+      tone: purple
+      label: Task 1
+    - kind: node
+      x: 24
+      y: 44
+      w: 188
+      h: 52
+      tone: teal
+      title: ansible.builtin.dnf
+      sub: "name: httpd"
+      mono: true
+    - kind: node
+      x: 24
+      y: 170
+      w: 188
+      h: 52
+      tone: purple
+      title: "register: install_result"
+      mono: true
+      titleSize: 12.5
+    - kind: arrow
+      points:
+        - - 118
+          - 96
+        - - 118
+          - 168
+      label: returns
+      labelDx: 8
+      labelDy: 4
+      labelAnchor: start
+    - kind: node
+      x: 262
+      y: 62
+      w: 200
+      h: 140
+      tone: gray
+      title: install_result
+      sub:
+        - "changed: false"
+        - "rc: 0"
+        - 'msg: ""'
+        - "results: [ … ]"
+      mono: true
+    - kind: arrow
+      points:
+        - - 212
+          - 196
+        - - 240
+          - 196
+        - - 240
+          - 132
+        - - 260
+          - 132
+    - kind: group
+      x: 494
+      y: 8
+      w: 178
+      h: 234
+      tone: amber
+      label: Later tasks
+    - kind: node
+      x: 508
+      y: 44
+      w: 150
+      h: 52
+      tone: amber
+      title: debug
+      sub: "var: install_result"
+    - kind: node
+      x: 508
+      y: 106
+      w: 150
+      h: 52
+      tone: amber
+      title: "when:"
+      sub: install_result.changed
+    - kind: node
+      x: 508
+      y: 168
+      w: 150
+      h: 52
+      tone: amber
+      title: "msg:"
+      sub: "{{ install_result.rc }}"
+    - kind: arrow
+      points:
+        - - 462
+          - 132
+        - - 484
+          - 132
+        - - 484
+          - 70
+        - - 506
+          - 70
+    - kind: arrow
+      points:
+        - - 462
+          - 132
+        - - 484
+          - 132
+        - - 484
+          - 132
+        - - 506
+          - 132
+    - kind: arrow
+      points:
+        - - 462
+          - 132
+        - - 484
+          - 132
+        - - 484
+          - 194
+        - - 506
+          - 194
+    - kind: label
+      x: 585
+      y: 236
+      text: "(when: is covered in chapter 5)"
+      size: 11
+      muted: true
 check:
   questions:
     - id: q-f7726edba898

@@ -1,13 +1,9 @@
 export { default as InventoryExplorer } from './InventoryExplorer';
 export { default as RangeExpander } from './RangeExpander';
 export { default as PrecedenceResolver } from './PrecedenceResolver';
-export { default as PrivilegeEscalation } from './PrivilegeEscalation';
-export { default as PlaybookNesting } from './PlaybookNesting';
 export { default as AnnotatedYaml } from './AnnotatedYaml';
 export { default as PlayRecap } from './PlayRecap';
 export { default as Verbosity } from './Verbosity';
-export { default as SafeWorkflow } from './SafeWorkflow';
-export { default as MultiPlayFlow } from './MultiPlayFlow';
 export { default as ModuleExplorer } from './ModuleExplorer';
 export { default as CommandVsModule } from './CommandVsModule';
 export { default as YamlMultiline } from './YamlMultiline';

@@ -144,7 +144,35 @@ Attribute values are text in double quotes, numbers, `true`/`false`, or lists su
 
 ## 5. Diagrams
 
-Diagrams are React components that draw SVG with the kit in `packages/engine/src/diagrams/kit`. They share one visual language: flat pastel boxes, hairline borders, 14px titles, 12px subtitles, thin grey arrows, and a `680`-wide coordinate space that scales to fit.
+### Diagrams from data
+
+Most diagrams are data: `{% diagram ref="architecture" /%}` with the drawing under that key in the page's data file. The diagram uses the platform's shared look (flat pastel boxes, hairline borders, thin grey arrows) on a `680`-wide canvas that scales to fit. It cannot contain code, markup or colours of its own.
+
+```yaml
+architecture:
+  title: How the pieces connect
+  caption: Select a box to see what it does.
+  height: 200
+  mode: select              # static (default) | select | steps
+  elements:
+    - { kind: group, x: 10, y: 10, w: 300, h: 180, tone: gray, label: Control node }
+    - { kind: node, x: 30, y: 50, w: 140, h: 56, tone: purple, title: site.yml, sub: desired state, select: playbook, active: [playbook], visible: [playbook] }
+    - { kind: arrow, points: [[170, 78], [240, 78]], label: runs, hot: [playbook] }
+  info:
+    playbook: { title: The playbook, text: Describes the state you want. }
+```
+
+- **Elements** are `node`, `group`, `arrow`, `label` and `badge`, each with plain coordinates and optional `tone` (`gray`, `purple`, `teal`, `coral`, `pink`, `blue`, `green`, `amber`, `red`). `sub` may be a list of up to three lines.
+- **Static** diagrams need nothing else.
+- **Select** diagrams make elements clickable with `select: <key>`. Selecting a box shows `info.<key>` underneath. `active` lists the views in which an element is highlighted, `hot` the views in which an arrow is accented, and `visible` the views in which it is **not** faded (every other view fades it). Set `initial: <key>` to open with a box selected; without it, selecting a box again clears the selection.
+- **Steps** diagrams list `steps` (`title`, `text`) and use step numbers (`0`, `1`, …) as the views in the same fields. `overrides` changes a property per step, for example `overrides: { sub: { 0: before, 3: after } }`.
+- `<HOST_LAN_IP>` and the other lab values in a node's `sub` are replaced with the reader's own values once entered.
+
+The compiler rejects unknown element kinds or properties, so a typo is an error, not a silently missing arrow.
+
+### Interactive kits
+
+The remaining interactive widgets (simulators, calculators, resolvers) are platform code, bound to page data through `legacy-widget`. To add one, write a component with the kit as follows; it is the exception, not the rule.
 
 ```jsx
 import { Arrow, Diagram, Group, Node } from '../kit';

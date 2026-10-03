@@ -47,7 +47,7 @@ If a question asks which term best describes Ansible's architecture, the answer 
 
 Communication is at the heart of DevOps. Because a playbook can be read by developers, testers, operators, managers and outside contractors alike, it becomes a shared language across the whole application lifecycle.
 
-{% legacy-widget name="DevOpsLifecycle" ref="dev-ops-lifecycle" /%}
+{% diagram ref="dev-ops-lifecycle" /%}
 
 ## The Ansible way
 

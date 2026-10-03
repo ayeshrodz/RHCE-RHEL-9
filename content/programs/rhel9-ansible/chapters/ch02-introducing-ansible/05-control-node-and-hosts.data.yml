@@ -1,28 +1,111 @@
 navigator-runtime:
-  text:
-    title: How ansible-navigator runs a playbook
-    caption: ansible-navigator starts the execution environment with Podman, mounts your project into it, and the container connects to the managed hosts.
-    title2: Container registry
-    sub: EE images
-    label: podman pull (once)
-    label2: Control node (workstation)
-    title3: ansible-navigator
-    sub2: "you run: run site.yml"
-    title4: Project directory
-    sub3: site.yml, inventory, cfg
-    label3: starts container
-    label4: mounted inside
-    title5: EE container
-    sub4: ansible-core
-    sub5: collections
-    sub6: Python libraries
-    sub7: runs as root
-    label5: Hosts
-    title6: servera
-    title7: serverb
-    label6: SSH
-    label7: SSH
-  data: {}
+  title: How ansible-navigator runs a playbook
+  caption: ansible-navigator starts the execution environment with Podman, mounts your project into it, and the container connects to the managed hosts.
+  height: 300
+  mode: static
+  elements:
+    - kind: node
+      x: 372
+      y: 8
+      w: 160
+      h: 52
+      tone: blue
+      title: Container registry
+      sub: EE images
+    - kind: arrow
+      points:
+        - - 452
+          - 60
+        - - 452
+          - 120
+      label: podman pull (once)
+      labelDx: -8
+      labelDy: -4
+      labelAnchor: end
+    - kind: group
+      x: 10
+      y: 84
+      w: 540
+      h: 206
+      tone: gray
+      label: Control node (workstation)
+    - kind: node
+      x: 30
+      y: 122
+      w: 170
+      h: 62
+      tone: amber
+      title: ansible-navigator
+      sub: "you run: run site.yml"
+    - kind: node
+      x: 30
+      y: 204
+      w: 170
+      h: 62
+      tone: purple
+      title: Project directory
+      sub: site.yml, inventory, cfg
+    - kind: arrow
+      points:
+        - - 200
+          - 153
+        - - 370
+          - 153
+      label: starts container
+    - kind: arrow
+      points:
+        - - 200
+          - 235
+        - - 370
+          - 235
+      label: mounted inside
+    - kind: node
+      x: 372
+      y: 122
+      w: 160
+      h: 144
+      tone: teal
+      title: EE container
+      sub:
+        - ansible-core
+        - collections
+        - Python libraries
+        - runs as root
+    - kind: group
+      x: 566
+      y: 84
+      w: 104
+      h: 206
+      tone: green
+      label: Hosts
+    - kind: node
+      x: 578
+      y: 122
+      w: 80
+      h: 56
+      tone: green
+      title: servera
+    - kind: node
+      x: 578
+      y: 206
+      w: 80
+      h: 56
+      tone: green
+      title: serverb
+    - kind: arrow
+      points:
+        - - 532
+          - 150
+        - - 576
+          - 150
+      label: SSH
+    - kind: arrow
+      points:
+        - - 532
+          - 234
+        - - 576
+          - 234
+      label: SSH
 check:
   questions:
     - id: q-b64af50d3717

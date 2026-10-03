@@ -103,6 +103,14 @@
   stroke: var(--accent);
   stroke-width: 2;
 }
+.dg-group-select {
+  cursor: pointer;
+  outline: none;
+}
+.dg-group-select:focus-visible > .dg-group > rect {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
 .dg-node.is-active rect {
   stroke-width: 2;
 }

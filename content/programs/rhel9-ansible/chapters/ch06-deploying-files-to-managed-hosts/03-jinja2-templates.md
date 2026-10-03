@@ -85,7 +85,7 @@ tasks:
 
 Step through what happens:
 
-{% legacy-widget name="TemplateFlow" ref="template-flow" /%}
+{% diagram ref="template-flow" /%}
 
 `template` takes the same `owner`, `group`, `mode` and SELinux arguments as `file` and `copy`. It also has **`validate`**, which runs a command against the rendered file before it replaces the real one. If the command fails, nothing is changed:
 

@@ -93,7 +93,7 @@ cd ~/ansible && git init
 
 ### Getting in
 
-{% legacy-widget name="AccessPaths" ref="access-paths" /%}
+{% diagram ref="access-paths" /%}
 
 On the host, `rht-vmctl ws` drops you at the student prompt on workstation. From your own computer, one SSH alias takes you straight there:
 

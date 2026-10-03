@@ -1,20 +1,104 @@
 multi-play-flow:
-  text:
-    title: A playbook with two plays
-    caption: Plays run in order. The first configures servera with root privileges; the second runs on localhost (inside the execution environment) to test the result.
-    title2: intranet.yml
-    sub: 2 plays
-    title3: "Play 1: Enable intranet services"
-    sub2: "hosts: servera.lab.example.com"
-    sub3: "become: true"
-    label: SSH + sudo
-    title4: servera
-    sub4: httpd, firewalld
-    title5: "Play 2: Test intranet web server"
-    sub5: "hosts: localhost"
-    sub6: "become: false"
-    label2: local
-    title6: localhost
-    sub7: the EE container
-    label3: HTTP GET → 200
-  data: {}
+  title: A playbook with two plays
+  caption: Plays run in order. The first configures servera with root privileges; the second runs on localhost (inside the execution environment) to test the result.
+  height: 236
+  mode: static
+  elements:
+    - kind: node
+      x: 10
+      y: 88
+      w: 130
+      h: 60
+      tone: purple
+      title: intranet.yml
+      sub: 2 plays
+      mono: true
+    - kind: arrow
+      points:
+        - - 140
+          - 118
+        - - 168
+          - 118
+        - - 168
+          - 58
+        - - 198
+          - 58
+    - kind: arrow
+      points:
+        - - 140
+          - 118
+        - - 168
+          - 118
+        - - 168
+          - 178
+        - - 198
+          - 178
+    - kind: node
+      x: 200
+      y: 20
+      w: 250
+      h: 76
+      tone: blue
+      title: "Play 1: Enable intranet services"
+      sub:
+        - "hosts: servera.lab.example.com"
+        - "become: true"
+    - kind: badge
+      x: 200
+      y: 20
+      n: 1
+    - kind: arrow
+      points:
+        - - 450
+          - 58
+        - - 518
+          - 58
+      label: SSH + sudo
+    - kind: node
+      x: 520
+      y: 28
+      w: 150
+      h: 60
+      tone: green
+      title: servera
+      sub: httpd, firewalld
+    - kind: node
+      x: 200
+      y: 140
+      w: 250
+      h: 76
+      tone: teal
+      title: "Play 2: Test intranet web server"
+      sub:
+        - "hosts: localhost"
+        - "become: false"
+    - kind: badge
+      x: 200
+      y: 140
+      n: 2
+    - kind: arrow
+      points:
+        - - 450
+          - 178
+        - - 518
+          - 178
+      label: local
+    - kind: node
+      x: 520
+      y: 148
+      w: 150
+      h: 60
+      tone: gray
+      title: localhost
+      sub: the EE container
+    - kind: arrow
+      points:
+        - - 595
+          - 148
+        - - 595
+          - 90
+      label: HTTP GET → 200
+      labelDx: -8
+      labelDy: 4
+      dashed: true
+      labelAnchor: end

@@ -1,23 +1,90 @@
 privilege-escalation:
-  text:
-    title: Connecting and escalating privileges
-    caption: Ansible logs in as the remote user with an SSH key, then uses sudo to become root before running the task.
-    title2: student
-    sub: on workstation
-    label: SSH key
-    title3: someuser
-    sub2: on servera
-    label2: sudo
-    title4: root
-    sub3: on servera
-    title5: task
-    sub4: runs as root
-    label3: ask_pass = false
-    label4: remote_user = someuser
-    label5: become_user = root
-    label6: become = true · become_method = sudo · become_ask_pass = false
-    label7: "[defaults] controls the connection · [privilege_escalation] controls sudo"
-  data: {}
+  title: Connecting and escalating privileges
+  caption: Ansible logs in as the remote user with an SSH key, then uses sudo to become root before running the task.
+  height: 212
+  mode: static
+  elements:
+    - kind: node
+      x: 16
+      y: 56
+      w: 130
+      h: 64
+      tone: gray
+      title: student
+      sub: on workstation
+    - kind: arrow
+      points:
+        - - 146
+          - 88
+        - - 222
+          - 88
+      label: SSH key
+    - kind: node
+      x: 224
+      y: 56
+      w: 130
+      h: 64
+      tone: blue
+      title: someuser
+      sub: on servera
+    - kind: arrow
+      points:
+        - - 354
+          - 88
+        - - 424
+          - 88
+      label: sudo
+    - kind: node
+      x: 426
+      y: 56
+      w: 110
+      h: 64
+      tone: coral
+      title: root
+      sub: on servera
+    - kind: arrow
+      points:
+        - - 536
+          - 88
+        - - 572
+          - 88
+    - kind: node
+      x: 574
+      y: 56
+      w: 92
+      h: 64
+      tone: teal
+      title: task
+      sub: runs as root
+    - kind: label
+      x: 81
+      y: 146
+      text: ask_pass = false
+      muted: true
+      mono: true
+    - kind: label
+      x: 289
+      y: 146
+      text: remote_user = someuser
+      muted: true
+      mono: true
+    - kind: label
+      x: 481
+      y: 146
+      text: become_user = root
+      muted: true
+      mono: true
+    - kind: label
+      x: 340
+      y: 188
+      text: become = true · become_method = sudo · become_ask_pass = false
+      muted: true
+      mono: true
+    - kind: label
+      x: 340
+      y: 30
+      text: "[defaults] controls the connection · [privilege_escalation] controls sudo"
+      muted: true
 precedence-resolver:
   text:
     template: "{value0}: {value1}"

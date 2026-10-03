@@ -19,7 +19,7 @@ A playbook is only half of what runs. The other half is the tools: which ansible
 
 So far you have run Ansible with the tools installed on workstation. That works, but it ties the project to one machine: a colleague with a different ansible-core version can get different results from the same playbook. Containers fix the tools as well as the code.
 
-{% legacy-widget name="ToolRuntimes" ref="tool-runtimes" /%}
+{% diagram ref="tool-runtimes" /%}
 
 | Runtime | Where it comes from | What it is for |
 | --- | --- | --- |

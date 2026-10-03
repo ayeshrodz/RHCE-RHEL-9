@@ -1,25 +1,112 @@
 vault-flow:
-  text:
-    title: How Ansible Vault protects a secret
-    caption: The secret is only ever stored encrypted. ansible-navigator decrypts it in memory while the playbook runs, using a password you supply.
-    title2: secret.yml
-    sub: plain text
-    sub2: "web_pass: redhat"
-    label: encrypt
-    title3: secret.yml
-    sub3: $ANSIBLE_VAULT;1.1;AES256
-    sub4: 6231386563383461653…
-    sub5: safe to commit to Git
-    title4: Vault password
-    sub6: prompt or password file
-    label2: unlocks
-    label3: read at run time
-    label4: ansible-navigator run
-    title5: web_pass = redhat
-    sub7: decrypted in memory only
-    label5: Never on disk in plain text,
-    label6: never in Git history.
-  data: {}
+  title: How Ansible Vault protects a secret
+  caption: The secret is only ever stored encrypted. ansible-navigator decrypts it in memory while the playbook runs, using a password you supply.
+  height: 300
+  mode: static
+  elements:
+    - kind: node
+      x: 10
+      y: 40
+      w: 150
+      h: 96
+      tone: coral
+      title: secret.yml
+      sub:
+        - plain text
+        - "web_pass: redhat"
+    - kind: badge
+      x: 10
+      y: 40
+      n: 1
+    - kind: arrow
+      points:
+        - - 160
+          - 88
+        - - 236
+          - 88
+      label: encrypt
+      hot: true
+    - kind: node
+      x: 238
+      y: 40
+      w: 196
+      h: 96
+      tone: gray
+      title: secret.yml
+      sub:
+        - $ANSIBLE_VAULT;1.1;AES256
+        - 6231386563383461653…
+        - safe to commit to Git
+      mono: true
+      titleSize: 13
+    - kind: badge
+      x: 238
+      y: 40
+      n: 2
+    - kind: node
+      x: 494
+      y: 24
+      w: 176
+      h: 52
+      tone: purple
+      title: Vault password
+      sub: prompt or password file
+    - kind: arrow
+      points:
+        - - 582
+          - 76
+        - - 582
+          - 176
+      label: unlocks
+      labelDx: 8
+      labelDy: 4
+      dashed: true
+      labelAnchor: start
+    - kind: arrow
+      points:
+        - - 336
+          - 136
+        - - 336
+          - 206
+        - - 490
+          - 206
+      label: read at run time
+      labelAt: 0.75
+    - kind: group
+      x: 492
+      y: 176
+      w: 180
+      h: 116
+      tone: teal
+      label: ansible-navigator run
+      solid: true
+    - kind: badge
+      x: 492
+      y: 176
+      n: 3
+    - kind: node
+      x: 506
+      y: 210
+      w: 152
+      h: 66
+      tone: teal
+      title: web_pass = redhat
+      sub: decrypted in memory only
+      titleSize: 13
+    - kind: label
+      x: 130
+      y: 200
+      text: Never on disk in plain text,
+      anchor: middle
+      size: 12
+      muted: true
+    - kind: label
+      x: 130
+      y: 218
+      text: never in Git history.
+      anchor: middle
+      size: 12
+      muted: true
 vault-commands:
   text:
     vcState: no file

@@ -22,7 +22,7 @@ A playbook turns a long, fiddly manual procedure into a short text file you can 
 
 Because a play is written in readable YAML, it is also documentation: the tasks describe exactly what is needed to deploy your application or infrastructure.
 
-{% legacy-widget name="PlaybookNesting" ref="playbook-nesting" /%}
+{% diagram ref="playbook-nesting" /%}
 
 ## Anatomy of a playbook
 
@@ -218,7 +218,7 @@ servera.lab.example.com    : ok=2    changed=1    unreachable=0    failed=0  ...
 
 Here the dry run predicts that the httpd task would make a change.
 
-{% legacy-widget name="SafeWorkflow" ref="safe-workflow" /%}
+{% diagram ref="safe-workflow" /%}
 
 {% quiz
   objectives=["ch03.playbooks"]

@@ -101,7 +101,7 @@ Everything else, including the `172.25.250.0/24` network, the hostnames and the 
 
 Your Ubuntu host keeps its normal address on your local network, `<HOST_LAN_IP>`. When you create the lab network, LXD builds a virtual switch called `rhcebr0` inside the host and gives the host a **second** address on it: `172.25.250.254`. That second address is the lab's **gateway**.
 
-{% legacy-widget name="TwoAddresses" ref="two-addresses" /%}
+{% diagram ref="two-addresses" /%}
 
 {% callout type="tip" title="Think of your home router" %}
 Your router works the same way: a public address towards your internet provider, and a private one (often `192.168.x.1`) towards your devices, which use it as their way out. Here the VMs use 172.25.250.254 as their way out, and the host forwards their traffic through `<HOST_LAN_IP>`.

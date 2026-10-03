@@ -49,7 +49,7 @@ A subscription adds a set of things that enterprises care about:
 
 Click a component to see what it does. The **execution environment** at the centre is the idea that ties AAP 2 together.
 
-{% legacy-widget name="PlatformComponents" ref="platform-components" /%}
+{% diagram ref="platform-components" /%}
 
 ### Ansible Core
 

@@ -23,7 +23,7 @@ To run playbooks you install **automation content navigator** (`ansible-navigato
 
 Here is how the pieces fit together at run time:
 
-{% legacy-widget name="NavigatorRuntime" ref="navigator-runtime" /%}
+{% diagram ref="navigator-runtime" /%}
 
 ### Installation, step by step
 

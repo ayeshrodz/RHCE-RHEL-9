@@ -27,7 +27,7 @@ In chapter 2 you met **infrastructure as code**: the playbook describes the stat
 
 Git keeps your project in four places. Step through one change, from cloning the project to pulling a teammate's work back:
 
-{% legacy-widget name="GitFlow" ref="git-flow" /%}
+{% diagram ref="git-flow" /%}
 
 | Place | What it holds | Commands that move work into it |
 | --- | --- | --- |

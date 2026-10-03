@@ -1,33 +1,262 @@
 storage-stack:
-  text:
-    title: From a blank disk to a mounted file system
-    title2: /dev/sdb
-    sub: 5 GiB disk
-    title3: /dev/sdb1
-    sub2: 1 GiB, LVM
-    title4: "volume group: apps"
-    title5: /dev/apps/data
-    sub3: 500 MiB
-    title6: XFS
-    title7: /srv/data
-    sub4: mounted, in /etc/fstab
-    label: disk
-    label2: LVM
-    label3: what users see
-  data:
-    steps:
-      - title: A blank disk
-        text: "/dev/sdb: 5 GiB, no partition table. On the home lab it is sdb; on many other systems vdb or nvme1n1."
-      - title: Partition
-        text: community.general.parted creates /dev/sdb1 and marks it for LVM. part_end sets its size.
-      - title: Volume group
-        text: community.general.lvg turns sdb1 into a physical volume and builds the volume group apps from it.
-      - title: Logical volume
-        text: community.general.lvol carves the logical volume data (500 MiB) out of the group. Later you can grow it.
-      - title: File system
-        text: community.general.filesystem puts XFS on /dev/apps/data. It never reformats a device that already has a file system.
-      - title: Mount
-        text: "ansible.posix.mount with state: mounted mounts it on /srv/data now and writes the line to /etc/fstab for every boot."
+  title: From a blank disk to a mounted file system
+  height: 320
+  expandable: false
+  mode: steps
+  elements:
+    - kind: node
+      x: 160
+      y: 262
+      w: 360
+      h: 44
+      tone: gray
+      title: /dev/sdb
+      sub: 5 GiB disk
+      mono: true
+      active:
+        - 0
+    - kind: node
+      x: 160
+      y: 210
+      w: 200
+      h: 40
+      tone: amber
+      title: /dev/sdb1
+      sub: 1 GiB, LVM
+      mono: true
+      active:
+        - 1
+      visible:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+    - kind: node
+      x: 160
+      y: 158
+      w: 360
+      h: 40
+      tone: purple
+      title: "volume group: apps"
+      mono: true
+      active:
+        - 2
+      visible:
+        - 2
+        - 3
+        - 4
+        - 5
+    - kind: node
+      x: 160
+      y: 106
+      w: 220
+      h: 40
+      tone: teal
+      title: /dev/apps/data
+      sub: 500 MiB
+      mono: true
+      active:
+        - 3
+      visible:
+        - 3
+        - 4
+        - 5
+    - kind: node
+      x: 160
+      y: 54
+      w: 220
+      h: 40
+      tone: blue
+      title: XFS
+      mono: true
+      active:
+        - 4
+      visible:
+        - 4
+        - 5
+    - kind: node
+      x: 160
+      y: 4
+      w: 220
+      h: 40
+      tone: green
+      title: /srv/data
+      sub: mounted, in /etc/fstab
+      mono: true
+      active:
+        - 5
+      visible:
+        - 5
+    - kind: label
+      x: 536
+      y: 234
+      text: community.general.parted
+      anchor: start
+      size: 12
+      overrides:
+        muted:
+          "0": true
+          "1": false
+          "2": true
+          "3": true
+          "4": true
+          "5": true
+      mono: true
+    - kind: label
+      x: 536
+      y: 182
+      text: community.general.lvg
+      anchor: start
+      size: 12
+      overrides:
+        muted:
+          "0": true
+          "1": true
+          "2": false
+          "3": true
+          "4": true
+          "5": true
+      mono: true
+    - kind: label
+      x: 536
+      y: 130
+      text: community.general.lvol
+      anchor: start
+      size: 12
+      overrides:
+        muted:
+          "0": true
+          "1": true
+          "2": true
+          "3": false
+          "4": true
+          "5": true
+      mono: true
+    - kind: label
+      x: 536
+      y: 78
+      text: community.general.filesystem
+      anchor: start
+      size: 12
+      overrides:
+        muted:
+          "0": true
+          "1": true
+          "2": true
+          "3": true
+          "4": false
+          "5": true
+      mono: true
+    - kind: label
+      x: 536
+      y: 28
+      text: ansible.posix.mount
+      anchor: start
+      size: 12
+      overrides:
+        muted:
+          "0": true
+          "1": true
+          "2": true
+          "3": true
+          "4": true
+          "5": false
+      mono: true
+    - kind: arrow
+      points:
+        - - 530
+          - 264
+        - - 530
+          - 240
+      visible:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      hot:
+        - 1
+    - kind: arrow
+      points:
+        - - 530
+          - 186
+        - - 530
+          - 162
+      visible:
+        - 2
+        - 3
+        - 4
+        - 5
+      hot:
+        - 2
+    - kind: arrow
+      points:
+        - - 530
+          - 134
+        - - 530
+          - 110
+      visible:
+        - 3
+        - 4
+        - 5
+      hot:
+        - 3
+    - kind: arrow
+      points:
+        - - 530
+          - 82
+        - - 530
+          - 58
+      visible:
+        - 4
+        - 5
+      hot:
+        - 4
+    - kind: arrow
+      points:
+        - - 530
+          - 30
+        - - 530
+          - 6
+      visible:
+        - 5
+      hot:
+        - 5
+    - kind: label
+      x: 144
+      y: 286
+      text: disk
+      anchor: end
+      size: 12
+      muted: true
+    - kind: label
+      x: 144
+      y: 182
+      text: LVM
+      anchor: end
+      size: 12
+      muted: true
+    - kind: label
+      x: 144
+      y: 30
+      text: what users see
+      anchor: end
+      size: 12
+      muted: true
+  steps:
+    - title: A blank disk
+      text: "/dev/sdb: 5 GiB, no partition table. On the home lab it is sdb; on many other systems vdb or nvme1n1."
+    - title: Partition
+      text: community.general.parted creates /dev/sdb1 and marks it for LVM. part_end sets its size.
+    - title: Volume group
+      text: community.general.lvg turns sdb1 into a physical volume and builds the volume group apps from it.
+    - title: Logical volume
+      text: community.general.lvol carves the logical volume data (500 MiB) out of the group. Later you can grow it.
+    - title: File system
+      text: community.general.filesystem puts XFS on /dev/apps/data. It never reformats a device that already has a file system.
+    - title: Mount
+      text: "ansible.posix.mount with state: mounted mounts it on /srv/data now and writes the line to /etc/fstab for every boot."
 check:
   questions:
     - id: q-1ca6ff291e9e
