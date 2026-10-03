@@ -1,0 +1,94 @@
+name: sa-storage-review
+title: Storage and file systems
+page: ch17/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: projects
+      kind: mount
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/projects is an xfs file system mounted now and at boot
+      path: /srv/projects
+      fstype: xfs
+      persistent: true
+    - id: backups
+      kind: mount
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/backups is an ext4 file system mounted now and at boot
+      path: /srv/backups
+      fstype: ext4
+      persistent: true
+    - id: fstab-uuid
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The projects entry identifies the file system by UUID
+      paths:
+      - /etc/fstab
+      matches: ^UUID=[^ ]+[[:space:]]+/srv/projects[[:space:]]+xfs[[:space:]]
+    - id: fstab-options
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: The backups entry uses UUID, noexec and nodev
+      paths:
+      - /etc/fstab
+      matches: ^UUID=[^ ]+[[:space:]]+/srv/backups[[:space:]]+ext4[[:space:]]+[^ ]*(noexec[^ ]*nodev|nodev[^ ]*noexec)
+    - id: swap
+      kind: swap
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: A swap area of at least 500 MiB is active and in fstab
+      minSizeMiB: 500
+    - id: readme
+      kind: file
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: /srv/projects/README.txt is on the new file system
+      paths:
+      - /srv/projects/README.txt
+      line: storage ready
+    - id: answer-uuid-tool
+      kind: file
+      'on': control
+      message: 'answers.txt: the command that prints the UUID of a file system'
+      paths:
+      - answers.txt
+      matches: ^UUID_TOOL=blkid[ \t]*$
+    - id: answer-nofail-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the fstab option that stops a missing disk from blocking the boot'
+      paths:
+      - answers.txt
+      matches: ^NOFAIL_OPTION=nofail[ \t]*$
+    - id: answer-default-fs
+      kind: file
+      'on': control
+      message: 'answers.txt: the default file system type on this system'
+      paths:
+      - answers.txt
+      matches: ^DEFAULT_FS=xfs[ \t]*$
+    - id: answer-inode-command
+      kind: file
+      'on': control
+      message: 'answers.txt: the df option that reports inode usage'
+      paths:
+      - answers.txt
+      matches: ^INODE_COMMAND=df -i[ \t]*$

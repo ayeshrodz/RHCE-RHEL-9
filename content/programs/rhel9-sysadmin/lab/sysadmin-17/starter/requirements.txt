@@ -1,4 +1,0 @@
-On clean servera, identify its blank secondary disk, create a 1 GiB XFS practice partition and mount it at /srv/data by UUID. Retain a marker across unmount/remount and reboot. All disk writes target only the confirmed disposable spare.
-
-Identify blank secondary storage before partitioning.
-Create, persist and verify file systems and swap.

@@ -1,0 +1,10 @@
+# Write each answer after the = sign. Only INODE_COMMAND has a space.
+
+# The command that prints the UUID of a file system or partition:
+UUID_TOOL=
+# The fstab option that keeps a missing, non-essential disk from stopping the boot:
+NOFAIL_OPTION=
+# The file system type created by default by RHEL's mkfs tools (xfs or ext4):
+DEFAULT_FS=
+# The command, with its option, that shows inode usage (two words):
+INODE_COMMAND=

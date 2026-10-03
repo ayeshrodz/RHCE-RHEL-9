@@ -226,6 +226,13 @@ def conditions_mount(c):
     return out
 
 
+def conditions_swap(c):
+    out = ["swapon --noheadings --bytes --show=SIZE | awk -v m=%d '$1 >= m * 1048576 {ok=1} END {exit !ok}'" % int(c.get('minSizeMiB', 1))]
+    if c.get('persistent', True):
+        out.append("awk '$1 !~ /^#/ && $3 == \"swap\" {ok=1} END {exit !ok}' /etc/fstab")
+    return out
+
+
 def conditions_logical_volume(c):
     device = shlex.quote('/dev/%s/%s' % (c['vg'], c['lv']))
     if 'minSizeMiB' not in c:
@@ -339,7 +346,7 @@ def conditions_process(c):
 HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
-    'logical-volume': conditions_logical_volume, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
+    'logical-volume': conditions_logical_volume, 'swap': conditions_swap, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
     'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'selinux-boolean': conditions_selinux_boolean, 'selinux-port': conditions_selinux_port, 'selinux-fcontext': conditions_selinux_fcontext, 'address': conditions_address,
     'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process,
 }

@@ -489,6 +489,38 @@
   - ch16/exercise-troubleshooting
   - ch16/lab
   challenges: []
+- id: ch17.partitions
+  chapter: ch17
+  lessons:
+  - ch17/disks-and-partitions
+  labs:
+  - ch17/exercise-partitions
+  - ch17/lab
+  challenges: []
+- id: ch17.filesystems
+  chapter: ch17
+  lessons:
+  - ch17/filesystems-and-mounting
+  labs:
+  - ch17/exercise-filesystems
+  - ch17/lab
+  challenges: []
+- id: ch17.fstab
+  chapter: ch17
+  lessons:
+  - ch17/fstab-and-swap
+  labs:
+  - ch17/exercise-fstab
+  - ch17/lab
+  challenges: []
+- id: ch17.maintenance
+  chapter: ch17
+  lessons:
+  - ch17/space-and-maintenance
+  labs:
+  - ch17/exercise-space
+  - ch17/lab
+  challenges: []
 - id: ch18.operations
   chapter: ch18
   lessons:
@@ -568,20 +600,4 @@
   - ch21/quadlet-and-systemd
   labs:
   - ch21/lab
-  challenges: []
-- id: ch17.operations
-  chapter: ch17
-  lessons:
-  - ch17/partitions-and-filesystems
-  - ch17/mounts-and-fstab
-  labs:
-  - ch17/lab
-  challenges: []
-- id: ch17.verification
-  chapter: ch17
-  lessons:
-  - ch17/partitions-and-filesystems
-  - ch17/mounts-and-fstab
-  labs:
-  - ch17/lab
   challenges: []

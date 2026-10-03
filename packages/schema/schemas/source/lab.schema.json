@@ -257,6 +257,9 @@
           "$ref": "#/$defs/checkLogicalVolume"
         },
         {
+          "$ref": "#/$defs/checkSwap"
+        },
+        {
           "$ref": "#/$defs/checkHttp"
         },
         {
@@ -1080,6 +1083,31 @@
         "persistent": {
           "description": "Also present in /etc/fstab.",
           "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "checkSwap": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "kind": {
+          "const": "swap"
+        },
+        "minSizeMiB": {
+          "description": "At least one active swap area of this size.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "persistent": {
+          "description": "Also a swap entry in /etc/fstab. Default true.",
+          "type": "boolean",
+          "default": true
         }
       },
       "type": "object"

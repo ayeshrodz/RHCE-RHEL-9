@@ -1,8 +1,12 @@
 title: Storage and file systems
-goal: Partition disks, create file systems, and mount them now and at boot.
+goal: Partition disks, create and mount XFS, ext4 and swap, make them permanent with fstab, and find and fix space and busy-mount problems.
 objectives:
-- Identify blank secondary storage before partitioning.
-- Create, persist and verify file systems and swap.
+  - Identify disks and partitions and create a GPT table and partitions with parted.
+  - Create XFS, ext4 and swap, and mount and unmount file systems.
+  - Write safe /etc/fstab entries by UUID with options, and test them before rebooting.
+  - Diagnose full file systems, inode exhaustion, deleted-but-open files and busy mounts, and use the repair and label tools.
 objectiveIds:
-- ch17.operations
-- ch17.verification
+  - ch17.partitions
+  - ch17.filesystems
+  - ch17.fstab
+  - ch17.maintenance

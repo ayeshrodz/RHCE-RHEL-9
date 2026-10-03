@@ -1,0 +1,28 @@
+Exercise: sa-storage-review (chapter 17 lab)
+
+Work on serverb, with sudo or as root. Use the spare disk /dev/sdb (5 GiB,
+empty). Do not touch /dev/sda.
+
+Partitions
+ 1. A GPT table on /dev/sdb with three partitions:
+      - about 1 GiB for project files,
+      - about 1 GiB for backups,
+      - about 512 MiB for swap.
+
+File systems
+ 2. An XFS file system on the first partition, mounted on /srv/projects.
+    Put a file /srv/projects/README.txt in it that contains the line
+    "storage ready".
+ 3. An ext4 file system on the second partition, mounted on /srv/backups
+    with the options noexec and nodev (plus the defaults).
+ 4. Swap space on the third partition.
+
+Permanent
+ 5. All of it must come back after a reboot: fstab entries that identify the
+    file systems and the swap area by UUID. Test with findmnt --verify and
+    mount -a, and (recommended) with a real reboot.
+
+On workstation
+ 6. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-storage-review

@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Four steps for a new disk?
+    back: Partition (parted) → file system (mkfs / mkswap) → mount → /etc/fstab.
+  - front: See disks, partitions, file systems?
+    back: lsblk · lsblk -f · blkid · parted -s DISK print
+  - front: GPT label and a partition?
+    back: parted -s /dev/sdb mklabel gpt · parted -s /dev/sdb mkpart NAME xfs 1MiB 1025MiB
+  - front: Create file systems?
+    back: mkfs.xfs DEV · mkfs.ext4 -L LABEL DEV · mkswap DEV
+  - front: Mount, unmount, show?
+    back: mount DEV DIR · umount DIR · findmnt · df -hT
+  - front: Permanent mount?
+    back: UUID=… /dir xfs defaults 0 0 in /etc/fstab; daemon-reload; findmnt --verify; mount -a
+  - front: Swap?
+    back: mkswap DEV · swapon DEV · swapon --show · fstab line with type swap and mount point none
+  - front: Why UUID?
+    back: Device names such as /dev/sdb1 can change; UUIDs do not.
+  - front: Out of space?
+    back: df -h · df -i · du -xh --max-depth=1 DIR | sort -rh · lsof +L1
+  - front: Busy mount?
+    back: fuser -vm DIR · lsof DIR; leave the directory, stop the process
+  - front: Check a file system?
+    back: xfs_repair -n DEV (XFS) · e2fsck -f DEV (ext4), both unmounted
+  - front: Labels and details?
+    back: xfs_admin -L · e2label · xfs_info · tune2fs -l
