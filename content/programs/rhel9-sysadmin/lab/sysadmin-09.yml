@@ -1,10 +1,10 @@
 name: sysadmin-09
 title: Services and the boot process
 page: ch09/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

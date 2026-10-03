@@ -5,7 +5,7 @@ minutes: 30
 ---
 
 {% lead %}
-Phases 08 and 09: create workstation and the four servers from the Rocky Linux 9 cloud image, then step inside and prove two things: everything works *inside* the lab, and everything *outside* is blocked.
+Phases 08 and 09: create workstation and the two servers from the Rocky Linux 9 cloud image, then step inside and prove two things: everything works *inside* the lab, and everything *outside* is blocked.
 {% /lead %}
 
 {% lab
@@ -13,7 +13,7 @@ Phases 08 and 09: create workstation and the four servers from the Rocky Linux 9
   id="vms"
   title="Phase 08 · Create the VMs (~20 min)"
   hosts=["LXD UI"]
-  outcomes=["Create servera in full, then workstation and the other servers with fixed IPs."] %}
+  outcomes=["Create servera in full, then workstation and serverb with fixed IPs."] %}
   {% task id="task-1fc07290400b" legacyIndex=1 title="LXD UI: start a new instance" %}
     Project **rhce** → **Instances** → **Create instance**.
   {% /task %}
@@ -67,14 +67,12 @@ devices:
     **Create and start**. The first boot takes 2–3 minutes: cloud-init installs the packages, then the VM reboots once more to switch SELinux on. The UI shows it running the whole time.
   {% /task %}
 
-  {% task id="task-06ea7fce0778" legacyIndex=6 title="LXD UI: create the rest the same way" %}
+  {% task id="task-06ea7fce0778" legacyIndex=6 title="LXD UI: create workstation and serverb the same way" %}
 
     | Name | ipv4.address | disk2 source | Resource limits (left menu) |
     | --- | --- | --- | --- |
     | workstation | 172.25.250.9 | none: delete the `disk2` lines | CPU `2`, memory `2GiB` |
     | serverb | 172.25.250.11 | serverb-disk2 | from profile |
-    | serverc | 172.25.250.12 | serverc-disk2 | from profile |
-    | serverd | 172.25.250.13 | serverd-disk2 | from profile |
 
 ```yaml {% title="workstation: YAML configuration, devices section" %}
 devices:
@@ -85,9 +83,6 @@ devices:
     ipv4.address: 172.25.250.9
 ```
 
-    {% callout type="tip" title="Save time" %}
-    Build workstation, servera and serverb first. Add serverc and serverd when an exercise needs them; the routine is the same.
-    {% /callout %}
   {% /task %}
 {% /lab %}
 

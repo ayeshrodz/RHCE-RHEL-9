@@ -1,10 +1,10 @@
 name: sysadmin-18
 title: Logical volume management
 page: ch18/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

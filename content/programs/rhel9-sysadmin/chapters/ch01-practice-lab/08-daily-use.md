@@ -5,13 +5,13 @@ minutes: 15
 ---
 
 {% lead %}
-Phases 13 and 14. With the baseline saved, everything from here on is your own work. Run a first short session so you know the loop, then set up a one-command way into the lab from your own computer.
+Phases 12 and 13. With the baseline saved, everything from here on is your own work. Run a first short session so you know the loop, then set up a one-command way into the lab from your own computer.
 {% /lead %}
 
 {% lab
   objectives=["ch01.lab-network","ch01.lab-machines","ch01.lab-tools","ch01.lab-reset"]
   id="first-session"
-  title="Phase 13 · A first practice session (~10 min)"
+  title="Phase 12 · A first practice session (~10 min)"
   hosts=["workstation","servera"]
   outcomes=["Create a practice folder on workstation.","Change a server, then put it back with one command."] %}
   {% task id="task-7b2d9e5a1c04" legacyIndex=1 title="VM: create the practice folder" %}
@@ -96,23 +96,25 @@ lxc file push notes.txt workstation/home/student/            # host → VM
 lxc file pull workstation/home/student/practice/notes.txt .   # VM → host
 ```
 
-### Before each exercise in this path
+### Every exercise follows the same loop
+
+Each chapter ends with an exercise, and many lessons have a shorter guided one. They all use the same five steps, whichever lab you built:
 
 {% steps %}
   {% step title="Reset the servers" %}
     `rht-vmctl reset servers` on the host, so every exercise starts from the same state.
   {% /step %}
+  {% step title="Start the exercise" %}
+    `lab start NAME` on workstation, with the name the exercise page gives. It creates `~/NAME` with the brief and any starter files.
+  {% /step %}
   {% step title="Work" %}
-    Do the exercise on workstation and the servers. Break things on purpose; the reset is a few seconds away.
+    Follow the steps on workstation and the servers. Break things on purpose; the reset is a few seconds away. firewalld runs on every server, as on a RHEL server, so a new network service needs its port opened before you can reach it from workstation.
   {% /step %}
-  {% step title="Remember the firewall" %}
-    firewalld runs on every server, as on a RHEL server. If an exercise sets up a service, open its port (`firewall-cmd --permanent --add-service=…`, then `--reload`) before testing it from workstation.
-  {% /step %}
-  {% step title="Check twice" %}
-    Verify the result, then reboot or restart the service and verify again: a change that does not survive a reboot is not finished.
+  {% step title="Check" %}
+    `lab grade NAME` checks your result on the servers and prints PASS or FAIL for each requirement. It only reads; fix what failed and run it again. For lasting changes, reboot the server and grade once more: a change that does not survive a reboot is not finished.
   {% /step %}
   {% step title="Finish" %}
-    Keep anything you want from workstation, then reset the servers on the host.
+    `lab finish NAME` on workstation puts the folder away in `~/lab-archive/`. Then reset the servers on the host for the next one.
   {% /step %}
 {% /steps %}
 

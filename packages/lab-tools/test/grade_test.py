@@ -164,6 +164,8 @@ class GradingTests(unittest.TestCase):
                     project = Path(temp)
                     checks = cp.get('checks', [])
                     scripts = {raw: c for c in checks if c['on'] != 'control' for raw in [grade.raw_command(grade.host_script(c))]}
+                    if exercise.get('transport') == 'ssh':
+                        cp = {**cp, 'groups': {}}
                     for file in cp.get('files', []) + [cp.get('inventory', 'inventory')]:
                         p = project / file
                         p.parent.mkdir(parents=True, exist_ok=True)
@@ -174,6 +176,8 @@ class GradingTests(unittest.TestCase):
 
                     def runner_for(state_name):
                         def runner(args, cwd):
+                            if args[0] == 'ssh':
+                                return subprocess.CompletedProcess(args, {'pass': 0, 'broken': 1, 'unreachable': 255}[state_name], '', '')
                             if args[0] == 'ansible-inventory':
                                 inventory = {g: {'hosts': hs} for g, hs in cp.get('groups', {}).items()}
                                 return subprocess.CompletedProcess(args, 0, json.dumps(inventory), '')
@@ -236,6 +240,30 @@ class GradingTests(unittest.TestCase):
                 grade.control_check = original
             self.assertEqual(code, 1)
             self.assertTrue(any(c['status'] == 'fail' and 'required host was not checked' in c['message'] for c in report['checks']))
+
+
+class SshTransportTests(unittest.TestCase):
+    """Exercises that do not use Ansible reach each host directly as root with the learner's key."""
+
+    def test_the_remote_command_decodes_and_runs_the_check_with_the_host_name(self):
+        command = grade.ssh_command('test "$H" = servera.lab.example.com && test "$HS" = servera', 'servera.lab.example.com')
+        self.assertEqual(subprocess.run(['bash', '-c', command]).returncode, 0)
+
+    def test_results_follow_the_ssh_exit_status_and_never_need_an_inventory(self):
+        exercise = {'version': 1, 'lesson': '#/ch07/lab', 'transport': 'ssh', 'checkpoints': {'final': {'checks': [
+            {'id': 'team', 'kind': 'file', 'on': 'servera.lab.example.com', 'targets': ['servera.lab.example.com'],
+             'message': 'The team directory exists', 'paths': ['/srv/team']}]}}}
+        catalog = {'version': 2, 'exercises': {'demo': exercise}}
+        calls = []
+        for rc, status, code in [(0, 'pass', 0), (1, 'fail', 1), (255, 'skip', 2)]:
+            def runner(args, cwd, rc=rc):
+                calls.append(args)
+                return subprocess.CompletedProcess(args, rc, '', '')
+            with tempfile.TemporaryDirectory() as temp:
+                report, exit_code = grade.grade('demo', 'final', Path(temp), catalog, runner)
+            self.assertEqual(exit_code, code)
+            self.assertEqual([c['status'] for c in report['checks']], [status])
+        self.assertTrue(all(a[0] == 'ssh' and 'root@servera.lab.example.com' in a and 'BatchMode=yes' in a for a in calls))
 
 
 class ControlCheckTests(unittest.TestCase):

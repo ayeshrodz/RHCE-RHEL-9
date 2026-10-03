@@ -276,6 +276,16 @@ def host_script(check):
     return ' && '.join(c for c in build(check) if c) or 'true'
 
 
+def ssh_command(script, host):
+    """The remote command for the ssh transport: the host name is a validated literal; the script travels encoded."""
+    payload = base64.b64encode(script.encode()).decode()
+    short = host.split('.')[0]
+    return "echo %s | base64 -d | H=%s HS=%s bash" % (payload, shlex.quote(host), shlex.quote(short))
+
+
+SSH_OPTIONS = ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR']
+
+
 def raw_command(script):
     """The text for ansible's raw module: only the host name is templated; the script travels encoded."""
     payload = base64.b64encode(script.encode()).decode()
@@ -394,6 +404,29 @@ def grade(exercise_id, checkpoint_id, project, catalog, runner=run):
             add(check['id'], 'skip', check['message'] + '; ' + type(error).__name__)
 
     host_checks = [c for c in cp.get('checks', []) if c['on'] != 'control']
+    if exercise.get('transport') == 'ssh':
+        # Exercises that do not use Ansible: each check names one host, reached as root with the
+        # learner's SSH key, as the lab setup arranges on every server.
+        for check in host_checks:
+            try:
+                script = host_script(check)
+            except (CheckError, KeyError, ValueError) as error:
+                environment_problem = True
+                add(check['id'], 'skip', check['message'] + '; the check is not valid: ' + str(error))
+                continue
+            host = check['on']
+            try:
+                executed = runner(['ssh', *SSH_OPTIONS, 'root@' + host, ssh_command(script, host)], project)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                environment_problem = True
+                add(check['id'] + ':' + host, 'skip', host + ': ' + check['message'] + '; ' + type(error).__name__)
+                continue
+            if executed.returncode == 255:
+                environment_problem = True
+                add(check['id'] + ':' + host, 'skip', host + ': cannot log in as root with your SSH key; run lab check')
+            else:
+                add(check['id'] + ':' + host, 'pass' if executed.returncode == 0 else 'fail', host + ': ' + check['message'])
+        host_checks = []
     inventory_file = cp.get('inventory', 'inventory')
     inv = None
     if cp.get('groups') or host_checks:
@@ -494,7 +527,10 @@ def main():
         print(f"{args.name} / {args.checkpoint} — read-only checks")
         for check in report['checks']:
             print(f"{check['status'].upper():4} {check['message']}\n     Review: {check['lesson']}")
-        print('Run your playbook again to check repeatability. Perform any requested reboot check yourself.')
+        if exercise.get('transport') == 'ssh':
+            print('Grading only reads. Fix any FAIL and grade again; for lasting changes, reboot the server and grade once more.')
+        else:
+            print('Run your playbook again to check repeatability. Perform any requested reboot check yourself.')
     return code
 
 

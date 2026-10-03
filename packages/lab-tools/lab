@@ -2,14 +2,18 @@
 # lab - starts and finishes exercises on the Kernel Path home lab
 # (same syntax as a classroom 'lab' command). Runs on workstation as student.
 # Install or update: see section 1.6 of the guide, or run: lab update
-# Version 5
+# Version 6
 set -euo pipefail
 
-VERSION=5
+VERSION=6
 BASE="${LAB_URL:-https://kernelpath.dev/lab}"
 LAB_ROOT="${LAB_HOME:-$HOME}"
 ARCHIVE="$LAB_ROOT/lab-archive"
 SERVERS=(servera serverb serverc serverd)
+
+# The servers this lab has: the system administration lab builds servera and serverb,
+# the Ansible lab all four. A server that does not exist has no name in the lab's DNS.
+lab_servers() { local h; for h in "${SERVERS[@]}"; do getent hosts "$h.lab.example.com" >/dev/null && echo "$h"; done; }
 
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
@@ -34,7 +38,7 @@ Starter files come from: $BASE
 USAGE
 }
 
-need_name() { [[ -n ${1:-} ]] || die "which exercise? e.g. 'lab $SUB playbook-basic' (see: lab list)"; }
+need_name() { [[ -n ${1:-} ]] || die "which exercise? e.g. 'lab $SUB NAME' (see: lab list)"; }
 valid_name() { [[ $1 =~ ^[a-z0-9][a-z0-9-]*$ ]] || die "'$1' is not an exercise name"; }
 stamp() { date +%Y%m%d-%H%M%S; }
 
@@ -72,7 +76,7 @@ cmd_start() {
     || die "setup failed; exercise is not ready. Fix the reported error and restart with --force"
   rm -f "$dir/.lab-prepare.py" "$dir/.lab-catalog.json" "$dir/.lab-not-ready"
   say "~/$name is ready: cd ~/$name"
-  echo "  Start from clean servers. Read the requirements before running playbooks."
+  echo "  Start from clean servers (on the Ubuntu host: rht-vmctl reset servers)."
 }
 
 cmd_finish() {
@@ -107,23 +111,36 @@ cmd_grade() {
 cmd_list() { fetch INDEX || die "no connection to $BASE"; }
 
 cmd_check() {
-  local h u bad=0 missing=""
+  local h u bad=0 missing="" users servers
   ok() { printf '  \033[32mPASS\033[0m %s\n' "$1"; }
   ko() { printf '  \033[31mFAIL\033[0m %s\n' "$1"; bad=1; }
-  for h in workstation "${SERVERS[@]}"; do
+  mapfile -t servers < <(lab_servers)
+  if (( ${#servers[@]} )); then ok "servers in the lab: ${servers[*]}"; else ko "no lab servers resolve (servera.lab.example.com, ...)"; fi
+  if command -v ansible >/dev/null 2>&1; then
+    # The Ansible lab: Ansible connects as devops, and exercises also manage workstation.
+    users=(devops student root)
+    servers=(workstation "${servers[@]}")
+  else
+    users=(student root)
+  fi
+  for h in "${servers[@]}"; do
     missing=""
-    for u in devops student root; do
+    for u in "${users[@]}"; do
       ssh -o BatchMode=yes -o ConnectTimeout=5 "$u@$h" true 2>/dev/null || missing+=" $u"
     done
-    if [[ -z $missing ]]; then ok "$h: key login as devops, student and root"; else ko "$h: no key login as:$missing"; fi
+    if [[ -z $missing ]]; then ok "$h: key login as ${users[*]}"; else ko "$h: no key login as:$missing"; fi
   done
-  if ansible-galaxy collection list 2>/dev/null | grep -q '^ansible.posix'; then ok "ansible.posix collection"; else ko "ansible.posix collection"; fi
+  if command -v ansible >/dev/null 2>&1; then
+    if ansible-galaxy collection list 2>/dev/null | grep -q '^ansible.posix'; then ok "ansible.posix collection"; else ko "ansible.posix collection"; fi
+  else
+    ok "Ansible is not installed (not needed for the system administration path)"
+  fi
   if fetch INDEX >/dev/null 2>&1; then ok "starter files reachable"; else ko "cannot reach $BASE"; fi
   if (( bad )); then
     echo
     echo "  Missing key logins on the servers usually mean the 'clean' baseline was saved"
-    echo "  before they were set up, and a reset removed them. Repeat steps 5 and 6 of"
-    echo "  section 1.6, then on the Ubuntu host run:  rht-vmctl save"
+    echo "  before they were set up, and a reset removed them. Repeat the SSH key steps"
+    echo "  of the lab setup in chapter 1, then on the Ubuntu host run:  rht-vmctl save"
     return 1
   fi
   say "the lab is ready"

@@ -1,6 +1,7 @@
 name: sysadmin-14
 title: Archives and file transfer
 page: ch14/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

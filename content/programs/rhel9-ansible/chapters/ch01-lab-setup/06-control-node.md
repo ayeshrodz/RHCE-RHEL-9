@@ -158,7 +158,7 @@ ssh student@serverb hostname         # serverb.lab.example.com
 ```bash {% title="student@workstation" %}
 curl -fsSL https://kernelpath.dev/lab/lab -o ~/.local/bin/lab
 chmod +x ~/.local/bin/lab
-lab version                          # lab 2
+lab version                          # lab 6
 lab list                             # every exercise that has starter files
 lab check                            # key logins, collections and starter files: every line PASS
 ```

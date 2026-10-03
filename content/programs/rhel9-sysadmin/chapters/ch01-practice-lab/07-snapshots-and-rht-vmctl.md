@@ -5,7 +5,7 @@ minutes: 20
 ---
 
 {% lead %}
-Phase 12. Training labs reset their machines with `rht-vmctl`. Here you install a home-lab version with the same syntax. It runs on the Ubuntu host and uses LXD snapshots underneath.
+Phase 11. Training labs reset their machines with `rht-vmctl`. Here you install a home-lab version with the same syntax. It runs on the Ubuntu host and uses LXD snapshots underneath.
 {% /lead %}
 
 {% objectives %}
@@ -25,7 +25,7 @@ Build the lab once, save a `clean` snapshot, then break things freely: any machi
 {% lab
   objectives=["ch01.lab-reset"]
   id="rhtvmctl"
-  title="Phase 12 · Snapshots and rht-vmctl (~10 min)"
+  title="Phase 11 · Snapshots and rht-vmctl (~10 min)"
   hosts=["Ubuntu host"]
   outcomes=["Install rht-vmctl.","Verify the build and take the clean baseline."] %}
   {% task id="task-bf7a2980d7d8" legacyIndex=1 title="Host: install the script" %}
@@ -38,21 +38,20 @@ sudo install -m 755 /tmp/rht-vmctl /usr/local/bin/rht-vmctl
 ```
   {% /task %}
 
-  {% task id="task-defbd8bd0ef3" legacyIndex=2 title="Host: make it executable and try it" %}
+  {% task id="task-defbd8bd0ef3" legacyIndex=2 title="Host: try it" %}
 
 ```bash {% title="Ubuntu host" %}
-sudo chmod 755 /usr/local/bin/rht-vmctl
-rht-vmctl version                        # "rht-vmctl 2"
-rht-vmctl status all
+rht-vmctl version                        # "rht-vmctl 3"
+rht-vmctl status all                     # workstation, servera, serverb: RUNNING
 ```
 
-    {% callout type="note" title="Updating from version 1" %}
-    Version 1 didn't snapshot the servers' extra disks, so `reset` left partitions on `sdb`. Install version 2 the same way, then run `rht-vmctl save` once and answer `y`: that retakes `clean` and adds the missing disk snapshots. `rht-vmctl snaps` shows a `disk` line under each server.
+    {% callout type="note" title="Same commands, any lab size" %}
+    `servers` means the servers your lab has, and `all` means every VM in it. In this lab that is servera and serverb; in the larger Ansible lab the same commands also cover serverc, serverd and utility. Version 2 or older? Install version 3 the same way.
     {% /callout %}
   {% /task %}
 
   {% task id="task-2c3c17b28575" legacyIndex=3 title="Host: verify the whole build" %}
-    The `clean` snapshot is what every reset returns to, so check everything first. This changes nothing: it prints PASS or FAIL for every requirement in this chapter, including that workstation has no project yet. Every line should pass (the utility line only matters if you built it).
+    The `clean` snapshot is what every reset returns to, so check everything first. This changes nothing: it prints PASS or FAIL for every requirement in this chapter, including that workstation has no practice files yet. Every line should pass.
 
 ```bash {% title="Ubuntu host: verify the build" %}
 P=rhce; ok(){ printf '  \e[32mPASS\e[0m %s\n' "$1"; }; ko(){ printf '  \e[31mFAIL\e[0m %s\n' "$1"; }
@@ -68,10 +67,10 @@ chk "LXD on 5.21/stable and held"   "snap list lxd | grep -q '5.21/stable.*held'
 chk "seal service active"           "systemctl is-active --quiet rhce-isolate"
 chk "rhcebr0 up at .254"            "ip -4 addr show rhcebr0 | grep -q 172.25.250.254/24"
 chk_not "host cannot ping servera"  "ping -c1 -W2 172.25.250.10"
+chk "rht-vmctl 3 or newer"          "[ \$(rht-vmctl version | awk '{print \$2}') -ge 3 ]"
 
 echo "== VMs"
-for vm in workstation servera serverb serverc serverd utility; do
-  lxc info --project $P "$vm" >/dev/null 2>&1 || { echo "  skip $vm (not created)"; continue; }
+for vm in workstation servera serverb; do
   chk "$vm running"                 "lxc list --project $P ^$vm\$ -c s --format csv | grep -q RUNNING"
   chk "$vm FQDN hostname"           "X $vm 'hostname | grep -q ^$vm.lab.example.com\$'"
   chk "$vm profile packages"        "X $vm 'rpm -q lvm2 tar rsync vim-enhanced man-db tree firewalld chrony policycoreutils-python-utils'"
@@ -80,18 +79,18 @@ for vm in workstation servera serverb serverc serverd utility; do
 done
 
 echo "== servers"
-for vm in servera serverb serverc serverd; do
-  chk "$vm sdb present and empty"    "X $vm 'test -b /dev/sdb && [ -z \"\$(lsblk -no FSTYPE /dev/sdb)\" ] && [ \$(lsblk -no NAME /dev/sdb | wc -l) -eq 1 ]'"
+for vm in servera serverb; do
+  chk "$vm sdb present and empty"   "X $vm 'test -b /dev/sdb && [ -z \"\$(lsblk -no FSTYPE /dev/sdb)\" ] && [ \$(lsblk -no NAME /dev/sdb | wc -l) -eq 1 ]'"
 done
 
 echo "== workstation"
 chk "student can use sudo"              "S 'echo student | sudo -S true'"
 chk "tools installed"                   "S 'which tree tmux dig man'"
+chk "SSH key: student and root on both" "S 'for h in servera serverb; do for u in student root; do ssh -o BatchMode=yes \$u@\$h true || exit 1; done; done'"
+chk "lab command ready"                 "S 'lab check'"
 chk "no practice files yet (clean)"     "S 'test -z \"\$(ls -A ~/practice 2>/dev/null)\"'"
-chk "every server resolves by name"   "S 'for h in servera serverb serverc serverd; do getent hosts \$h.lab.example.com >/dev/null || exit 1; done'"
-chk "names resolve inside lab"          "S 'getent hosts serverd.lab.example.com'"
+chk "names resolve inside lab"          "S 'getent hosts serverb.lab.example.com'"
 chk "internet via NAT"                  "S 'curl -sfI -m5 https://rockylinux.org'"
-chk "utility serves files (optional)"   "S 'curl -sf -m5 http://materials.example.com/files/README'"
 chk_not "lab cannot reach host LAN IP"  "S 'ping -c1 -W2 $LANIP'"
 chk_not "lab cannot reach router"       "S 'ping -c1 -W2 $GW'"
 ```
@@ -100,9 +99,12 @@ chk_not "lab cannot reach router"       "S 'ping -c1 -W2 $GW'"
     | --- | --- |
     | LXD on 5.21/stable and held | [Section 1.2](#/ch01/prepare-host), `sudo snap refresh --hold lxd` |
     | seal service / host cannot ping / lab cannot reach | [Section 1.3](#/ch01/network-and-seal), Phase 04 |
+    | rht-vmctl 3 or newer | Step 1 above |
     | FQDN hostname, sdb | [Section 1.4](#/ch01/project-profile-disks) profile; recreate the VM |
     | profile packages, SELinux, firewalld | [Repair an existing lab](#/ch01/troubleshooting#repair-an-existing-lab) (no need to recreate) |
     | tools installed, sudo | [Section 1.6](#/ch01/workstation), step 1 |
+    | SSH key | [Section 1.6](#/ch01/workstation), steps 5 and 6 (running them again is safe) |
+    | lab command ready | [Section 1.6](#/ch01/workstation), step 7; `lab check` on workstation says which part fails |
     | no practice files yet | "Already created files?" below |
     | names resolve / internet | The ufw step in [section 1.3](#/ch01/network-and-seal), then [troubleshooting](#/ch01/troubleshooting) |
   {% /task %}
@@ -117,12 +119,11 @@ rht-vmctl save          # snapshot 'clean' on every VM; asks before replacing an
     Then confirm each VM has exactly one snapshot, `clean`. Remove any older ones with `rht-vmctl rmsnap VM NAME`, so that `clean` is always the newest (see the ZFS rule below).
 
 ```bash {% title="Ubuntu host: every line should read PASS …: clean" %}
-for vm in workstation servera serverb serverc serverd utility; do
-  lxc info --project rhce "$vm" >/dev/null 2>&1 || continue
+for vm in workstation servera serverb; do
   n=$(lxc query "/1.0/instances/$vm/snapshots?project=rhce" | sed -n 's#.*/snapshots/\([^?"]*\).*#\1#p' | paste -sd,)
   [ "$n" = clean ] && echo "  PASS $vm: $n" || echo "  FAIL $vm: $n"
 done
-for vm in servera serverb serverc serverd; do          # the extra disks have their own snapshots
+for vm in servera serverb; do          # the extra disks have their own snapshots
   n=$(lxc query "/1.0/storage-pools/default/volumes/custom/$vm-disk2/snapshots?project=rhce" | sed -n 's#.*/snapshots/\([^?"]*\).*#\1#p' | paste -sd,)
   [ "$n" = clean ] && echo "  PASS $vm-disk2: $n" || echo "  FAIL $vm-disk2: $n"
 done
@@ -139,13 +140,15 @@ done
 - SELinux enforcing, firewalld and chrony running on every VM
 - Manual pages, `tree`, `tmux`, `dig`, `lsof`, `nano` and `vim`
 - `~/.vimrc` and `~/.tmux.conf` on workstation
+- The SSH key from `student@workstation` to `student` and `root` on both servers
+- The `lab` command
 - Empty extra disks (`sdb`) on the servers
 
 {% /column %}
 {% column title="Not in it (created afterwards)" tone="gray" %}
 
-- Your `~/practice` folder and anything else you create in a home directory
-- SSH keys you generate in the SSH chapter
+- Exercise folders that `lab start` creates, your `~/practice` folder, and anything else you create in a home directory
+- Other SSH keys you generate in the SSH chapter
 - Users, packages, files and partitions you add while practising
 
 {% /column %}
@@ -155,7 +158,8 @@ done
 If you practised anything before saving, `clean` contains that work. Remove it and save again; `rht-vmctl save` asks before replacing the old snapshot.
 
 ```bash {% title="student@workstation: remove your practice files, keep the tools" %}
-rm -rf ~/practice
+rm -rf ~/practice ~/lab-archive
+lab list | awk 'NF && !/^#/{print $1}' | while read -r n; do rm -rf ~/"$n"; done   # exercise folders
 ```
 
 If you changed the servers (packages, users, files, partitions on `sdb`), cleaning them by hand is unreliable. It is quicker to delete and recreate those VMs (section 1.5) and then save.
@@ -163,7 +167,7 @@ If you changed the servers (packages, users, files, partitions on `sdb`), cleani
 
 ## Command reference
 
-A *VM* is a name like `servera`, or `servers` (servera–serverd), or `all`.
+A *VM* is a name like `servera`, or `servers` (servera and serverb here), or `all` (every VM).
 
 | Command | What it does |
 | --- | --- |
@@ -172,9 +176,9 @@ A *VM* is a name like `servera`, or `servers` (servera–serverd), or `all`.
 | `rht-vmctl stop all` | Clean shutdown |
 | `rht-vmctl poweroff serverb` | Force off |
 | `rht-vmctl reset servera` | Back to the `clean` snapshot, extra disk (`sdb`) included, booted and ready |
-| `rht-vmctl reset servers` | Reset servera–serverd, never workstation |
+| `rht-vmctl reset servers` | Reset the servers, never workstation. Run it before each exercise |
 | `rht-vmctl reset all` | Reset everything; asks first because of workstation |
-| `rht-vmctl fullreset serverc` | Same as reset in this lab |
+| `rht-vmctl fullreset serverb` | Same as reset in this lab |
 | `rht-vmctl view servera` | Text console; leave with {% kbd %}Ctrl{% /kbd %}+{% kbd %}a{% /kbd %} then {% kbd %}q{% /kbd %} |
 | `rht-vmctl save` | Create/replace the `clean` baseline on every VM and its extra disk |
 | `rht-vmctl save workstation -n ch04-done` | Named checkpoint |

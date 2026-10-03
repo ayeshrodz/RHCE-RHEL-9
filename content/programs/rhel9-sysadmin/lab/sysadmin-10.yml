@@ -1,10 +1,10 @@
 name: sysadmin-10
 title: Secure remote access
 page: ch10/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

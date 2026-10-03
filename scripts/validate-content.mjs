@@ -168,4 +168,29 @@ const listed = initial.files
   .filter((line) => line.trim() && !line.startsWith('#'))
   .map((line) => line.trim().split(/\s+/)[0]);
 assert.deepEqual(listed.sort(), names, 'INDEX and exercises differ');
+// Lab chapters that print a setup script inline must print exactly the file the site publishes.
+for (const [page, title, file] of [
+  [
+    'content/programs/rhel9-ansible/chapters/ch01-lab-setup/07-snapshots-and-rht-vmctl.md',
+    '/usr/local/bin/rht-vmctl',
+    'packages/lab-tools/setup/rht-vmctl',
+  ],
+  [
+    'content/programs/rhel9-ansible/chapters/ch01-lab-setup/09-troubleshooting.md',
+    'Ubuntu host: build-rhce-lab.sh',
+    'packages/lab-tools/setup/build-rhce-lab.sh',
+  ],
+  [
+    'content/programs/rhel9-sysadmin/chapters/ch01-practice-lab/09-troubleshooting.md',
+    'Ubuntu host: build-sysadmin-lab.sh',
+    'packages/lab-tools/setup/build-sysadmin-lab.sh',
+  ],
+]) {
+  const text = fs.readFileSync(page, 'utf8');
+  const opening = '```bash {% title="' + title + '" %}\n';
+  const at = text.indexOf(opening);
+  assert(at >= 0, `${page}: no inline copy of ${title}`);
+  const body = text.slice(at + opening.length, text.indexOf('```', at + opening.length));
+  assert.equal(body, fs.readFileSync(file, 'utf8'), `${page}: the inline ${title} differs from ${file}`);
+}
 console.log(`Validated ${initial.site.programs.length} programs and ${totalRoutes} routes.`);

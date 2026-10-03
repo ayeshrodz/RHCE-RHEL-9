@@ -1,10 +1,10 @@
 name: sysadmin-12
 title: Networking
 page: ch12/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

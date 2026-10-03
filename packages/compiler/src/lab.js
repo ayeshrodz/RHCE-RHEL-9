@@ -127,6 +127,8 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
         ids.add(check.id);
         if (check.on !== 'control' && !check.targets?.length) fail(`check '${check.id}' needs targets: the hosts it must be run on`);
         if (check.on === 'control' && check.targets?.length) fail(`check '${check.id}' runs on the control node and cannot have targets`);
+        if (def.transport === 'ssh' && check.on !== 'control' && (check.targets?.length !== 1 || check.targets[0] !== check.on))
+          fail(`check '${check.id}': with the ssh transport, 'on' names one host and 'targets' lists exactly that host`);
         if (CONTROL_ONLY.has(check.kind) && check.on !== 'control') fail(`a '${check.kind}' check can only run on the control node`);
         if (!CONTROL_ONLY.has(check.kind) && !['file', 'commands'].includes(check.kind) && check.on === 'control')
           fail(`a '${check.kind}' check cannot run on the control node`);
@@ -136,6 +138,7 @@ export function compileLabs({ labs, pages, references, seen, validator, diagnost
     exercises[name] = {
       version: def.version ?? 1,
       lesson: `#/${def.page}`,
+      ...(def.transport === 'ssh' ? { transport: 'ssh' } : {}),
       ...(setup.length ? { setup } : {}),
       checkpoints: def.checkpoints,
     };

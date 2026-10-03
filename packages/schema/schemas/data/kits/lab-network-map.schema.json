@@ -136,11 +136,7 @@
             "gw",
             "lxc",
             "ws",
-            "sa",
-            "sb",
-            "sc",
-            "sd",
-            "ut"
+            "sa"
           ],
           "properties": {
             "net": {
@@ -647,7 +643,8 @@
                 }
               }
             }
-          }
+          },
+          "description": "The boxes of the map by id. The host and network boxes are required; a lab draws the servers it has."
         },
         "initialSelection1": {
           "type": "string",

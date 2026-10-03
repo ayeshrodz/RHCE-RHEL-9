@@ -1,10 +1,10 @@
 name: sysadmin-20
 title: The firewall
 page: ch20/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

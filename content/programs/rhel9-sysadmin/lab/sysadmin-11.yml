@@ -1,10 +1,10 @@
 name: sysadmin-11
 title: Logs and time
 page: ch11/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

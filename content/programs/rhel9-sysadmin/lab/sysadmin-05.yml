@@ -1,6 +1,7 @@
 name: sysadmin-05
 title: Working with text
 page: ch05/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

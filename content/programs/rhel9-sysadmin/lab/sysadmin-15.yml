@@ -1,10 +1,10 @@
 name: sysadmin-15
 title: Scripts and scheduling
 page: ch15/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

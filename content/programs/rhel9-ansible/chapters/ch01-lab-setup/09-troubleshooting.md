@@ -75,13 +75,14 @@ Temporarily remove the lab firewall with `sudo systemctl stop rhce-isolate`. If 
 
 ## Repair an existing lab
 
-For a lab whose first boot missed its packages, or one built before the profile in [section 1.4](#/ch01/project-profile-disks) switched on SELinux, firewalld and chrony. It brings running VMs up to date in place, keeps everything on them, and takes about five minutes.
+For a lab whose first boot missed its packages, or one built before the profile in [section 1.4](#/ch01/project-profile-disks) switched on SELinux, firewalld and chrony, or added the manual pages and everyday tools the system administration path uses. It brings running VMs up to date in place, keeps everything on them, and takes about five minutes.
 
 ```bash {% title="Ubuntu host: install what the profile should have, then reboot to relabel" %}
 for vm in workstation servera serverb serverc serverd utility; do
   lxc info --project rhce "$vm" >/dev/null 2>&1 || continue
   lxc exec --project rhce "$vm" -- bash -c '
     dnf install -y python3 python3-libselinux vim-enhanced bash-completion lvm2 tar rsync \
+      man-db man-pages tree tmux lsof nano bind-utils \
       selinux-policy-targeted policycoreutils-python-utils firewalld chrony
     semanage fcontext -a -t bin_t "/var/run/lxd_agent(/.*)?" 2>/dev/null || true
     systemctl enable --now firewalld chronyd' </dev/null
@@ -164,10 +165,16 @@ lxc list
 Save anything you want to keep from workstation first (`lxc file pull`, or push your Git repository somewhere).
 {% /callout %}
 
+The same commands remove the lighter system administration lab, which has only workstation, servera and serverb.
+
 ```bash {% title="Ubuntu host" %}
 lxc project switch rhce
-lxc delete --force workstation servera serverb serverc serverd utility 2>/dev/null || true
-for v in servera serverb serverc serverd; do lxc storage volume delete default "$v-disk2"; done
+for vm in workstation servera serverb serverc serverd utility; do
+  lxc delete --force "$vm" 2>/dev/null || true
+done
+for v in servera serverb serverc serverd; do
+  lxc storage volume delete default "$v-disk2" 2>/dev/null || true
+done
 lxc project switch default
 lxc project delete rhce
 lxc network delete rhcebr0

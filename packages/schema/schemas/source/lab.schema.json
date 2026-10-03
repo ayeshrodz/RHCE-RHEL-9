@@ -28,6 +28,13 @@
       "type": "integer",
       "minimum": 1
     },
+    "transport": {
+      "description": "How host checks reach the servers. ansible (the default): through Ansible with the exercise's inventory, for automation exercises. ssh: directly over SSH as root with key-based login from the learner's account, for exercises that do not use Ansible; each host check then names one host in 'on' and lists it in 'targets'.",
+      "enum": [
+        "ansible",
+        "ssh"
+      ]
+    },
     "starter": {
       "description": "Files copied into ~/NAME. They are kept in lab/<exercise>/starter/ and never leave the project folder.",
       "type": "array",

@@ -5,7 +5,7 @@ minutes: 10
 ---
 
 {% lead %}
-Every exercise in this path needs somewhere safe to run, and somewhere you can break and repair without fear. This chapter builds it on one Ubuntu machine at home: a `workstation` you work from and servers `servera` to `serverd` on `lab.example.com`, all Rocky Linux 9 virtual machines on a private network that nothing outside can connect into.
+Every exercise in this path needs somewhere safe to run, and somewhere you can break and repair without fear. This chapter builds it on one Ubuntu machine at home: a `workstation` you work from and two servers, `servera` and `serverb`, on `lab.example.com`. All three are Rocky Linux 9 virtual machines on a private network that nothing outside can connect into.
 {% /lead %}
 
 {% objectives %}
@@ -14,17 +14,36 @@ Every exercise in this path needs somewhere safe to run, and somewhere you can b
 - Check that your machine meets the requirements, and fill in your own lab values.
 {% /objectives %}
 
-{% callout type="note" title="Already built the Ansible lab?" %}
-This is the same lab: the same network, the same project and the same machines. If you built it for the Ansible path, you do not need to rebuild it. The only difference is a handful of extra everyday tools (manual pages, `tree`, `tmux`, `dig`): add them in place with [Repair an existing lab](#/ch01/troubleshooting#repair-an-existing-lab), run the check in [section 1.7](#/ch01/snapshots-and-rht-vmctl), and retake the `clean` snapshot. Ansible being installed on workstation does no harm.
-{% /callout %}
+## One lab, two sizes
+
+This site has two learning paths that share one practice lab design. The Ansible path needs more: two extra servers, an automation account on every machine and the Ansible tools. This path needs only the core of it, so this chapter builds a lighter version. Both versions use the same network, names, addresses and passwords, and the same lab commands: `lab start`, `lab grade` and `lab finish` on workstation, and `rht-vmctl` on the host.
+
+{% columns %}
+{% column title="Already built the Ansible lab?" tone="green" %}
+
+You don't need this setup. The Ansible lab is a complete superset of this one, and every exercise in this path runs on it unchanged.
+
+1. Add the few everyday tools this path uses, with [Repair an existing lab](#/ch01/troubleshooting#repair-an-existing-lab).
+2. Update the lab commands: `lab update` on workstation, and install the current [rht-vmctl](#/ch01/snapshots-and-rht-vmctl).
+3. Run the check in [section 1.7](#/ch01/snapshots-and-rht-vmctl), then retake the `clean` snapshot.
+
+{% /column %}
+{% column title="Taking the Ansible path later?" tone="amber" %}
+
+The lighter lab can't be grown into the Ansible lab in place: its machines were built without the account Ansible connects as, and that is set when a machine is first created.
+
+When you get there, [tear this lab down](#/ch01/troubleshooting#tear-the-whole-lab-down) and build the Ansible lab in its place. It runs everything in this path too, so you only ever need one lab at a time.
+
+{% /column %}
+{% /columns %}
 
 {% callout type="note" title="Tested end to end" %}
-The network, firewall, profile, machines and reset tools here are the same ones the Ansible path uses, built and verified on real hardware with the versions listed below. The profile and workstation steps specific to this path were checked on a fresh VM in that same lab. Follow it in order the first time; afterwards, the [fast rebuild script](#/ch01/troubleshooting) does most of it in one go.
+The network, firewall, profile, machines and reset tools in this chapter were built and verified on real hardware with the versions listed below. Follow it in order the first time; afterwards, the [fast rebuild script](#/ch01/troubleshooting) does most of it in one go.
 {% /callout %}
 
 ## The idea in one picture
 
-Six VMs sit on a private network called `rhcebr0`. Inside that network they talk to each other freely, and they can reach the internet, so `dnf install` works. From outside, nobody can open a connection in: not your laptop, not your router, and not even the host itself. You step inside with `lxc exec` (which does not use the network at all), then SSH between the VMs as you would between real servers.
+Three VMs sit on a private network called `rhcebr0`. Inside that network they talk to each other freely, and they can reach the internet, so `dnf install` works. From outside, nobody can open a connection in: not your laptop, not your router, and not even the host itself. You step inside with `lxc exec` (which does not use the network at all), then SSH between the VMs as you would between real servers.
 
 Pick a traffic flow to see its path and the firewall rule that decides it:
 
@@ -56,12 +75,11 @@ The lab uses the network `172.25.250.0/24` and the domain `lab.example.com`, so 
 | Name | IP | vCPU / RAM | Extra disk | Role |
 | --- | --- | --- | --- | --- |
 | (rhcebr0 gateway) | 172.25.250.254 | — | — | Lives on the host. Routes the lab to the internet; runs DHCP and DNS. |
-| `utility` | 172.25.250.8 | 1 / 1 GiB | — | Web server for practice files (optional) |
-| `workstation` | 172.25.250.9 | 2 / 2 GiB | — | The machine you work from. |
+| `workstation` | 172.25.250.9 | 2 / 2 GiB | — | The machine you work from. The `lab` command runs here. |
 | `servera` | 172.25.250.10 | 1 / 1 GiB | 5 GiB | Server you administer |
 | `serverb` | 172.25.250.11 | 1 / 1 GiB | 5 GiB | Server you administer |
-| `serverc` | 172.25.250.12 | 1 / 1 GiB | 5 GiB | Server you administer |
-| `serverd` | 172.25.250.13 | 1 / 1 GiB | 5 GiB | Server you administer |
+
+The extra disks stay empty until the storage chapters, where you partition them, build logical volumes on them and share them between the two servers.
 
 ## Accounts on every VM
 
@@ -70,7 +88,7 @@ The lab uses the network `172.25.250.0/24` and the domain `lab.example.com`, so 
 | `student` | `student` | Your everyday login. sudo with a password. |
 | `root` | `redhat` | The administrator account |
 
-The users, groups and permissions chapters have you create more accounts of your own.
+The users and groups chapter has you create more accounts of your own. In [section 1.6](#/ch01/workstation) you also give `student` on workstation an SSH key that logs in to the servers as `student` and as `root`: the `lab grade` command uses it to check your work.
 
 ## Where each step happens
 
@@ -124,22 +142,13 @@ The gateway can't be removed: without it the VMs would get no addresses (DHCP), 
 | | Minimum | Recommended | Tested on |
 | --- | --- | --- | --- |
 | Operating system | Ubuntu Server LTS, x86_64, with snap support | | Ubuntu Server 26.04.1 LTS |
-| CPU | 4 threads with Intel VT-x or AMD-V | 4+ cores | Intel Core i5-7500, 4 cores / 4 threads, 3.4 GHz |
-| Memory | 12 GB | 16 GB or more | 32 GB (30 GiB usable) |
-| Free disk | 40 GB | 100 GB or more (SSD) | 200 GiB ZFS pool on a loop file |
+| CPU | 2 cores / 4 threads with Intel VT-x or AMD-V | 4 cores | Intel Core i5-7500, 4 cores / 4 threads, 3.4 GHz |
+| Memory | 8 GB | 16 GB | 32 GB (30 GiB usable) |
+| Free disk | 30 GB | 60 GB or more (SSD) | 200 GiB ZFS pool on a loop file |
 | Network | A fixed address on your LAN and internet access | Wired | Wi-Fi (USB adapter) on a `/16` home LAN. The lab is routed with NAT, not bridged, so Wi-Fi works. |
 
-With all six VMs running idle, the tested host measured:
-
-| Resource | Lab stopped | Lab running | What it means |
-| --- | --- | --- | --- |
-| Host RAM available | 26 GiB | 22 GiB | The whole lab costs about **4 GiB** at idle |
-| Configured RAM limits | 7 GiB in total | | The ceiling if every VM is busy; size the host for this plus the OS |
-| CPU | — | load average 0.12 (4 cores) | 7 vCPUs on 4 cores is fine for exercises |
-| Storage pool used | 2.19 GiB of 192.81 GiB | | All VMs, the image and the `clean` snapshots; ZFS stores only what's written |
-
 {% callout type="note" title="How the minimums were chosen" %}
-**Memory:** 7 GiB of VM limits plus room for Ubuntu, LXD and the ZFS cache puts the floor at 12 GB. 16 GB leaves headroom for a browser with the LXD UI, or other workloads.
+**Memory:** the three VMs are allowed 4 GiB between them, and at idle they use well under half of that. Add room for Ubuntu, LXD and the ZFS cache and 8 GB is the floor; 16 GB leaves headroom for a browser with the LXD UI, or for the container chapter.
 
 **Disk:** the lab itself is small, but snapshots grow as VMs change, and the storage chapters write to the 5 GiB extra disks. The ZFS pool is a sparse file that only takes space as it fills, so a smaller disk works.
 {% /callout %}
