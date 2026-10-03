@@ -14,12 +14,12 @@ export function walk(nodes, visit, parent = 'page') {
 export const textOf = (nodes) =>
   (nodes ?? []).map((n) => (n.t === 'text' ? n.v : n.t === 'code' ? n.lines.flat().map((t) => t.v).join('') : textOf(n.c))).join('');
 
-export async function readBundle(dir = 'content') {
+export async function readBundle(dir = 'content', programId = 'rhel9-ansible') {
   const { files } = await compile(dir);
   const lab = files.has('lab/graders.json') ? JSON.parse(files.get('lab/graders.json')) : { exercises: {} };
   const json = (file) => JSON.parse(files.get(file));
   const site = json('site.json');
-  const manifest = json(site.programs[0].manifest);
+  const manifest = json(site.programs.find((p) => p.id === programId).manifest);
   const pages = Object.fromEntries(Object.entries(manifest.pages).map(([key, file]) => [key, json(file)]));
   const legacy = manifest.legacy ? json(manifest.legacy) : null;
   const shared = site.interface ? json(site.interface).interface : {};

@@ -54,7 +54,7 @@ def go(page, route, base=None):
 def engine_has_no_course_text():
     """The built engine is generic: no chapter or section title from the content bundle appears in its code."""
     site = json.loads((ROOT / 'dist/content/site.json').read_text())
-    manifest = json.loads((ROOT / 'dist/content' / site['programs'][0]['manifest']).read_text())
+    manifest = json.loads((ROOT / 'dist/content' / next(p for p in site['programs'] if p['id'] == PROGRAM)['manifest']).read_text())
     titles = {c['title'] for c in manifest['chapters']} | {s['title'] for c in manifest['chapters'] for s in c['sections']}
     code = ''.join(f.read_text() for f in (ROOT / 'dist/assets').glob('*.js'))
     leaked = sorted(t for t in titles if t in code)
@@ -154,7 +154,7 @@ def programs_stay_separate(browser):
             cards = page.locator('.showcase .sc')
             cards.first.wait_for()
             assert cards.count() == 2, page.locator('main').inner_text()[:600]
-            assert 'Ansible automation on RHEL 9' in cards.nth(0).inner_text()
+            assert 'Ansible automation on RHEL' in cards.nth(0).inner_text()
             assert 'Linux basics' in cards.nth(1).inner_text()
             assert not page.locator('.sidebar, .search-trigger').count(), 'the site home has no program navigation'
             # The first program keeps its own progress.
@@ -221,7 +221,7 @@ def planned_program_is_listed(browser):
     page.goto(BASE + '#/')
     cards = page.locator('.showcase .sc')
     cards.nth(1).wait_for()
-    planned = cards.filter(has_text='Linux system administration on RHEL 9')
+    planned = cards.filter(has_text='Linux system administration on RHEL')
     assert planned.count() == 1 and 'Growing' in planned.inner_text()
     planned.click()
     page.wait_for_url('**/#/rhel9-sysadmin')

@@ -32,3 +32,6 @@ showcase:
   art: terminal
   tone: teal
   highlights: [Shell, Users, Storage, SELinux, Networking, Containers]
+  title: Linux system administration on RHEL
+  label: RHEL
+  summary: A hands-on path through the core skills of a Red Hat Enterprise Linux system administrator, from the command line to containers, built on the tasks administrators do every day. The practice lab is ready; the other chapters are being written.
