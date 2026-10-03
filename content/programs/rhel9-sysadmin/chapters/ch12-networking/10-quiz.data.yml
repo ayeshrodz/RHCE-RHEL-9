@@ -1,6 +1,6 @@
 chapter:
   questions:
-  - id: q-bb8ef57dc5bd
+  - id: q-2850ca9aa456
     q: Which command shows IP addresses in a short, readable form?
     options:
     - ip -br addr
@@ -8,7 +8,7 @@ chapter:
     - ip route
     answer: 0
     explain: ip -br addr prints one line per interface.
-  - id: q-c8a58a914dc0
+  - id: q-1dc81cd3aa79
     q: What does a host need in order to reach other networks?
     options:
     - A default route via a gateway
@@ -16,7 +16,7 @@ chapter:
     - A hosts file
     answer: 0
     explain: ip route shows it.
-  - id: q-4bdcc25045c8
+  - id: q-2724ebe4ec5c
     q: Which nmcli command creates a static address on a profile?
     options:
     - nmcli connection modify NAME ipv4.method manual ipv4.addresses ADDR/PREFIX
@@ -24,7 +24,7 @@ chapter:
     - ip addr persist
     answer: 0
     explain: Then nmcli connection up NAME applies it.
-  - id: q-21d915392e7b
+  - id: q-edf6f084fd24
     q: Why does ip addr set by hand disappear after a reboot?
     options:
     - It is not stored in a NetworkManager profile
@@ -32,7 +32,7 @@ chapter:
     - The kernel forgets
     answer: 0
     explain: Use nmcli connection so the setting persists.
-  - id: q-d25c95e05e6a
+  - id: q-c7b3d8598284
     q: Which file maps names to addresses locally and is consulted first?
     options:
     - /etc/hosts
@@ -40,7 +40,7 @@ chapter:
     - /etc/hostname
     answer: 0
     explain: 'hosts: files dns in nsswitch.conf.'
-  - id: q-c7684c59c214
+  - id: q-2666958265ef
     q: Which command shows the resolution a program would get?
     options:
     - getent hosts NAME
@@ -48,7 +48,7 @@ chapter:
     - nslookup NAME
     answer: 0
     explain: getent follows nsswitch.conf.
-  - id: q-2c0693bd6fc5
+  - id: q-b48b6f45d54e
     q: hostnamectl set-hostname web1.lab.example.com changes ...
     options:
     - /etc/hostname, immediately
@@ -56,7 +56,7 @@ chapter:
     - DNS records
     answer: 0
     explain: DNS records are changed on the DNS server, not by this command.
-  - id: q-a909c5ce4820
+  - id: q-c9886cad2a84
     q: Which command lists listening TCP ports with the owning program?
     options:
     - ss -tlnp
@@ -64,7 +64,7 @@ chapter:
     - ping -t
     answer: 0
     explain: Run it as root to see all process names.
-  - id: q-aa84c3d23c9c
+  - id: q-01c0f92717bd
     q: '"Connection refused" means ...'
     options:
     - The host is reachable but nothing listens on that port
@@ -72,7 +72,7 @@ chapter:
     - The name did not resolve
     answer: 0
     explain: A closed port answers refusal immediately.
-  - id: q-697ee59d93fb
+  - id: q-0c9b40dcd63c
     q: What is a 169.254.x.x address on an interface set to DHCP?
     options:
     - A sign that DHCP did not answer

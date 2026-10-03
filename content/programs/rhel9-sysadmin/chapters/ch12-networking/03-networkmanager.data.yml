@@ -157,7 +157,7 @@ practice:
       - nmcli connection delete dummy0
 quick:
   questions:
-  - id: q-a55d4ed4801d
+  - id: q-369ec6cf142c
     q: What is the difference between a device and a connection in NetworkManager?
     options:
     - A device is the interface; a connection is a saved profile of settings
@@ -165,7 +165,7 @@ quick:
     - A connection is a cable
     answer: 0
     explain: One device can have several profiles, but only one active at a time.
-  - id: q-ebf8a6f3baa6
+  - id: q-c91076739b64
     q: You ran nmcli connection modify with a new address, and ip addr still shows the old one. Why?
     options:
     - modify changes the profile only; run nmcli connection up
@@ -173,7 +173,7 @@ quick:
     - ip addr is cached
     answer: 0
     explain: Apply the changed profile with connection up.
-  - id: q-3ba0f0445767
+  - id: q-4d35fe35f16a
     q: Which option adds an address without removing the existing ones?
     options:
     - +ipv4.addresses
@@ -181,7 +181,7 @@ quick:
     - ipv4.add
     answer: 0
     explain: The + prefix appends to a list property; - removes.
-  - id: q-c65ae1c6e9d2
+  - id: q-539b07f475b1
     q: Where are profiles stored?
     options:
     - /etc/NetworkManager/system-connections/
@@ -189,7 +189,7 @@ quick:
     - /var/log/NetworkManager
     answer: 0
     explain: One .nmconnection file per profile (older RHEL used ifcfg files).
-  - id: q-157569e14cfc
+  - id: q-6921ca9bc519
     q: Which setting makes an address static instead of from DHCP?
     options:
     - ipv4.method manual
@@ -197,7 +197,7 @@ quick:
     - ipv4.static yes
     answer: 0
     explain: auto means DHCP.
-  - id: q-77629a283142
+  - id: q-b3104010566b
     q: Which command removes a profile completely?
     options:
     - nmcli connection delete NAME
