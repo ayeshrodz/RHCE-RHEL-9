@@ -362,3 +362,69 @@ test('a file that cannot be read is a content error with its file name, not a cr
   await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: a\ntitle: b\n' } });
   await rejects('text', /01-page\.md.*frontmatter cannot be read/, { front: 'title: [unclosed' });
 });
+
+// ---------- Scaffolding ----------
+
+import { scaffold, ScaffoldError } from '../src/scaffold.js';
+
+test('kernel new creates programs, chapters and sections that validate, numbered in order', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-new-'));
+  try {
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms:\n  - existing\n');
+    scaffold('program', ['demo'], { title: 'Demo program' }, dir);
+    assert.match(fs.readFileSync(path.join(dir, 'site.yml'), 'utf8'), /programs:\n {2}- existing\n {2}- demo\n$/);
+    scaffold('chapter', ['demo', 'first-steps'], {}, dir);
+    scaffold('chapter', ['demo', 'second-steps'], {}, dir);
+    const chapters = fs.readdirSync(path.join(dir, 'programs/demo/chapters')).sort();
+    assert.deepEqual(chapters, ['ch01-first-steps', 'ch02-second-steps']);
+    scaffold('section', ['demo', '1', 'hello'], {}, dir);
+    scaffold('section', ['demo', 'ch01', 'practice'], { kind: 'lab' }, dir);
+    assert.deepEqual(fs.readdirSync(path.join(dir, 'programs/demo/chapters/ch01-first-steps')).sort(), [
+      '01-hello.md',
+      '02-practice.md',
+      '_chapter.yml',
+    ]);
+    assert.doesNotMatch(
+      fs.readFileSync(path.join(dir, 'programs/demo/chapters/ch01-first-steps/_chapter.yml'), 'utf8'),
+      /status: planned/,
+      'a chapter with a section is no longer an outline',
+    );
+    scaffold('lab', ['demo', 'web-lab'], { page: 'ch01/practice' }, dir);
+    fs.appendFileSync(
+      path.join(dir, 'programs/demo/chapters/ch01-first-steps/02-practice.md'),
+      '\n{% lab id="web" title="Web" exercise="web-lab" objectives=["ch01.web"] %}\n{% lab-notes %}\nNotes.\n{% /lab-notes %}\n{% lab-challenge %}\nGoal.\n{% /lab-challenge %}\n{% task id="t" title="T" %}\nDo it.\n{% /task %}\n{% /lab %}\n',
+    );
+    // The unlisted "existing" program has no folder; list only what exists for this check.
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms:\n  - demo\n');
+    const out = await compile(dir, { now: NOW });
+    const manifest = JSON.parse(out.files.get(JSON.parse(out.files.get('site.json')).programs[0].manifest));
+    assert.deepEqual(
+      manifest.chapters.map((c) => [c.id, c.status, c.sections.length]),
+      [
+        ['ch01', 'active', 2],
+        ['ch02', 'planned', 0],
+      ],
+    );
+    assert.equal(manifest.chapters[0].sections[1].title, 'Exercise: Practice');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('kernel new refuses bad names, unknown parents and overwriting', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-new-'));
+  try {
+    fs.writeFileSync(path.join(dir, 'site.yml'), 'apiVersion: 1\nname: T\ntagline: T\nprograms:\n  - demo\n');
+    scaffold('program', ['demo'], {}, dir);
+    assert.throws(() => scaffold('program', ['demo'], {}, dir), /already exists/);
+    assert.throws(() => scaffold('program', ['Bad Name'], {}, dir), ScaffoldError);
+    assert.throws(() => scaffold('program', ['../escape'], {}, dir), ScaffoldError);
+    assert.throws(() => scaffold('chapter', ['missing', 'x'], {}, dir), /no program 'missing'/);
+    assert.throws(() => scaffold('section', ['demo', '9', 'x'], {}, dir), /no chapter ch09/);
+    assert.throws(() => scaffold('lab', ['demo', 'x'], {}, dir), /--page/);
+    assert.throws(() => scaffold('widget', [], {}, dir), /use: kernel new/);
+    assert.ok(!fs.existsSync(path.join(dir, '..', 'escape')));
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -167,4 +167,4 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 8. **Typed labs.**
 9. **Security hardening** (done): strict CSP with Trusted Types, bundled fonts, SRI, content fingerprints checked in the browser, optional ECDSA signing, size limits, per-tag attribute checks, strict YAML, fuzz tests.
 10. **RHEL 9 system administration** as a planned program (done): `rhel9-sysadmin`, a 22-chapter outline built from the published certification objectives and the RHEL 9 documentation. It has no lessons yet; its chapters list the topics they will cover.
-11. **Authoring tooling and open-source readiness.**
+11. **Authoring tooling and open-source readiness** (done): `kernel new` scaffolders, a generated component catalog reference and editor snippets, schemas published beside the site, VS Code settings, package READMEs, and updated contributing and security documents.

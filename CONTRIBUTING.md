@@ -20,7 +20,19 @@ npm install
 npm run dev                                          # http://localhost:3000, edits show live
 ```
 
-`docs/AUTHORING.md` explains how sections, frontmatter, components and diagrams work.
+`docs/AUTHORING.md` explains how sections, frontmatter, components and diagrams work, and `docs/CATALOG.md` lists every tag. `npx kernel new chapter|section|lab …` starts a new piece from a template, and `npx kernel validate` checks it. In VS Code, install the recommended extensions to get schema checking and `kp-` snippets.
+
+## Where things live
+
+| You want to | Look in |
+| --- | --- |
+| Fix or write lessons, quizzes, exercises | `content/programs/<program>/` |
+| Change what a tag may contain, add a tag | `packages/schema/` (the contract), then the engine's `registry.jsx` |
+| Change how content is checked or compiled | `packages/compiler/` |
+| Change how pages look or behave | `packages/engine/` |
+| Change the `lab` command, grading or setup | `packages/lab-tools/` |
+
+Content never contains code: no scripts, HTML, CSS or shell. If an exercise needs something the platform cannot express, open an issue describing the new check, action or component; it is added to the platform, with tests, and then used from content.
 
 ## Sending a pull request
 

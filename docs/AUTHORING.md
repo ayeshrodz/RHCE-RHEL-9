@@ -2,6 +2,19 @@
 
 How to add sections, diagrams and exercises so they match the rest of the guide.
 
+## Quick start
+
+```bash
+npm install
+npm run dev                                   # live preview; content errors appear in the terminal
+npx kernel new chapter <program> <name>       # starts from a template that already validates
+npx kernel new section <program> <chapter> <name> [--kind lesson|lab|quiz|summary]
+npx kernel new lab <program> <name> --page chNN/slug
+npx kernel validate                           # every error, with file and line
+```
+
+In VS Code, install the recommended extensions (YAML, Markdoc, Prettier). The committed `.vscode` settings check the YAML files against the content schemas, and typing `kp-` in a page offers a snippet for each tag. Outside this repository, the schemas are published beside the site at `https://<site>/schema/v1/` (for example `source/program.schema.json`), so any editor with JSON Schema support can use them. The full list of tags, with every attribute, is the generated [component catalog](CATALOG.md).
+
 ## 1. How content is organised
 
 The `content/` folder is the single source of truth. It holds only data: Markdoc pages (`.md`), YAML and JSON. The compiler (`packages/compiler`, run as `kernel validate` or `kernel build`) checks it against the content contract and builds the navigation, so you never edit JavaScript to add material. `npm run dev` recompiles it on every change.
@@ -102,6 +115,8 @@ Use `##` for topics and `###` for sub-topics; both appear in the table of conten
 - Only state exam facts you can back up. Phrase advice as practice habits, not as claims about how the exam is graded.
 
 ## 4. Tags
+
+(Every tag and attribute is listed in the generated [component catalog](CATALOG.md); this section explains how to use the common ones.)
 
 Pages use Markdown plus Markdoc tags: `{% name attribute="value" %}…{% /name %}`, or `{% name … /%}` for a tag without content. Every tag and attribute is declared in the component catalog (`packages/schema/catalog/components.json`), and the compiler rejects anything else. The engine renders tags through `packages/engine/src/components/content/registry.jsx`.
 

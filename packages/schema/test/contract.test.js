@@ -156,3 +156,11 @@ test('a compiled page cannot carry markup, script or event handlers', () => {
     'a CSS value in a token colour',
   );
 });
+
+test('every schema is published at the address its $id names, so editors and relative $refs resolve', () => {
+  const root = path.join(ROOT, 'packages/schema');
+  for (const schema of schemas) {
+    const relative = new URL(schema.$id).pathname.replace(/^\/schema\/v1\//, '');
+    assert.ok(fs.existsSync(path.join(root, 'schemas', relative)), `${schema.$id} → schemas/${relative}`);
+  }
+});
