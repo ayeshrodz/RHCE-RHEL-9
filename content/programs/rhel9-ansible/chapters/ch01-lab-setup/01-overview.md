@@ -24,7 +24,7 @@ Six VMs sit on a private network called `rhcebr0`. Inside that network they talk
 
 Pick a traffic flow to see its path and the firewall rule that decides it:
 
-{% legacy-widget name="LabNetworkMap" ref="lab-network-map" /%}
+{% lab-network-map ref="lab-network-map" /%}
 
 {% columns %}
 {% column title="Allowed" tone="green" %}
@@ -172,4 +172,4 @@ Newer patch releases should behave the same. If something differs, compare again
 
 ## The build at a glance
 
-{% legacy-widget name="BuildRoadmap" ref="build-roadmap" /%}
+{% build-roadmap ref="build-roadmap" /%}

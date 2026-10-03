@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/run-stages.schema.json",
+  "title": "Run stages",
+  "description": "The words and data for the run stages kit: Steps through the stages of a run and where each problem appears.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stages",
+        "initialSelection1"
+      ],
+      "properties": {
+        "stages": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "sub",
+              "tone",
+              "signs",
+              "tools"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "sub": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "tone": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "signs": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "tools": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            }
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

@@ -31,7 +31,7 @@ Patterns are matched against the names **in the inventory**. A name that resolve
 
 The rest of this lesson explains each form. Type a pattern, or pick one, and watch which hosts light up:
 
-{% legacy-widget name="HostPatternTester" ref="host-pattern-tester" /%}
+{% host-pattern-tester ref="host-pattern-tester" /%}
 
 ## Hosts and groups
 

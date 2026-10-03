@@ -58,7 +58,7 @@ To see everything Ansible knows about a host, print `ansible_facts` with the `de
 
 The output is long, several hundred values. Here is a trimmed sample for a classroom host. Click through it: each value shows how to reference it in a playbook.
 
-{% legacy-widget name="FactsExplorer" ref="facts-explorer" /%}
+{% facts-explorer ref="facts-explorer" /%}
 
 Some facts worth remembering:
 
@@ -122,7 +122,7 @@ The injected names are controlled by `inject_facts_as_vars` in the `[defaults]` 
 
 Gathering facts takes time and puts load on hosts. Sometimes you do not need facts at all, or a host cannot run `setup` until you install something first. Compare the options:
 
-{% legacy-widget name="FactGathering" ref="fact-gathering" /%}
+{% fact-gathering ref="fact-gathering" /%}
 
 In YAML, the two switches look like this:
 

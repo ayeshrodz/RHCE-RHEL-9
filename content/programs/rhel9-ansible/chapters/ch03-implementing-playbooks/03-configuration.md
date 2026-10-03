@@ -63,9 +63,7 @@ Here is how those settings line up along the path from your terminal to a task r
 
 Ansible looks for its configuration in several places, **uses the first file it finds, and ignores the rest**. Settings are not merged across files. Toggle the files below to see which one Ansible would use.
 
-{% legacy-widget
-  name="PrecedenceResolver"
-  ref="precedence-resolver" /%}
+{% precedence-resolver ref="precedence-resolver" /%}
 
 {% callout type="exam" title="Keep ansible.cfg in the project directory" %}
 Always run commands from the directory that contains your `ansible.cfg` and inventory. A surprising number of "it can't find my hosts" problems come from running `ansible-navigator` from the wrong directory.
@@ -101,9 +99,7 @@ With the classic tools, `ansible-config dump --only-changed` prints only the set
 
 Navigator reads its own settings file, in YAML (`.yml` or `.yaml`) or JSON. It uses the first one it finds:
 
-{% legacy-widget
-  name="PrecedenceResolver"
-  ref="precedence-resolver-2" /%}
+{% precedence-resolver ref="precedence-resolver-2" /%}
 
 Like `ansible.cfg`, each project can have its own navigator settings. A typical file:
 

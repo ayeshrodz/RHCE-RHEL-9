@@ -66,7 +66,7 @@ If a task fails but has `ignore_errors: true`, the play keeps running, so the ha
 
 Commands run with `ansible.builtin.command` or `ansible.builtin.shell` are judged only by their return code, and they report `changed` on every run. Two keywords let you apply your own rules. Try them:
 
-{% legacy-widget name="TaskOutcome" ref="task-outcome" /%}
+{% task-outcome ref="task-outcome" /%}
 
 ### failed_when
 
@@ -164,7 +164,7 @@ Blocks become really useful with two companion sections:
   {% /card %}
 {% /cards %}
 
-{% legacy-widget name="BlockFlow" ref="block-flow" /%}
+{% block-flow ref="block-flow" /%}
 
 ```yaml
 tasks:

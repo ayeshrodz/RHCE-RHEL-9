@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/play-order.schema.json",
+  "title": "Play order",
+  "description": "The words and data for the play order kit: Shows the order a play runs its tasks, roles and handlers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "written",
+        "run"
+      ],
+      "properties": {
+        "written": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "lines"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "lines": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            }
+          }
+        },
+        "run": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "src",
+              "text",
+              "note"
+            ],
+            "properties": {
+              "src": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "note": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "handler": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/readiness-checklist.schema.json",
+  "title": "Readiness checklist",
+  "description": "The words and data for the readiness checklist kit: A self-assessment checklist that records what you feel ready to do.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 60,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "tone"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "tone": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "1": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "2": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "3": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "4": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "5": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "6": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "7": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "8": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "9": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "10": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "11": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              },
+              "lab_deploy": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "label"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              },
+              "lab_playbooks": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "label"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              },
+              "lab_admin": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "label"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              },
+              "lab_roles": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "label"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

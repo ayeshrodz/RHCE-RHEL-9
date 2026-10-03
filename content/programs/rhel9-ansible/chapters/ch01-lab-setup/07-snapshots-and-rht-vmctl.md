@@ -562,7 +562,7 @@ LXD keeps `servera-disk2` and the other extra disks as separate volumes, and a V
 
 ZFS stores a VM's snapshots as a chain and can only roll back to the **newest** one. Going back to an older snapshot would mean deleting every snapshot taken after it, so LXD refuses. Try it:
 
-{% legacy-widget name="SnapshotChain" ref="snapshot-chain" /%}
+{% snapshot-chain ref="snapshot-chain" /%}
 
 | Situation | What happens |
 | --- | --- |

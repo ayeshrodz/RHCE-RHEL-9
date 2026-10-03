@@ -1,30 +1,43 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://kernelpath.dev/schema/v1/data/legacy-widget.schema.json",
-  "title": "Legacy widget data",
-  "description": "Transitional data for a widget that predates the generic catalog. Values are JSON data only (strings, numbers, booleans, arrays, objects); the compiler also caps depth and size. Removed when every legacy widget has been replaced by catalog components.",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/custom-fact-builder.schema.json",
+  "title": "Custom fact builder",
+  "description": "The words and data for the custom fact builder kit: Builds a custom fact file and shows the variable it creates.",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
   "properties": {
     "text": {
       "type": "object",
-      "propertyNames": {
-        "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
-      },
+      "maxProperties": 39,
       "additionalProperties": {
         "type": "string",
         "maxLength": 4000
       }
     },
     "data": {
-      "type": "object"
-    },
-    "props": {
-      "description": "Values the page passed as attributes before the migration.",
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "initialSelection1"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
     },
     "dependencies": {
-      "description": "Copy for widgets this widget renders inside itself, keyed by widget name.",
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
       "type": "object",
       "propertyNames": {
         "pattern": "^[A-Z][A-Za-z0-9]*$"

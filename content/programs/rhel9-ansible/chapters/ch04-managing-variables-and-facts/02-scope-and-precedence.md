@@ -38,7 +38,7 @@ When the same variable name is set in several places with different values, the 
 
 Two patterns fall out of that list. **Narrower beats wider**: a host variable beats a group variable, and a group variable for one group beats one set for `all`. **The playbook beats the inventory**: anything set in a play overrides inventory variables. And extra variables beat everything.
 
-{% legacy-widget name="VariablePrecedence" ref="variable-precedence" /%}
+{% variable-precedence ref="variable-precedence" /%}
 
 {% callout type="tip" title="Avoid needing the rules" %}
 The simplest practice is to give every variable a unique name, so precedence never comes into play. Use precedence on purpose, when you want a sensible default for a group and a deliberate exception for one host.
@@ -122,13 +122,11 @@ user: joe
 
 Here is the course's two-datacenter example. `datacenters` is a parent group of `datacenter1` and `datacenter2`, and each level sets a `package` variable. Pick a host to see which files apply to it and which value wins. Click a file to create or delete it and see the answer change.
 
-{% legacy-widget name="GroupVarsResolver" ref="group-vars-resolver" /%}
+{% group-vars-resolver ref="group-vars-resolver" /%}
 
 The same project, as a tree:
 
-{% legacy-widget
-  name="ProjectTree"
-  ref="project-tree" /%}
+{% project-tree ref="project-tree" /%}
 
 {% callout type="note" title="Two possible locations" %}
 Ansible looks for `group_vars` and `host_vars` next to the **inventory** and next to the **playbook**. If both are in the same directory, as in this course, there is only one place to look. If they are in different directories, Ansible reads both, and the directories beside the playbook take precedence.

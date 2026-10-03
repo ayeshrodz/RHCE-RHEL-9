@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/reuse-simulator.schema.json",
+  "title": "Reuse simulator",
+  "description": "The words and data for the reuse simulator kit: Compares ways of reusing tasks and what each does when the play runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 96,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tasks",
+        "initialSelection1",
+        "initialSelection2"
+      ],
+      "properties": {
+        "tasks": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "initialSelection1": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "initialSelection2": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}

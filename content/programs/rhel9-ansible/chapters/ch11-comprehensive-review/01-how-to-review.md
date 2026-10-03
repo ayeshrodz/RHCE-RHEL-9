@@ -19,7 +19,7 @@ Everything from here on is practice. Four labs cover the whole course, each star
 
 Go through every chapter below and rate each objective honestly. A rating of **shaky** means "I could do it with my notes open". Your ratings are saved in this browser, and the list underneath tells you which chapters to reread and which review lab exercises them.
 
-{% legacy-widget name="ReadinessChecklist" ref="readiness-checklist" /%}
+{% readiness-checklist ref="readiness-checklist" /%}
 
 Revisit the weak chapters first: the knowledge check at the end of each one takes ten minutes and shows quickly whether the gap is real.
 

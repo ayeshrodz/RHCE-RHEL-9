@@ -8,13 +8,13 @@ import {
   validateFlowMapData,
   validateInterface,
   validateLegacy,
-  validateLegacyWidgetData,
   validateManifest,
   validatePage,
   validatePracticeData,
   validateQuizData,
   validateSearch,
   validateSite,
+  TAGS,
 } from '@kernel-path/schema/validators';
 
 import { MAX_BYTES } from '@kernel-path/schema/limits';
@@ -31,7 +31,6 @@ const DATA_VALIDATORS = {
   diagram: validateDiagramData,
   'feature-grid': validateFeatureGridData,
   'terminal-demo': validateTerminalDemoData,
-  'legacy-widget': validateLegacyWidgetData,
 };
 
 export class ContentError extends Error {}
@@ -121,8 +120,20 @@ async function load(file, validate, what, { fresh = false, limit = MAX_BYTES.pag
   return promise;
 }
 
+let kitValidators = null;
+/** Kit data validators are large and few pages need them, so they load only when a page contains a kit. */
+const loadKitValidators = () => (kitValidators ??= import('@kernel-path/schema/kits').then((m) => m.KIT_VALIDATORS));
+
 /** Tags whose page data must be checked against their data schema before rendering. */
-function validatePageData(page) {
+async function validatePageData(page) {
+  let usesKits = false;
+  (function find(nodes) {
+    for (const node of nodes ?? []) {
+      if (node.t === 'tag' && Object.hasOwn(TAGS, node.name) && TAGS[node.name].kit) usesKits = true;
+      find(node.c);
+    }
+  })(page.tree);
+  const kits = usesKits ? await loadKitValidators() : {};
   (function visit(nodes) {
     for (const node of nodes ?? []) {
       if (node.t === 'tag') {
@@ -130,7 +141,11 @@ function validatePageData(page) {
         if (problem) throw new ContentError(`The page is not valid content: ${problem}.`);
       }
       if (node.t === 'tag' && node.attrs?.ref !== undefined) {
-        const validate = DATA_VALIDATORS[node.name];
+        const validate = Object.hasOwn(DATA_VALIDATORS, node.name)
+          ? DATA_VALIDATORS[node.name]
+          : Object.hasOwn(kits, node.name)
+            ? kits[node.name]
+            : null;
         const entry = page.data[node.attrs.ref];
         if (!validate || entry === undefined || !validate(entry))
           throw new ContentError(

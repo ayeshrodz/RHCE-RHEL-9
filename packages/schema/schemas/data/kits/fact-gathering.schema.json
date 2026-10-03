@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/fact-gathering.schema.json",
+  "title": "Fact gathering",
+  "description": "The words and data for the fact gathering kit: Shows when facts are gathered and what disabling gathering changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modes"
+      ],
+      "properties": {
+        "modes": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "yaml",
+              "steps",
+              "facts",
+              "text"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "yaml": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "steps": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "maxProperties": 30,
+                  "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              },
+              "facts": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "text": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            }
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "description": "Copy for kits this kit shows inside itself, by kit name.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

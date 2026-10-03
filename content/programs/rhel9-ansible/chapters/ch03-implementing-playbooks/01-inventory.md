@@ -121,7 +121,7 @@ The course examples use names like `db-servers`. Ansible accepts them but prints
 
 This is the inventory from the next exercise. Pick a group to see the hosts it contains, including hosts inherited from child groups, exactly as `--graph` would print them. Pick a host to see every group it belongs to. You can also edit the file on the left and watch the result change.
 
-{% legacy-widget name="InventoryExplorer" ref="inventory-explorer" /%}
+{% inventory-explorer ref="inventory-explorer" /%}
 
 ## Host ranges
 
@@ -138,7 +138,7 @@ When host names or IP addresses follow a pattern, write a **range** instead of l
 If the range has leading zeros, they are part of the pattern. `server[01:20]` matches `server07` but **not** `server7`. Compare the first two presets below.
 {% /callout %}
 
-{% legacy-widget name="RangeExpander" ref="range-expander" /%}
+{% range-expander ref="range-expander" /%}
 
 Using ranges, the `usa` and `canada` groups above shrink to one line each:
 

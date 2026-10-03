@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/cron-builder.schema.json",
+  "title": "Schedule builder",
+  "description": "The words and data for the schedule builder kit: Builds a schedule entry and explains when it runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 99,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "array",
+        "maxItems": 20,
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "hint": {
+                  "type": "string",
+                  "maxLength": 4000
+                },
+                "v": {
+                  "type": "object",
+                  "maxProperties": 30,
+                  "additionalProperties": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                }
+              }
+            },
+            {
+              "type": "string",
+              "maxLength": 4000
+            }
+          ]
+        }
+      }
+    }
+  }
+}

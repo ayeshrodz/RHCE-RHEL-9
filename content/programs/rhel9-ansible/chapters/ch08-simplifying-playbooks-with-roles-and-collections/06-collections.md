@@ -21,7 +21,7 @@ Every module name you have typed so far has three parts, such as `ansible.posix.
 
 A collection can contain modules, roles, plug-ins such as filters, and documentation. You refer to anything inside it by its **fully qualified collection name**, the FQCN:
 
-{% legacy-widget name="FqcnExplorer" ref="fqcn-explorer" /%}
+{% fqcn-explorer ref="fqcn-explorer" /%}
 
 Using the full name in every task means a playbook says exactly which module it wants, and keeps working when two collections each have a module called, say, `user`.
 

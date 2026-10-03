@@ -18,7 +18,7 @@ Some work runs on a timetable: nightly backups, log rotation, a report every Mon
 
 `ansible.builtin.cron` manages entries in a user's crontab. Build a schedule and see both the task and the line it writes:
 
-{% legacy-widget name="CronBuilder" ref="cron-builder" /%}
+{% cron-builder ref="cron-builder" /%}
 
 ```yaml
 - name: Uptime is logged every five minutes

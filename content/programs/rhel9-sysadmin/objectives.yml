@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": "ch01.lab-network",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/network-and-seal"
+    ],
+    "labs": [
+      "ch01/network-and-seal"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-machines",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/create-and-verify-vms"
+    ],
+    "labs": [
+      "ch01/create-and-verify-vms"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-tools",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/workstation"
+    ],
+    "labs": [
+      "ch01/workstation"
+    ],
+    "challenges": []
+  },
+  {
+    "id": "ch01.lab-reset",
+    "chapter": "ch01",
+    "lessons": [
+      "ch01/snapshots-and-rht-vmctl"
+    ],
+    "labs": [
+      "ch01/snapshots-and-rht-vmctl"
+    ],
+    "challenges": []
+  }
+]

@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/data-explorer.schema.json",
+  "title": "Data explorer",
+  "description": "The words and data for the data explorer kit: Explores a nested data structure and the expression that reaches each value.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "data"
+  ],
+  "properties": {
+    "text": {
+      "type": "object",
+      "maxProperties": 30,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "props": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "data",
+        "initial"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "bjones": {
+              "type": "object",
+              "maxProperties": 30,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "acook": {
+              "type": "object",
+              "maxProperties": 30,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "changed": {
+              "type": "boolean"
+            },
+            "msg": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "results": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ansible_loop_var",
+                  "item",
+                  "changed",
+                  "cmd",
+                  "rc",
+                  "stdout",
+                  "stdout_lines",
+                  "failed"
+                ],
+                "properties": {
+                  "ansible_loop_var": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "item": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "changed": {
+                    "type": "boolean"
+                  },
+                  "cmd": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "rc": {
+                    "type": "integer"
+                  },
+                  "stdout": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "stdout_lines": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 4000
+                    }
+                  },
+                  "failed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "skipped": {
+              "type": "boolean"
+            }
+          }
+        },
+        "initial": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

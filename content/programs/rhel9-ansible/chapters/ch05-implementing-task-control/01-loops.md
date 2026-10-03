@@ -54,7 +54,7 @@ Add the **`loop`** keyword to a task and give it a list. Ansible runs the task o
 
 Add and remove items below, and switch to a list of dictionaries, to see how one task becomes several runs:
 
-{% legacy-widget name="LoopUnroller" ref="loop-unroller" /%}
+{% loop-unroller ref="loop-unroller" /%}
 
 ## Looping over a variable
 
@@ -143,7 +143,7 @@ Since Ansible 2.5, `loop` is the recommended keyword. Read `with_items` comforta
 
 Explore the registered variable (trimmed to the most useful keys):
 
-{% legacy-widget name="DataExplorer" ref="data-explorer" /%}
+{% data-explorer ref="data-explorer" /%}
 
 To use each result, loop over the `results` list. Inside that loop, `item` is one result dictionary:
 

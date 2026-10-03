@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/kits/project-tree.schema.json",
+  "title": "Project tree",
+  "description": "The words and data for the project tree kit: A project directory tree with the role of each file explained.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "props": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paths"
+      ],
+      "properties": {
+        "paths": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "notes": {
+          "type": "object",
+          "maxProperties": 30,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "locked": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}
