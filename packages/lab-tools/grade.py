@@ -163,7 +163,7 @@ def conditions_firewall(c):
 def conditions_package(c):
     names = ' '.join(shlex.quote(n) for n in c['names'])
     if c.get('installed', True):
-        return ['rpm -q %s >/dev/null' % names]
+        return ['rpm -q %s >/dev/null' % names] + (['rpm -V %s' % names] if c.get('verify') else [])
     return ['! rpm -q %s >/dev/null' % shlex.quote(n) for n in c['names']]
 
 

@@ -228,6 +228,8 @@ def script_package(a):
     names = ' '.join(q(n) for n in a['names'])
     if a.get('state', 'present') == 'absent':
         return 'dnf remove -y -q %s >/dev/null 2>&1' % names
+    if a.get('state') == 'reinstalled':
+        return 'dnf install -y -q %s >/dev/null 2>&1; dnf reinstall -y -q %s >/dev/null 2>&1' % (names, names)
     return 'dnf install -y -q %s >/dev/null 2>&1' % names
 
 
@@ -269,7 +271,7 @@ def script_group(a):
 def script_user(a):
     n = q(name(a['name']))
     if a.get('state', 'present') == 'absent':
-        return 'if id %s >/dev/null 2>&1; then pkill -KILL -u %s 2>/dev/null; sleep 1; userdel -r -f %s 2>/dev/null || userdel -f %s; fi' % (n, n, n, n)
+        return 'if id %s >/dev/null 2>&1; then pkill -KILL -u %s 2>/dev/null || true; sleep 1; userdel -r -f %s 2>/dev/null || userdel -f %s; fi' % (n, n, n, n)
     flags = ''
     if 'uid' in a:
         flags += ' -u %d' % a['uid']
@@ -353,7 +355,8 @@ def script_selinux(a):
 
 def script_wipe_disk(a):
     dev = q(a['device'])
-    return """for s in $(swapon --noheadings --show=NAME 2>/dev/null); do
+    return """set +e
+for s in $(swapon --noheadings --show=NAME 2>/dev/null); do
   case $s in %(d)s*|/dev/dm-*|/dev/mapper/*) swapoff $s 2>/dev/null;; esac
 done
 for m in $(lsblk -nrpo MOUNTPOINTS %(dev)s 2>/dev/null | grep '^/'); do umount -l "$m" 2>/dev/null; done
@@ -402,6 +405,35 @@ def script_timezone(a):
     return 'timedatectl set-timezone %s' % q(a['zone'])
 
 
+def script_nm_connection(a):
+    return 'nmcli connection delete %s >/dev/null 2>&1 || true' % q(a['name'])
+
+
+def script_hostname(a):
+    if not re.match(r'^[a-z][a-z0-9.-]{1,60}$', a['name']):
+        raise SetupError('unsafe host name')
+    return 'hostnamectl set-hostname %s' % q(a['name'])
+
+
+def script_http_server(a):
+    port = int(a['port'])
+    if a['bind'] not in ('127.0.0.1', '0.0.0.0'):
+        raise SetupError('unsafe address')
+    unit = 'lab-http-%d' % port
+    stop = 'systemctl stop %s 2>/dev/null || true\nsystemctl reset-failed %s 2>/dev/null || true\npkill -f %s 2>/dev/null || true' % (unit, unit, q('http.server %d' % port))
+    if a.get('state', 'started') == 'stopped':
+        return stop
+    return '%s\nsystemd-run --quiet --unit=%s -p WorkingDirectory=%s python3 -m http.server %d --bind %s\nsleep 1' % (
+        stop, unit, q(safe_path(a['directory'])), port, a['bind'])
+
+
+def script_dnf_module(a):
+    n = q(a['name'])
+    if a['state'] == 'reset':
+        return 'dnf module reset -y %s >/dev/null 2>&1' % n
+    return 'dnf module enable -y %s:%s >/dev/null 2>&1' % (n, q(a['stream']))
+
+
 def script_run_as(a):
     user = q(name(a['user']))
     image = q(a['image'])
@@ -414,6 +446,7 @@ HOST_SCRIPTS = {
     'file': script_file, 'remove-lines': script_remove_lines, 'firewall': script_firewall, 'selinux': script_selinux,
     'wipe-disk': script_wipe_disk, 'systemd': script_systemd, 'linger': script_linger, 'container-reset': script_container_reset,
     'run-as': script_run_as, 'restore-skel': script_restore_skel, 'boot': script_boot, 'timezone': script_timezone,
+    'nm-connection': script_nm_connection, 'hostname': script_hostname, 'http-server': script_http_server, 'dnf-module': script_dnf_module,
 }
 
 

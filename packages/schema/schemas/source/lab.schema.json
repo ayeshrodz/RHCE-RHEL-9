@@ -641,7 +641,8 @@
             "state": {
               "enum": [
                 "present",
-                "absent"
+                "absent",
+                "reinstalled"
               ]
             }
           }
@@ -1255,6 +1256,122 @@
               "maxLength": 40
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "name"
+          ],
+          "properties": {
+            "action": {
+              "const": "nm-connection"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,30}$"
+            },
+            "state": {
+              "enum": [
+                "absent"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "name"
+          ],
+          "properties": {
+            "action": {
+              "const": "hostname"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{1,60}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "port",
+            "bind",
+            "directory"
+          ],
+          "properties": {
+            "action": {
+              "const": "http-server"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 65535
+            },
+            "bind": {
+              "type": "string",
+              "pattern": "^(?:127\\.0\\.0\\.1|0\\.0\\.0\\.0)$"
+            },
+            "directory": {
+              "$ref": "#/$defs/hostPath"
+            },
+            "state": {
+              "enum": [
+                "started",
+                "stopped"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "hosts",
+            "name",
+            "state"
+          ],
+          "properties": {
+            "action": {
+              "const": "dnf-module"
+            },
+            "hosts": {
+              "$ref": "#/$defs/serverList"
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{1,30}$"
+            },
+            "stream": {
+              "type": "string",
+              "pattern": "^[0-9][A-Za-z0-9._-]{0,15}$"
+            },
+            "state": {
+              "enum": [
+                "reset",
+                "enabled"
+              ]
+            }
+          }
         }
       ]
     },
@@ -1386,6 +1503,10 @@
         "installed": {
           "type": "boolean",
           "default": true
+        },
+        "verify": {
+          "description": "Every file of the package matches the RPM database (rpm -V is clean).",
+          "type": "boolean"
         }
       },
       "type": "object"
