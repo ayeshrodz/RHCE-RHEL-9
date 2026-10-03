@@ -585,20 +585,36 @@
   - ch19/exercise-maps
   - ch19/lab
   challenges: []
-- id: ch20.operations
+- id: ch20.zones
   chapter: ch20
   lessons:
-  - ch20/firewalld-model
-  - ch20/firewall-diagnosis
+  - ch20/zones-and-services
   labs:
+  - ch20/exercise-web
   - ch20/lab
   challenges: []
-- id: ch20.verification
+- id: ch20.stores
   chapter: ch20
   lessons:
-  - ch20/firewalld-model
-  - ch20/firewall-diagnosis
+  - ch20/runtime-and-permanent
   labs:
+  - ch20/exercise-stores
+  - ch20/lab
+  challenges: []
+- id: ch20.special
+  chapter: ch20
+  lessons:
+  - ch20/sources-and-special-rules
+  labs:
+  - ch20/exercise-special
+  - ch20/lab
+  challenges: []
+- id: ch20.diagnosis
+  chapter: ch20
+  lessons:
+  - ch20/diagnosis
+  labs:
+  - ch20/exercise-diagnosis
   - ch20/lab
   challenges: []
 - id: ch22.operations

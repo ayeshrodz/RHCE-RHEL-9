@@ -1,0 +1,165 @@
+name: sa-firewalld-review
+title: The firewall
+page: ch20/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: httpd
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd is running and enabled on servera
+      names:
+      - httpd.service
+      active: true
+      enabled: true
+    - id: page
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The home page says Welcome to servera
+      url: http://localhost/
+      containsAny:
+      - Welcome to servera
+    - id: listen-8080
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd answers on port 8080
+      url: http://localhost:8080/
+      containsAny:
+      - Welcome to servera
+    - id: listen-9000
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: httpd answers on port 9000
+      url: http://localhost:9000/
+      containsAny:
+      - Welcome to servera
+    - id: zone-file
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The permanent zone partners has a source address
+      paths:
+      - /etc/firewalld/zones/partners.xml
+      matches: <source address="[0-9a-fA-F.:/]+"/>
+    - id: partners-http
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The zone partners allows http
+      zone: partners
+      service: http
+    - id: partners-portal
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The zone partners allows the service portal
+      zone: partners
+      service: portal
+    - id: portal-service
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The service portal is defined for port 9000
+      paths:
+      - /etc/firewalld/services/portal.xml
+      matches: port="9000"
+    - id: partners-forward
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The zone partners forwards 8081 to 8080
+      zone: partners
+      forwardPort: port=8081:proto=tcp:toport=8080
+    - id: public-no-http
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The default zone does not allow http
+      service: http
+      allowed: false
+    - id: public-no-8080
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The default zone does not open 8080
+      port: 8080/tcp
+      allowed: false
+    - id: public-no-9000
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The default zone does not open 9000
+      port: 9000/tcp
+      allowed: false
+    - id: from-80
+      kind: http
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb reaches port 80 on servera
+      url: http://servera.lab.example.com/
+      containsAny:
+      - Welcome to servera
+    - id: from-9000
+      kind: http
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb reaches port 9000 on servera
+      url: http://servera.lab.example.com:9000/
+      containsAny:
+      - Welcome to servera
+    - id: from-8081
+      kind: http
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb reaches port 8081 (forwarded to 8080)
+      url: http://servera.lab.example.com:8081/
+      containsAny:
+      - Welcome to servera
+    - id: answer-reload-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the firewall-cmd option that loads the permanent rules'
+      paths:
+      - answers.txt
+      matches: ^RELOAD_OPTION=--reload[ \t]*$
+    - id: answer-temp-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the option that makes a runtime rule expire'
+      paths:
+      - answers.txt
+      matches: ^TEMP_OPTION=--timeout[ \t]*$
+    - id: answer-drop-symptom
+      kind: file
+      'on': control
+      message: 'answers.txt: what a client sees when its packets are dropped (timeout, refused or noroute)'
+      paths:
+      - answers.txt
+      matches: ^DROP_SYMPTOM=timeout[ \t]*$

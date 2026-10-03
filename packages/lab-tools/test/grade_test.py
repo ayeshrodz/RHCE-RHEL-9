@@ -262,6 +262,21 @@ esac
         for check, expected in cases:
             self.assertEqual(self.run_script(check) != 0, bool(expected), check)
 
+    def test_firewall_checks_build_zone_queries(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('grade_module', ROOT / 'packages' / 'lab-tools' / 'grade.py')
+        grade = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(grade)
+        self.assertEqual(grade.conditions_firewall({'service': 'http', 'runtime': False}), ['firewall-cmd --permanent --query-service=http'])
+        self.assertEqual(
+            grade.conditions_firewall({'zone': 'partners', 'source': '172.25.250.11', 'permanent': False}),
+            ['firewall-cmd --zone=partners --query-source=172.25.250.11'],
+        )
+        self.assertEqual(
+            grade.conditions_firewall({'zone': 'partners', 'forwardPort': 'port=8081:proto=tcp:toport=8080', 'runtime': False, 'allowed': False}),
+            ['! firewall-cmd --permanent --zone=partners --query-forward-port=port=8081:proto=tcp:toport=8080'],
+        )
+
     def test_http_checks_against_a_local_server(self):
         import threading
         from http.server import BaseHTTPRequestHandler, HTTPServer

@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-732a18df0125
+    q: Which command prints the zones that are in use?
+    options:
+    - firewall-cmd --get-active-zones
+    - firewall-cmd --get-zones
+    - firewall-cmd --state
+    answer: 0
+    explain: --get-zones lists all that exist.
+  - id: q-b47e7dd77358
+    q: A zone has the source 10.0.0.5 and the interface zone is public. Packets from 10.0.0.5 are judged by...
+    options:
+    - the zone with the source
+    - public
+    - the default zone
+    answer: 0
+    explain: Source beats interface.
+  - id: q-adda4dada978
+    q: What must you do after firewall-cmd --permanent --add-service=http?
+    options:
+    - firewall-cmd --reload
+    - Reboot
+    - Nothing
+    answer: 0
+    explain: Permanent changes are not enforced until a reload.
+  - id: q-2e544fdbbf96
+    q: Which option makes a rule disappear after a time?
+    options:
+    - --timeout=60
+    - --permanent
+    - --reload
+    answer: 0
+    explain: Runtime only.
+  - id: q-b70ee6381635
+    q: Which command answers yes or no about a service in the saved configuration?
+    options:
+    - firewall-cmd --permanent --query-service=http
+    - firewall-cmd --query-service=http
+    - systemctl is-enabled firewalld
+    answer: 0
+    explain: Without --permanent it asks the running firewall.
+  - id: q-fb1cbd7429ad
+    q: How do you open a non-standard port 9000/tcp permanently?
+    options:
+    - firewall-cmd --permanent --add-port=9000/tcp; firewall-cmd --reload
+    - firewall-cmd --add-service=9000
+    - systemctl enable 9000
+    answer: 0
+    explain: Or define a service for it.
+  - id: q-57009937c30f
+    q: A client gets "Connection refused" for a port the firewall allows. Where do you look?
+    options:
+    - 'At the service: is it running and listening (ss -tlnp)?'
+    - At the DNS
+    - At the zone files
+    answer: 0
+    explain: The packet arrived and nothing answered.
+  - id: q-2a5a85098a14
+    q: Which zone silently discards traffic?
+    options:
+    - drop
+    - block
+    - public
+    answer: 0
+    explain: block rejects with a reply.
+  - id: q-c5cbff578f46
+    q: A client times out instead of being rejected. What do you suspect?
+    options:
+    - A drop zone or rule for its address
+    - A stopped service
+    - A wrong port in the URL
+    answer: 0
+    explain: Dropped packets get no answer.
+  - id: q-e2b5766abe2b
+    q: Why not simply stop firewalld to make an application work?
+    options:
+    - It removes all protection and hides the real cause
+    - It is not allowed by RHEL
+    - It breaks DNS
+    answer: 0
+    explain: Find the missing rule and add it.

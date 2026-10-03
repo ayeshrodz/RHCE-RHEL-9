@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The firewall-cmd option that loads the permanent rules into the running firewall:
+RELOAD_OPTION=
+# The option that makes a runtime rule remove itself after some time (starts with two dashes):
+TEMP_OPTION=
+# What a client sees when its packets are dropped: timeout, refused or noroute
+DROP_SYMPTOM=
