@@ -282,6 +282,22 @@
   labs:
   - ch19/lab
   challenges: []
+- id: ch20.operations
+  chapter: ch20
+  lessons:
+  - ch20/firewalld-model
+  - ch20/firewall-diagnosis
+  labs:
+  - ch20/lab
+  challenges: []
+- id: ch20.verification
+  chapter: ch20
+  lessons:
+  - ch20/firewalld-model
+  - ch20/firewall-diagnosis
+  labs:
+  - ch20/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
