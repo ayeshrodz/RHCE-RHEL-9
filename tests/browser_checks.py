@@ -394,6 +394,13 @@ with preview_server(BASE, ROOT):
         assert figure.locator('.dg-info-title').count() == 1 and figure.locator('.dg-node.is-active').count() == 1
         figure.locator('.dg-node.is-clickable').first.click()
         assert figure.locator('.dg-node.is-active').count() == 0 and figure.locator('.dg-info-hint').count() == 1
+        # A selectable group works from the keyboard too.
+        go(page, '/ch02/automation-platform')
+        group = page.locator('figure.diagram .dg-group-select').first
+        group.focus(); page.keyboard.press('Enter')
+        assert group.get_attribute('aria-pressed') == 'true'
+        assert 'execution environment' in page.locator('figure.diagram .dg-info-title').first.inner_text().lower()
+        go(page, '/ch02/architecture')
         stepped = page.locator('figure.diagram').nth(1)
         before = stepped.locator('.dg-arrow.is-hot').count()
         stepped.get_by_role('button', name='Next').click()
