@@ -90,3 +90,19 @@
   labs:
   - ch05/lab
   challenges: []
+- id: ch06.operations
+  chapter: ch06
+  lessons:
+  - ch06/account-lifecycle
+  - ch06/sudo-policy
+  labs:
+  - ch06/lab
+  challenges: []
+- id: ch06.verification
+  chapter: ch06
+  lessons:
+  - ch06/account-lifecycle
+  - ch06/sudo-policy
+  labs:
+  - ch06/lab
+  challenges: []

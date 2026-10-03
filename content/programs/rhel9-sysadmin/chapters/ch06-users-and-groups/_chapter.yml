@@ -1,9 +1,8 @@
-title: "Users and groups"
-goal: "Create and manage local accounts, groups and administrative access."
-status: planned
-topics:
-  - "Creating, modifying and deleting users and groups"
-  - "The account files and default profiles"
-  - "Passwords, aging and locking accounts"
-  - "Switching users and running commands with sudo"
-  - "Writing sudoers rules safely"
+title: Users and groups
+goal: Create and manage local accounts, groups and administrative access.
+objectives:
+- Manage account membership and lifecycle using supported tools.
+- Delegate administrative work and validate policy safely.
+objectiveIds:
+- ch06.operations
+- ch06.verification
