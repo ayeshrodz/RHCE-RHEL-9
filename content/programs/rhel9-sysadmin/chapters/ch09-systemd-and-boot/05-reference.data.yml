@@ -1,0 +1,10 @@
+recall:
+  cards:
+  - front: A service is enabled but failed. What does enable establish?
+    back: Startup policy, not successful runtime behavior. Enable and runtime status answer different
+      questions.
+  - front: You edited a unit file. What tells systemd to reread it?
+    back: systemctl daemon-reload Manager unit definitions and daemon configuration are distinct layers.
+  - front: Where do rd.break recovery commands belong?
+    back: In the disposable VM console break environment. The paths refer to the early boot environment,
+      and console preparation is essential.

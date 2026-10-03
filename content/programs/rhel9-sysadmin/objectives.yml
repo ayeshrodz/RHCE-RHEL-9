@@ -138,3 +138,19 @@
   labs:
   - ch08/lab
   challenges: []
+- id: ch09.operations
+  chapter: ch09
+  lessons:
+  - ch09/service-state
+  - ch09/boot-and-recovery
+  labs:
+  - ch09/lab
+  challenges: []
+- id: ch09.verification
+  chapter: ch09
+  lessons:
+  - ch09/service-state
+  - ch09/boot-and-recovery
+  labs:
+  - ch09/lab
+  challenges: []
