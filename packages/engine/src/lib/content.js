@@ -2,6 +2,8 @@
 // from the configured content base only, and validated against the contract before use.
 import {
   validateDiagramData,
+  validateFeatureGridData,
+  validateTerminalDemoData,
   validateFlashcardsData,
   validateFlowMapData,
   validateInterface,
@@ -27,6 +29,8 @@ const DATA_VALIDATORS = {
   flashcards: validateFlashcardsData,
   'flow-map': validateFlowMapData,
   diagram: validateDiagramData,
+  'feature-grid': validateFeatureGridData,
+  'terminal-demo': validateTerminalDemoData,
 };
 
 export class ContentError extends Error {}

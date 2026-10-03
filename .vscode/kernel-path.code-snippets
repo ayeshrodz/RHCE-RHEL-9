@@ -149,6 +149,13 @@
       "{% facts-explorer ref=\"${1}\" /%}"
     ]
   },
+  "kp-feature-grid": {
+    "prefix": "kp-feature-grid",
+    "description": "A grid of short feature descriptions, each with an icon.",
+    "body": [
+      "{% feature-grid ref=\"${1}\" /%}"
+    ]
+  },
   "kp-fetch-layout": {
     "prefix": "kp-fetch-layout",
     "description": "Shows where fetched files are stored on the control side.",
@@ -212,6 +219,15 @@
     "description": "A timeline showing when notified handlers run relative to tasks.",
     "body": [
       "{% handler-timeline ref=\"${1}\" /%}"
+    ]
+  },
+  "kp-hero": {
+    "prefix": "kp-hero",
+    "description": "The opening block of a landing page: heading, short introduction, two buttons and an animated illustration.",
+    "body": [
+      "{% hero title=\"${1}\" %}",
+      "$0",
+      "{% /hero %}"
     ]
   },
   "kp-host-pattern-tester": {
@@ -534,6 +550,13 @@
       "{% term name=\"${1}\" %}",
       "$0",
       "{% /term %}"
+    ]
+  },
+  "kp-terminal-demo": {
+    "prefix": "kp-terminal-demo",
+    "description": "An animated terminal that types a few commands and shows their output once it scrolls into view.",
+    "body": [
+      "{% terminal-demo ref=\"${1}\" /%}"
     ]
   },
   "kp-variable-name-checker": {

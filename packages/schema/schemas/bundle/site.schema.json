@@ -116,6 +116,9 @@
           },
           "manifest": {
             "$ref": "#/$defs/hashedUrl"
+          },
+          "showcase": {
+            "$ref": "../source/program.schema.json#/properties/showcase"
           }
         }
       }

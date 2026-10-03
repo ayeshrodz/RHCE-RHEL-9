@@ -177,6 +177,45 @@
     },
     "theme": {
       "$ref": "theme.schema.json"
+    },
+    "showcase": {
+      "description": "How the program is presented on the site home page: an illustration, an accent colour and a few topic chips.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "art"
+      ],
+      "properties": {
+        "art": {
+          "description": "Which engine illustration to show.",
+          "enum": [
+            "automation",
+            "terminal"
+          ]
+        },
+        "tone": {
+          "description": "Accent colour of the card.",
+          "enum": [
+            "purple",
+            "teal",
+            "coral",
+            "pink",
+            "blue",
+            "green",
+            "amber",
+            "gray"
+          ]
+        },
+        "highlights": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "../common.schema.json#/$defs/shortText",
+            "maxLength": 28,
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

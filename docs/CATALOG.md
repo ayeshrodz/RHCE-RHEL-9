@@ -2,7 +2,7 @@
 
 Every tag a page may use. This file is generated from `packages/schema/catalog/components.json`; do not edit it. Pages write a tag as `{% name attribute="value" %}…{% /name %}`, or `{% name … /%}` when it holds nothing. Attribute values are text in double quotes, numbers, `true`/`false`, or a list such as `["a", "b"]`.
 
-[`admin-module-finder`](#admin-module-finder) · [`annotated-yaml`](#annotated-yaml) · [`assessment-timer`](#assessment-timer) · [`block-flow`](#block-flow) · [`build-roadmap`](#build-roadmap) · [`callout`](#callout) · [`card`](#card) · [`cards`](#cards) · [`check-mode-sim`](#check-mode-sim) · [`column`](#column) · [`columns`](#columns) · [`command-vs-module`](#command-vs-module) · [`condition-playground`](#condition-playground) · [`cron-builder`](#cron-builder) · [`custom-fact-builder`](#custom-fact-builder) · [`data-explorer`](#data-explorer) · [`diagram`](#diagram) · [`error-decoder`](#error-decoder) · [`fact-gathering`](#fact-gathering) · [`facts-explorer`](#facts-explorer) · [`fetch-layout`](#fetch-layout) · [`file-edit-simulator`](#file-edit-simulator) · [`file-module-chooser`](#file-module-chooser) · [`flashcards`](#flashcards) · [`flow-map`](#flow-map) · [`fqcn-explorer`](#fqcn-explorer) · [`glossary`](#glossary) · [`group-vars-resolver`](#group-vars-resolver) · [`handler-timeline`](#handler-timeline) · [`host-pattern-tester`](#host-pattern-tester) · [`idempotency-demo`](#idempotency-demo) · [`inventory-explorer`](#inventory-explorer) · [`kbd`](#kbd) · [`lab`](#lab) · [`lab-challenge`](#lab-challenge) · [`lab-finish`](#lab-finish) · [`lab-network-map`](#lab-network-map) · [`lab-notes`](#lab-notes) · [`lab-setup`](#lab-setup) · [`lead`](#lead) · [`loop-unroller`](#loop-unroller) · [`magic-variables`](#magic-variables) · [`mode-calculator`](#mode-calculator) · [`module-explorer`](#module-explorer) · [`objectives`](#objectives) · [`play-order`](#play-order) · [`play-recap`](#play-recap) · [`practice`](#practice) · [`precedence-resolver`](#precedence-resolver) · [`program-cards`](#program-cards) · [`project-tree`](#project-tree) · [`quiz`](#quiz) · [`range-expander`](#range-expander) · [`reader-variables`](#reader-variables) · [`readiness-checklist`](#readiness-checklist) · [`reuse-simulator`](#reuse-simulator) · [`reveal`](#reveal) · [`role-anatomy`](#role-anatomy) · [`role-var-resolver`](#role-var-resolver) · [`run-stages`](#run-stages) · [`snapshot-chain`](#snapshot-chain) · [`starter-files`](#starter-files) · [`stat-explorer`](#stat-explorer) · [`step`](#step) · [`steps`](#steps) · [`tab`](#tab) · [`tabs`](#tabs) · [`task`](#task) · [`task-outcome`](#task-outcome) · [`template-playground`](#template-playground) · [`term`](#term) · [`variable-name-checker`](#variable-name-checker) · [`variable-precedence`](#variable-precedence) · [`variable-substitution`](#variable-substitution) · [`variant`](#variant) · [`variant-group`](#variant-group) · [`variant-switch`](#variant-switch) · [`vault-commands`](#vault-commands) · [`verbosity`](#verbosity) · [`yaml-multiline`](#yaml-multiline)
+[`admin-module-finder`](#admin-module-finder) · [`annotated-yaml`](#annotated-yaml) · [`assessment-timer`](#assessment-timer) · [`block-flow`](#block-flow) · [`build-roadmap`](#build-roadmap) · [`callout`](#callout) · [`card`](#card) · [`cards`](#cards) · [`check-mode-sim`](#check-mode-sim) · [`column`](#column) · [`columns`](#columns) · [`command-vs-module`](#command-vs-module) · [`condition-playground`](#condition-playground) · [`cron-builder`](#cron-builder) · [`custom-fact-builder`](#custom-fact-builder) · [`data-explorer`](#data-explorer) · [`diagram`](#diagram) · [`error-decoder`](#error-decoder) · [`fact-gathering`](#fact-gathering) · [`facts-explorer`](#facts-explorer) · [`feature-grid`](#feature-grid) · [`fetch-layout`](#fetch-layout) · [`file-edit-simulator`](#file-edit-simulator) · [`file-module-chooser`](#file-module-chooser) · [`flashcards`](#flashcards) · [`flow-map`](#flow-map) · [`fqcn-explorer`](#fqcn-explorer) · [`glossary`](#glossary) · [`group-vars-resolver`](#group-vars-resolver) · [`handler-timeline`](#handler-timeline) · [`hero`](#hero) · [`host-pattern-tester`](#host-pattern-tester) · [`idempotency-demo`](#idempotency-demo) · [`inventory-explorer`](#inventory-explorer) · [`kbd`](#kbd) · [`lab`](#lab) · [`lab-challenge`](#lab-challenge) · [`lab-finish`](#lab-finish) · [`lab-network-map`](#lab-network-map) · [`lab-notes`](#lab-notes) · [`lab-setup`](#lab-setup) · [`lead`](#lead) · [`loop-unroller`](#loop-unroller) · [`magic-variables`](#magic-variables) · [`mode-calculator`](#mode-calculator) · [`module-explorer`](#module-explorer) · [`objectives`](#objectives) · [`play-order`](#play-order) · [`play-recap`](#play-recap) · [`practice`](#practice) · [`precedence-resolver`](#precedence-resolver) · [`program-cards`](#program-cards) · [`project-tree`](#project-tree) · [`quiz`](#quiz) · [`range-expander`](#range-expander) · [`reader-variables`](#reader-variables) · [`readiness-checklist`](#readiness-checklist) · [`reuse-simulator`](#reuse-simulator) · [`reveal`](#reveal) · [`role-anatomy`](#role-anatomy) · [`role-var-resolver`](#role-var-resolver) · [`run-stages`](#run-stages) · [`snapshot-chain`](#snapshot-chain) · [`starter-files`](#starter-files) · [`stat-explorer`](#stat-explorer) · [`step`](#step) · [`steps`](#steps) · [`tab`](#tab) · [`tabs`](#tabs) · [`task`](#task) · [`task-outcome`](#task-outcome) · [`template-playground`](#template-playground) · [`term`](#term) · [`terminal-demo`](#terminal-demo) · [`variable-name-checker`](#variable-name-checker) · [`variable-precedence`](#variable-precedence) · [`variable-substitution`](#variable-substitution) · [`variant`](#variant) · [`variant-group`](#variant-group) · [`variant-switch`](#variant-switch) · [`vault-commands`](#vault-commands) · [`verbosity`](#verbosity) · [`yaml-multiline`](#yaml-multiline)
 
 ## admin-module-finder
 
@@ -205,6 +205,16 @@ Browses gathered facts and the expression that reads each one.
 | --- | --- | --- | --- |
 | `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
 
+## feature-grid
+
+A grid of short feature descriptions, each with an icon.
+
+**Where:** on its own lines · **Inside:** `page` · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/feature-grid.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of the items in the page data. |
+
 ## fetch-layout
 
 Shows where fetched files are stored on the control side.
@@ -293,6 +303,21 @@ A timeline showing when notified handlers run relative to tasks.
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `ref` | string (dataRef) | yes | Key of its words and data in the page data. |
+
+## hero
+
+The opening block of a landing page: heading, short introduction, two buttons and an animated illustration.
+
+**Where:** on its own lines · **Inside:** `page` · **Holds:** Markdown
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `eyebrow` | string (shortText) |  | Small line above the heading. |
+| `title` | string (shortText) | yes | Main heading. Wrap one word in asterisks in the intro, not here; the heading is plain text. |
+| `art` | `lab` (default `lab`) |  | Which illustration to show beside the text. |
+| `primary` | string (id) |  | Id of the program the first button opens. |
+| `primaryLabel` | string (shortText) |  | Text of the first button. |
+| `secondaryLabel` | string (shortText) |  | Text of the second button, which scrolls to the program cards. |
 
 ## host-pattern-tester
 
@@ -690,6 +715,16 @@ One glossary entry: a term and its definition.
 | Attribute | Value | Required | Meaning |
 | --- | --- | --- | --- |
 | `name` | string (shortText) | yes | The term. |
+
+## terminal-demo
+
+An animated terminal that types a few commands and shows their output once it scrolls into view.
+
+**Where:** on its own lines · **Inside:** `page` · **Holds:** nothing (write it as `/%}`) · **Page data:** `ref` names an entry in the page's `.data.yml`, checked against `data/terminal-demo.schema.json`
+
+| Attribute | Value | Required | Meaning |
+| --- | --- | --- | --- |
+| `ref` | string (dataRef) | yes | Key of the terminal lines in the page data. |
 
 ## variable-name-checker
 

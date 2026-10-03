@@ -1,0 +1,45 @@
+demo:
+  title: student@workstation
+  lines:
+    - kind: command
+      text: lab start first-playbook
+    - kind: output
+      text: "Starting the exercise on servera, serverb ..."
+    - kind: command
+      text: ansible-playbook site.yml
+    - kind: ok
+      text: "servera   ok=4  changed=3"
+    - kind: ok
+      text: "serverb   ok=4  changed=3"
+    - kind: command
+      text: lab grade first-playbook
+    - kind: ok
+      text: "PASS  web server installed and running"
+    - kind: ok
+      text: "PASS  page served on port 80"
+features:
+  items:
+    - icon: eye
+      tone: purple
+      title: Lessons you can see
+      text: Every idea gets a clean diagram. Many are clickable, or step through one stage at a time.
+    - icon: flask
+      tone: teal
+      title: Real exercises
+      text: Practise on virtual machines you build yourself, and let a grader check what you did.
+    - icon: rotate
+      tone: coral
+      title: Break it, reset it
+      text: Snapshots put every machine back in seconds, so you can experiment without fear.
+    - icon: check
+      tone: green
+      title: Quizzes that explain
+      text: Instant feedback after every answer, with the reason behind it, and review questions at the end of each chapter.
+    - icon: shield
+      tone: blue
+      title: Private by design
+      text: Your lab is sealed off from your home network, and your progress never leaves your browser.
+    - icon: save
+      tone: amber
+      title: Progress that stays with you
+      text: There are no accounts. Progress is saved in this browser and can be exported to a file.

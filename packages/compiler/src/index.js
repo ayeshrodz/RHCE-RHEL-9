@@ -114,10 +114,10 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
   };
 
   /** Parse, convert and check one page; returns the page object ready to emit. */
-  const buildPage = (key, { file, source: src, dataFile, dataSource }, frontDefaults) => {
+  const buildPage = (key, { file, source: src, dataFile, dataSource }, frontDefaults, forced = {}) => {
     const parsed = readPage(src, dataSource, file, dataFile, diagnostics);
     const { tree, data, toc } = convertPage(parsed, { file, dataFile, diagnostics, validator });
-    const front = { ...frontDefaults, ...parsed.front };
+    const front = { ...frontDefaults, ...parsed.front, ...forced };
     const page = {
       apiVersion: 1,
       key,
@@ -234,6 +234,7 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
       platform: program.platform,
       status: program.status,
       ...(program.theme ? { theme: program.theme } : {}),
+      ...(program.showcase ? { showcase: program.showcase } : {}),
       sections: sectionCount,
       manifest: emit(base, 'manifest', manifest),
     });
@@ -244,7 +245,11 @@ export async function compile(contentDir, { now = new Date(), signingKey = null 
   if (source.home) {
     const front = readPage(source.home.source, null, source.home.file, null, diagnostics).front;
     expect(validator.ids.section, front, source.home.file, 'frontmatter');
-    home = emit('site', 'home', buildPage('site-home', source.home, { kind: front.layout === 'landing' ? 'landing' : front.kind }).page);
+    home = emit(
+      'site',
+      'home',
+      buildPage('site-home', source.home, { kind: front.kind }, front.layout === 'landing' ? { kind: 'landing' } : {}).page,
+    );
   }
   let shared;
   if (source.interface) {

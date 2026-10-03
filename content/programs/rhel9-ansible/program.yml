@@ -67,3 +67,7 @@ readerVariables:
     example: 192.168.1.1
     pattern: ipv4
 lab: true
+showcase:
+  art: automation
+  tone: coral
+  highlights: [Playbooks, Variables, Roles, Vault, Templates, Troubleshooting]

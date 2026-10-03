@@ -28,3 +28,7 @@ stages:
   - title: Containers and review
     chapters: [21, 22]
     text: "Podman, then everything together."
+showcase:
+  art: terminal
+  tone: teal
+  highlights: [Shell, Users, Storage, SELinux, Networking, Containers]

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/feature-grid.schema.json",
+  "title": "Feature grid data",
+  "description": "The items of a feature grid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "icon",
+          "title",
+          "text"
+        ],
+        "properties": {
+          "icon": {
+            "enum": [
+              "book",
+              "flask",
+              "chart",
+              "shield",
+              "layers",
+              "terminal",
+              "rotate",
+              "save",
+              "laptop",
+              "eye",
+              "check",
+              "git"
+            ]
+          },
+          "title": {
+            "$ref": "../common.schema.json#/$defs/shortText"
+          },
+          "text": {
+            "$ref": "../common.schema.json#/$defs/text",
+            "maxLength": 300,
+            "type": "string"
+          },
+          "tone": {
+            "enum": [
+              "purple",
+              "teal",
+              "coral",
+              "pink",
+              "blue",
+              "green",
+              "amber",
+              "gray"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

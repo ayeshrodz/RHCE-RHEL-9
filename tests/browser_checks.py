@@ -151,7 +151,7 @@ def programs_stay_separate(browser):
             # The site home lists every program, with the reader's progress in each.
             page.goto(base + '#/'); page.reload()
             page.get_by_role('heading', name='Learn Linux and automation by doing', level=1).wait_for()
-            cards = page.locator('.program-cards .chapter-card')
+            cards = page.locator('.showcase .sc')
             cards.first.wait_for()
             assert cards.count() == 2, page.locator('main').inner_text()[:600]
             assert 'Ansible automation on RHEL 9' in cards.nth(0).inner_text()
@@ -219,10 +219,10 @@ def planned_program_is_listed(browser):
     context = browser.new_context()
     page = context.new_page()
     page.goto(BASE + '#/')
-    cards = page.locator('.program-cards .chapter-card')
+    cards = page.locator('.showcase .sc')
     cards.nth(1).wait_for()
     planned = cards.filter(has_text='Linux system administration on RHEL 9')
-    assert planned.count() == 1 and 'Planned' in planned.inner_text()
+    assert planned.count() == 1 and 'Growing' in planned.inner_text()
     planned.click()
     page.wait_for_url('**/#/rhel9-sysadmin')
     page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
