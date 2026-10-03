@@ -124,13 +124,24 @@ Folders and file names carry structure:
 | Dependency or supply-chain compromise in the engine | Pinned lockfile, Dependabot, CI on every change, and SRI on engine assets. |
 | Clickjacking | Not fully preventable on GitHub Pages: `frame-ancestors` needs an HTTP header. This is accepted while the site hosts no sensitive actions. |
 
-**Browser hardening** fits GitHub Pages, so it is a `<meta>` content security policy:
+**Browser hardening** fits GitHub Pages, so it is a `<meta>` content security policy, written into the built page by `scripts/inject-meta.mjs`:
 
-- `default-src 'self'`
-- `script-src 'self'`
-- `connect-src` and `img-src` limited to `'self'` and the content origin
+- `default-src 'none'`, then `script-src 'self'`, `style-src 'self'`, `font-src 'self'` (fonts are bundled with the site, so no request goes to a third party), and `img-src 'self' data:`
+- `connect-src 'self'` plus the content origin from `kernel.config.json`, when the content is hosted elsewhere
 - `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`
-- `require-trusted-types-for 'script'`
+- `require-trusted-types-for 'script'`, and no `eval`: the runtime validators are generated code, not compiled in the browser
+- Subresource Integrity hashes on the engine's scripts and stylesheets, and `referrer` set to same-origin
+
+The browser tests run every route under this policy and fail on any violation.
+
+**Integrity of the content**
+
+- Every content file is named for a hash of its content, and the engine checks the hash after downloading it, so a file swapped on a CDN is refused before it is parsed.
+- With a public key pinned in `kernel.config.json`, the site index must carry an ECDSA P-256 signature that verifies; the index names every other file by hash, so one signature vouches for the whole bundle. `kernel keygen` makes the key, the build signs with `KERNEL_SIGNING_KEY` (a CI secret), and the build fails if the pinned key and the signature disagree. See [hosting](HOSTING.md).
+- Downloads are size-limited per kind of file, in the compiler and again in the browser.
+- The browser re-checks every tag against the catalog (known tag, declared attributes, declared types and values) before rendering it.
+
+**Tests that attack the controls:** `tests/fuzz.test.js` feeds the compiler mutated pages and data, the runtime validators corrupted copies of every kind of bundle file, and the progress importer random JSON. It asserts that nothing crashes with an unexpected error, that what the compiler accepts the browser accepts, that everything accepted is safe to render, and that no prototype is polluted. YAML is read as plain data: custom tags, duplicate keys and alias bombs are errors.
 
 ## Hosting
 
@@ -154,6 +165,6 @@ All files except `site.json` and `kernel.config.json` are content-hashed, so the
 6. **Platform home and program selector** (done): `#/` is the site home, compiled from `content/site/home.md` with the `program-cards` tag; the header's program menu replaces the track badge; programs without landing or dashboard copy get built-in pages. Shared interface text moved to `content/interface.json`.
 7. **Generic components replace the bespoke widgets** (partly done): a data-driven `diagram` replaces 20 diagram widgets with identical rendering. The 47 stateful simulators and calculators remain platform kits, reached through `legacy-widget`, and move to generic components one family at a time.
 8. **Typed labs.**
-9. **Security hardening:** CSP, SRI, signing, fuzzing.
+9. **Security hardening** (done): strict CSP with Trusted Types, bundled fonts, SRI, content fingerprints checked in the browser, optional ECDSA signing, size limits, per-tag attribute checks, strict YAML, fuzz tests.
 10. **RHEL 9 RHCSA** as a planned program.
 11. **Authoring tooling and open-source readiness.**

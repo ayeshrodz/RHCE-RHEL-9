@@ -403,6 +403,8 @@ button.ht-status:hover {
   }
   .lu-add {
     flex: 1 1 100%;
+    min-width: 0;
+    max-width: 100%;
   }
   .lu-add input {
     flex: 1;

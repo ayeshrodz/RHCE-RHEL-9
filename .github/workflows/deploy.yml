@@ -36,6 +36,11 @@ jobs:
 
       - name: Build static site
         run: npm run build
+        env:
+          # Optional. With both set, the content is signed during the build and the site refuses content
+          # that is not signed by this key. See docs/HOSTING.md.
+          KERNEL_SIGNING_KEY: ${{ secrets.KERNEL_SIGNING_KEY }}
+          KERNEL_PUBLIC_KEY: ${{ vars.KERNEL_PUBLIC_KEY }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v6

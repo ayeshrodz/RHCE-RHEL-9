@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 from browser_server import preview_server
+from waiting import wait_until
 
 PROGRAM = 'rhel9-ansible'
 BASE = os.environ.get('KERNEL_TEST_URL', os.environ.get('PLAYBOOK_TEST_URL', 'http://127.0.0.1:4173/'))
@@ -17,7 +18,7 @@ ROUTES = json.loads((ROOT / 'node_modules/.cache/kernel-path/routes.json').read_
 def go(page, route):
     page.goto(BASE + '#/' + PROGRAM + route)
     page.locator('h1').first.wait_for()
-    page.wait_for_function("!document.querySelector('.skeleton, .prose .widget[role=status]')")
+    wait_until(page, "!document.querySelector('.skeleton, .prose .widget[role=status]')")
     assert not page.locator('.load-error').count(), route
     assert 'This activity could not load' not in page.inner_text('body'), route
 
@@ -74,7 +75,7 @@ with preview_server(BASE, ROOT):
             go(page, route)
             for width in [320, 360, 412, 480, 540, 640, 700, 820, 960, 1200, 1440]:
                 page.set_viewport_size({'width': width, 'height': 900})
-                page.wait_for_function('(width) => innerWidth === width', arg=width)
+                wait_until(page, '(width) => innerWidth === width', width)
                 assert page.evaluate('(width) => document.documentElement.scrollWidth <= width', width), (route, width)
                 check_code_headers(page)
                 badge = page.locator('.brand-pill').bounding_box()
@@ -116,7 +117,7 @@ with preview_server(BASE, ROOT):
         drawer.evaluate(swipe, [[300, 400], [295, 300], [290, 200]])
         assert drawer.count(), 'a vertical drag must not close the drawer'
         drawer.evaluate(swipe, [[300, 400], [260, 402], [160, 404], [90, 405]])
-        page.wait_for_function("!document.querySelector('[role=dialog][aria-label=\"Course navigation\"]')")
+        wait_until(page, "!document.querySelector('[role=dialog][aria-label=\"Course navigation\"]')")
         # Header overlays share one controller: switching never stacks focus traps.
         page.get_by_role('button', name='Open navigation', exact=True).click()
         page.get_by_role('button', name='Your progress', exact=True).click()
@@ -170,9 +171,9 @@ with preview_server(BASE, ROOT):
         fits(page, page.locator('.lightbox-body'))
         assert dialog.locator('.lightbox-viewport').evaluate('(e) => e.scrollWidth <= e.clientWidth + 1')
         dialog.get_by_role('button', name='Zoom in').click()
-        page.wait_for_function("document.querySelector('.lightbox-viewport').scrollWidth > document.querySelector('.lightbox-viewport').clientWidth")
+        wait_until(page, "document.querySelector('.lightbox-viewport').scrollWidth > document.querySelector('.lightbox-viewport').clientWidth")
         dialog.get_by_role('button', name='Fit to screen').click()
-        page.wait_for_function("document.querySelector('.lightbox-viewport').classList.contains('is-fit') && document.querySelector('.lightbox-viewport').scrollWidth <= document.querySelector('.lightbox-viewport').clientWidth + 1")
+        wait_until(page, "document.querySelector('.lightbox-viewport').classList.contains('is-fit') && document.querySelector('.lightbox-viewport').scrollWidth <= document.querySelector('.lightbox-viewport').clientWidth + 1")
         dialog.get_by_role('button', name='Close diagram').click()
         assert opener.evaluate('(e) => e === document.activeElement')
         # Visual wrapping preserves exact source text and copied code.
