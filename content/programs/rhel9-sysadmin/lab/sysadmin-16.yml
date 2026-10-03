@@ -1,10 +1,10 @@
 name: sysadmin-16
 title: SELinux
 page: ch16/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

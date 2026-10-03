@@ -38,7 +38,7 @@ sudo tee /usr/local/bin/rht-vmctl >/dev/null
 
     It now waits for input. Copy the whole script below with its **Copy** button, paste it into the terminal, press {% kbd %}Enter{% /kbd %}, then {% kbd %}Ctrl{% /kbd %}+{% kbd %}D{% /kbd %} to save. The same command overwrites an older copy. Prefer an editor? `sudo nano /usr/local/bin/rht-vmctl`, paste, save with {% kbd %}Ctrl{% /kbd %}+{% kbd %}O{% /kbd %} and exit with {% kbd %}Ctrl{% /kbd %}+{% kbd %}X{% /kbd %}.
 
-{% reveal title="Show the rht-vmctl script (301 lines, version 2)" %}
+{% reveal title="Show the rht-vmctl script (303 lines, version 3)" %}
 
 [Download the script](lab/setup/rht-vmctl). Read it before running it. The expandable example below matches the download.
 
@@ -47,14 +47,15 @@ sudo tee /usr/local/bin/rht-vmctl >/dev/null
 # rht-vmctl - classroom-style VM control for the Kernel Path LXD home lab
 # Install: sudo install -m 755 rht-vmctl /usr/local/bin/rht-vmctl
 # Version 2 (2026-09-30): the servers' extra disks are snapshotted and reset too
+# Version 3 (2026-10-04): 'servers' and 'all' mean the lab's VMs that exist, so the same
+#   commands work in the system administration lab (servera, serverb) and the Ansible lab
 set -uo pipefail
 
-VERSION=2
+VERSION=3
 
 PROJECT="${LAB_PROJECT:-rhce}"
 BASELINE="${LAB_BASELINE:-clean}"
 SERVERS=(servera serverb serverc serverd)
-ALL=(workstation servera serverb serverc serverd)
 
 L()    { lxc --project "$PROJECT" "$@"; }
 say()  { printf '\033[1;36m==>\033[0m %s\n' "$*"; }
@@ -109,13 +110,14 @@ restore_failed() {
   fi
 }
 
-# Expand targets: a VM name, 'servers' (servera-d) or 'all' (+ utility if it exists)
+# Expand targets: a VM name, 'servers' (those of servera-serverd that exist) or 'all'
+# (workstation, the servers and utility, when they exist)
 targets() {
-  local t out=()
+  local t s out=()
   for t in "$@"; do
     case "$t" in
-      servers) out+=("${SERVERS[@]}") ;;
-      all)     out+=("${ALL[@]}"); exists utility && out+=(utility) ;;
+      servers) for s in "${SERVERS[@]}"; do exists "$s" && out+=("$s"); done ;;
+      all)     for s in workstation "${SERVERS[@]}" utility; do exists "$s" && out+=("$s"); done ;;
       *)       out+=("$t") ;;
     esac
   done
@@ -165,7 +167,7 @@ Home-lab extras:
   rht-vmctl login   VM [USER]            shell in a VM (default user: student)
   rht-vmctl ws                           shortcut for student@workstation
 
-VM can also be 'servers' (servera-serverd).
+VM can also be 'servers' (servera to serverd, whichever exist) or 'all'.
 start/reset/restore wait until each VM has booted, like the classroom.
   LAB_NOWAIT=1 rht-vmctl reset servera   # return immediately instead
 Anything that resets workstation asks first: your playbooks live there.
@@ -353,12 +355,12 @@ exit $RC
 
 ```bash {% title="Ubuntu host" %}
 sudo chmod 755 /usr/local/bin/rht-vmctl
-bash -n /usr/local/bin/rht-vmctl && rht-vmctl version    # no syntax errors; "rht-vmctl 2"
+bash -n /usr/local/bin/rht-vmctl && rht-vmctl version    # no syntax errors; "rht-vmctl 3"
 rht-vmctl status all
 ```
 
-    {% callout type="note" title="Updating from version 1" %}
-    Version 1 didn't snapshot the servers' extra disks, so `reset` left partitions on `sdb`. Install version 2 the same way (the `tee` command overwrites the old file and keeps its permissions), then run `rht-vmctl save` once and answer `y`: that retakes `clean` and adds the missing disk snapshots. `rht-vmctl snaps` shows a `disk` line under each server.
+    {% callout type="note" title="Updating from an older version" %}
+    Install the current version the same way: the `tee` command overwrites the old file and keeps its permissions. Version 3 only changes what `servers` and `all` mean (the VMs that exist), so the same commands also work in the smaller system administration lab. Coming from version 1, which didn't snapshot the servers' extra disks, also run `rht-vmctl save` once and answer `y`: that retakes `clean` with disk snapshots, and `rht-vmctl snaps` then shows a `disk` line under each server.
     {% /callout %}
   {% /task %}
 

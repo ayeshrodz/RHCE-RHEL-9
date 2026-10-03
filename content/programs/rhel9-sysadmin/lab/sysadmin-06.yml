@@ -1,10 +1,10 @@
 name: sysadmin-06
 title: Users and groups
 page: ch06/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

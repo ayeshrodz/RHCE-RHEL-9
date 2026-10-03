@@ -53,7 +53,7 @@ A **profile** is a template every VM inherits. The rhce project's `default` prof
 | --- | --- |
 | `limits.*` | Default VM size. You raise it for workstation only. |
 | `users:` / `chpasswd:` | Creates `student`, `devops` and root's password, as in the classroom |
-| `packages:` | Python and SELinux bindings for Ansible, LVM tools for the storage tasks, a nicer vim, plus the SELinux policy, firewalld and chrony a RHEL server has |
+| `packages:` | Python and SELinux bindings for Ansible, LVM tools for the storage tasks, manual pages and everyday tools for the system administration path, a nicer vim, plus the SELinux policy, firewalld and chrony a RHEL server has |
 | `runcmd:` + `preserve_hostname` | Sets the full hostname from the VM name, e.g. `servera.lab.example.com`, and keeps it after reboots. Also switches on firewalld and chrony, and keeps `lxc exec` working under SELinux |
 | `power_state:` | Reboots once after the first boot, so SELinux labels the disk and starts in enforcing mode |
 | `devices:` | A 20 GiB system disk and a network card on `rhcebr0` |
@@ -107,6 +107,13 @@ config:
       - python3-libselinux
       - vim-enhanced
       - bash-completion
+      - man-db                        # manual pages and everyday tools,
+      - man-pages                     # also used by the system administration path
+      - tree
+      - tmux
+      - lsof
+      - nano
+      - bind-utils
       - lvm2
       - tar
       - rsync                         # ansible.posix.synchronize needs it on both ends

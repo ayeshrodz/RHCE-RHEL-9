@@ -1,10 +1,10 @@
 name: sysadmin-21
 title: Containers with Podman
 page: ch21/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

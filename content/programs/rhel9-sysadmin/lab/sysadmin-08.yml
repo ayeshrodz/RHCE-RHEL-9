@@ -1,6 +1,7 @@
 name: sysadmin-08
 title: Processes
 page: ch08/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

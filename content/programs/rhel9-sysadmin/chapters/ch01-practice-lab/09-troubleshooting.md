@@ -59,6 +59,11 @@ Temporarily remove the lab firewall with `sudo systemctl stop rhce-isolate`. If 
 | Restore fails: *"cannot be restored due to subsequent snapshot(s)"* | ZFS only rolls back to the newest snapshot | See [the ZFS snapshot rule](#/ch01/snapshots-and-rht-vmctl). Restore the newest snapshot, or delete newer ones with `rht-vmctl rmsnap` |
 | After `rht-vmctl reset`, `sdb` still has partitions or a volume group | The extra disk has no `clean` snapshot: an older `rht-vmctl` only snapshotted the VM | Install the current script from [section 1.7](#/ch01/snapshots-and-rht-vmctl), clear the disk once (`vgremove`, `wipefs -a /dev/sdb1 /dev/sdb`), then `rht-vmctl save`. `reset` warns when a disk has no snapshot |
 | `rht-vmctl reset` says there's no `clean` snapshot | Baseline never taken | `rht-vmctl snaps` to check, then `rht-vmctl save` |
+| `lab grade` reports *cannot log in as root with your SSH key* | root's `authorized_keys` on that server is missing or different | [Section 1.6](#/ch01/workstation), step 6. `lab check` lists every login that fails |
+| Key logins worked, then stopped after `rht-vmctl reset servers` | The `clean` baseline was saved before the keys were set up, so every reset removes them | Repeat steps 5 and 6 of [section 1.6](#/ch01/workstation), confirm with `lab check`, then run `rht-vmctl save` on the host |
+| `lab: command not found` | Not installed, or a new shell has not picked up `~/.local/bin` | [Section 1.6](#/ch01/workstation), step 7, then `exec bash -l` |
+| `lab start` says it cannot download the exercise | No internet on workstation, or an old `lab` that uses a former address | `curl -sI https://kernelpath.dev` from workstation; reinstall `lab` with step 7 of [section 1.6](#/ch01/workstation) |
+| `rht-vmctl reset servers` warns *no such VM: serverc* | An `rht-vmctl` older than version 3 | Install the current script from [section 1.7](#/ch01/snapshots-and-rht-vmctl) |
 | Snapshot times look hours off | LXD shows them in UTC | Convert from UTC to your local time zone |
 
 ## Repair an existing lab
@@ -100,12 +105,14 @@ lxc exec --project rhce workstation -- su - student -c 'rpm -q man-db tree tmux 
 
 ## Rebuild everything fast
 
-Everything in this chapter as commands, once you know what each step does. It assumes the host is prepared and the seal is enabled (sections 1.2 and 1.3, plus the ufw rules if ufw is active), and that the profile YAML from [section 1.4](#/ch01/project-profile-disks) is saved as `rhce-profile.yaml` on the host. Afterwards, continue with sections 1.6 and 1.7 as normal: prepare workstation, add utility if you want it, run the verification, then save `clean`.
+Everything in this chapter as commands, once you know what each step does. It assumes the host is prepared and the seal is enabled (sections 1.2 and 1.3, plus the ufw rules if ufw is active), and that the profile YAML from [section 1.4](#/ch01/project-profile-disks) is saved as `sysadmin-profile.yaml` on the host. Afterwards, continue with sections 1.6 and 1.7 as normal: prepare workstation and the lab tools, run the verification, then save `clean`.
 
-[Download the script](lab/setup/build-rhce-lab.sh). Read it before running it. The expandable example below matches the download.
+[Download the script](lab/setup/build-sysadmin-lab.sh). Read it before running it. The expandable example below matches the download.
 
-```bash {% title="Ubuntu host: build-rhce-lab.sh" %}
+```bash {% title="Ubuntu host: build-sysadmin-lab.sh" %}
 #!/usr/bin/env bash
+# Builds the system administration practice lab: workstation, servera and serverb.
+# Same network, project and names as the Ansible lab, with fewer machines.
 set -euo pipefail
 
 # Network (Phase 03)
@@ -122,11 +129,11 @@ lxc project create rhce -c features.images=false -c features.profiles=true \
 lxc project switch rhce
 
 # Profile (Phase 06)
-lxc profile edit default < rhce-profile.yaml
+lxc profile edit default < sysadmin-profile.yaml
 
 # Disks and VMs (Phases 07–08)
-declare -A IP=( [workstation]=9 [servera]=10 [serverb]=11 [serverc]=12 [serverd]=13 )
-for vm in workstation servera serverb serverc serverd; do
+declare -A IP=( [workstation]=9 [servera]=10 [serverb]=11 )
+for vm in workstation servera serverb; do
   lxc init "${IMAGE:-images:rockylinux/9/cloud}" "$vm" --vm    # IMAGE=rocky9-lab to use a frozen copy
   lxc config device override "$vm" eth0 ipv4.address=172.25.250.${IP[$vm]}
   if [[ $vm == server* ]]; then
@@ -145,18 +152,40 @@ lxc list
 ## Tear the whole lab down
 
 {% callout type="warning" title="This deletes every lab VM and disk" %}
-Save anything you want to keep from workstation first (`lxc file pull`, or push your Git repository somewhere).
+Save anything you want to keep from workstation first (`lxc file pull`, or push a Git repository somewhere).
 {% /callout %}
+
+The same commands remove either lab, the lighter one from this chapter or the Ansible lab:
 
 ```bash {% title="Ubuntu host" %}
 lxc project switch rhce
-lxc delete --force workstation servera serverb serverc serverd utility 2>/dev/null || true
-for v in servera serverb serverc serverd; do lxc storage volume delete default "$v-disk2"; done
+for vm in workstation servera serverb serverc serverd utility; do
+  lxc delete --force "$vm" 2>/dev/null || true
+done
+for v in servera serverb serverc serverd; do
+  lxc storage volume delete default "$v-disk2" 2>/dev/null || true
+done
 lxc project switch default
 lxc project delete rhce
 lxc network delete rhcebr0
 sudo systemctl disable --now rhce-isolate
 ```
+
+## Moving to the Ansible path
+
+The Ansible path needs the larger lab: four servers, an optional utility server, an automation account on every machine, and the Ansible tools on workstation. It also runs every exercise in this path, so you never need both labs.
+
+{% steps %}
+  {% step title="Keep your work" %}
+    Copy anything you want from workstation to the host with `lxc file pull`.
+  {% /step %}
+  {% step title="Tear this lab down" %}
+    Run the commands in [Tear the whole lab down](#tear-the-whole-lab-down) above. LXD, its storage pool, the seal's rules file and `rht-vmctl` stay on the host.
+  {% /step %}
+  {% step title="Build the Ansible lab" %}
+    Follow the Ansible path's practice lab chapter from its network section onwards. The seal's rules file already exists, so in that phase you only need to turn the service on again. The Ansible lab's profile is different (it adds the automation account), which is why the machines must be created again rather than changed.
+  {% /step %}
+{% /steps %}
 
 {% callout type="important" %}
 The home lab is built on Rocky Linux 9 VMs on LXD 5.21 LTS, sealed behind an nftables firewall on Ubuntu Server 26.04 LTS, and laid out like a typical RHEL 9 training lab. UI labels can differ slightly between LXD versions; the YAML shown is the same everywhere.

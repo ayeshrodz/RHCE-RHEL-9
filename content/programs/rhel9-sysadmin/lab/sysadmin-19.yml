@@ -1,10 +1,10 @@
 name: sysadmin-19
 title: Network file systems and autofs
 page: ch19/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

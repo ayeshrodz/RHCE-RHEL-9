@@ -1,6 +1,7 @@
 name: sysadmin-02
 title: Command-line essentials
 page: ch02/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

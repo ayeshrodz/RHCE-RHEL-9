@@ -1,10 +1,10 @@
 name: sysadmin-17
 title: Storage and file systems
 page: ch17/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt
-- inventory
 checkpoints:
   final:
     files:

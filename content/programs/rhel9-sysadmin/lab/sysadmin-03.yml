@@ -1,6 +1,7 @@
 name: sysadmin-03
 title: Files and directories
 page: ch03/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

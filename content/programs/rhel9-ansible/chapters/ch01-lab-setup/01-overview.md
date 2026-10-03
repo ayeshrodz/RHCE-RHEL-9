@@ -14,6 +14,19 @@ The guide's exercises assume a conventional Ansible training classroom: a `works
 - Check that your machine meets the requirements, and fill in your own lab values.
 {% /objectives %}
 
+{% columns %}
+{% column title="This lab also serves the system administration path" tone="green" %}
+
+The site's system administration path uses a lighter version of this lab: workstation, servera and serverb, without Ansible. This lab is a complete superset of it, with the same names, addresses, `lab` command and `rht-vmctl`, so if you build this one you never need the other.
+
+{% /column %}
+{% column title="Built the lighter system administration lab?" tone="amber" %}
+
+It can't be grown into this one in place: its machines were built without the `devops` account Ansible connects as, and cloud-init only sets that up when a machine is first created. Keep anything you want from its workstation, [tear it down](#/ch01/troubleshooting#tear-the-whole-lab-down), then build this lab from [section 1.3](#/ch01/network-and-seal) onwards. Your host preparation, the seal's rules file and `rht-vmctl` stay as they are.
+
+{% /column %}
+{% /columns %}
+
 {% callout type="note" title="Tested end to end" %}
 Every step in this chapter was built and verified on real hardware with the versions listed below. Follow it in order the first time; afterwards, the [fast rebuild script](#/ch01/troubleshooting) does most of it in one go.
 {% /callout %}

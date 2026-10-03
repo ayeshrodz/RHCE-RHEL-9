@@ -1,6 +1,7 @@
 name: sysadmin-04
 title: Getting help
 page: ch04/lab
+transport: ssh
 version: 1
 starter:
 - requirements.txt

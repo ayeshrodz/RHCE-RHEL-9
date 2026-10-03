@@ -5,7 +5,7 @@ minutes: 17
 ---
 
 {% lead %}
-Phases 05 to 07: give the lab its own LXD project, turn the project's default profile into a template that creates the lab users on first boot, and create the spare disks the storage exercises need.
+Phases 05 to 07: give the lab its own LXD project, turn the project's default profile into a template that creates the lab users on first boot, and create the two spare disks the storage chapters need.
 {% /lead %}
 
 {% lab
@@ -137,10 +137,6 @@ devices:
     The Rocky cloud image comes with SELinux switched off, but RHEL runs it in **enforcing** mode, and a later chapter is about SELinux. Installing the policy turns it on after one reboot. In enforcing mode SELinux would also block the LXD agent that `lxc exec` talks to; the `semanage fcontext` line labels the agent as a normal program so it keeps working. Nothing else is relaxed.
     {% /callout %}
 
-    {% callout type="note" title="Built the Ansible lab already?" %}
-    This is the same lab. Its profile also creates a `devops` user for Ansible, which does no harm here, so you can keep your VMs. They lack the few extra tools in the package list above, which [Repair an existing lab](#/ch01/troubleshooting#repair-an-existing-lab) adds in place. Only start over if you want a lab without the Ansible tools on workstation.
-    {% /callout %}
-
     {% callout type="important" title="cloud-init runs once" %}
     These settings apply only on a VM's *first* boot. Editing the profile later doesn't change existing VMs; delete and recreate them instead (about a minute each).
     {% /callout %}
@@ -152,9 +148,9 @@ devices:
   id="disks"
   title="Phase 07 · Create the extra disks (~5 min)"
   hosts=["LXD UI"]
-  outcomes=["Give each managed host an empty 5 GiB disk for the partition, LVM and filesystem exercises."] %}
-  {% task id="task-3c482cdb8850" legacyIndex=1 title="LXD UI: create four block volumes" %}
-    Four times, for `servera-disk2`, `serverb-disk2`, `serverc-disk2` and `serverd-disk2`: **Storage** → **Volumes** → **Create volume**.
+  outcomes=["Give servera and serverb an empty 5 GiB disk each for the partition, LVM, file system and NFS exercises."] %}
+  {% task id="task-3c482cdb8850" legacyIndex=1 title="LXD UI: create two block volumes" %}
+    Twice, for `servera-disk2` and `serverb-disk2`: **Storage** → **Volumes** → **Create volume**.
 
     | Field | Value |
     | --- | --- |
