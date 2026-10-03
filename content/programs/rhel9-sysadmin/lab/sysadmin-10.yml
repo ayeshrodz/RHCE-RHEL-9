@@ -1,0 +1,36 @@
+name: sysadmin-10
+title: Secure remote access
+page: ch10/lab
+version: 1
+starter:
+- requirements.txt
+- inventory
+checkpoints:
+  final:
+    files:
+    - requirements.txt
+    checks:
+    - kind: sshd
+      'on': servera.lab.example.com
+      setting: permitrootlogin
+      value: 'no'
+      id: check-1
+      message: Verify sshd requirement 1 for Secure remote access
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': servera.lab.example.com
+      paths:
+      - /home/student/remote-report.txt
+      line: remote-ready
+      id: check-2
+      message: Verify file requirement 2 for Secure remote access
+      targets:
+      - servera.lab.example.com
+    - kind: file
+      'on': control
+      paths:
+      - observations.txt
+      nonEmpty: true
+      id: check-3
+      message: Verify file requirement 3 for Secure remote access

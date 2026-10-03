@@ -1,0 +1,10 @@
+recall:
+  cards:
+  - front: SSH reports a changed host key after a reset. What is the right next step?
+    back: Verify the replacement fingerprint through a trusted path. A rebuild is a possible cause, but
+      the warning alone does not establish trust.
+  - front: A restrictive drop-in has no effect. What must you inspect?
+    back: Effective configuration, include order and Match blocks. OpenSSH processing order and conditional
+      settings can make a file differ from effective policy.
+  - front: Which key goes into the server account authorized_keys?
+    back: The public key. Private identity material stays with its owner on the client.
