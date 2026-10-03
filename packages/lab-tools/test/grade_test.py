@@ -1,7 +1,9 @@
 """Exercise every check against passing, broken and unavailable host responses, and check the scripts it builds."""
 import base64
 import json
+import getpass
 import os
+import time
 import re
 import shutil
 import subprocess
@@ -105,6 +107,24 @@ class ScriptTests(unittest.TestCase):
                         host[key] = str(root / host[key])
                 self.assertEqual(self.run_script({'kind': 'file', **host}) == 0, expected, host)
 
+    def test_process_conditions_follow_nice_state_and_user(self):
+        import signal
+        child = subprocess.Popen(['nice', '-n', '7', 'sleep', '4322'])
+        try:
+            time.sleep(0.5)
+            user = getpass.getuser()
+            for check, expected in (({'pattern': '^sleep 4322$'}, True), ({'pattern': '^sleep 4322$', 'nice': 7, 'user': user}, True),
+                                    ({'pattern': '^sleep 4322$', 'nice': 5}, False), ({'pattern': '^sleep 4322$', 'state': 'S'}, True),
+                                    ({'pattern': '^sleep 4322$', 'state': 'T'}, False), ({'pattern': '^sleep 4322$', 'user': 'root' if user != 'root' else 'nobody'}, False),
+                                    ({'pattern': '^sleep 4322$', 'running': False}, False)):
+                self.assertEqual(self.run_script({'kind': 'process', **check}) == 0, expected, check)
+            child.send_signal(signal.SIGSTOP)
+            time.sleep(0.3)
+            self.assertEqual(self.run_script({'kind': 'process', 'pattern': '^sleep 4322$', 'state': 'T'}), 0)
+        finally:
+            child.kill()
+            child.wait()
+
     def test_acl_entries_are_matched_exactly_ignoring_effective_comments(self):
         with tempfile.TemporaryDirectory() as temp:
             bin_dir = Path(temp) / 'bin'
@@ -165,6 +185,8 @@ class ScriptTests(unittest.TestCase):
             ({'kind': 'address', 'interface': 'lo', 'cidr': '10.9.9.9/8', 'persistent': False}, 1),
             ({'kind': 'boot-target', 'target': default_target}, 0 if default_target else 1),
             ({'kind': 'boot-target', 'target': 'nothing.target'}, 1),
+            ({'kind': 'process', 'pattern': '^sleep 4321$', 'running': False}, 0),
+            ({'kind': 'process', 'pattern': '^sleep 4321$'}, 1),
             ({'kind': 'commands', 'names': ['bash', 'ls']}, 0),
             ({'kind': 'commands', 'names': ['bash', 'no-such-cmd-xyz']}, 1),
         ]

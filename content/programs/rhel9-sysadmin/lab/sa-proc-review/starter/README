@@ -1,0 +1,20 @@
+Exercise: sa-proc-review (chapter 8 lab)
+
+Work on servera, with sudo or as root.
+
+Processes (all as the user "worker", who you create first)
+ 1. Start "sleep 7000" in the background so that it survives a closed
+    terminal, with a niceness of 5.
+ 2. Start "sleep 7001" in the background and change its niceness to 12.
+    Then pause it (stop it, do not kill it).
+ 3. Start "sleep 7002" in the background, then terminate it with the
+    default (polite) signal. It must not be running when you grade.
+
+Tuning
+ 4. Install the tuned package, enable and start the tuned service, and
+    select the profile throughput-performance.
+
+On workstation
+ 5. Fill in the four signal numbers in answers.txt.
+
+Then, on workstation:  lab grade sa-proc-review

@@ -284,6 +284,9 @@
           "$ref": "#/$defs/checkCommands"
         },
         {
+          "$ref": "#/$defs/checkProcess"
+        },
+        {
           "$ref": "#/$defs/checkGit"
         },
         {
@@ -1305,6 +1308,53 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9._-]{1,64}$"
           }
+        }
+      },
+      "type": "object"
+    },
+    "checkProcess": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/checkBase"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": [
+        "pattern"
+      ],
+      "properties": {
+        "kind": {
+          "const": "process"
+        },
+        "pattern": {
+          "description": "Extended regular expression matched against the full command line (pgrep -f), for example ^sleep 7000$.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "running": {
+          "description": "Whether a matching process must exist (default) or must not.",
+          "type": "boolean"
+        },
+        "user": {
+          "description": "The account the process must run as.",
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_-]{0,31}$"
+        },
+        "nice": {
+          "description": "The niceness every matching process must have.",
+          "type": "integer",
+          "minimum": -20,
+          "maximum": 19
+        },
+        "state": {
+          "description": "The first letter of the process state every matching process must be in: R running, S sleeping, T stopped, Z zombie.",
+          "enum": [
+            "R",
+            "S",
+            "T",
+            "Z"
+          ]
         }
       },
       "type": "object"

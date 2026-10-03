@@ -1,0 +1,104 @@
+name: sa-proc-review
+title: Processes
+page: ch08/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: user
+      kind: user
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The worker account exists
+      names:
+      - worker
+    - id: steady
+      kind: process
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: worker runs sleep 7000 with niceness 5
+      pattern: ^sleep 7000$
+      user: worker
+      nice: 5
+    - id: paused
+      kind: process
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: worker has sleep 7001 stopped, with niceness 12
+      pattern: ^sleep 7001$
+      user: worker
+      nice: 12
+      state: T
+    - id: ended
+      kind: process
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sleep 7002 is no longer running
+      pattern: ^sleep 7002$
+      running: false
+    - id: tuned-package
+      kind: package
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: tuned is installed
+      names:
+      - tuned
+    - id: tuned-service
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: tuned is running and enabled
+      names:
+      - tuned
+      active: true
+      enabled: true
+    - id: tuned-profile
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The throughput-performance profile is active
+      paths:
+      - /etc/tuned/active_profile
+      line: throughput-performance
+    - id: answer-term
+      kind: file
+      'on': control
+      message: 'answers.txt: the default signal of kill'
+      paths:
+      - answers.txt
+      matches: ^term=15[ \t]*$
+    - id: answer-kill
+      kind: file
+      'on': control
+      message: 'answers.txt: the signal that cannot be caught'
+      paths:
+      - answers.txt
+      matches: ^kill=9[ \t]*$
+    - id: answer-stop
+      kind: file
+      'on': control
+      message: 'answers.txt: the signal that pauses a process'
+      paths:
+      - answers.txt
+      matches: ^stop=19[ \t]*$
+    - id: answer-cont
+      kind: file
+      'on': control
+      message: 'answers.txt: the signal that resumes a process'
+      paths:
+      - answers.txt
+      matches: ^cont=18[ \t]*$

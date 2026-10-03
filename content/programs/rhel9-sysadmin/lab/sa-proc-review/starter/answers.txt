@@ -1,0 +1,11 @@
+# Write each signal number after the = sign, with no spaces.
+# You can look them up with: kill -l
+
+# The signal kill sends by default:
+term=
+# The signal that cannot be caught, ending a process immediately:
+kill=
+# The signal that pauses a process:
+stop=
+# The signal that continues a paused process:
+cont=

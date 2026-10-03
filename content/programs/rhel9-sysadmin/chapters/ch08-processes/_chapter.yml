@@ -1,8 +1,12 @@
 title: Processes
-goal: See what is running, control it, and tune how it shares the machine.
+goal: See what is running, control jobs and signals, and judge and tune how processes share the machine.
 objectives:
-- Inspect process state and terminate the intended process safely.
-- Distinguish resource symptoms from evidence for a tuning change.
+  - Explain processes, PIDs and states, and list and trace them with ps, pstree and /proc.
+  - Run commands in the background and control them with jobs, fg, bg and nohup.
+  - Send signals with kill, pkill and killall, and end processes safely with the right escalation.
+  - Read load average, top and free, change priority with nice and renice, and select a tuned profile.
 objectiveIds:
-- ch08.operations
-- ch08.verification
+  - ch08.processes
+  - ch08.jobs
+  - ch08.signals
+  - ch08.monitoring
