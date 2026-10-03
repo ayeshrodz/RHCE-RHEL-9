@@ -226,8 +226,8 @@ def planned_program_is_listed(browser):
     planned.click()
     page.wait_for_url('**/#/rhel9-sysadmin')
     page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
-    assert page.locator('.chapter-card.is-soon').count() == 21, 'every chapter after the practice lab is an outline entry'
-    assert page.get_by_role('link', name='Build the practice lab').count() == 1
+    page.get_by_role('link', name='Build the practice lab').wait_for()
+    wait_until(page, "document.querySelectorAll('.chapter-card.is-soon').length === 21")
     page.locator('.chapter-card.is-soon').nth(14).click()
     page.get_by_role('heading', name='SELinux').first.wait_for()
     assert 'Allowing services on non-standard ports' in page.locator('main').inner_text()
