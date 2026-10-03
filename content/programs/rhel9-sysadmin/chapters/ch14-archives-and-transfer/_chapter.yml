@@ -1,9 +1,8 @@
-title: "Archives and file transfer"
-goal: "Bundle, compress and move data between systems."
-status: planned
-topics:
-  - "Creating, listing and extracting archives with tar"
-  - "Compression with gzip, bzip2 and xz"
-  - "Checking integrity with checksums"
-  - "Synchronising directories with rsync"
-  - "Preserving ownership, permissions and SELinux contexts"
+title: Archives and file transfer
+goal: Bundle, compress and move data between systems.
+objectives:
+- Create and inspect archives with explicit metadata policy.
+- Prove restored data and synchronize safely.
+objectiveIds:
+- ch14.operations
+- ch14.verification

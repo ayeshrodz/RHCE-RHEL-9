@@ -202,6 +202,22 @@
   labs:
   - ch13/lab
   challenges: []
+- id: ch14.operations
+  chapter: ch14
+  lessons:
+  - ch14/archives-and-checksums
+  - ch14/rsync-and-restore
+  labs:
+  - ch14/lab
+  challenges: []
+- id: ch14.verification
+  chapter: ch14
+  lessons:
+  - ch14/archives-and-checksums
+  - ch14/rsync-and-restore
+  labs:
+  - ch14/lab
+  challenges: []
 - id: ch09.operations
   chapter: ch09
   lessons:
