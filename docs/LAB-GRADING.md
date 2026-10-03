@@ -1,6 +1,6 @@
 # Local lab feedback
 
-Run `lab update` on workstation to install the current helper (version 5 or later reads the typed exercise catalog). Grade before `lab finish`, while the project and host state still exist:
+Run `lab update` on workstation to install the current helper (version 5 or later reads the typed exercise catalog). An older `lab` command still starts exercises without setup actions; for an exercise that has them, it stops with "Run: lab update" instead of preparing it half-way. Grade before `lab finish`, while the project and host state still exist:
 
 ```sh
 lab grade system-storage

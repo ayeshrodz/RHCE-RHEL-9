@@ -6,7 +6,7 @@ Kernel Path needs nothing but static files. The default is GitHub Pages; the sam
 
 The deploy workflow builds `dist/` and publishes it. The site, its content (`dist/content/`) and the lab tree (`dist/lab/`) are served from one origin, and the content security policy in `index.html` allows only that origin.
 
-GitHub Pages cannot send custom headers, so the content security policy is a `<meta>` tag, and anti-framing protection (`frame-ancestors`) is not available. The cache lifetime is fixed at about ten minutes; content files carry a hash in their name, so a stale cache never mixes versions. Only `site.json` and `kernel.config.json` are unhashed.
+The Pages upload step leaves out files whose names start with a dot, so the compiler never publishes one (lab starter files such as `.htaccess` are renamed; see the authoring guide). GitHub Pages cannot send custom headers, so the content security policy is a `<meta>` tag, and anti-framing protection (`frame-ancestors`) is not available. The cache lifetime is fixed at about ten minutes; content files carry a hash in their name, so a stale cache never mixes versions. Only `site.json` and `kernel.config.json` are unhashed.
 
 ## Content on another host (S3, a CDN)
 

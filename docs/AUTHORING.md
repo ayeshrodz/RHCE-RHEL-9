@@ -285,7 +285,7 @@ checkpoints:
 - `on` is an inventory host or group pattern (groups joined with `:`), or `control` for the learner's project folder. A check on managed hosts must list its `targets`; a missing target fails instead of passing silently.
 - `{host}` and `{hostShort}` in paths and text are replaced with the inventory name and its first label.
 - Setup actions: `self-signed-cert`, `htpasswd`, `password-hash-var`, `vault-encrypt`, `ssh-keypairs`, `pack-installed-collection`, `build-collection`, `collection-requirements` and `git-seed-remote`.
-- Starter and tree files are published with a `.lab` suffix so a browser never renders them; the lab command saves them under their real names.
+- Starter and tree files are published with a `.lab` suffix so a browser never renders them, and a name part that starts with a dot gets a `_` in front (`files/.htaccess` is published as `files/_.htaccess.lab`), because static hosts leave dotfiles out. The lab command saves them under their real names. Do not name a file starting with `_.`; that form is reserved.
 
 The compiler publishes the lab tree (the `lab` command, the grader, starter files, `INDEX`, and a `MANIFEST` per exercise) with the rest of the site, and the build also places it at `/lab/`. Try an exercise end to end with `npm run build`, then `LAB_URL=file://$PWD/dist/lab bash dist/lab/lab start NAME`, and run its solution against the lab before you publish it.
 
