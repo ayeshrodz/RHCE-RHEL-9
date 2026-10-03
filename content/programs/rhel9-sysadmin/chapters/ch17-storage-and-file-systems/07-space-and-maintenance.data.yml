@@ -1,0 +1,306 @@
+no-space:
+  title: '"No space left on device"'
+  caption: Step through finding where the space went.
+  height: 260
+  mode: steps
+  steps:
+  - title: '1 · Blocks: df -h'
+    text: df -h FILESYSTEM shows used and available space. 100% here is the obvious cause.
+  - title: '2 · Inodes: df -i'
+    text: Each file needs an inode, and ext4 has a fixed number of them. Millions of tiny files can use all inodes while df -h still shows free space.
+  - title: '3 · Who uses it: du'
+    text: du -xh --max-depth=1 DIR | sort -rh | head shows the biggest directories. -x stays on one file system. Descend into the largest.
+  - title: 4 · Deleted but open
+    text: 'If df says full but du finds little, a deleted file may still be held open by a running program: lsof +L1 lists them. Restarting the program releases the space.'
+  - title: 5 · Fix and prevent
+    text: 'Remove or move data, rotate logs (chapter 11), or grow the file system. Then monitor: df is the first check in most routines.'
+  elements:
+  - kind: node
+    x: 8
+    y: 20
+    w: 128
+    h: 56
+    tone: coral
+    title: df -h
+    sub: blocks full?
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 144
+    y: 20
+    w: 128
+    h: 56
+    tone: amber
+    title: df -i
+    sub: inodes full?
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 280
+    y: 20
+    w: 128
+    h: 56
+    tone: blue
+    title: du
+    sub: which directory?
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 416
+    y: 20
+    w: 128
+    h: 56
+    tone: purple
+    title: lsof +L1
+    sub: deleted, open
+    mono: true
+    titleSize: 12
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 552
+    y: 20
+    w: 118
+    h: 56
+    tone: green
+    title: fix
+    sub: free · grow
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 136
+      - 48
+    - - 144
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 272
+      - 48
+    - - 280
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 408
+      - 48
+    - - 416
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 544
+      - 48
+    - - 552
+      - 48
+    visible:
+    - 4
+tools:
+  title: Maintenance tools by file system
+  caption: Select a file system.
+  height: 250
+  mode: select
+  initial: x
+  info:
+    x:
+      tone: green
+      title: XFS
+      text: 'Check or repair with xfs_repair (unmounted; -n only reports). xfs_info shows the geometry. Label: xfs_admin -L NAME (unmounted). Grow with xfs_growfs (mounted).'
+    e:
+      tone: blue
+      title: ext4
+      text: 'Check or repair with e2fsck -f (unmounted). tune2fs -l shows settings, including the inode count. Label: e2label DEVICE NAME. Grow with resize2fs.'
+    s:
+      tone: amber
+      title: swap
+      text: swapon --show lists active areas; swapoff DEV turns one off; free -h shows totals; mkswap -L sets a label.
+    g:
+      tone: gray
+      title: Any
+      text: lsblk -f, blkid, findmnt, df -hT and df -i work on every type. fuser -vm DIR or lsof DIR show what keeps a mount busy.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: XFS
+    sub: xfs_repair · xfs_info
+    titleSize: 13
+    select: x
+    active:
+    - x
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: ext4
+    sub: e2fsck · tune2fs
+    titleSize: 13
+    select: e
+    active:
+    - e
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: amber
+    title: swap
+    sub: swapon · swapoff
+    titleSize: 13
+    select: s
+    active:
+    - s
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: gray
+    title: any
+    sub: lsblk · blkid · df
+    titleSize: 13
+    select: g
+    active:
+    - g
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: finding the missing space'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: df -h /srv/data
+      out: 'Filesystem      Size  Used Avail Use% Mounted on
+
+        /dev/sdb1       960M  939M   22M  98% /srv/data'
+    - cmd: du -xh --max-depth=1 /srv/data | sort -rh | head -3
+      out: "900M\t/srv/data\n800M\t/srv/data/big.log\n50M\t/srv/data/part1.tmp"
+    - cmd: df -i /srv/archive
+      out: 'Filesystem     Inodes IUsed  IFree IUse% Mounted on
+
+        /dev/sdb2       65536 65536      0  100% /srv/archive'
+    - cmd: touch /srv/archive/many/newfile
+      out: 'touch: cannot touch ''/srv/archive/many/newfile'': No space left on device'
+    - cmd: cd /srv/data; umount /srv/data
+      out: 'umount: /srv/data: target is busy.'
+    - cmd: fuser -vm /srv/data
+      out: "                     USER        PID ACCESS COMMAND\n/srv/data:           root     kernel mount /srv/data\n                     root        713 ..c.. bash"
+    - cmd: lsof +L1 | grep srv/data
+      out: tail      1072 root    3r   REG   8,17 209715200     0  132 /srv/data/log.big (deleted)
+    - cmd: umount /srv/data; xfs_repair -n /dev/sdb1 | tail -2
+      out: 'Phase 7 - verify link counts...
+
+        No modify flag set, skipping filesystem flush and exiting.'
+    tasks:
+    - text: Check how full the file system is.
+      commands:
+      - df -h /srv/data
+    - text: Find the biggest directories on that file system.
+      commands:
+      - du -xh --max-depth=1 /srv/data | sort -rh | head -3
+    - text: Check the inodes of the other file system.
+      commands:
+      - df -i /srv/archive
+    - text: See what keeps a mount busy.
+      commands:
+      - fuser -vm /srv/data
+    - text: List deleted files that are still open.
+      commands:
+      - lsof +L1 | grep srv/data
+quick:
+  questions:
+  - id: q-49f14f6db822
+    q: df -h shows 30% used but writes fail with "No space left on device". What do you check?
+    options:
+    - 'df -i: the inodes may be exhausted'
+    - The cable
+    - fstab
+    answer: 0
+    explain: Millions of small files use inodes.
+  - id: q-ea4119f17d7b
+    q: df says the file system is full but du cannot find the data. Likely cause?
+    options:
+    - A deleted file still held open by a process
+    - A bad disk
+    - SELinux
+    answer: 0
+    explain: lsof +L1 finds it; restart the process.
+  - id: q-3bb26fad12f5
+    q: umount fails with "target is busy". What helps?
+    options:
+    - fuser -vm /mountpoint or lsof to find the user, then stop it or leave the directory
+    - umount -f always
+    - Reboot
+    answer: 0
+    explain: Your own shell sitting in the directory is the most common cause.
+  - id: q-0acc3f48efed
+    q: Which command checks an unmounted XFS file system without changing it?
+    options:
+    - xfs_repair -n /dev/sdb1
+    - e2fsck /dev/sdb1
+    - mkfs.xfs
+    answer: 0
+    explain: Never run a repair tool on a mounted file system.
+  - id: q-7ae877eba794
+    q: Which option of du stays within one file system?
+    options:
+    - -x
+    - -s
+    - -a
+    answer: 0
+    explain: Handy on / to ignore /proc and other mounts.
+  - id: q-798337be08ee
+    q: How do you change the label of an ext4 file system?
+    options:
+    - e2label DEVICE NAME
+    - xfs_admin -L
+    - mkswap
+    answer: 0
+    explain: xfs_admin -L for XFS (unmounted).

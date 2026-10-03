@@ -1,0 +1,195 @@
+fs-types:
+  title: XFS or ext4?
+  caption: Select a file system.
+  height: 250
+  mode: select
+  initial: xfs
+  info:
+    xfs:
+      tone: green
+      title: 'XFS: the RHEL default'
+      text: Fast with large files and many parallel operations. Can be grown while mounted (xfs_growfs) but cannot be shrunk. Check and repair with xfs_repair on an unmounted file system. Label with xfs_admin -L.
+    ext4:
+      tone: blue
+      title: 'ext4: the long-time favourite'
+      text: Mature and flexible. Can be grown and shrunk (shrinking needs it unmounted). Check and repair with e2fsck, inspect with tune2fs and dumpe2fs, label with e2label. Has a fixed number of inodes chosen when it is created.
+    swap:
+      tone: amber
+      title: 'swap: not a file system'
+      text: Prepared with mkswap, enabled with swapon. It is overflow space the kernel uses when memory is short. Never mounted.
+    vfat:
+      tone: gray
+      title: vfat · NFS · tmpfs
+      text: vfat for the EFI partition and USB sticks, NFS for network shares (chapter 19), tmpfs for memory-backed directories such as /dev/shm and /run.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 64
+    tone: green
+    title: xfs
+    sub: mkfs.xfs
+    mono: true
+    titleSize: 15
+    select: xfs
+    active:
+    - xfs
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 64
+    tone: blue
+    title: ext4
+    sub: mkfs.ext4
+    mono: true
+    titleSize: 15
+    select: ext4
+    active:
+    - ext4
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 64
+    tone: amber
+    title: swap
+    sub: mkswap
+    mono: true
+    titleSize: 15
+    select: swap
+    active:
+    - swap
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 64
+    tone: gray
+    title: others
+    sub: vfat · nfs · tmpfs
+    titleSize: 13
+    select: vfat
+    active:
+    - vfat
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: file systems and mounts'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: mkfs.xfs /dev/sdb1
+      out: "meta-data=/dev/sdb1              isize=512    agcount=4, agsize=65536 blks\n         =                       sectsz=512   attr=2, projid32bit=1\n         =                       crc=1        finobt=1, sparse=1, rmapbt=0\n         =                       reflink=1    bigtime=1 inobtcount=1 nrext64=0"
+    - cmd: mkfs.ext4 -L logs /dev/sdb2
+      out: "Allocating group tables: 0/8   done                            \nWriting inode tables: 0/8   done                            \nCreating journal (8192 blocks): done\nWriting superblocks and filesystem accounting information: 0/8   done"
+    - cmd: mkswap /dev/sdb3
+      out: 'Setting up swapspace version 1, size = 512 MiB (536866816 bytes)
+
+        no label, UUID=89858a47-2255-4fa3-a2a9-64711ac2d782'
+    - cmd: blkid /dev/sdb1 /dev/sdb2 /dev/sdb3
+      out: '/dev/sdb1: UUID="c64946eb-fc27-4485-8020-db4119b686eb" TYPE="xfs" PARTLABEL="data" PARTUUID="e854bd58-ccb2-4b37-9c51-d7279cde5332"
+
+        /dev/sdb2: LABEL="logs" UUID="cd0b3883-1d6d-4271-a89e-2f48a2dac5b7" TYPE="ext4" PARTLABEL="logs" PARTUUID="79e6c3a7-faf8-4526-bcce-61e1392bbc3a"
+
+        /dev/sdb3: UUID="89858a47-2255-4fa3-a2a9-64711ac2d782" TYPE="swap" PARTLABEL="swap" PARTUUID="e6f880d9-0ca4-4fb9-a10c-10aca71a3980"'
+    - cmd: mkdir -p /data /logs; mount /dev/sdb1 /data; mount /dev/sdb2 /logs
+      out: ''
+    - cmd: df -hT /data /logs
+      out: 'Filesystem     Type  Size  Used Avail Use% Mounted on
+
+        /dev/sdb1      xfs   960M   39M  922M   5% /data
+
+        /dev/sdb2      ext4  974M   24K  907M   1% /logs'
+    - cmd: findmnt -o TARGET,SOURCE,FSTYPE,OPTIONS /data
+      out: 'TARGET SOURCE    FSTYPE OPTIONS
+
+        /data  /dev/sdb1 xfs    rw,relatime,seclabel,attr2,inode64,logbufs=8,logbsize=32k,noquota'
+    - cmd: swapon /dev/sdb3; swapon --show
+      out: 'NAME      TYPE      SIZE USED PRIO
+
+        /dev/sdb3 partition 512M   0B   -2'
+    - cmd: umount /data
+      out: ''
+    tasks:
+    - text: Create an XFS file system on sdb1 and an ext4 file system labelled logs on sdb2.
+      commands:
+      - mkfs.xfs /dev/sdb1
+      - mkfs.ext4 -L logs /dev/sdb2
+    - text: Prepare sdb3 as swap space.
+      commands:
+      - mkswap /dev/sdb3
+    - text: Show the UUIDs and types of the new file systems.
+      commands:
+      - blkid /dev/sdb1 /dev/sdb2 /dev/sdb3
+    - text: Create the mount points and mount both file systems.
+      commands:
+      - mkdir -p /data /logs; mount /dev/sdb1 /data; mount /dev/sdb2 /logs
+    - text: Check sizes and types.
+      commands:
+      - df -hT /data /logs
+    - text: Enable the swap space and list it.
+      commands:
+      - swapon /dev/sdb3; swapon --show
+quick:
+  questions:
+  - id: q-49bd6f43ce07
+    q: Which command creates an XFS file system?
+    options:
+    - mkfs.xfs /dev/sdb1
+    - xfs create /dev/sdb1
+    - mount -t xfs /dev/sdb1
+    answer: 0
+    explain: mkfs.ext4 for ext4.
+  - id: q-ff21b73b7f7b
+    q: mount /dev/sdb1 /data fails with "mount point does not exist". What do you do?
+    options:
+    - mkdir /data first
+    - Reformat the partition
+    - Reboot
+    answer: 0
+    explain: The target directory must exist.
+  - id: q-831108da46e1
+    q: Which command lists mounted file systems with their sizes and types?
+    options:
+    - df -hT
+    - lsblk
+    - blkid
+    answer: 0
+    explain: findmnt shows the mount tree and options.
+  - id: q-09a5019ab3fd
+    q: Which file system can NOT be shrunk?
+    options:
+    - XFS
+    - ext4
+    - Both can
+    answer: 0
+    explain: XFS can only grow.
+  - id: q-829f748bcd1a
+    q: Why is blkid useful?
+    options:
+    - It shows UUIDs, labels and types of block devices
+    - It formats disks
+    - It mounts disks
+    answer: 0
+    explain: UUIDs are what /etc/fstab should use.
+  - id: q-74ca65be25f4
+    q: Swap space is activated with ...
+    options:
+    - swapon
+    - mount
+    - mkfs.swap
+    answer: 0
+    explain: mkswap prepares, swapon enables, swapoff disables.

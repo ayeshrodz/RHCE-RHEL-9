@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-22ee34d68626
+    q: Which order creates usable storage on a new disk?
+    options:
+    - Partition, file system, mount, fstab
+    - Mount, partition, file system
+    - fstab, mkfs, parted
+    answer: 0
+    explain: Then check with lsblk, df and mount -a.
+  - id: q-b30697072980
+    q: Which command lists block devices as a tree?
+    options:
+    - lsblk
+    - df
+    - mount
+    answer: 0
+    explain: Add -f for file systems and UUIDs.
+  - id: q-2e141371ac0b
+    q: Which command creates a GPT label non-interactively?
+    options:
+    - parted -s /dev/sdb mklabel gpt
+    - mkfs.gpt /dev/sdb
+    - fdisk -g
+    answer: 0
+    explain: Then mkpart for each partition.
+  - id: q-8a66b08a1016
+    q: Which file system tool prepares swap?
+    options:
+    - mkswap
+    - mkfs.swap
+    - swapon
+    answer: 0
+    explain: swapon enables it afterwards.
+  - id: q-9694ba104c00
+    q: What does UUID= protect you from in fstab?
+    options:
+    - Device names changing
+    - Typos
+    - Full disks
+    answer: 0
+    explain: Stable identification.
+  - id: q-c6f63a7bf903
+    q: Which pair of commands tests fstab without rebooting?
+    options:
+    - findmnt --verify and mount -a
+    - fsck and reboot
+    - df and du
+    answer: 0
+    explain: Do this before every reboot.
+  - id: q-28de04ba1982
+    q: Which command shows inode usage?
+    options:
+    - df -i
+    - du -i
+    - lsblk -i
+    answer: 0
+    explain: Full inodes also give "No space left".
+  - id: q-59a0871e3b64
+    q: A mount is busy. Which command shows who uses it?
+    options:
+    - fuser -vm /mountpoint
+    - blkid
+    - findmnt --verify
+    answer: 0
+    explain: Or lsof /mountpoint.
+  - id: q-86856f07de36
+    q: Which option stops a missing non-essential disk from blocking boot?
+    options:
+    - nofail
+    - noexec
+    - ro
+    answer: 0
+    explain: In the options field of fstab.
+  - id: q-26c5af33f9d0
+    q: Can an XFS file system be shrunk?
+    options:
+    - No, only grown
+    - Yes, when mounted
+    - Yes, with e2fsck
+    answer: 0
+    explain: ext4 can be shrunk when unmounted.

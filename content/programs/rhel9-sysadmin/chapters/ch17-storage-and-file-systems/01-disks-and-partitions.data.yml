@@ -1,0 +1,333 @@
+layout:
+  title: One disk, three partitions
+  caption: Select a part of /dev/sdb.
+  height: 260
+  mode: select
+  initial: table
+  info:
+    disk:
+      tone: gray
+      title: '/dev/sdb: the disk'
+      text: 'The whole block device: 5 GiB here. sd… names are SCSI/SATA/virtual disks (sda, sdb…), vd… are virtio disks, nvme0n1 is NVMe. Files are never written to the disk itself, but to what lives on it.'
+    table:
+      tone: purple
+      title: The partition table (GPT)
+      text: A small map at the start (and a backup at the end) of the disk that says where each partition starts and ends. GPT is the modern format (up to 128 partitions, disks over 2 TiB); the older MBR allows 4 primary partitions and 2 TiB.
+    p1:
+      tone: blue
+      title: /dev/sdb1
+      text: 'The first partition: a numbered slice of the disk. It is another block device, and it holds a file system. Here 1 GiB for data.'
+    p2:
+      tone: green
+      title: /dev/sdb2
+      text: 'The second partition: 1 GiB for another file system.'
+    p3:
+      tone: amber
+      title: /dev/sdb3
+      text: 'The third partition: 512 MiB reserved for swap space (memory overflow), which has no file system and is never mounted.'
+    free:
+      tone: gray
+      title: Free space
+      text: 'Unpartitioned space remains for later: more partitions, or whole-disk use by LVM (next chapter).'
+  elements:
+  - kind: node
+    x: 10
+    y: 28
+    w: 660
+    h: 36
+    tone: gray
+    title: /dev/sdb  ·  5 GiB
+    mono: true
+    titleSize: 13
+    select: disk
+    active:
+    - disk
+  - kind: node
+    x: 10
+    y: 72
+    w: 70
+    h: 56
+    tone: purple
+    title: GPT
+    sub: table
+    mono: true
+    titleSize: 13
+    select: table
+    active:
+    - table
+  - kind: node
+    x: 86
+    y: 72
+    w: 150
+    h: 56
+    tone: blue
+    title: sdb1
+    sub: 1 GiB · xfs
+    mono: true
+    titleSize: 14
+    select: p1
+    active:
+    - p1
+  - kind: node
+    x: 242
+    y: 72
+    w: 150
+    h: 56
+    tone: green
+    title: sdb2
+    sub: 1 GiB · ext4
+    mono: true
+    titleSize: 14
+    select: p2
+    active:
+    - p2
+  - kind: node
+    x: 398
+    y: 72
+    w: 100
+    h: 56
+    tone: amber
+    title: sdb3
+    sub: 512 MiB · swap
+    mono: true
+    titleSize: 12
+    select: p3
+    active:
+    - p3
+  - kind: node
+    x: 504
+    y: 72
+    w: 166
+    h: 56
+    tone: gray
+    title: free space
+    sub: 2.5 GiB
+    titleSize: 13
+    select: free
+    active:
+    - free
+new-disk:
+  title: A new disk, step by step
+  caption: Every disk follows the same four steps.
+  height: 250
+  mode: steps
+  steps:
+  - title: 1 · Partition
+    text: 'Write a partition table and create partitions: parted (or fdisk, gdisk). The kernel creates /dev/sdb1, /dev/sdb2… Check with lsblk.'
+  - title: 2 · Create a file system
+    text: mkfs.xfs /dev/sdb1 (or mkfs.ext4) puts the structures on the partition that hold directories and files. mkswap prepares swap space. Check with blkid or lsblk -f.
+  - title: 3 · Mount it
+    text: mount /dev/sdb1 /data attaches the file system to a directory. The directory must exist. Check with findmnt, df -h.
+  - title: 4 · Make it permanent
+    text: Add a line to /etc/fstab (by UUID), test it with findmnt --verify and mount -a. Without this step the mount disappears at reboot.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: partition
+    sub: parted · lsblk
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: file system
+    sub: mkfs.xfs · blkid
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: mount
+    sub: mount · findmnt
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: /etc/fstab
+    sub: mount -a
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 190
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 48
+    - - 370
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 48
+    - - 550
+      - 48
+    visible:
+    - 3
+  - kind: node
+    x: 150
+    y: 110
+    w: 380
+    h: 44
+    tone: gray
+    title: 'then use it: df -h · ls /data'
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: disks and partitions'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: lsblk
+      out: "NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS\nsda      8:0    0   20G  0 disk \n├─sda1   8:1    0  100M  0 part /boot/efi\n└─sda2   8:2    0 19.9G  0 part /\nsdb      8:16   0    5G  0 disk "
+    - cmd: lsblk -f
+      out: "NAME   FSTYPE FSVER LABEL  UUID                                 FSAVAIL FSUSE% MOUNTPOINTS\nsda                                                                            \n├─sda1 vfat   FAT32 UEFI   76E8-0192                              90.8M     8% /boot/efi\n└─sda2 ext4   1.0   rootfs 4bbdcf8d-863d-4050-957c-c815ca3838b8   17.5G     9% /\nsdb                                                                            "
+    - cmd: parted -s /dev/sdb print
+      out: 'Error: /dev/sdb: unrecognised disk label
+
+        Model: QEMU QEMU HARDDISK (scsi)
+
+        Disk /dev/sdb: 5369MB
+
+        Sector size (logical/physical): 512B/512B
+
+        Partition Table: unknown
+
+        Disk Flags: '
+    - cmd: parted -s /dev/sdb mklabel gpt
+      out: ''
+    - cmd: parted -s /dev/sdb mkpart data xfs 1MiB 1025MiB
+      out: ''
+    - cmd: parted -s /dev/sdb mkpart logs ext4 1025MiB 2049MiB
+      out: ''
+    - cmd: parted -s /dev/sdb mkpart swap linux-swap 2049MiB 2561MiB
+      out: ''
+    - cmd: parted -s /dev/sdb print
+      out: "Model: QEMU QEMU HARDDISK (scsi)\nDisk /dev/sdb: 5369MB\nSector size (logical/physical): 512B/512B\nPartition Table: gpt\nDisk Flags: \n\nNumber  Start   End     Size    File system  Name  Flags\n 1      1049kB  1075MB  1074MB               data\n 2      1075MB  2149MB  1074MB               logs\n 3      2149MB  2685MB  537MB                swap  swap"
+    - cmd: udevadm settle; lsblk /dev/sdb
+      out: "NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS\nsdb      8:16   0    5G  0 disk \n├─sdb1   8:17   0    1G  0 part \n├─sdb2   8:18   0    1G  0 part \n└─sdb3   8:19   0  512M  0 part "
+    tasks:
+    - text: List the block devices.
+      commands:
+      - lsblk
+    - text: Show the current partition table of /dev/sdb.
+      commands:
+      - parted -s /dev/sdb print
+    - text: Create a GPT label.
+      commands:
+      - parted -s /dev/sdb mklabel gpt
+    - text: 'Create the three partitions: data 1 GiB, logs 1 GiB, swap 512 MiB.'
+      commands:
+      - parted -s /dev/sdb mkpart data xfs 1MiB 1025MiB
+      - parted -s /dev/sdb mkpart logs ext4 1025MiB 2049MiB
+      - parted -s /dev/sdb mkpart swap linux-swap 2049MiB 2561MiB
+    - text: Check the result.
+      commands:
+      - udevadm settle; lsblk /dev/sdb
+quick:
+  questions:
+  - id: q-19d4ef7d61ed
+    q: What is /dev/sdb2?
+    options:
+    - The second partition of the disk /dev/sdb
+    - The second disk
+    - A mount point
+    answer: 0
+    explain: Partitions are numbered slices; disks have letters.
+  - id: q-d96347e52c5e
+    q: Which partition table type supports disks larger than 2 TiB?
+    options:
+    - GPT
+    - MBR
+    - Both
+    answer: 0
+    explain: MBR is limited to 2 TiB and four primary partitions.
+  - id: q-34e4709bfd8b
+    q: After creating a partition, what is still missing before you can store files?
+    options:
+    - A file system, then a mount
+    - A reboot
+    - Nothing
+    answer: 0
+    explain: Partition, mkfs, mount, fstab.
+  - id: q-c833195c41d6
+    q: Which command shows disks, partitions and their file systems and mount points as a tree?
+    options:
+    - lsblk -f
+    - ls /dev
+    - df -h
+    answer: 0
+    explain: df lists only mounted file systems.
+  - id: q-d913c32a5e18
+    q: Why start the first partition at 1MiB?
+    options:
+    - Alignment with the disk's blocks, for performance
+    - Because parted requires it
+    - To leave room for the boot loader on every disk
+    answer: 0
+    explain: Misaligned partitions can be slow on modern disks.
+  - id: q-035bff26fab1
+    q: Which command writes a partition table without prompts, for scripts?
+    options:
+    - parted -s /dev/sdb mklabel gpt
+    - fdisk
+    - mkfs
+    answer: 0
+    explain: fdisk and gdisk are interactive; parted -s takes everything on the command line.

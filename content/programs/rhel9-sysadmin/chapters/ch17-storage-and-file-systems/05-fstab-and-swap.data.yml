@@ -1,0 +1,350 @@
+fstab-line:
+  title: A line of /etc/fstab
+  caption: Select a field.
+  height: 250
+  mode: select
+  initial: dev
+  info:
+    dev:
+      tone: purple
+      title: 'Device: UUID=…'
+      text: What to mount. A UUID identifies the file system and never changes, while /dev/sdb1 can become /dev/sdc1 if disks are added or the order changes. LABEL=… also works. Read the UUID with blkid.
+    mp:
+      tone: blue
+      title: 'Mount point: /srv/data'
+      text: The directory to attach it to. It must exist. For swap it is the word none.
+    type:
+      tone: green
+      title: 'Type: xfs'
+      text: The file system type (xfs, ext4, swap, nfs, …).
+    opts:
+      tone: amber
+      title: 'Options: defaults,noexec'
+      text: 'defaults means rw, suid, dev, exec, auto, nouser, async. Add others separated by commas: noexec (no programs run from it), nodev, nosuid, ro, nofail (do not fail the boot if missing).'
+    dump:
+      tone: gray
+      title: 'dump: 0'
+      text: Historic backup flag. Always 0 today.
+    pass:
+      tone: gray
+      title: 'fsck order: 0'
+      text: Order of boot-time checks. 0 = none (the right value for XFS). The root file system traditionally 1, others 2.
+  elements:
+  - kind: node
+    x: 6
+    y: 28
+    w: 250
+    h: 56
+    tone: purple
+    title: UUID=c64946eb-…
+    sub: device
+    mono: true
+    titleSize: 12
+    select: dev
+    active:
+    - dev
+  - kind: node
+    x: 262
+    y: 28
+    w: 110
+    h: 56
+    tone: blue
+    title: /srv/data
+    sub: mount point
+    mono: true
+    titleSize: 12
+    select: mp
+    active:
+    - mp
+  - kind: node
+    x: 378
+    y: 28
+    w: 60
+    h: 56
+    tone: green
+    title: xfs
+    sub: type
+    mono: true
+    titleSize: 13
+    select: type
+    active:
+    - type
+  - kind: node
+    x: 444
+    y: 28
+    w: 150
+    h: 56
+    tone: amber
+    title: defaults,noexec
+    sub: options
+    mono: true
+    titleSize: 12
+    select: opts
+    active:
+    - opts
+  - kind: node
+    x: 600
+    y: 28
+    w: 32
+    h: 56
+    tone: gray
+    title: '0'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: dump
+    active:
+    - dump
+  - kind: node
+    x: 638
+    y: 28
+    w: 32
+    h: 56
+    tone: gray
+    title: '0'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: pass
+    active:
+    - pass
+persist:
+  title: Make a mount permanent, safely
+  caption: Step through the routine that avoids a failed boot.
+  height: 250
+  mode: steps
+  steps:
+  - title: Read the UUID
+    text: blkid /dev/sdb1 prints it. Copy it carefully (or use blkid -s UUID -o value).
+  - title: Back up and edit
+    text: cp /etc/fstab /root/fstab.bak, then add the line. A mistake here can stop the machine booting, so keep the copy.
+  - title: Tell systemd, then check
+    text: systemctl daemon-reload (it generates mount units from fstab), then findmnt --verify to check the syntax and the devices.
+  - title: Test the mount
+    text: mount -a mounts everything in fstab that is not yet mounted. If it prints nothing, the lines work. Use df -h and findmnt to see them.
+  - title: Prove it with a reboot
+    text: On a lab server, reboot and check again. A mount that survives a reboot is a mount that is configured.
+  elements:
+  - kind: node
+    x: 8
+    y: 20
+    w: 128
+    h: 56
+    tone: purple
+    title: blkid
+    sub: UUID
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+  - kind: node
+    x: 144
+    y: 20
+    w: 128
+    h: 56
+    tone: amber
+    title: edit fstab
+    sub: keep a backup
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 280
+    y: 20
+    w: 128
+    h: 56
+    tone: blue
+    title: verify
+    sub: findmnt --verify
+    mono: true
+    titleSize: 11.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 416
+    y: 20
+    w: 128
+    h: 56
+    tone: green
+    title: mount -a
+    sub: test
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 552
+    y: 20
+    w: 118
+    h: 56
+    tone: teal
+    title: reboot
+    sub: prove it
+    titleSize: 12.5
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 136
+      - 48
+    - - 144
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 272
+      - 48
+    - - 280
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 408
+      - 48
+    - - 416
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 544
+      - 48
+    - - 552
+      - 48
+    visible:
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: fstab and swap'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: blkid -s UUID -o value /dev/sdb1
+      out: c64946eb-fc27-4485-8020-db4119b686eb
+    - cmd: cp /etc/fstab /root/fstab.bak
+      out: ''
+    - cmd: tail -4 /etc/fstab
+      out: 'LABEL=UEFI    /boot/efi vfat  defaults  0 0
+
+        UUID=c64946eb-fc27-4485-8020-db4119b686eb  /srv/data     xfs   defaults          0 0
+
+        UUID=cd0b3883-1d6d-4271-a89e-2f48a2dac5b7  /srv/archive  ext4  defaults,noexec   0 0
+
+        UUID=89858a47-2255-4fa3-a2a9-64711ac2d782  none          swap  defaults          0 0'
+    - cmd: systemctl daemon-reload; findmnt --verify | tail -3
+      out: "0 parse errors, 0 errors, 1 warning\n/\n   [W] recommended root FS passno is 1 (current is 0)"
+    - cmd: mount -a; echo "rc=$?"
+      out: rc=0
+    - cmd: swapon -a; swapon --show
+      out: 'NAME      TYPE      SIZE USED PRIO
+
+        /dev/sdb3 partition 512M   0B   -2'
+    - cmd: df -h /srv/data /srv/archive
+      out: 'Filesystem      Size  Used Avail Use% Mounted on
+
+        /dev/sdb1       960M   39M  922M   5% /srv/data
+
+        /dev/sdb2       974M   24K  907M   1% /srv/archive'
+    - cmd: free -h | tail -1
+      out: 'Swap:          511Mi          0B       511Mi'
+    tasks:
+    - text: Read the UUID of sdb1.
+      commands:
+      - blkid -s UUID -o value /dev/sdb1
+    - text: Back up fstab.
+      commands:
+      - cp /etc/fstab /root/fstab.bak
+    - text: Reload systemd and verify fstab.
+      commands:
+      - systemctl daemon-reload; findmnt --verify | tail -3
+    - text: Mount everything from fstab and check the status.
+      commands:
+      - mount -a; echo "rc=$?"
+    - text: Activate the swap entries and check the memory view.
+      commands:
+      - swapon -a; swapon --show
+      - free -h | tail -1
+quick:
+  questions:
+  - id: q-6bc77af84b9d
+    q: Why use UUID= instead of /dev/sdb1 in /etc/fstab?
+    options:
+    - Device names can change; the UUID of a file system does not
+    - It is shorter
+    - fstab does not accept device names
+    answer: 0
+    explain: LABEL= is also stable.
+  - id: q-224eff50efcc
+    q: Which command tests all fstab entries without rebooting?
+    options:
+    - mount -a
+    - mount --test
+    - fstab -t
+    answer: 0
+    explain: No output means success. Run findmnt --verify too.
+  - id: q-942c965d62d0
+    q: A typo in fstab can cause ...
+    options:
+    - A failed or emergency-mode boot
+    - Nothing
+    - A faster boot
+    answer: 0
+    explain: Always back up, verify, and test with mount -a.
+  - id: q-8fa12d188773
+    q: Which fstab option makes a missing disk not stop the boot?
+    options:
+    - nofail
+    - noauto
+    - defaults
+    answer: 0
+    explain: nofail is for non-essential file systems.
+  - id: q-b01594df791a
+    q: What is the mount point field for a swap entry?
+    options:
+    - none
+    - /swap
+    - swap
+    answer: 0
+    explain: The type is swap, the mount point none.
+  - id: q-468029844fbe
+    q: Which option prevents programs on the file system from being executed?
+    options:
+    - noexec
+    - nodev
+    - ro
+    answer: 0
+    explain: Useful for upload or archive areas.
