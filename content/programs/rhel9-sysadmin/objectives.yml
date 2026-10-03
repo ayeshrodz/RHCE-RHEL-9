@@ -361,20 +361,36 @@
   - ch12/exercise-troubleshooting
   - ch12/lab
   challenges: []
-- id: ch13.operations
+- id: ch13.rpm
   chapter: ch13
   lessons:
-  - ch13/dnf-and-rpm
-  - ch13/installation-and-maintenance
+  - ch13/rpm-basics
   labs:
+  - ch13/exercise-rpm
   - ch13/lab
   challenges: []
-- id: ch13.verification
+- id: ch13.dnf
   chapter: ch13
   lessons:
-  - ch13/dnf-and-rpm
-  - ch13/installation-and-maintenance
+  - ch13/dnf
   labs:
+  - ch13/exercise-dnf
+  - ch13/lab
+  challenges: []
+- id: ch13.repositories
+  chapter: ch13
+  lessons:
+  - ch13/repositories
+  labs:
+  - ch13/exercise-local-repo
+  - ch13/lab
+  challenges: []
+- id: ch13.updates
+  chapter: ch13
+  lessons:
+  - ch13/modules-and-updates
+  labs:
+  - ch13/exercise-modules
   - ch13/lab
   challenges: []
 - id: ch14.operations

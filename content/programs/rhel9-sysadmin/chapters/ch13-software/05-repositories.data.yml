@@ -1,0 +1,341 @@
+repo-file:
+  title: A repository file
+  caption: Select a line of a .repo file.
+  height: 260
+  mode: select
+  initial: baseurl
+  info:
+    id:
+      tone: blue
+      title: '[localrepo]'
+      text: 'The repository id: a short name used on the command line (--enablerepo=localrepo). Must be unique.'
+    name:
+      tone: gray
+      title: name=
+      text: A human-readable description, shown by dnf repolist.
+    baseurl:
+      tone: green
+      title: baseurl=
+      text: 'Where the packages and their metadata are: a URL starting with https://, http://, ftp:// or file:///. Several lines allowed. (Public repositories often use mirrorlist= or metalink= instead, which choose a mirror for you.)'
+    enabled:
+      tone: teal
+      title: enabled=1
+      text: Whether dnf uses the repository by default. 0 keeps it defined but off; dnf --enablerepo=ID turns it on for one command.
+    gpgcheck:
+      tone: coral
+      title: gpgcheck=1
+      text: 'Check the GPG signature of every package from this repository. Turning it off (0) removes the protection against tampered packages: do it only for repositories you built yourself and trust.'
+    gpgkey:
+      tone: amber
+      title: gpgkey=
+      text: Where the public key for the signatures is. dnf offers to import it the first time. Packages from the distribution are all signed with the same key.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 300
+    h: 34
+    tone: blue
+    title: '[localrepo]'
+    mono: true
+    titleSize: 13
+    select: id
+    active:
+    - id
+  - kind: node
+    x: 10
+    y: 60
+    w: 300
+    h: 34
+    tone: gray
+    title: name=Local repository
+    mono: true
+    titleSize: 12.5
+    select: name
+    active:
+    - name
+  - kind: node
+    x: 10
+    y: 100
+    w: 300
+    h: 34
+    tone: green
+    title: baseurl=file:///srv/localrepo
+    mono: true
+    titleSize: 12.5
+    select: baseurl
+    active:
+    - baseurl
+  - kind: node
+    x: 10
+    y: 140
+    w: 300
+    h: 34
+    tone: teal
+    title: enabled=1
+    mono: true
+    titleSize: 12.5
+    select: enabled
+    active:
+    - enabled
+  - kind: node
+    x: 10
+    y: 180
+    w: 300
+    h: 34
+    tone: coral
+    title: gpgcheck=1
+    mono: true
+    titleSize: 12.5
+    select: gpgcheck
+    active:
+    - gpgcheck
+  - kind: node
+    x: 320
+    y: 100
+    w: 350
+    h: 34
+    tone: amber
+    title: gpgkey=file:///etc/pki/rpm-gpg/…
+    mono: true
+    titleSize: 12.5
+    select: gpgkey
+    active:
+    - gpgkey
+  - kind: label
+    x: 500
+    y: 60
+    text: /etc/yum.repos.d/local.repo
+    mono: true
+    size: 12.5
+    muted: true
+local-repo:
+  title: Build a repository of your own
+  caption: Step through creating a local repository from downloaded packages.
+  height: 240
+  mode: steps
+  steps:
+  - title: Gather the packages
+    text: dnf download --resolve --destdir /srv/localrepo zip downloads the package and its dependencies as .rpm files (the plugin comes from dnf-plugins-core).
+  - title: Create the metadata
+    text: 'createrepo_c /srv/localrepo scans the .rpm files and writes the repodata/ directory: the catalogue that dnf reads.'
+  - title: Describe it to dnf
+    text: A file in /etc/yum.repos.d/ with baseurl=file:///srv/localrepo, enabled=1 and gpgcheck=1 with the gpgkey line.
+  - title: Use it
+    text: 'dnf --disablerepo="*" --enablerepo=localrepo install zip uses only your repository. dnf info shows From repo : localrepo.'
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 56
+    tone: blue
+    title: .rpm files
+    sub: /srv/localrepo
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 180
+    y: 20
+    w: 150
+    h: 56
+    tone: purple
+    title: repodata/
+    sub: createrepo_c
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 350
+    y: 20
+    w: 150
+    h: 56
+    tone: amber
+    title: local.repo
+    sub: /etc/yum.repos.d
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 520
+    y: 20
+    w: 150
+    h: 56
+    tone: green
+    title: dnf install
+    sub: from localrepo
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 48
+    - - 180
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 330
+      - 48
+    - - 350
+      - 48
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 500
+      - 48
+    - - 520
+      - 48
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: repositories'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: dnf repolist
+      out: 'repo id                         repo name
+
+        appstream                       Rocky Linux 9 - AppStream
+
+        baseos                          Rocky Linux 9 - BaseOS
+
+        extras                          Rocky Linux 9 - Extras'
+    - cmd: ls /etc/yum.repos.d
+      out: rocky-addons.repo  rocky-devel.repo  rocky-extras.repo  rocky-security.repo  rocky.repo
+    - cmd: dnf repolist --all | head -4
+      out: 'repo id                    repo name                                    status
+
+        appstream                  Rocky Linux 9 - AppStream                    enabled
+
+        appstream-debuginfo        Rocky Linux 9 - AppStream - Debug            disabled
+
+        appstream-source           Rocky Linux 9 - AppStream - Source           disabled'
+    - cmd: dnf install -y dnf-plugins-core createrepo_c
+      out: Complete!
+    - cmd: mkdir -p /srv/localrepo
+      out: ''
+    - cmd: dnf download --resolve --destdir /srv/localrepo zip
+      out: "(1/2): zip-3.0-35.el9.x86_64.rpm                1.2 MB/s | 263 kB     00:00    \n(2/2): unzip-6.0-60.el9_8.x86_64.rpm            778 kB/s | 180 kB     00:00    "
+    - cmd: createrepo_c /srv/localrepo
+      out: 'Directory walk started
+
+        Directory walk done - 2 packages
+
+        Preparing sqlite DBs
+
+        Pool started (with 5 workers)
+
+        Pool finished'
+    - cmd: rpm -K /srv/localrepo/zip-3.0-35.el9.x86_64.rpm
+      out: '/srv/localrepo/zip-3.0-35.el9.x86_64.rpm: digests signatures OK'
+    - cmd: dnf --disablerepo="*" --enablerepo=localrepo list available
+      out: 'Available Packages
+
+        unzip.x86_64                       6.0-60.el9_8                        localrepo
+
+        zip.x86_64                         3.0-35.el9                          localrepo'
+    - cmd: dnf --disablerepo="*" --enablerepo=localrepo install -y zip
+      out: "Installed:\n  unzip-6.0-60.el9_8.x86_64                zip-3.0-35.el9.x86_64\n\nComplete!"
+    - cmd: dnf info zip | grep From
+      out: 'From repo    : localrepo'
+    tasks:
+    - text: List the enabled repositories, then all of them.
+      commands:
+      - dnf repolist
+      - dnf repolist --all | head -4
+    - text: Download zip and its dependencies into /srv/localrepo.
+      commands:
+      - dnf download --resolve --destdir /srv/localrepo zip
+    - text: Build the repository metadata.
+      commands:
+      - createrepo_c /srv/localrepo
+    - text: Check the signature of a downloaded package.
+      commands:
+      - rpm -K /srv/localrepo/zip-3.0-35.el9.x86_64.rpm
+    - text: Install from your repository only.
+      commands:
+      - dnf --disablerepo="*" --enablerepo=localrepo install -y zip
+quick:
+  questions:
+  - id: q-e90b0402f14c
+    q: Where do repository definitions live?
+    options:
+    - /etc/yum.repos.d/*.repo
+    - /var/lib/rpm
+    - /etc/dnf/modules.d
+    answer: 0
+    explain: Every .repo file may define several repositories.
+  - id: q-9645de6c2f17
+    q: What does gpgcheck=1 do?
+    options:
+    - dnf verifies each package's signature
+    - dnf compresses downloads
+    - dnf checks the server clock
+    answer: 0
+    explain: It protects against modified packages.
+  - id: q-185b44b9bab6
+    q: Which command builds the metadata for a directory of .rpm files?
+    options:
+    - createrepo_c DIR
+    - dnf makecache DIR
+    - rpm --rebuilddb
+    answer: 0
+    explain: It writes DIR/repodata.
+  - id: q-7d60fc72918c
+    q: How do you use one repository only, for one command?
+    options:
+    - dnf --disablerepo="*" --enablerepo=ID ...
+    - dnf --repo-only ID
+    - Edit rpm.conf
+    answer: 0
+    explain: This is also how you prove which repository supplies a package.
+  - id: q-f5a8424dbd1a
+    q: What does baseurl=file:///srv/localrepo mean?
+    options:
+    - The repository is a directory on this machine
+    - An FTP server
+    - A mirror list
+    answer: 0
+    explain: file:/// followed by an absolute path.
+  - id: q-8c2849dabcfb
+    q: Why not set gpgcheck=0 for convenience?
+    options:
+    - Anyone able to change the repository could install malware
+    - It slows dnf
+    - It is not allowed
+    answer: 0
+    explain: For your own repository of packages that you downloaded from a signed source, you can keep gpgcheck=1 with the vendor key.

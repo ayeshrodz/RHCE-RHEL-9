@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The name (just the name, no version) of the package that owns /usr/bin/passwd:
+PASSWD_PACKAGE=
+# The single character rpm -V prints when the checksum of a file has changed:
+CHECKSUM_FLAG=
+# The directory in which repository definitions (.repo files) are kept:
+REPO_DIR=

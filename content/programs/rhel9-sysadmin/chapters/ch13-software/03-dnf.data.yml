@@ -1,0 +1,264 @@
+dnf-flow:
+  title: What dnf does for you
+  caption: Step through dnf install zip.
+  height: 250
+  mode: steps
+  steps:
+  - title: You ask
+    text: dnf install zip. rpm alone would stop at "failed dependencies"; dnf finds and brings what zip needs.
+  - title: Read the repository metadata
+    text: 'dnf downloads (and caches) a catalogue from each enabled repository: which packages exist, in which versions, and what they need.'
+  - title: Solve the dependencies
+    text: zip needs unzip. dnf works out the complete list of packages to install and shows it to you for confirmation.
+  - title: Download and verify
+    text: It downloads the packages and checks each one's GPG signature against the repository's key. An unsigned or tampered package is refused.
+  - title: Run the transaction
+    text: It installs the packages with rpm in one transaction, runs their scriptlets, and records the whole change in the dnf history, where it can be undone.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: blue
+    title: dnf install zip
+    sub: ''
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+  - kind: node
+    x: 150
+    y: 20
+    w: 120
+    h: 56
+    tone: purple
+    title: metadata
+    sub: what exists
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 290
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: dependencies
+    sub: zip + unzip
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 430
+    y: 20
+    w: 120
+    h: 56
+    tone: teal
+    title: download
+    sub: verify GPG
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: green
+    title: install
+    sub: history
+    titleSize: 12.5
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 150
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 270
+      - 48
+    - - 290
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 48
+    - - 430
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 550
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+  - kind: node
+    x: 150
+    y: 110
+    w: 400
+    h: 44
+    tone: gray
+    title: the same flow for remove, update and group install
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: dnf'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: dnf search tree | head -3
+      out: 'Last metadata expiration check: 0:00:05 ago on Sat Oct  3 17:25:41 2026.
+
+        ========================= Name & Summary Matched: tree =========================
+
+        tree.x86_64 : File system tree viewer'
+    - cmd: dnf info tree | head -6
+      out: 'Installed Packages
+
+        Name         : tree
+
+        Version      : 1.8.0
+
+        Release      : 10.el9
+
+        Architecture : x86_64
+
+        Size         : 113 k'
+    - cmd: dnf provides /usr/bin/tree
+      out: 'tree-1.8.0-10.el9.x86_64 : File system tree viewer
+
+        Repo        : @System
+
+        Matched from:
+
+        Filename    : /usr/bin/tree'
+    - cmd: dnf install zip
+      out: "Dependencies resolved.\n================================================================================\n Package         Architecture      Version               Repository          Size\n================================================================================\nInstalling:\n zip             x86_64            3.0-35.el9            baseos             263 k\nInstalling dependencies:\n unzip           x86_64            6.0-60.el9_8          baseos             180 k\n\nTransaction Summary\n================================================================================\nInstall  2 Packages\n\nIs this ok [y/N]: y\n...output omitted...\nComplete!"
+    - cmd: dnf history | head -4
+      out: "ID     | Command line             | Date and time    | Action(s)      | Altered\n-------------------------------------------------------------------------------\n    11 | install -y zip           | 2026-10-03 17:27 | Install        |    2   \n    10 | module remove -y nginx   | 2026-10-03 17:27 | Removed        |   88 EE"
+    - cmd: dnf history undo last
+      out: "Removed:\n  unzip-6.0-60.el9_8.x86_64                zip-3.0-35.el9.x86_64\n\nComplete!"
+    - cmd: dnf check-update | head -3
+      out: 'kernel.x86_64                          5.14.0-687.54.1.el9_8              baseos
+
+        kernel-core.x86_64                     5.14.0-687.54.1.el9_8              baseos
+
+        kernel-modules.x86_64                  5.14.0-687.54.1.el9_8              baseos'
+    - cmd: dnf group list | head -5
+      out: "Available Environment Groups:\n   Server with GUI\n   Server\n   Minimal Install\n   Workstation"
+    tasks:
+    - text: Search the repositories for the word tree.
+      commands:
+      - dnf search tree | head -3
+    - text: Find out which package provides a file.
+      commands:
+      - dnf provides /usr/bin/tree
+    - text: Install zip (and what it needs).
+      commands:
+      - dnf install zip
+    - text: Show the history of dnf transactions, then undo the last one.
+      commands:
+      - dnf history | head -4
+      - dnf history undo last
+    - text: List available updates.
+      commands:
+      - dnf check-update | head -3
+quick:
+  questions:
+  - id: q-4b54dc4205bc
+    q: Which command finds the package that provides a file you do not have yet?
+    options:
+    - dnf provides "*/FILE"
+    - rpm -qf FILE
+    - dnf search FILE
+    answer: 0
+    explain: dnf provides searches the repositories; rpm -qf only knows installed files.
+  - id: q-efab2747e1c0
+    q: Why use dnf instead of rpm -i?
+    options:
+    - dnf resolves and installs dependencies from repositories
+    - dnf is faster at unpacking
+    - rpm cannot install
+    answer: 0
+    explain: rpm installs files you give it; dnf finds the rest.
+  - id: q-7f5f5c0b1d7b
+    q: Which command reverses the last dnf transaction?
+    options:
+    - dnf history undo last
+    - dnf rollback
+    - rpm -e last
+    answer: 0
+    explain: The history records exactly what changed.
+  - id: q-eb3d4e7bf8c7
+    q: What does dnf check-update do?
+    options:
+    - Lists packages with newer versions available, without installing
+    - Installs all updates
+    - Checks signatures
+    answer: 0
+    explain: dnf upgrade (or update) applies them.
+  - id: q-92118b61c551
+    q: Which command removes a package and the dependencies nothing else needs?
+    options:
+    - dnf remove NAME (with autoremove behaviour for unneeded dependencies)
+    - rpm -e --all
+    - dnf clean
+    answer: 0
+    explain: dnf remove removes packages it installed only as dependencies when nothing else requires them; dnf autoremove cleans up leftovers.
+  - id: q-783a611d7370
+    q: A package group such as "Server" is ...
+    options:
+    - A named set of packages installed together
+    - A user group
+    - A repository
+    answer: 0
+    explain: dnf group list; dnf group install "NAME".
