@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Log in and run a command remotely?
+    back: ssh user@host  ·  ssh user@host command
+  - front: What is in known_hosts, and what does a warning mean?
+    back: 'The host keys you trust. A changed key means a rebuilt server or an attack: find out which.'
+  - front: Create a key pair and install the public key?
+    back: ssh-keygen -t ed25519  ·  ssh-copy-id -i KEY.pub user@host
+  - front: Which key file is secret?
+    back: The private key (no .pub). Mode 600.
+  - front: Permissions sshd insists on?
+    back: ~/.ssh 700, authorized_keys 600, both owned by the user.
+  - front: Load a key once for many logins?
+    back: eval $(ssh-agent -s)  ·  ssh-add KEY
+  - front: Copy a file, a directory, and synchronise?
+    back: 'scp F host:  ·  scp -r D host:  ·  rsync -av D/ host:D/'
+  - front: A short name for a server?
+    back: 'Host block in ~/.ssh/config: HostName, User, IdentityFile'
+  - front: Where do sshd changes go, and in what order are they read?
+    back: '/etc/ssh/sshd_config.d/*.conf, alphabetical, first value wins: name yours 10-...'
+  - front: Check and apply sshd configuration?
+    back: sshd -t  ·  sshd -T | grep OPTION  ·  systemctl reload sshd
+  - front: Remove a stale host key?
+    back: ssh-keygen -R HOST
+  - front: Where are SSH logins logged?
+    back: journalctl -u sshd and /var/log/secure

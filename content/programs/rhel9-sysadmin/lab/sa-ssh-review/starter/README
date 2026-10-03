@@ -1,0 +1,30 @@
+Exercise: sa-ssh-review (chapter 10 lab)
+
+Work on workstation as student, and on servera as root (ssh root@servera).
+
+Access for an account
+ 1. An account ops on servera (password Ops-Pass-2026). Log in to it from
+    workstation with a key pair you create, ~/.ssh/id_ops, with the public
+    key installed through ssh-copy-id. Give it a Host alias opsa in
+    ~/.ssh/config.
+
+Hardening (servera)
+ 2. In /etc/ssh/sshd_config.d/10-hardening.conf set:
+      PasswordAuthentication no
+      X11Forwarding no
+      MaxAuthTries 3
+      LoginGraceTime 30
+    Check with sshd -T, and reload sshd. Do all of it with a second session
+    kept open, and test a new key login before you close it.
+
+Files
+ 3. Copy inventory.txt (from this directory) to the home directory of ops.
+ 4. Copy the three files in reports/ to /home/ops/mirror/ with rsync
+    (rsync -av reports/ opsa:mirror/). Then delete reports/b.txt locally and
+    run rsync again with --delete, so b.txt disappears on servera too.
+
+Evidence
+ 5. Fill in answers.txt: the SHA256 fingerprint of servera's Ed25519 host key
+    and the key type.
+
+Then, on workstation:  lab grade sa-ssh-review

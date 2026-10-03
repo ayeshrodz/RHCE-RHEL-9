@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-8f539e5f5438
+    q: What does the "Are you sure you want to continue connecting?" prompt ask you to verify?
+    options:
+    - The server's host key fingerprint
+    - Your password
+    - The port number
+    answer: 0
+    explain: It is your chance to confirm that you are talking to the right machine.
+  - id: q-8e1961b193f5
+    q: Which pair of files makes a key login work?
+    options:
+    - The private key on the client and the public key in authorized_keys on the server
+    - known_hosts on both sides
+    - sshd_config and ssh_config
+    answer: 0
+    explain: The server holds the public half; the client proves it has the private half.
+  - id: q-4321cfb397a6
+    q: What permissions must ~/.ssh and authorized_keys have?
+    options:
+    - 700 and 600
+    - 755 and 644
+    - 777 and 666
+    answer: 0
+    explain: Anything writable by others makes sshd refuse the key.
+  - id: q-2dba4a79e75a
+    q: Which command copies a directory tree to a server, sending only changes next time?
+    options:
+    - rsync -av dir/ host:dir/
+    - 'scp -r dir host:'
+    - sftp dir
+    answer: 0
+    explain: rsync compares and transfers differences.
+  - id: q-1326aba9684d
+    q: How do you give a host a short name with its user and key?
+    options:
+    - A Host block in ~/.ssh/config
+    - An alias in /etc/hosts
+    - A line in known_hosts
+    answer: 0
+    explain: ssh, scp, sftp and rsync all read ~/.ssh/config.
+  - id: q-28d5352be1b0
+    q: Where do you put a hardening change for sshd?
+    options:
+    - /etc/ssh/sshd_config.d/10-NAME.conf
+    - /usr/lib/ssh/
+    - ~/.ssh/config
+    answer: 0
+    explain: A drop-in sorted before 50- so it wins.
+  - id: q-7c57397a6277
+    q: Which command checks the configuration syntax?
+    options:
+    - sshd -t
+    - sshd -T
+    - systemctl status sshd
+    answer: 0
+    explain: No output means valid.
+  - id: q-761eb8ff53c2
+    q: After editing the sshd configuration, you should ...
+    options:
+    - reload sshd and test a new login in another terminal
+    - reboot
+    - delete known_hosts
+    answer: 0
+    explain: Reload keeps current sessions; the new login proves the change works.
+  - id: q-db82c953fcc9
+    q: A host key changed because the server was rebuilt. How do you update your known_hosts?
+    options:
+    - ssh-keygen -R HOST, then connect and verify the new fingerprint
+    - Edit sshd_config
+    - Turn off host key checking
+    answer: 0
+    explain: Remove the old entry and accept the new key after checking it.
+  - id: q-3c455ad4c0dd
+    q: Which setting stops password guessing completely?
+    options:
+    - PasswordAuthentication no (with working keys)
+    - MaxAuthTries 1
+    - LogLevel DEBUG
+    answer: 0
+    explain: Without password logins there is nothing to guess. Make sure your key works first.

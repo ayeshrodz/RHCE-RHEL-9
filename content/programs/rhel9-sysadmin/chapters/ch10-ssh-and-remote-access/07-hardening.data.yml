@@ -1,0 +1,346 @@
+precedence:
+  title: Which line wins?
+  caption: sshd uses the first value it finds. Step through the files in the order sshd reads them.
+  height: 250
+  mode: steps
+  steps:
+  - title: The main file includes drop-ins first
+    text: /etc/ssh/sshd_config starts with Include /etc/ssh/sshd_config.d/*.conf, so the drop-ins are read before the rest of the main file.
+  - title: Alphabetical order
+    text: 'Drop-ins are read in alphabetical order: 10-..., 50-..., 99-.... The first one to set an option decides its value.'
+  - title: A late file loses
+    text: 50-cloud-init.conf already says PasswordAuthentication yes. A file called 99-hardening.conf that says no is read later, and is ignored for that option.
+  - title: An early file wins
+    text: Name your file 10-hardening.conf and its PasswordAuthentication no is read first and wins. Always confirm with sshd -T.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 200
+    h: 50
+    tone: gray
+    title: 10-...
+    sub: (not there yet)
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    overrides:
+      title:
+        '0': 10-...
+        '1': 10-...
+        '2': 10-...
+        '3': 10-hardening.conf
+      sub:
+        '0': (not there yet)
+        '1': (not there yet)
+        '2': (not there yet)
+        '3': PasswordAuthentication no
+  - kind: node
+    x: 240
+    y: 20
+    w: 200
+    h: 50
+    tone: amber
+    title: 50-cloud-init.conf
+    sub: PasswordAuthentication yes
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 470
+    y: 20
+    w: 200
+    h: 50
+    tone: coral
+    title: 99-hardening.conf
+    sub: PasswordAuthentication no
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+  - kind: arrow
+    points:
+    - - 210
+      - 45
+    - - 240
+      - 45
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 440
+      - 45
+    - - 470
+      - 45
+    visible:
+    - 2
+  - kind: node
+    x: 150
+    y: 120
+    w: 380
+    h: 50
+    tone: gray
+    title: first value found wins
+    titleSize: 12.5
+    active:
+    - 0
+    - 1
+    - 2
+    - 3
+    overrides:
+      title:
+        '0': first value found wins
+        '1': first value found wins
+        '2': sshd -T  →  passwordauthentication yes
+        '3': sshd -T  →  passwordauthentication no
+safe-change:
+  title: Change sshd without locking yourself out
+  caption: Step through the safe routine.
+  height: 220
+  mode: steps
+  steps:
+  - title: Keep a session open
+    text: Stay logged in on a second terminal (or a root console). An open session survives a reload, and is your way back if the change is wrong.
+  - title: Edit a drop-in
+    text: Put your change in /etc/ssh/sshd_config.d/10-NAME.conf instead of editing the main file.
+  - title: Test the syntax
+    text: sshd -t prints nothing when the configuration is valid. Then sshd -T | grep OPTION shows the value that really applies.
+  - title: Reload, do not restart
+    text: systemctl reload sshd applies the change without dropping existing connections.
+  - title: Test a NEW login
+    text: Open a third terminal and log in again. Only when that works, close the spare session. If it does not, fix the file using the session you kept open.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: blue
+    title: spare session
+    sub: keep open
+    titleSize: 12
+    active:
+    - 0
+    - 4
+  - kind: node
+    x: 150
+    y: 20
+    w: 120
+    h: 56
+    tone: purple
+    title: edit
+    sub: 10-NAME.conf
+    mono: true
+    titleSize: 12
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 290
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: sshd -t
+    sub: and sshd -T
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 430
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: reload
+    sub: not restart
+    mono: true
+    titleSize: 12
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: teal
+    title: new login
+    sub: test it
+    titleSize: 12
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 150
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 270
+      - 48
+    - - 290
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 48
+    - - 430
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 550
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: checking sshd'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: sshd -T | grep -E '^(passwordauthentication|x11forwarding|maxauthtries|permitrootlogin) '
+      out: 'maxauthtries 6
+
+        permitrootlogin without-password
+
+        passwordauthentication yes
+
+        x11forwarding yes'
+    - cmd: ls /etc/ssh/sshd_config.d
+      out: 50-cloud-init.conf  50-redhat.conf
+    - cmd: grep -n "^Include" /etc/ssh/sshd_config
+      out: 15:Include /etc/ssh/sshd_config.d/*.conf
+    - cmd: printf 'PasswordAuthentication no\nX11Forwarding no\nMaxAuthTries 3\n' > /etc/ssh/sshd_config.d/10-hardening.conf
+      out: ''
+    - cmd: sshd -t
+      out: ''
+    - cmd: sshd -T | grep -E '^(passwordauthentication|x11forwarding|maxauthtries) '
+      out: 'maxauthtries 3
+
+        passwordauthentication no
+
+        x11forwarding no'
+    - cmd: systemctl reload sshd
+      out: ''
+    - cmd: journalctl -u sshd -n 2 --no-pager
+      out: 'Oct 03 16:49:26 servera.lab.example.com systemd[1]: Reloaded OpenSSH server daemon.
+
+        Oct 03 16:49:26 servera.lab.example.com sshd-session[1049]: Accepted publickey for ops from 172.25.251.9 port 41346 ssh2: ED25519 SHA256:5AQbFTBUkvfPw8I6cXrZ71yQTp6wis83oln7qAUHiBA'
+    tasks:
+    - text: Show the current values of the options you care about.
+      commands:
+      - sshd -T | grep -E '^(passwordauthentication|x11forwarding|maxauthtries|permitrootlogin) '
+    - text: Write the hardening drop-in with the three settings.
+      commands:
+      - printf 'PasswordAuthentication no\nX11Forwarding no\nMaxAuthTries 3\n' > /etc/ssh/sshd_config.d/10-hardening.conf
+    - text: Test the configuration syntax.
+      commands:
+      - sshd -t
+    - text: Apply the change without dropping connections.
+      commands:
+      - systemctl reload sshd
+quick:
+  questions:
+  - id: q-e84ee000d399
+    q: You set PasswordAuthentication no in 99-hardening.conf, but sshd -T still says yes. Why?
+    options:
+    - An earlier file (50-cloud-init.conf) set it first, and the first value wins
+    - sshd must be restarted
+    - 99 is reserved
+    answer: 0
+    explain: Drop-ins are read in alphabetical order and the first value found is used, so name yours 10-.
+  - id: q-74d17c19f139
+    q: Which command shows the value sshd really uses?
+    options:
+    - sshd -T
+    - sshd -t
+    - ssh -V
+    answer: 0
+    explain: -T prints the effective configuration; -t only checks the syntax.
+  - id: q-644b1a6ba712
+    q: Why reload instead of restart sshd?
+    options:
+    - Existing sessions stay connected
+    - Reload is faster
+    - Restart is not allowed
+    answer: 0
+    explain: A reload makes sshd re-read its configuration without dropping connections.
+  - id: q-0be34b629cd5
+    q: What is the safest way to test a new sshd configuration on a remote machine?
+    options:
+    - Keep a session open and test a new login before closing it
+    - Reboot
+    - Disable the firewall
+    answer: 0
+    explain: The old session survives and lets you undo a mistake.
+  - id: q-9c58bfc0c7b0
+    q: PermitRootLogin no means ...
+    options:
+    - Root cannot log in over SSH at all
+    - Root needs a key
+    - Root needs sudo
+    answer: 0
+    explain: Administrators log in as themselves and use sudo. (The default here, prohibit-password, allows root with a key only.)
+  - id: q-88b539e0928b
+    q: Which log shows failed and successful SSH logins?
+    options:
+    - journalctl -u sshd (and /var/log/secure)
+    - /var/log/ssh.log
+    - dmesg
+    answer: 0
+    explain: sshd logs to the journal and, on RHEL, to /var/log/secure.
