@@ -1,0 +1,27 @@
+quick:
+  questions:
+  - q: Why does sudo podman ps show a different list from podman ps?
+    options:
+    - Root and the regular user use different stores.
+    - Every container was automatically deleted.
+    - Podman never supports rootless mode.
+    answer: 0
+    explain: Container state is scoped to the invoking identity.
+    id: q-2c478a5d6268
+model:
+  connections:
+  - relates to
+  - verify
+  steps:
+  - id: part0
+    title: Image
+    text: Trusted immutable content plus a documented runtime command and user.
+    tone: purple
+  - id: part1
+    title: Container and data
+    text: Disposable process state with deliberate persistent volume ownership and labels.
+    tone: teal
+  - id: part2
+    title: User service
+    text: Quadlet generation and lingering define unattended lifecycle; test the actual workload.
+    tone: green
