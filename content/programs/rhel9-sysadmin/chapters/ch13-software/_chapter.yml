@@ -1,0 +1,10 @@
+title: "Software management"
+goal: "Install, update and remove software, and manage where it comes from."
+status: planned
+topics:
+  - "Repositories: configuring and using dnf repos"
+  - "Installing, updating and removing packages and groups"
+  - "Modules and streams"
+  - "Querying and verifying packages with rpm"
+  - "Signature checking"
+  - "Building a local repository"

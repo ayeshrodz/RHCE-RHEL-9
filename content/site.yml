@@ -5,3 +5,4 @@ description: Free, open learning paths for Linux and automation. Short lessons, 
 repo: https://github.com/ayeshrodz/playbook-path
 programs:
   - rhel9-ansible
+  - rhel9-sysadmin

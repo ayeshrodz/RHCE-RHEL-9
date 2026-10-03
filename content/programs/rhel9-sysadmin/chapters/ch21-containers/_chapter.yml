@@ -1,0 +1,11 @@
+title: "Containers with Podman"
+goal: "Run services in containers and keep them running."
+status: planned
+topics:
+  - "Finding, pulling and inspecting images"
+  - "Running, listing, stopping and removing containers"
+  - "Ports, environment variables and persistent storage"
+  - "SELinux labels on volumes"
+  - "Rootless containers"
+  - "Running a container as a systemd service"
+  - "Building a simple image"

@@ -1,0 +1,10 @@
+title: "Networking"
+goal: "Configure addresses, names and routes, and check that they work."
+status: planned
+topics:
+  - "IPv4 and IPv6 addressing"
+  - "NetworkManager: nmcli and connection profiles"
+  - "Static and dynamic configuration"
+  - "Host names and name resolution"
+  - "Routes and default gateways"
+  - "Checking connectivity with ip, ping and ss"

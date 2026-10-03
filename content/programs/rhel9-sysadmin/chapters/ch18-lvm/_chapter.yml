@@ -1,0 +1,10 @@
+title: "Logical volume management"
+goal: "Build flexible storage with physical volumes, volume groups and logical volumes."
+status: planned
+topics:
+  - "Physical volumes, volume groups and logical volumes"
+  - "Creating and mounting logical volumes"
+  - "Extending volume groups and logical volumes"
+  - "Extending a file system together with its volume"
+  - "Swap on a logical volume"
+  - "Inspecting and troubleshooting LVM"

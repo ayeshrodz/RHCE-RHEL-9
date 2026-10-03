@@ -1,0 +1,10 @@
+title: "Processes"
+goal: "See what is running, control it, and tune how it shares the machine."
+status: planned
+topics:
+  - "Listing and inspecting processes"
+  - "Signals and ending processes"
+  - "Priorities with nice and renice"
+  - "Foreground and background jobs"
+  - "Load, memory and CPU at a glance"
+  - "Performance profiles with tuned"

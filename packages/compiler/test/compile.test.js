@@ -356,6 +356,13 @@ test('an exercise must be taught, defined once, and have its starter files', asy
   );
 });
 
+test('a file that cannot be read is a content error with its file name, not a crash', async () => {
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: [unclosed\n' } });
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: !!js/function "x"\n' } });
+  await rejects('text', /_chapter\.yml.*cannot be read/, { extra: { '_chapter.yml': 'title: a\ntitle: b\n' } });
+  await rejects('text', /01-page\.md.*frontmatter cannot be read/, { front: 'title: [unclosed' });
+});
+
 test('symbolic links in content are refused, so nothing outside content can be published', async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-link-'));
   try {

@@ -1,0 +1,10 @@
+title: "Services and the boot process"
+goal: "Manage services and understand what happens from power-on to login."
+status: planned
+topics:
+  - "Units, targets and the default target"
+  - "Starting, stopping, enabling and masking services"
+  - "Reading service status and logs when a unit fails"
+  - "Interrupting the boot and choosing a target"
+  - "Boot loader parameters"
+  - "Recovering access to a system you cannot log in to"

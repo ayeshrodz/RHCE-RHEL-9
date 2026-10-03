@@ -1,0 +1,9 @@
+title: "Logs and time"
+goal: "Read the system logs and keep the clock right."
+status: planned
+topics:
+  - "The journal: filtering with journalctl and keeping it across reboots"
+  - "Traditional log files and rsyslog"
+  - "Log rotation"
+  - "Time zones and the system clock with timedatectl"
+  - "Time synchronisation with chrony"

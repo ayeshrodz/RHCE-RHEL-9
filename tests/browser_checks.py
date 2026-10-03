@@ -138,7 +138,8 @@ def programs_stay_separate(browser):
         shutil.copytree(ROOT / 'content', content)
         second = content / 'programs' / 'second-program'
         shutil.copytree(ROOT / 'packages/compiler/test/fixtures/second-program', second)
-        (content / 'site.yml').write_text((content / 'site.yml').read_text() + '  - second-program\n')
+        # Only the two programs this test is about: the course and a small fixture.
+        (content / 'site.yml').write_text((content / 'site.yml').read_text().replace('  - rhel9-sysadmin\n', '') + '  - second-program\n')
         out = Path(temp) / 'bundle'
         subprocess.run(['node', str(ROOT / 'packages/compiler/src/cli.js'), 'build', str(content), '--out', str(out)], check=True, capture_output=True)
         server, origin = serve_bundle(out)
@@ -211,6 +212,25 @@ def programs_stay_separate(browser):
         finally:
             site.__exit__(None, None, None)
             server.shutdown()
+
+
+def planned_program_is_listed(browser):
+    """A planned program shows up on the site home with its outline, and has no lessons to open yet."""
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(BASE + '#/')
+    cards = page.locator('.program-cards .chapter-card')
+    cards.nth(1).wait_for()
+    planned = cards.filter(has_text='Linux system administration on RHEL 9')
+    assert planned.count() == 1 and 'Planned' in planned.inner_text()
+    planned.click()
+    page.wait_for_url('**/#/rhel9-sysadmin')
+    page.get_by_role('heading', name='Linux system administration on RHEL 9', level=1).wait_for()
+    assert page.locator('.chapter-card.is-soon').count() == 22, 'every chapter is an outline entry'
+    page.locator('.chapter-card.is-soon').nth(15).click()
+    page.get_by_role('heading', name='SELinux').first.wait_for()
+    assert 'Allowing services on non-standard ports' in page.locator('main').inner_text()
+    context.close()
 
 
 def new_signing_key(directory):
@@ -295,6 +315,7 @@ with preview_server(BASE, ROOT):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         content_from_another_origin(browser)
+        planned_program_is_listed(browser)
         tampered_content_is_refused(browser)
         signed_content(browser)
         programs_stay_separate(browser)

@@ -70,7 +70,7 @@ journey:
 
 Native buttons select explanations, and the diagram changes to a vertical layout on phones. Keep machine names, operating systems, versions, captions, and teaching text in content or track metadata. The component contains presentation logic. Keep existing reference headings when updating content so shared links continue to work.
 
-The site's own home page is `content/site/home.md`; use `{% program-cards /%}` to list the programs. To add a program, create `content/programs/<id>/` with a `program.yml` and `chapters/`, then list the id in `site.yml`. Each program has its own navigation, search index and progress.
+The site's own home page is `content/site/home.md`; use `{% program-cards /%}` to list the programs. To announce a program before its lessons exist, give it `status: planned` and a folder per chapter whose `_chapter.yml` has `status: planned` and a list of `topics`; readers see the outline with "Coming soon" chapters, and the program is marked Planned on the site home and in the program menu (`content/programs/rhel9-sysadmin` is an example). To add a program, create `content/programs/<id>/` with a `program.yml` and `chapters/`, then list the id in `site.yml`. Each program has its own navigation, search index and progress.
 
 ## 2. Page shape
 

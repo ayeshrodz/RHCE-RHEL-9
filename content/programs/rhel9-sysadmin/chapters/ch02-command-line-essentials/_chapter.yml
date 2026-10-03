@@ -1,0 +1,10 @@
+title: "Command-line essentials"
+goal: "Work comfortably in the shell: run commands, combine them, and redirect their input and output."
+status: planned
+topics:
+  - "Shell prompt, command syntax and tab completion"
+  - "History and editing the command line"
+  - "Standard input, output and error; redirection and pipes"
+  - "Globbing, quoting and escaping"
+  - "Shell and environment variables, exit status"
+  - "Searching text with grep and regular expressions"

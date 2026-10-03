@@ -1,0 +1,9 @@
+title: "The firewall"
+goal: "Control which network traffic reaches the machine."
+status: planned
+topics:
+  - "Zones, services and ports"
+  - "Runtime and permanent configuration"
+  - "Changing the default zone and assigning interfaces"
+  - "Source-based rules"
+  - "Verifying what is allowed"

@@ -1,0 +1,10 @@
+title: "Build a practice lab"
+setup: true
+goal: "Set up virtual machines you can break and repair safely, so every later exercise has somewhere to run."
+status: planned
+topics:
+  - "Choose a host machine and virtualisation tool"
+  - "Create RHEL 9-compatible virtual machines"
+  - "Install the system and apply updates"
+  - "Take and restore snapshots between exercises"
+  - "Reach machines over SSH and a console"
