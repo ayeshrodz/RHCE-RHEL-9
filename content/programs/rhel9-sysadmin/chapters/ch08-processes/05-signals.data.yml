@@ -1,0 +1,287 @@
+signals:
+  title: Common signals
+  caption: Select a signal to see when to use it.
+  height: 250
+  mode: select
+  initial: term
+  info:
+    hup:
+      tone: gray
+      title: 1 · SIGHUP
+      text: Hang up. Sent when a terminal closes. Many daemons treat it as "reload your configuration".
+    int:
+      tone: blue
+      title: 2 · SIGINT
+      text: Interrupt. What Ctrl+C sends to the foreground program.
+    term:
+      tone: green
+      title: 15 · SIGTERM
+      text: Terminate, politely. The default for kill. The program can clean up, save its work and exit. Always try this first.
+    kill:
+      tone: coral
+      title: 9 · SIGKILL
+      text: Kill, immediately. The kernel ends the process; it cannot catch or ignore it, and cannot clean up. A last resort.
+    stop:
+      tone: amber
+      title: 19 · SIGSTOP
+      text: Pause the process. It cannot be ignored. (Ctrl+Z sends a similar SIGTSTP, number 20.)
+    cont:
+      tone: teal
+      title: 18 · SIGCONT
+      text: Continue a stopped process.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 100
+    h: 60
+    tone: gray
+    title: '1'
+    sub: HUP
+    mono: true
+    titleSize: 22
+    select: hup
+    active:
+    - hup
+  - kind: node
+    x: 120
+    y: 30
+    w: 100
+    h: 60
+    tone: blue
+    title: '2'
+    sub: INT
+    mono: true
+    titleSize: 22
+    select: int
+    active:
+    - int
+  - kind: node
+    x: 230
+    y: 30
+    w: 100
+    h: 60
+    tone: green
+    title: '15'
+    sub: TERM
+    mono: true
+    titleSize: 22
+    select: term
+    active:
+    - term
+  - kind: node
+    x: 340
+    y: 30
+    w: 100
+    h: 60
+    tone: coral
+    title: '9'
+    sub: KILL
+    mono: true
+    titleSize: 22
+    select: kill
+    active:
+    - kill
+  - kind: node
+    x: 450
+    y: 30
+    w: 100
+    h: 60
+    tone: amber
+    title: '19'
+    sub: STOP
+    mono: true
+    titleSize: 22
+    select: stop
+    active:
+    - stop
+  - kind: node
+    x: 560
+    y: 30
+    w: 100
+    h: 60
+    tone: teal
+    title: '18'
+    sub: CONT
+    mono: true
+    titleSize: 22
+    select: cont
+    active:
+    - cont
+  - kind: label
+    x: 340
+    y: 124
+    text: kill -l lists them all · kill PID sends 15 · kill -9 PID sends 9
+    size: 12.5
+    muted: true
+escalation:
+  title: Ending a stuck process
+  caption: Step through the safe order of escalation.
+  height: 220
+  mode: steps
+  steps:
+  - title: Identify it
+    text: 'Find the right process first: pgrep -a NAME or ps aux | grep NAME. Check the user, the command line and the PID.'
+  - title: 'Ask: SIGTERM'
+    text: kill PID (signal 15). Wait a few seconds. Most programs save their work and exit.
+  - title: Still there? Look again
+    text: 'Check with ps -p PID. If it is in state D, or is a zombie, kill will not help: look at what it is waiting for, or at its parent.'
+  - title: 'Insist: SIGKILL'
+    text: kill -9 PID. The kernel removes the process at once. Unsaved data and temporary files are lost, so use it last.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 60
+    tone: blue
+    title: 1. identify
+    sub: pgrep -a · ps
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+  - kind: node
+    x: 190
+    y: 20
+    w: 150
+    h: 60
+    tone: green
+    title: 2. kill PID
+    sub: SIGTERM (15)
+    mono: true
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 370
+    y: 20
+    w: 150
+    h: 60
+    tone: amber
+    title: 3. check
+    sub: ps -p PID
+    mono: true
+    titleSize: 12.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 550
+    y: 20
+    w: 120
+    h: 60
+    tone: coral
+    title: 4. kill -9
+    sub: if still alive
+    mono: true
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+  - kind: arrow
+    points:
+    - - 160
+      - 50
+    - - 190
+      - 50
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 340
+      - 50
+    - - 370
+      - 50
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 520
+      - 50
+    - - 550
+      - 50
+    visible:
+    - 3
+  - kind: node
+    x: 190
+    y: 120
+    w: 330
+    h: 44
+    tone: gray
+    title: 'a clean exit: no data lost'
+    titleSize: 12.5
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+quick:
+  questions:
+  - id: q-5f48ad19bfbd
+    q: What does kill 1234 send by default?
+    options:
+    - SIGTERM (15)
+    - SIGKILL (9)
+    - SIGHUP (1)
+    answer: 0
+    explain: The default is the polite terminate request. Use -9 only when that fails.
+  - id: q-5ddc09376cce
+    q: Why is SIGKILL a last resort?
+    options:
+    - The process cannot clean up or save data
+    - It needs root
+    - It only works once
+    answer: 0
+    explain: SIGKILL cannot be caught, so the program has no chance to flush buffers or remove temporary files.
+  - id: q-2294b7051ebf
+    q: Which command ends every process named "myapp" at once?
+    options:
+    - pkill myapp
+    - kill myapp
+    - ps myapp
+    answer: 0
+    explain: pkill and killall match by name; kill needs PIDs (or job numbers).
+  - id: q-2a5176026d0d
+    q: How do you safely check which processes pkill sleep would hit?
+    options:
+    - pgrep -a sleep
+    - ps sleep
+    - top sleep
+    answer: 0
+    explain: pgrep uses the same matching as pkill and only lists, so check before you signal.
+  - id: q-d3060048fd0c
+    q: Which signal pauses a process so it can later continue?
+    options:
+    - SIGSTOP, then SIGCONT
+    - SIGHUP
+    - SIGKILL
+    answer: 0
+    explain: kill -STOP PID pauses it; kill -CONT PID resumes it.
+  - id: q-7411f6882549
+    q: A process in state D does not react to kill -9. What does this suggest?
+    options:
+    - It is waiting on hardware or storage
+    - It has already ended
+    - It is a shell builtin
+    answer: 0
+    explain: Uninterruptible sleep ends when the I/O finishes. Look for a storage or network-mount problem.
+  - id: q-766dadc7f5d1
+    q: How do you end all processes owned by user bob?
+    options:
+    - pkill -u bob
+    - kill bob
+    - userdel bob
+    answer: 0
+    explain: pkill -u USER matches by owner. (pkill -KILL -u bob if they ignore the polite request.)

@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: What are PID and PPID?
+    back: The process ID, and the ID of the process that started it (its parent).
+  - front: How does a shell run an external command?
+    back: It forks a child copy, which execs the program; the shell waits and collects the exit status.
+  - front: What do the ps STAT letters R, S, D, T, Z mean?
+    back: Running, sleeping, uninterruptible disk wait, stopped, zombie.
+  - front: Two commands that list all processes?
+    back: ps aux and ps -ef (add --forest for the tree), or pstree.
+  - front: Run a command in the background, list jobs, bring one back?
+    back: cmd &  ·  jobs  ·  fg %N
+  - front: Pause the foreground job and continue it in the background?
+    back: Ctrl+Z, then bg
+  - front: Which signal does kill send by default, and what is the last resort?
+    back: 15 (TERM). The last resort is kill -9 (KILL).
+  - front: End all processes named foo, or owned by bob?
+    back: pkill foo  ·  pkill -u bob
+  - front: Preview what pkill would match?
+    back: pgrep -a PATTERN
+  - front: How do you judge a load average?
+    back: Divide by the number of CPUs (nproc). About 1 per CPU is full.
+  - front: Start a command with low priority, and change a running one?
+    back: nice -n 10 cmd  ·  renice -n 15 -p PID
+  - front: Show and set the performance profile?
+    back: tuned-adm active  ·  tuned-adm profile NAME  ·  tuned-adm recommend

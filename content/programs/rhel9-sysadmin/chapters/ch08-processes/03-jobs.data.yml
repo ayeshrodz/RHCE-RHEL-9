@@ -1,0 +1,235 @@
+job-states:
+  title: The life of a job
+  caption: Step through starting, pausing and resuming a command in your terminal.
+  height: 230
+  mode: steps
+  steps:
+  - title: Foreground
+    text: 'You type sleep 500. It runs in the foreground: your shell waits, and the prompt does not come back.'
+  - title: 'Ctrl+Z: stop it'
+    text: Ctrl+Z sends a stop signal. The job is paused (state T) and listed by jobs as Stopped; the prompt returns.
+  - title: 'bg: continue in the background'
+    text: bg %1 resumes it without giving it the terminal. You get the prompt back while it works.
+  - title: 'fg: bring it back'
+    text: fg %1 returns it to the foreground, so you can see its output, or press Ctrl+C to end it.
+  - title: Start in the background
+    text: Add & to the command (sleep 500 &) to start it in the background from the beginning.
+  elements:
+  - kind: node
+    x: 20
+    y: 20
+    w: 180
+    h: 56
+    tone: blue
+    title: Foreground
+    sub: prompt is blocked
+    titleSize: 13
+    active:
+    - 0
+    - 3
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 250
+    y: 20
+    w: 180
+    h: 56
+    tone: amber
+    title: Stopped
+    sub: state T, paused
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 480
+    y: 20
+    w: 180
+    h: 56
+    tone: green
+    title: Background
+    sub: state S/R, prompt free
+    titleSize: 13
+    active:
+    - 2
+    - 4
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 200
+      - 36
+    - - 250
+      - 36
+    label: Ctrl+Z
+    labelDy: -6
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 430
+      - 36
+    - - 480
+      - 36
+    label: bg
+    labelDy: -6
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 570
+      - 76
+    - - 570
+      - 120
+    - - 110
+      - 120
+    - - 110
+      - 76
+    label: fg
+    labelDy: -6
+    visible:
+    - 3
+  - kind: node
+    x: 480
+    y: 150
+    w: 180
+    h: 50
+    tone: teal
+    title: cmd &
+    sub: starts here
+    mono: true
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 570
+      - 150
+    - - 570
+      - 76
+    visible:
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: job control'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: sleep 500 &
+      out: '[1] 762'
+    - cmd: sleep 501 &
+      out: '[2] 763'
+    - cmd: jobs
+      out: '[1]-  Running                 sleep 500 &
+
+        [2]+  Running                 sleep 501 &'
+    - cmd: fg %1
+      out: sleep 500
+    - cmd: bg %1
+      out: '[1]+ sleep 500 &'
+    - cmd: kill %2
+      out: '[2]+  Terminated              sleep 501'
+    - cmd: jobs -l
+      out: '[1]+   762 Running                 sleep 500 &'
+    - cmd: nohup sleep 700 &
+      out: '[3] 766
+
+        nohup: ignoring input and appending output to ''nohup.out'''
+    tasks:
+    - text: Start a command in the background.
+      commands:
+      - sleep 500 &
+    - text: List your jobs.
+      commands:
+      - jobs
+    - text: Bring job 1 to the foreground.
+      commands:
+      - fg %1
+    - text: Continue it in the background (as if you had pressed Ctrl+Z first).
+      commands:
+      - bg %1
+    - text: Terminate job 2.
+      commands:
+      - kill %2
+    - text: Start a command that survives closing the terminal.
+      commands:
+      - nohup sleep 700 &
+quick:
+  questions:
+  - id: q-94d5217587a0
+    q: How do you start a command directly in the background?
+    options:
+    - Add & at the end
+    - Add -bg
+    - Start it with sudo
+    answer: 0
+    explain: command & returns the prompt immediately and prints [job] PID.
+  - id: q-27e3e23b4959
+    q: You pressed Ctrl+Z in a running command. What state is the job in?
+    options:
+    - Stopped (paused)
+    - Terminated
+    - Running in the background
+    answer: 0
+    explain: Ctrl+Z pauses it. bg resumes it in the background, fg in the foreground.
+  - id: q-c1b5f1d441af
+    q: Which command refers to job number 3?
+    options:
+    - '%3'
+    - '#3'
+    - $3
+    answer: 0
+    explain: fg %3, bg %3, kill %3 all use the percent form.
+  - id: q-68ca0601ad8b
+    q: Are job numbers (from jobs) the same as PIDs?
+    options:
+    - 'No: job numbers are per shell, PIDs are system wide'
+    - 'Yes'
+    - Only for background jobs
+    answer: 0
+    explain: A job number only means something in the shell that started it.
+  - id: q-9d8410fce3ad
+    q: What happens to your background jobs when you close the terminal?
+    options:
+    - They usually receive SIGHUP and end
+    - They always keep running
+    - They are paused
+    answer: 0
+    explain: Use nohup, or a terminal multiplexer such as tmux, when a job must survive a closed session.
+  - id: q-f7e368f05d88
+    q: Ctrl+C in the foreground does what?
+    options:
+    - Sends SIGINT, asking the program to stop
+    - Pauses the program
+    - Copies the output
+    answer: 0
+    explain: SIGINT (signal 2) interrupts the foreground job.

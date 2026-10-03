@@ -1,0 +1,334 @@
+lifecycle:
+  title: How a command becomes a process
+  caption: Step through what happens when you type ls.
+  height: 230
+  mode: steps
+  steps:
+  - title: You type ls
+    text: Your shell (bash, PID 670) is a running process. It reads the line and finds that ls is not built in.
+  - title: 'fork: the shell copies itself'
+    text: 'The kernel creates a child process, a near-copy of the shell with a new PID (say 701). The shell is its parent: the child''s PPID is 670.'
+  - title: 'exec: the child becomes ls'
+    text: In the child, the kernel replaces the copy of bash with the ls program. The PID stays 701; only the program changes.
+  - title: ls runs and exits
+    text: ls prints the listing, then exits and hands back an exit status (0 means success).
+  - title: The parent collects the result
+    text: The shell waits for its child, reads the exit status (available as $?), and shows the prompt again. Every process on the system was started this way, all the way back to PID 1.
+  elements:
+  - kind: node
+    x: 20
+    y: 15
+    w: 200
+    h: 56
+    tone: blue
+    title: bash
+    sub: PID 670 · the shell
+    mono: true
+    titleSize: 13
+    active:
+    - 0
+    - 4
+  - kind: node
+    x: 250
+    y: 15
+    w: 200
+    h: 56
+    tone: gray
+    title: bash (copy)
+    sub: PID 701 · PPID 670
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 220
+      - 43
+    - - 250
+      - 43
+    label: fork
+    labelDy: -6
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 250
+    y: 110
+    w: 200
+    h: 56
+    tone: green
+    title: ls
+    sub: PID 701 · PPID 670
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 350
+      - 71
+    - - 350
+      - 110
+    label: exec
+    labelDy: -4
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 480
+    y: 110
+    w: 180
+    h: 56
+    tone: teal
+    title: exit 0
+    sub: status returned
+    mono: true
+    titleSize: 13
+    active:
+    - 3
+    - 4
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 450
+      - 138
+    - - 480
+      - 138
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 120
+    y: 178
+    w: 440
+    h: 40
+    tone: gray
+    title: every process has a parent, up to systemd (PID 1)
+    titleSize: 12.5
+    active:
+    - 4
+    visible:
+    - 4
+states:
+  title: Process states
+  caption: Select a state letter, as shown in the STAT column of ps.
+  height: 230
+  mode: select
+  initial: s
+  info:
+    r:
+      tone: green
+      title: 'R: running'
+      text: Running on a CPU, or waiting in the queue for one. A busy process spends its life here.
+    s:
+      tone: blue
+      title: 'S: sleeping'
+      text: 'Waiting for something: input, a timer, a network reply. It can be woken by a signal. Most processes are in this state most of the time.'
+    d:
+      tone: amber
+      title: 'D: uninterruptible sleep'
+      text: Waiting for hardware or disk and cannot be interrupted, not even by kill -9. Rare and brief; a process stuck in D usually points to a storage problem.
+    t:
+      tone: coral
+      title: 'T: stopped'
+      text: Paused by a signal (Ctrl+Z or SIGSTOP). It keeps its memory and resumes with SIGCONT.
+    z:
+      tone: purple
+      title: 'Z: zombie'
+      text: Finished, but its parent has not yet collected its exit status. It uses no CPU or memory, only a process-table entry. Fix the parent; the zombie cannot be killed.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 120
+    h: 60
+    tone: green
+    title: R
+    sub: running
+    mono: true
+    titleSize: 22
+    select: r
+    active:
+    - r
+  - kind: node
+    x: 142
+    y: 30
+    w: 120
+    h: 60
+    tone: blue
+    title: S
+    sub: sleeping
+    mono: true
+    titleSize: 22
+    select: s
+    active:
+    - s
+  - kind: node
+    x: 274
+    y: 30
+    w: 120
+    h: 60
+    tone: amber
+    title: D
+    sub: disk wait
+    mono: true
+    titleSize: 22
+    select: d
+    active:
+    - d
+  - kind: node
+    x: 406
+    y: 30
+    w: 120
+    h: 60
+    tone: coral
+    title: T
+    sub: stopped
+    mono: true
+    titleSize: 22
+    select: t
+    active:
+    - t
+  - kind: node
+    x: 538
+    y: 30
+    w: 120
+    h: 60
+    tone: purple
+    title: Z
+    sub: zombie
+    mono: true
+    titleSize: 22
+    select: z
+    active:
+    - z
+  - kind: label
+    x: 340
+    y: 118
+    text: 'extra letters: s session leader · l multi-threaded · + foreground · < high priority · N low priority'
+    size: 12
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: looking at processes'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: ps
+      out: "    PID TTY          TIME CMD\n    661 ?        00:00:00 systemd\n    663 ?        00:00:00 (sd-pam)\n    670 pts/0    00:00:00 bash\n    712 pts/0    00:00:00 ps"
+    - cmd: echo $$
+      out: '670'
+    - cmd: ps aux | head -4
+      out: 'USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+
+        root           1  8.2  1.7  26836 16424 ?        Ss   16:21   0:00 /usr/lib/systemd/systemd --switched-root --system --deserialize 31
+
+        root           2  0.0  0.0      0     0 ?        S    16:21   0:00 [kthreadd]
+
+        root           3  0.0  0.0      0     0 ?        S    16:21   0:00 [pool_workqueue_]'
+    - cmd: ps -o pid,ppid,user,stat,ni,pcpu,pmem,comm -p $$
+      out: "    PID    PPID USER     STAT  NI %CPU %MEM COMMAND\n    670     659 student  Ss     0  0.0  0.3 bash"
+    - cmd: ps -ef --forest | head -4
+      out: 'UID          PID    PPID  C STIME TTY          TIME CMD
+
+        root           2       0  0 16:21 ?        00:00:00 [kthreadd]
+
+        root           3       2  0 16:21 ?        00:00:00  \_ [pool_workqueue_]
+
+        root           4       2  0 16:21 ?        00:00:00  \_ [kworker/R-rcu_gp]'
+    - cmd: pstree -p | head -4
+      out: "systemd(1)-+-NetworkManager(547)-+-{NetworkManager}(548)\n           |                     |-{NetworkManager}(549)\n           |                     `-{NetworkManager}(550)"
+    - cmd: ps -eo pid,ppid,stat,comm --sort=-pcpu | head -3
+      out: "    PID    PPID STAT COMMAND\n      1       0 Ss   systemd\n     17       2 S<   pr/ttyS0"
+    - cmd: cat /proc/$$/status | head -3
+      out: "Name:\tbash\nUmask:\t0022\nState:\tS (sleeping)"
+    tasks:
+    - text: Find the PID of your own shell.
+      commands:
+      - echo $$
+    - text: List every process in the standard BSD format.
+      commands:
+      - ps aux | head -4
+    - text: Show your shell's PID, parent, state and niceness.
+      commands:
+      - ps -o pid,ppid,user,stat,ni,pcpu,pmem,comm -p $$
+    - text: Draw the process tree with PIDs.
+      commands:
+      - pstree -p | head -4
+quick:
+  questions:
+  - id: q-c6939e973c83
+    q: What does PPID mean?
+    options:
+    - The parent's process ID
+    - The process priority
+    - The port the process listens on
+    answer: 0
+    explain: Every process except PID 1 was started by another process, its parent.
+  - id: q-2ed170c605e9
+    q: Which process has PID 1 on RHEL?
+    options:
+    - systemd
+    - bash
+    - init.sh
+    answer: 0
+    explain: systemd starts first and is the ancestor of every other process.
+  - id: q-c27ff6313ff4
+    q: A process shows STAT Z in ps. What does that mean?
+    options:
+    - It finished but its parent has not collected the exit status
+    - It is using too much CPU
+    - It is paused with Ctrl+Z
+    answer: 0
+    explain: A zombie uses no CPU or memory. You fix it by fixing or ending the parent; kill -9 cannot remove it.
+  - id: q-5e7c634af533
+    q: Which command shows processes as a parent-child tree?
+    options:
+    - pstree
+    - ps -l
+    - top -c
+    answer: 0
+    explain: pstree (or ps -ef --forest) draws the family tree.
+  - id: q-021355a7728d
+    q: What does the shell do to run an external command like ls?
+    options:
+    - fork a child, which then execs the program
+    - Load ls into its own memory and run it
+    - Ask systemd to start it
+    answer: 0
+    explain: fork creates the copy and exec replaces it with the new program.
+  - id: q-2de6f74f740b
+    q: Where do you find the live details of process 1234, such as its state?
+    options:
+    - /proc/1234
+    - /var/run/1234
+    - /etc/processes
+    answer: 0
+    explain: /proc has a directory per process; ps and top read the same data.

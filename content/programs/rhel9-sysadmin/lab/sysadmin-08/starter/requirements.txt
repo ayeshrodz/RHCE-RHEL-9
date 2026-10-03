@@ -1,4 +1,0 @@
-Investigate one disposable sleep process and collect a small resource baseline. Demonstrate priority adjustment and graceful termination without touching a system daemon.
-
-Inspect process state and terminate the intended process safely.
-Distinguish resource symptoms from evidence for a tuning change.

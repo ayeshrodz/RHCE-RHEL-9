@@ -290,12 +290,24 @@ def conditions_commands(c):
     return ['command -v %s >/dev/null' % shlex.quote(n) for n in c['names']]
 
 
+def conditions_process(c):
+    find = 'pgrep %s-f -- %s' % ('-u %s ' % shlex.quote(c['user']) if 'user' in c else '', shlex.quote(c['pattern']))
+    if c.get('running', True) is False:
+        return ['! ' + find + ' >/dev/null']
+    out = [find + ' >/dev/null']
+    if 'nice' in c:
+        out.append("ps -o ni= -p $(%s) | awk '$1 != %d {bad=1} END {exit bad}'" % (find, c['nice']))
+    if 'state' in c:
+        out.append("ps -o stat= -p $(%s) | awk 'substr($1, 1, 1) != \"%s\" {bad=1} END {exit bad}'" % (find, c['state']))
+    return out
+
+
 HOST_CHECKS = {
     'service': conditions_service, 'firewall': conditions_firewall, 'package': conditions_package, 'file': conditions_file,
     'file-compare': conditions_file_compare, 'archive': conditions_archive, 'user': conditions_user, 'mount': conditions_mount,
     'logical-volume': conditions_logical_volume, 'http': conditions_http, 'selinux': conditions_selinux, 'sudoers': conditions_sudoers,
     'sshd': conditions_sshd, 'cron': conditions_cron, 'boot-target': conditions_boot_target, 'address': conditions_address,
-    'hostname': conditions_hostname, 'commands': conditions_commands,
+    'hostname': conditions_hostname, 'commands': conditions_commands, 'process': conditions_process,
 }
 
 

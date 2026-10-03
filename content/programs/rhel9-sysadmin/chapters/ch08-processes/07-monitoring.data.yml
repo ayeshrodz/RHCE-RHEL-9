@@ -1,0 +1,193 @@
+load-average:
+  title: Reading the load average
+  caption: Select a number from uptime to see what it says.
+  height: 220
+  mode: select
+  initial: five
+  info:
+    one:
+      tone: coral
+      title: '1 minute: 1.03'
+      text: The average number of processes wanting the CPU (running or ready, plus those in uninterruptible disk wait) over the last minute. Reacts quickly, so it also reacts to short spikes.
+    five:
+      tone: amber
+      title: '5 minutes: 0.23'
+      text: 'The same over five minutes: a better sense of the recent trend.'
+    fifteen:
+      tone: green
+      title: '15 minutes: 0.07'
+      text: 'Over fifteen minutes: the steady state. If it is falling, the machine is recovering.'
+    cpus:
+      tone: blue
+      title: Compare with the CPU count
+      text: One CPU can handle a load of about 1. With nproc = 4, a load of 4 is full and 8 means a queue of work waiting. Divide by the number of CPUs before worrying.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 60
+    tone: coral
+    title: '1.03'
+    sub: 1 min
+    mono: true
+    titleSize: 22
+    select: one
+    active:
+    - one
+  - kind: node
+    x: 176
+    y: 20
+    w: 150
+    h: 60
+    tone: amber
+    title: '0.23'
+    sub: 5 min
+    mono: true
+    titleSize: 22
+    select: five
+    active:
+    - five
+  - kind: node
+    x: 342
+    y: 20
+    w: 150
+    h: 60
+    tone: green
+    title: '0.07'
+    sub: 15 min
+    mono: true
+    titleSize: 22
+    select: fifteen
+    active:
+    - fifteen
+  - kind: node
+    x: 520
+    y: 20
+    w: 150
+    h: 60
+    tone: blue
+    title: nproc
+    sub: number of CPUs
+    mono: true
+    titleSize: 18
+    select: cpus
+    active:
+    - cpus
+  - kind: label
+    x: 340
+    y: 108
+    text: '16:21:40 up 0 min,  0 users,  load average: 1.03, 0.23, 0.07'
+    mono: true
+    size: 12.5
+    muted: true
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: watching and tuning'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: uptime
+      out: ' 16:21:40 up 0 min,  0 users,  load average: 1.03, 0.23, 0.07'
+    - cmd: nproc
+      out: '1'
+    - cmd: cat /proc/loadavg
+      out: 1.03 0.23 0.07 1/141 702
+    - cmd: free -h
+      out: '               total        used        free      shared  buff/cache   available
+
+        Mem:           937Mi       376Mi       553Mi        21Mi       166Mi       560Mi
+
+        Swap:             0B          0B          0B'
+    - cmd: top -b -n1 | head -5
+      out: 'top - 16:21:41 up 0 min,  0 users,  load average: 1.03, 0.23, 0.07
+
+        Tasks: 119 total,   1 running, 118 sleeping,   0 stopped,   0 zombie
+
+        %Cpu(s):  0.0 us,  6.2 sy,  0.0 ni, 93.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+
+        MiB Mem :    937.4 total,    553.6 free,    376.0 used,    166.8 buff/cache
+
+        MiB Swap:      0.0 total,      0.0 free,      0.0 used.    561.4 avail Mem'
+    - cmd: nice -n 10 sleep 600 &
+      out: '[1] 713'
+    - cmd: ps -o pid,ni,cmd -C sleep
+      out: "    PID  NI CMD\n    713  10 sleep 600"
+    - cmd: renice -n 15 -p 713
+      out: 713 (process ID) old priority 10, new priority 15
+    tasks:
+    - text: Check the load average and the number of CPUs.
+      commands:
+      - uptime
+      - nproc
+    - text: Check memory in human-readable sizes.
+      commands:
+      - free -h
+    - text: Start a process with a lower priority (nice value 10) in the background.
+      commands:
+      - nice -n 10 sleep 600 &
+    - text: Change its nice value to 15.
+      commands:
+      - renice -n 15 -p 713
+quick:
+  questions:
+  - id: q-d7668fa47d7b
+    q: A server has 4 CPUs and a load average of 4.0. What does it mean?
+    options:
+    - The CPUs are fully used, with no queue
+    - The server is overloaded by 4x
+    - Four processes have crashed
+    answer: 0
+    explain: 'Load divided by CPUs is about 1: fully busy. Well above 1 means work is waiting.'
+  - id: q-44f24ff7cb66
+    q: Which nice value gives a process the lowest priority?
+    options:
+    - '19'
+    - '-20'
+    - '0'
+    answer: 0
+    explain: A higher nice number is nicer to others, so 19 is the least favoured. -20 is the most favoured.
+  - id: q-9891274a9872
+    q: Who may lower a process's nice value (raise its priority)?
+    options:
+    - Only root
+    - The process owner
+    - Any user
+    answer: 0
+    explain: Anyone may make their own processes nicer. Lowering the value below 0 needs root.
+  - id: q-be165a061bd6
+    q: In top, which key quits?
+    options:
+    - q
+    - x
+    - Ctrl+Z
+    answer: 0
+    explain: q quits; k sends a signal to a PID; r renices one; M and P sort by memory and CPU.
+  - id: q-ff401a97445c
+    q: free -h shows little "free" memory but a lot "available". Is that a problem?
+    options:
+    - No, Linux uses spare memory for caching and gives it back
+    - Yes, the server is out of memory
+    - Only if swap is zero
+    answer: 0
+    explain: '"available" is the number that matters: memory that can be used without swapping.'
+  - id: q-f67423d12cc3
+    q: What does tuned-adm profile throughput-performance do?
+    options:
+    - Applies a set of kernel and device settings tuned for throughput
+    - Sets every nice value to 0
+    - Kills slow processes
+    answer: 0
+    explain: tuned applies named profiles; tuned-adm active shows the one in use and tuned-adm recommend suggests one.

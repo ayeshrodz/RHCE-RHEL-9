@@ -201,20 +201,36 @@
   - ch07/exercise-acls
   - ch07/lab
   challenges: []
-- id: ch08.operations
+- id: ch08.processes
   chapter: ch08
   lessons:
-  - ch08/process-control
-  - ch08/performance-evidence
+  - ch08/processes
   labs:
+  - ch08/exercise-inspect
   - ch08/lab
   challenges: []
-- id: ch08.verification
+- id: ch08.jobs
   chapter: ch08
   lessons:
-  - ch08/process-control
-  - ch08/performance-evidence
+  - ch08/jobs
   labs:
+  - ch08/exercise-jobs
+  - ch08/lab
+  challenges: []
+- id: ch08.signals
+  chapter: ch08
+  lessons:
+  - ch08/signals
+  labs:
+  - ch08/exercise-signals
+  - ch08/lab
+  challenges: []
+- id: ch08.monitoring
+  chapter: ch08
+  lessons:
+  - ch08/monitoring
+  labs:
+  - ch08/exercise-monitoring
   - ch08/lab
   challenges: []
 - id: ch10.operations

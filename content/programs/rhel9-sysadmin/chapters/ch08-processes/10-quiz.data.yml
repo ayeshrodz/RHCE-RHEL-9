@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-f0a38e3e5d23
+    q: What is the PID of a process's parent called?
+    options:
+    - PPID
+    - UID
+    - GID
+    answer: 0
+    explain: PPID is shown by ps -ef and ps -o ppid.
+  - id: q-617e9fdaeb79
+    q: Which command prints your shell's PID?
+    options:
+    - echo $$
+    - echo $?
+    - pid
+    answer: 0
+    explain: $$ is the PID of the current shell; $? is the last exit status.
+  - id: q-339be0e37f13
+    q: Which ps option set shows every process with full details?
+    options:
+    - ps aux or ps -ef
+    - ps -u
+    - ps -a
+    answer: 0
+    explain: a, u, x (BSD style) or -e, -f (standard) both list everything.
+  - id: q-85547f6d2e17
+    q: You started sleep 500 in the foreground. How do you move it to the background?
+    options:
+    - Ctrl+Z, then bg
+    - Ctrl+C, then bg
+    - fg
+    answer: 0
+    explain: Ctrl+Z pauses it, bg continues it in the background.
+  - id: q-62cf67ba0c7b
+    q: What does kill -9 do that kill does not?
+    options:
+    - Ends the process without letting it clean up
+    - Pauses it
+    - Reloads it
+    answer: 0
+    explain: Signal 9 cannot be caught or ignored.
+  - id: q-9a1d78ee14bd
+    q: Which pair finds and ends processes by name?
+    options:
+    - pgrep and pkill
+    - ps and top
+    - jobs and fg
+    answer: 0
+    explain: pgrep lists matches; pkill signals them.
+  - id: q-7f4dff2b4461
+    q: What does a load average of 8 mean on a 2-CPU server?
+    options:
+    - Roughly four times more work than the CPUs can do at once
+    - The server is idle
+    - Memory is full
+    answer: 0
+    explain: 'Load divided by CPUs is 4: there is a queue.'
+  - id: q-07d311103e39
+    q: nice -n 10 command ... does what?
+    options:
+    - Starts it with a lower priority
+    - Starts it with a higher priority
+    - Starts it as root
+    answer: 0
+    explain: Positive values are "nicer" to the other processes.
+  - id: q-113bb14253ec
+    q: Which command changes the priority of a process that is already running?
+    options:
+    - renice
+    - nice
+    - chrt -p
+    answer: 0
+    explain: renice -n 5 -p PID.
+  - id: q-ab84b9e3750a
+    q: Which command shows the tuned profile in use?
+    options:
+    - tuned-adm active
+    - tuned-adm list
+    - systemctl tuned
+    answer: 0
+    explain: list shows what exists; active shows the current one.
