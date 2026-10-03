@@ -1,0 +1,8 @@
+# Write each answer after the = sign, with no spaces.
+
+# The log file that records SSH logins and sudo use:
+LOGIN_LOG=
+# The number of the priority named err:
+ERR_LEVEL=
+# The single character chronyc sources shows in front of the source in use:
+SELECTED_MARK=

@@ -1,0 +1,338 @@
+journal-storage:
+  title: Where the journal is kept
+  caption: Select a Storage= setting.
+  height: 240
+  mode: select
+  initial: auto
+  info:
+    volatile:
+      tone: amber
+      title: Storage=volatile
+      text: Only in /run/log/journal (memory). Lost at every reboot, so you cannot read how the previous boot failed.
+    persistent:
+      tone: green
+      title: Storage=persistent
+      text: In /var/log/journal on disk. Survives reboots; journalctl -b -1 works. Size is limited by SystemMaxUse=.
+    auto:
+      tone: blue
+      title: Storage=auto (default)
+      text: Persistent if the directory /var/log/journal exists, otherwise volatile. On this image the directory is missing, so the journal is volatile. mkdir /var/log/journal, restart journald and run journalctl --flush is enough to change that.
+    limits:
+      tone: gray
+      title: Limits
+      text: SystemMaxUse= (total size on disk), MaxRetentionSec= (age), SystemKeepFree= (space to leave free). Clean up by hand with journalctl --vacuum-size=100M or --vacuum-time=2weeks.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: amber
+    title: volatile
+    sub: /run/log/journal
+    mono: true
+    titleSize: 12.5
+    select: volatile
+    active:
+    - volatile
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: persistent
+    sub: /var/log/journal
+    mono: true
+    titleSize: 12.5
+    select: persistent
+    active:
+    - persistent
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: blue
+    title: auto
+    sub: default
+    mono: true
+    titleSize: 13
+    select: auto
+    active:
+    - auto
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: gray
+    title: limits
+    sub: SystemMaxUse=…
+    mono: true
+    titleSize: 12.5
+    select: limits
+    active:
+    - limits
+  - kind: label
+    x: 340
+    y: 124
+    text: /etc/systemd/journald.conf.d/10-NAME.conf   then   systemctl restart systemd-journald
+    mono: true
+    size: 12
+    muted: true
+rotation:
+  title: How logrotate works
+  caption: Step through a weekly rotation that keeps four old copies.
+  height: 230
+  mode: steps
+  steps:
+  - title: The log is growing
+    text: Programs append to /var/log/myapp.log. The file keeps growing until logrotate runs (daily, from a systemd timer).
+  - title: Rotation day
+    text: If the weekly time has come, logrotate renames myapp.log to myapp.log.1 and creates a fresh empty myapp.log with the mode from the create line.
+  - title: Older copies shift and compress
+    text: 'Existing copies move up: .1 becomes .2 (compressed to .gz), .2 becomes .3, and so on.'
+  - title: The oldest is deleted
+    text: With rotate 4, the fifth copy is deleted. Disk use stays bounded.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 130
+    h: 56
+    tone: green
+    title: myapp.log
+    sub: live file
+    mono: true
+    titleSize: 12
+    active:
+    - 0
+    - 1
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 160
+    y: 30
+    w: 120
+    h: 56
+    tone: blue
+    title: myapp.log.1
+    sub: last week
+    mono: true
+    titleSize: 11.5
+    active:
+    - 1
+    - 2
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: node
+    x: 300
+    y: 30
+    w: 130
+    h: 56
+    tone: blue
+    title: myapp.log.2.gz
+    sub: compressed
+    mono: true
+    titleSize: 11.5
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 450
+    y: 30
+    w: 120
+    h: 56
+    tone: gray
+    title: ….3.gz
+    sub: older
+    mono: true
+    titleSize: 12
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+  - kind: node
+    x: 590
+    y: 30
+    w: 80
+    h: 56
+    tone: gray
+    title: ….4.gz
+    sub: oldest
+    mono: true
+    titleSize: 11
+    active:
+    - 3
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 140
+      - 58
+    - - 160
+      - 58
+    visible:
+    - 1
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 280
+      - 58
+    - - 300
+      - 58
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 430
+      - 58
+    - - 450
+      - 58
+    visible:
+    - 2
+    - 3
+  - kind: arrow
+    points:
+    - - 570
+      - 58
+    - - 590
+      - 58
+    visible:
+    - 3
+  - kind: node
+    x: 250
+    y: 130
+    w: 260
+    h: 44
+    tone: coral
+    title: the 5th copy is deleted
+    titleSize: 12.5
+    active:
+    - 3
+    visible:
+    - 3
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: persistence, rsyslog rules and logrotate'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: journalctl --list-boots
+      out: "IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY\n  0 e223ff84f70141d5b05d37983cb06b03 Sat 2026-10-03 17:00:58 UTC Sat 2026-10-03 17:01:08 UTC"
+    - cmd: mkdir -p /var/log/journal
+      out: ''
+    - cmd: systemctl restart systemd-journald
+      out: ''
+    - cmd: journalctl --flush
+      out: ''
+    - cmd: ls /var/log/journal
+      out: abfe75218e6b48b780e28b39cd961fcf
+    - cmd: journalctl --disk-usage
+      out: Archived and active journals take up 8.0M in the file system.
+    - cmd: echo 'local5.* /var/log/myapp.log' > /etc/rsyslog.d/10-myapp.conf
+      out: ''
+    - cmd: systemctl restart rsyslog
+      out: ''
+    - cmd: logger -p local5.info "myapp started"
+      out: ''
+    - cmd: cat /var/log/myapp.log
+      out: 'Oct  3 17:00:03 servera root[867]: myapp started'
+    - cmd: logrotate -f /etc/logrotate.d/myapp
+      out: ''
+    - cmd: ls -l /var/log/myapp*
+      out: '-rw-r-----. 1 root root  0 Oct  3 17:00 /var/log/myapp.log
+
+        -rw-------. 1 root root 81 Oct  3 17:00 /var/log/myapp.log.1.gz'
+    - cmd: journalctl --vacuum-size=50M
+      out: Vacuuming done, freed 0B of archived journals from /var/log/journal/abfe75218e6b48b780e28b39cd961fcf.
+    tasks:
+    - text: 'Make the journal persistent: create its directory, restart journald and flush the journal to disk.'
+      commands:
+      - mkdir -p /var/log/journal
+      - systemctl restart systemd-journald
+      - journalctl --flush
+    - text: Send everything the local5 facility logs to /var/log/myapp.log.
+      commands:
+      - echo 'local5.* /var/log/myapp.log' > /etc/rsyslog.d/10-myapp.conf
+    - text: Restart rsyslog and write a test message with logger.
+      commands:
+      - systemctl restart rsyslog
+      - logger -p local5.info "myapp started"
+    - text: Force a rotation of the myapp log now.
+      commands:
+      - logrotate -f /etc/logrotate.d/myapp
+quick:
+  questions:
+  - id: q-513dffad9a0e
+    q: After a reboot, journalctl -b -1 says "no persistent journal was found". How do you fix that?
+    options:
+    - mkdir /var/log/journal, restart systemd-journald and run journalctl --flush
+    - Reinstall rsyslog
+    - Edit /var/log/messages
+    answer: 0
+    explain: With Storage=auto, the existence of /var/log/journal switches on persistent storage.
+  - id: q-3373c76a7e0a
+    q: Where do you put a custom rsyslog rule?
+    options:
+    - /etc/rsyslog.d/NAME.conf
+    - /var/log/rsyslog.d/
+    - /usr/lib/rsyslog/
+    answer: 0
+    explain: rsyslog.conf includes /etc/rsyslog.d/*.conf.
+  - id: q-96536ec686f7
+    q: In rsyslog, what does local5.* /var/log/myapp.log mean?
+    options:
+    - All messages of facility local5 go to that file
+    - Priority 5 only
+    - Rotate every 5 days
+    answer: 0
+    explain: facility.priority, then the target; * means every priority.
+  - id: q-04c6050c3d27
+    q: What does rotate 4 in a logrotate rule mean?
+    options:
+    - Keep four old copies
+    - Rotate four times a day
+    - Compress after four days
+    answer: 0
+    explain: The fifth oldest is removed at each rotation.
+  - id: q-dba98d7b2c13
+    q: How do you test a logrotate rule without changing anything?
+    options:
+    - logrotate -d FILE
+    - logrotate -f FILE
+    - logrotate --apply
+    answer: 0
+    explain: '-d is debug mode: it prints what would be done. -f forces a rotation.'
+  - id: q-7e55df88f5f4
+    q: Which command frees journal space?
+    options:
+    - journalctl --vacuum-size=100M
+    - rm /var/log/messages
+    - journalctl --clear
+    answer: 0
+    explain: The vacuum options delete the oldest archived journal files until the limit is met.

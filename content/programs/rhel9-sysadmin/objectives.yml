@@ -297,20 +297,36 @@
   - ch10/exercise-hardening
   - ch10/lab
   challenges: []
-- id: ch11.operations
+- id: ch11.reading
   chapter: ch11
   lessons:
-  - ch11/journals-and-logs
-  - ch11/time-and-chrony
+  - ch11/reading-logs
   labs:
+  - ch11/exercise-reading
   - ch11/lab
   challenges: []
-- id: ch11.verification
+- id: ch11.retention
   chapter: ch11
   lessons:
-  - ch11/journals-and-logs
-  - ch11/time-and-chrony
+  - ch11/persistence-and-rotation
   labs:
+  - ch11/exercise-persistence
+  - ch11/lab
+  challenges: []
+- id: ch11.time
+  chapter: ch11
+  lessons:
+  - ch11/time
+  labs:
+  - ch11/exercise-time
+  - ch11/lab
+  challenges: []
+- id: ch11.diagnosis
+  chapter: ch11
+  lessons:
+  - ch11/diagnosing
+  labs:
+  - ch11/exercise-diagnosing
   - ch11/lab
   challenges: []
 - id: ch12.operations

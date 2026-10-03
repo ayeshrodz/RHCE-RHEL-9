@@ -1,0 +1,115 @@
+name: sa-logs-review
+title: Logs and time
+page: ch11/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: journal-dir
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: 'The journal is persistent: /var/log/journal exists'
+      paths:
+      - /var/log/journal
+      fileType: directory
+    - id: journal-conf
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: journald limits the journal to 100M
+      paths:
+      - /etc/systemd/journald.conf.d/10-retention.conf
+      contains:
+      - Storage=persistent
+      - SystemMaxUse=100M
+    - id: rsyslog-rule
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: rsyslog sends facility local6 to /var/log/appserver.log
+      paths:
+      - /etc/rsyslog.d/10-appserver.conf
+      matches: ^local6\.\*[[:space:]]+/var/log/appserver\.log[[:space:]]*$
+    - id: drill
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The drill message reached appserver.log
+      paths:
+      - /var/log/appserver.log
+      contains:
+      - drill complete
+    - id: logrotate
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: logrotate keeps six weekly compressed copies of appserver.log
+      paths:
+      - /etc/logrotate.d/appserver
+      contains:
+      - /var/log/appserver.log
+      - weekly
+      - rotate 6
+      - compress
+    - id: zone
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The time zone is Asia/Colombo
+      paths:
+      - /etc/localtime
+      resolvesTo: /usr/share/zoneinfo/Asia/Colombo
+    - id: chrony-source
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: chrony has the extra source 0.pool.ntp.org
+      paths:
+      - /etc/chrony.conf
+      line: server 0.pool.ntp.org iburst
+    - id: chronyd
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: chronyd is running and enabled
+      names:
+      - chronyd.service
+      active: true
+      enabled: true
+    - id: answer-login-log
+      kind: file
+      'on': control
+      message: 'answers.txt: the log file with SSH logins and sudo'
+      paths:
+      - answers.txt
+      matches: ^LOGIN_LOG=/var/log/secure[ \t]*$
+    - id: answer-err-level
+      kind: file
+      'on': control
+      message: 'answers.txt: the number of the err priority'
+      paths:
+      - answers.txt
+      matches: ^ERR_LEVEL=3[ \t]*$
+    - id: answer-selected-mark
+      kind: file
+      'on': control
+      message: 'answers.txt: the mark chronyc sources puts on the source in use'
+      paths:
+      - answers.txt
+      matches: ^SELECTED_MARK=\*[ \t]*$
