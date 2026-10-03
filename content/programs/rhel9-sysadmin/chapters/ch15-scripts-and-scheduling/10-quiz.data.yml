@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-229fe75e3d92
+    q: What does exit status 0 mean?
+    options:
+    - Success
+    - Failure
+    - The script is empty
+    answer: 0
+    explain: Anything else means failure or a special condition.
+  - id: q-98aceb9afcfe
+    q: Which line makes a script run with bash when executed directly?
+    options:
+    - '#!/bin/bash on the first line, and chmod +x'
+    - 'bash: on the first line'
+    - A file name ending in .sh
+    answer: 0
+    explain: The suffix means nothing to Linux.
+  - id: q-21f699b0c756
+    q: How do you handle a missing argument safely?
+    options:
+    - Test [ $# -ne 1 ], print a usage message to stderr, exit 2
+    - Ignore it
+    - Use $1 anyway
+    answer: 0
+    explain: Fail early with a clear message.
+  - id: q-925a3f573501
+    q: Which prints each argument as a separate word?
+    options:
+    - for a in "$@"; do …
+    - for a in $*; do …
+    - echo $@
+    answer: 0
+    explain: Keep the quotes.
+  - id: q-f0959e0bce5e
+    q: Which cron expression runs at 02:30 on weekdays?
+    options:
+    - 30 2 * * 1-5
+    - 2 30 * * 1-5
+    - 30 2 1-5 * *
+    answer: 0
+    explain: minute hour day-of-month month day-of-week.
+  - id: q-b7a920f0ff31
+    q: Where do you see whether cron ran a job?
+    options:
+    - /var/log/cron
+    - /var/log/messages only
+    - journalctl -u hello.timer
+    answer: 0
+    explain: Look for CMD and CMDEND lines.
+  - id: q-81cf393452db
+    q: A cron command containing date +%F fails. What do you change?
+    options:
+    - Write date +\%F
+    - Add quotes
+    - Use sudo
+    answer: 0
+    explain: Escape the percent sign.
+  - id: q-54e1552e2d2e
+    q: Which command lists your personal crontab?
+    options:
+    - crontab -l
+    - cron -l
+    - cat /etc/crontab
+    answer: 0
+    explain: crontab -u USER -l as root for someone else.
+  - id: q-042aba3e627a
+    q: What triggers hello.service when hello.timer is enabled?
+    options:
+    - The OnCalendar schedule of the timer
+    - systemctl start hello.service at boot
+    - cron
+    answer: 0
+    explain: The timer unit activates the service.
+  - id: q-a277035ce4b7
+    q: Which tool runs a job once, later?
+    options:
+    - at
+    - cron
+    - anacron
+    answer: 0
+    explain: Install the at package and enable atd.

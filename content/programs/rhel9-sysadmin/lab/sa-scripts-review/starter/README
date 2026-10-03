@@ -1,0 +1,29 @@
+Exercise: sa-scripts-review (chapter 15 lab)
+
+Work on servera, with sudo or as root.
+
+The script
+ 1. /usr/local/bin/sa-report.sh, a bash script (first line #!/bin/bash,
+    mode 755) that takes one argument, a directory, and prints three lines:
+        Directory: NAME
+        Files: N        (regular files directly inside it)
+        Bytes: N        (their total size in bytes)
+    and exits with status 0.
+    - With no argument (or more than one), it prints a line starting with
+      "Usage: " to standard error and exits with status 2.
+    - If the argument is not a directory, it prints a message containing
+      "not a directory" to standard error and exits with status 1.
+    The grader runs it as an ordinary user, so it must work without root.
+
+Scheduling
+ 2. /etc/cron.d/sa-report: run "/usr/local/bin/sa-report.sh /etc/ssh" as
+    root at 06:15 on weekdays (Monday to Friday). You may append the output
+    to /var/log/sa-report.log.
+ 3. A personal crontab for student with a heartbeat every 10 minutes:
+        /usr/bin/logger -t sa-heartbeat alive
+ 4. A systemd service sa-report.service (Type=oneshot) running
+    "/usr/local/bin/sa-report.sh /etc", and a timer sa-report.timer that
+    starts it daily at 02:30, with Persistent=true. The timer must be
+    enabled and running.
+
+Then, on workstation:  lab grade sa-scripts-review

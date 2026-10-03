@@ -1,0 +1,122 @@
+name: sa-scripts-review
+title: Scripts and scheduling
+page: ch15/lab
+transport: ssh
+version: 1
+starter:
+- README
+checkpoints:
+  final:
+    files:
+    - README
+    checks:
+    - id: script
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.sh is an executable bash script in /usr/local/bin
+      paths:
+      - /usr/local/bin/sa-report.sh
+      fileType: regular
+      mode: '0755'
+      matches: ^#!/bin/bash[[:space:]]*$
+    - id: behaviour-files
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.sh DIR prints the number of files
+      paths:
+      - /usr/local/bin/sa-report.sh
+      runs:
+      - args:
+        - /etc/ssh
+        exitCode: 0
+        output: '^Files: [0-9]+$'
+    - id: behaviour-bytes
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.sh DIR prints the total size in bytes
+      paths:
+      - /usr/local/bin/sa-report.sh
+      runs:
+      - args:
+        - /etc/ssh
+        exitCode: 0
+        output: '^Bytes: [0-9]+$'
+    - id: behaviour-usage
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: Without an argument it prints a usage message and exits with 2
+      paths:
+      - /usr/local/bin/sa-report.sh
+      runs:
+      - exitCode: 2
+        output: '^Usage: '
+    - id: behaviour-error
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: With a path that is not a directory it complains and exits with 1
+      paths:
+      - /usr/local/bin/sa-report.sh
+      runs:
+      - args:
+        - /etc/hostname
+        exitCode: 1
+        output: not a directory
+    - id: cron-d
+      kind: cron
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: A system cron job runs the report at 06:15 on weekdays
+      file: sa-report
+      matches: ^15 6 \* \* 1-5 root /usr/local/bin/sa-report\.sh /etc/ssh
+    - id: crontab
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: student has a heartbeat job every 10 minutes
+      paths:
+      - /var/spool/cron/student
+      matches: '^\*/10 \* \* \* \* /usr/bin/logger -t sa-heartbeat '
+    - id: service
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.service is a oneshot service for the script
+      paths:
+      - /etc/systemd/system/sa-report.service
+      contains:
+      - Type=oneshot
+      matches: ^ExecStart=/usr/local/bin/sa-report\.sh /etc[[:space:]]*$
+    - id: timer-file
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.timer runs daily at 02:30 and catches up
+      paths:
+      - /etc/systemd/system/sa-report.timer
+      matches: ^OnCalendar=\*-\*-\* 02:30(:00)?[[:space:]]*$
+      contains:
+      - Persistent=true
+    - id: timer
+      kind: service
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: sa-report.timer is enabled and running
+      names:
+      - sa-report.timer
+      active: true
+      enabled: true

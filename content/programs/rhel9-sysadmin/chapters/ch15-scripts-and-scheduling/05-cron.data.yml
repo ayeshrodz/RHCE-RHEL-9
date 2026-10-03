@@ -1,0 +1,238 @@
+crontab-line:
+  title: A crontab line
+  caption: 'Select a field of: 15 6 * * 1-5 root /usr/local/bin/report.sh'
+  height: 260
+  mode: select
+  initial: minute
+  info:
+    minute:
+      tone: purple
+      title: 'Minute: 0 to 59'
+      text: 15 means at minute 15 of the hour. */10 means every 10 minutes, 0,30 means at 0 and 30, 10-20 a range, * every minute.
+    hour:
+      tone: blue
+      title: 'Hour: 0 to 23'
+      text: '6 means 06:00 to 06:59. Combined with the minute: at 06:15.'
+    dom:
+      tone: teal
+      title: 'Day of month: 1 to 31'
+      text: '* means every day. 1 would mean only on the first.'
+    month:
+      tone: green
+      title: 'Month: 1 to 12'
+      text: '* means every month (names such as jan also work).'
+    dow:
+      tone: amber
+      title: 'Day of week: 0 to 7'
+      text: 1-5 means Monday to Friday (0 or 7 is Sunday). If both day-of-month and day-of-week are restricted, cron runs when EITHER matches.
+    user:
+      tone: gray
+      title: User (system crontabs only)
+      text: 'Files in /etc/cron.d and /etc/crontab have this extra column. Personal crontabs (crontab -e) do not: they always run as their owner.'
+    cmd:
+      tone: coral
+      title: Command
+      text: The rest of the line, run by /bin/sh with a minimal environment and PATH. Use full paths. A % must be written \% because cron treats it as a newline.
+  elements:
+  - kind: node
+    x: 6
+    y: 24
+    w: 52
+    h: 52
+    tone: purple
+    title: '15'
+    sub: min
+    mono: true
+    titleSize: 16
+    select: minute
+    active:
+    - minute
+  - kind: node
+    x: 62
+    y: 24
+    w: 52
+    h: 52
+    tone: blue
+    title: '6'
+    sub: hour
+    mono: true
+    titleSize: 16
+    select: hour
+    active:
+    - hour
+  - kind: node
+    x: 118
+    y: 24
+    w: 52
+    h: 52
+    tone: teal
+    title: '*'
+    sub: day
+    mono: true
+    titleSize: 16
+    select: dom
+    active:
+    - dom
+  - kind: node
+    x: 174
+    y: 24
+    w: 62
+    h: 52
+    tone: green
+    title: '*'
+    sub: month
+    mono: true
+    titleSize: 16
+    select: month
+    active:
+    - month
+  - kind: node
+    x: 240
+    y: 24
+    w: 70
+    h: 52
+    tone: amber
+    title: 1-5
+    sub: weekday
+    mono: true
+    titleSize: 14
+    select: dow
+    active:
+    - dow
+  - kind: node
+    x: 314
+    y: 24
+    w: 70
+    h: 52
+    tone: gray
+    title: root
+    sub: user
+    mono: true
+    titleSize: 14
+    select: user
+    active:
+    - user
+  - kind: node
+    x: 388
+    y: 24
+    w: 282
+    h: 52
+    tone: coral
+    title: /usr/local/bin/report.sh
+    sub: command
+    mono: true
+    titleSize: 13
+    select: cmd
+    active:
+    - cmd
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: cron'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: cat /etc/cron.d/0hourly
+      out: '# Run the hourly jobs
+
+        SHELL=/bin/bash
+
+        PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+        MAILTO=root
+
+        01 * * * * root run-parts /etc/cron.hourly'
+    - cmd: ls /etc/cron.d
+      out: 0hourly  dailyjobs
+    - cmd: crontab -u student -l
+      out: no crontab for student
+    - cmd: echo '* * * * * echo "cron ran at $(date +%T)" >> /home/student/cron.out' > /tmp/ct; crontab -u student /tmp/ct
+      out: ''
+    - cmd: grep CROND /var/log/cron | tail -1 | cut -c1-140
+      out: 'Oct  3 17:50:01 servera CROND[732]: (student) CMDOUT (/bin/sh: -c: line 1: unexpected EOF while looking for matching `)'')'
+    - cmd: echo '* * * * * echo "cron ran at $(date +\%T)" >> /home/student/cron.out' > /tmp/ct; crontab -u student /tmp/ct; crontab -u student -l
+      out: '* * * * * echo "cron ran at $(date +\%T)" >> /home/student/cron.out'
+    - cmd: cat /home/student/cron.out
+      out: cron ran at 17:52:01
+    - cmd: grep CROND /var/log/cron | tail -1 | cut -c1-150
+      out: 'Oct  3 17:52:01 servera CROND[845]: (student) CMDEND (echo "cron ran at $(date +%T)" >> /home/student/cron.out)'
+    - cmd: crontab -u student -r
+      out: ''
+    tasks:
+    - text: List the system cron files and look at the hourly one.
+      commands:
+      - ls /etc/cron.d
+      - cat /etc/cron.d/0hourly
+    - text: Install a crontab for student whose command contains an unescaped %.
+      commands:
+      - echo '* * * * * echo "cron ran at $(date +%T)" >> /home/student/cron.out' > /tmp/ct; crontab -u student /tmp/ct
+    - text: Find the error in the cron log.
+      commands:
+      - grep CROND /var/log/cron | tail -1 | cut -c1-140
+    - text: Fix it with \% and list the crontab.
+      commands:
+      - echo '* * * * * echo "cron ran at $(date +\%T)" >> /home/student/cron.out' > /tmp/ct; crontab -u student /tmp/ct; crontab -u student -l
+    - text: Remove the crontab.
+      commands:
+      - crontab -u student -r
+quick:
+  questions:
+  - id: q-d2648c47bed6
+    q: What does */15 * * * * mean?
+    options:
+    - Every 15 minutes
+    - At minute 15 of every hour
+    - Every 15 hours
+    answer: 0
+    explain: '*/N in a field means every N units.'
+  - id: q-3eb338eed562
+    q: A cron job works in your shell but not from cron. What is a likely reason?
+    options:
+    - cron has a minimal PATH and environment; use full paths
+    - cron is disabled
+    - The job is too short
+    answer: 0
+    explain: Use /usr/bin/date, not date; set variables inside the job.
+  - id: q-eb5c64e97993
+    q: A job uses date +%T and fails with "unexpected EOF". What is wrong?
+    options:
+    - The % must be written \% in a crontab
+    - date is not installed
+    - The minute field
+    answer: 0
+    explain: cron treats an unescaped % as a newline.
+  - id: q-585aaba5a4e9
+    q: Which command edits your own crontab?
+    options:
+    - crontab -e
+    - cron -e
+    - vim /etc/crontab
+    answer: 0
+    explain: crontab -l lists it and crontab -r removes it (without asking!).
+  - id: q-93d3d12b7f89
+    q: Where do you put a system-wide job that runs as a chosen user?
+    options:
+    - A file in /etc/cron.d with a user column
+    - crontab -e as that user, always
+    - /etc/cron.deny
+    answer: 0
+    explain: 'Format: m h dom mon dow USER command.'
+  - id: q-9cf0573a5efa
+    q: Where do you look to see whether cron ran a job?
+    options:
+    - /var/log/cron
+    - /var/log/dnf.log
+    - /etc/crontab
+    answer: 0
+    explain: Lines with CROND show CMD and CMDEND, and any error output.

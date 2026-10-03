@@ -795,6 +795,34 @@
             "symlink"
           ]
         },
+        "runs": {
+          "description": "Run the file (as the unprivileged user nobody, with a 10 second limit) with these arguments and check the exit status and the combined output. Host checks only.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "args": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9._/@:=,+-]{1,100}$"
+                }
+              },
+              "exitCode": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              },
+              "output": {
+                "$ref": "#/$defs/regex"
+              }
+            }
+          }
+        },
         "checksumsVerify": {
           "description": "The file is a SHA-256 checksum list that sha256sum -c accepts, run from the file's own directory. Host checks only.",
           "type": "boolean"

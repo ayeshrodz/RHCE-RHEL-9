@@ -1,0 +1,286 @@
+anatomy:
+  title: Anatomy of a script
+  caption: Select a line of hello.sh.
+  height: 270
+  mode: select
+  initial: shebang
+  info:
+    shebang:
+      tone: purple
+      title: '#!/bin/bash'
+      text: 'The "shebang": the first line, which names the program that runs the script. It must be the very first line, with no space before #!.'
+    comment:
+      tone: gray
+      title: '# comment'
+      text: 'Everything after a # on a line is ignored by the shell. Use comments to say why, not what.'
+    var:
+      tone: blue
+      title: name=${1:-$USER}
+      text: A variable. No spaces around =. ${1:-$USER} means "the first argument, or the value of USER if there is none". Read a variable with $name.
+    subst:
+      tone: amber
+      title: $(date +%A)
+      text: 'Command substitution: run the command, and use its output in place of the $( ).'
+    args:
+      tone: teal
+      title: $0  $#  $1  $@
+      text: $0 is the script name, $1 $2 … are the arguments, $# is how many, and "$@" is all of them, each kept as one word.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 660
+    h: 32
+    tone: purple
+    title: '#!/bin/bash'
+    mono: true
+    titleSize: 13
+    select: shebang
+    active:
+    - shebang
+  - kind: node
+    x: 10
+    y: 56
+    w: 660
+    h: 32
+    tone: gray
+    title: '# Greet the user named in the first argument'
+    mono: true
+    titleSize: 12.5
+    select: comment
+    active:
+    - comment
+  - kind: node
+    x: 10
+    y: 92
+    w: 660
+    h: 32
+    tone: blue
+    title: name=${1:-$USER}
+    mono: true
+    titleSize: 13
+    select: var
+    active:
+    - var
+  - kind: node
+    x: 10
+    y: 128
+    w: 660
+    h: 32
+    tone: green
+    title: echo "Hello, $name! You ran $0 with $# argument(s)."
+    mono: true
+    titleSize: 12.5
+    select: args
+    active:
+    - args
+  - kind: node
+    x: 10
+    y: 164
+    w: 660
+    h: 32
+    tone: amber
+    title: echo "Today is $(date +%A) on $(hostname -s)."
+    mono: true
+    titleSize: 12.5
+    select: subst
+    active:
+    - subst
+  - kind: label
+    x: 340
+    y: 214
+    text: echo prints text · quotes group words · the shell expands $… before running
+    size: 12
+    muted: true
+run-ways:
+  title: Four ways to run a script
+  caption: Select one to see what it needs.
+  height: 240
+  mode: select
+  initial: dotslash
+  info:
+    dotslash:
+      tone: green
+      title: ./hello.sh
+      text: Runs the file itself. Needs the execute bit (chmod +x) and a shebang. The ./ is required because the current directory is not in PATH.
+    bash:
+      tone: blue
+      title: bash hello.sh
+      text: Starts bash and gives it the file to read. No execute bit needed, the shebang is ignored. Handy for a quick test.
+    path:
+      tone: teal
+      title: hello.sh
+      text: Found through PATH. Copy the executable file into a directory that PATH lists (~/bin for you, /usr/local/bin for everyone) and type just its name.
+    source:
+      tone: amber
+      title: source hello.sh
+      text: Runs the commands inside your current shell instead of a new one. Variables it sets stay set. This is how ~/.bashrc is loaded; ordinary scripts should be run, not sourced.
+  elements:
+  - kind: node
+    x: 10
+    y: 30
+    w: 150
+    h: 60
+    tone: green
+    title: ./hello.sh
+    sub: needs chmod +x
+    mono: true
+    titleSize: 13
+    select: dotslash
+    active:
+    - dotslash
+  - kind: node
+    x: 176
+    y: 30
+    w: 150
+    h: 60
+    tone: blue
+    title: bash hello.sh
+    sub: no x needed
+    mono: true
+    titleSize: 13
+    select: bash
+    active:
+    - bash
+  - kind: node
+    x: 342
+    y: 30
+    w: 150
+    h: 60
+    tone: teal
+    title: hello.sh
+    sub: via PATH
+    mono: true
+    titleSize: 13
+    select: path
+    active:
+    - path
+  - kind: node
+    x: 508
+    y: 30
+    w: 162
+    h: 60
+    tone: amber
+    title: source hello.sh
+    sub: current shell
+    mono: true
+    titleSize: 13
+    select: source
+    active:
+    - source
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: your first scripts'
+    prompt: '[student@servera scripts]$'
+    commands:
+    - cmd: ./hello.sh
+      out: 'bash: ./hello.sh: Permission denied'
+    - cmd: echo $?
+      out: '126'
+    - cmd: chmod +x hello.sh
+      out: ''
+    - cmd: ./hello.sh
+      out: 'Hello, student! You ran ./hello.sh with 0 argument(s).
+
+        Today is Saturday and this host is servera.'
+    - cmd: ./hello.sh Maria "two words"
+      out: 'Hello, Maria! You ran ./hello.sh with 2 argument(s).
+
+        Today is Saturday and this host is servera.'
+    - cmd: bash hello.sh x
+      out: 'Hello, x! You ran hello.sh with 1 argument(s).
+
+        Today is Saturday and this host is servera.'
+    - cmd: echo $PATH
+      out: /home/student/.local/bin:/home/student/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+    - cmd: cp hello.sh ~/bin/; hello.sh Ana
+      out: 'Hello, Ana! You ran /home/student/bin/hello.sh with 1 argument(s).
+
+        Today is Saturday and this host is servera.'
+    - cmd: ./args.sh one "two words" three
+      out: "script: ./args.sh\nfirst: one  second: two words\ncount: 3\nall: one two words three\n  arg: [one]\n  arg: [two words]\n  arg: [three]"
+    - cmd: true; echo $?
+      out: '0'
+    - cmd: ls /nope 2>/dev/null; echo $?
+      out: '2'
+    tasks:
+    - text: Try to run the script before it is executable.
+      commands:
+      - ./hello.sh
+      - echo $?
+    - text: Make it executable and run it without arguments.
+      commands:
+      - chmod +x hello.sh
+      - ./hello.sh
+    - text: Run it with two arguments, one of them with a space.
+      commands:
+      - ./hello.sh Maria "two words"
+    - text: Copy it into ~/bin and run it by name.
+      commands:
+      - cp hello.sh ~/bin/; hello.sh Ana
+    - text: Look at the exit status of a failing command.
+      commands:
+      - ls /nope 2>/dev/null; echo $?
+quick:
+  questions:
+  - id: q-eadfcaa717a4
+    q: What must the first line of a bash script be?
+    options:
+    - '#!/bin/bash'
+    - '#include bash'
+    - // bash
+    answer: 0
+    explain: The shebang names the interpreter.
+  - id: q-826d4ac7f9cd
+    q: You run ./script.sh and get "Permission denied". What is missing?
+    options:
+    - chmod +x script.sh
+    - A reboot
+    - sudo
+    answer: 0
+    explain: The execute bit. Exit status 126 means "found but not executable".
+  - id: q-0516f210969e
+    q: Which variable holds the number of arguments?
+    options:
+    - $#
+    - $?
+    - $0
+    answer: 0
+    explain: $# count, $? last exit status, $0 script name.
+  - id: q-60b524bd6dbc
+    q: What does name=${1:-guest} do?
+    options:
+    - Uses the first argument, or "guest" if none was given
+    - Sets name to 1
+    - Errors if $1 is empty
+    answer: 0
+    explain: :- gives a default value.
+  - id: q-6725eeec4c86
+    q: Why are "$@" and "$*" different?
+    options:
+    - '"$@" keeps each argument as a separate word'
+    - They are the same
+    - '"$*" is faster'
+    answer: 0
+    explain: Always use "$@" to pass arguments on safely.
+  - id: q-90d0391625e5
+    q: Where should a script live to run it by name for every user?
+    options:
+    - /usr/local/bin
+    - /etc
+    - /tmp
+    answer: 0
+    explain: A directory in PATH, executable by everyone.

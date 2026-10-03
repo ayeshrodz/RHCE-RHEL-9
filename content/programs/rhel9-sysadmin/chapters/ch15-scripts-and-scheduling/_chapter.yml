@@ -1,8 +1,12 @@
 title: Scripts and scheduling
-goal: Automate small jobs with shell scripts and run them on a schedule.
+goal: Write shell scripts with arguments, tests and loops, and schedule them with cron, systemd timers and at.
 objectives:
-- Write small scripts with explicit input and failure behavior.
-- Choose and verify cron, at or systemd timer scheduling.
+  - Write and run a bash script, with variables, arguments and exit statuses.
+  - Use tests, if, case, for and while to make a script decide and repeat.
+  - Schedule jobs with crontab and /etc/cron.d, and diagnose cron problems from its log.
+  - Create systemd timers and one-off at jobs, and choose the right scheduler.
 objectiveIds:
-- ch15.operations
-- ch15.verification
+  - ch15.scripts
+  - ch15.logic
+  - ch15.cron
+  - ch15.timers
