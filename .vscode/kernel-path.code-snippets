@@ -58,6 +58,13 @@
       "{% diagram ref=\"${1}\" /%}"
     ]
   },
+  "kp-feature-grid": {
+    "prefix": "kp-feature-grid",
+    "description": "A grid of short feature descriptions, each with an icon.",
+    "body": [
+      "{% feature-grid ref=\"${1}\" /%}"
+    ]
+  },
   "kp-flashcards": {
     "prefix": "kp-flashcards",
     "description": "A deck of flip cards for recall.",
@@ -79,6 +86,15 @@
       "{% glossary %}",
       "\t$0",
       "{% /glossary %}"
+    ]
+  },
+  "kp-hero": {
+    "prefix": "kp-hero",
+    "description": "The opening block of a landing page: heading, short introduction, two buttons and an animated illustration.",
+    "body": [
+      "{% hero title=\"${1}\" %}",
+      "$0",
+      "{% /hero %}"
     ]
   },
   "kp-kbd": {
@@ -247,6 +263,13 @@
       "{% term name=\"${1}\" %}",
       "$0",
       "{% /term %}"
+    ]
+  },
+  "kp-terminal-demo": {
+    "prefix": "kp-terminal-demo",
+    "description": "An animated terminal that types a few commands and shows their output once it scrolls into view.",
+    "body": [
+      "{% terminal-demo ref=\"${1}\" /%}"
     ]
   },
   "kp-variant": {

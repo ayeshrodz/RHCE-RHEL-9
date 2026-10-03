@@ -253,11 +253,14 @@
       "data": "data/diagram.schema.json"
     },
     "feature-grid": {
-      "summary": "A grid of short feature descriptions.",
-      "status": "planned",
+      "summary": "A grid of short feature descriptions, each with an icon.",
+      "status": "stable",
       "since": 1,
       "placement": "block",
       "children": "none",
+      "parents": [
+        "page"
+      ],
       "attributes": {
         "ref": {
           "type": "string",
@@ -265,9 +268,10 @@
           "format": "dataRef"
         }
       },
-      "parents": [
-        "page"
-      ]
+      "required": [
+        "ref"
+      ],
+      "data": "data/feature-grid.schema.json"
     },
     "file-tree": {
       "summary": "A project tree with notes per file.",
@@ -354,11 +358,14 @@
       ]
     },
     "hero": {
-      "summary": "The opening block of a landing page.",
-      "status": "planned",
+      "summary": "The opening block of a landing page: heading, short introduction, two buttons and an animated illustration.",
+      "status": "stable",
       "since": 1,
       "placement": "block",
       "children": "markdown",
+      "parents": [
+        "page"
+      ],
       "attributes": {
         "eyebrow": {
           "type": "string",
@@ -367,12 +374,35 @@
         },
         "title": {
           "type": "string",
-          "description": "Main heading.",
+          "description": "Main heading. Wrap one word in asterisks in the intro, not here; the heading is plain text.",
+          "format": "shortText"
+        },
+        "art": {
+          "type": "string",
+          "description": "Which illustration to show beside the text.",
+          "enum": [
+            "lab"
+          ],
+          "default": "lab"
+        },
+        "primary": {
+          "type": "string",
+          "description": "Id of the program the first button opens.",
+          "format": "id"
+        },
+        "primaryLabel": {
+          "type": "string",
+          "description": "Text of the first button.",
+          "format": "shortText"
+        },
+        "secondaryLabel": {
+          "type": "string",
+          "description": "Text of the second button, which scrolls to the program cards.",
           "format": "shortText"
         }
       },
-      "parents": [
-        "page"
+      "required": [
+        "title"
       ]
     },
     "kbd": {
@@ -901,6 +931,27 @@
       "required": [
         "ref"
       ]
+    },
+    "terminal-demo": {
+      "summary": "An animated terminal that types a few commands and shows their output once it scrolls into view.",
+      "status": "stable",
+      "since": 1,
+      "placement": "block",
+      "children": "none",
+      "parents": [
+        "page"
+      ],
+      "attributes": {
+        "ref": {
+          "type": "string",
+          "description": "Key of the terminal lines in the page data.",
+          "format": "dataRef"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "data": "data/terminal-demo.schema.json"
     },
     "variant": {
       "summary": "Instructions for one variant (declared in program.yml).",

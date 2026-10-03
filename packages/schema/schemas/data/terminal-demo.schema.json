@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kernelpath.dev/schema/v1/data/terminal-demo.schema.json",
+  "title": "Terminal demo data",
+  "description": "A window title and the lines the terminal plays: commands are typed, output and results appear after them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "lines"
+  ],
+  "properties": {
+    "title": {
+      "$ref": "../common.schema.json#/$defs/shortText"
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "text"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "command",
+              "output",
+              "ok",
+              "changed",
+              "comment"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,9 @@ import { Lab, LabChallenge, LabNotes, Task } from '@/components/interactive/Lab'
 import { Classroom, Env, EnvSwitch, Finish, HomeLab, HomeSetup, StarterFiles } from '@/components/interactive/Env';
 import { lazyWidget } from '@/components/interactive/LazyWidget';
 import ProgramCards from './ProgramCards';
+import Hero from '@/components/landing/Hero';
+import FeatureGrid from '@/components/landing/FeatureGrid';
+import TerminalDemo from '@/components/landing/TerminalDemo';
 import SpecDiagram from './SpecDiagram';
 import chapterWidgets from 'virtual:chapter-widgets';
 
@@ -38,6 +41,12 @@ export const tags = {
   term: (a) => [Term, { name: a.name }],
   kbd: () => ['kbd'],
   'program-cards': () => [ProgramCards],
+  hero: (a) => [
+    Hero,
+    { eyebrow: a.eyebrow, title: a.title, primary: a.primary, primaryLabel: a.primaryLabel, secondaryLabel: a.secondaryLabel },
+  ],
+  'feature-grid': (a, data) => [FeatureGrid, { items: data.items }],
+  'terminal-demo': (a, data) => [TerminalDemo, { title: data.title, lines: data.lines }],
   diagram: (a, data) => [SpecDiagram, { spec: data }],
 
   quiz: (a, data) => [Quiz, { id: a.id, title: a.title, questions: data.questions }],

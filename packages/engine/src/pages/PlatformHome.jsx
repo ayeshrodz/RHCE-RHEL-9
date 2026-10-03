@@ -22,6 +22,13 @@ export default function PlatformHome() {
     };
   }, []);
 
+  if (page?.kind === 'landing')
+    return (
+      <div className="landing">
+        <PageTree page={page} />
+      </div>
+    );
+
   return (
     <div className="page-grid platform-home">
       <article className="page-article">

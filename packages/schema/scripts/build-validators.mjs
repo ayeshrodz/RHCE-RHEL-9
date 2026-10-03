@@ -43,6 +43,8 @@ const exports = {
   validateFlashcardsData: dataSchemaFor('flashcards'),
   validateFlowMapData: dataSchemaFor('flow-map'),
   validateDiagramData: dataSchemaFor('diagram'),
+  validateFeatureGridData: dataSchemaFor('feature-grid'),
+  validateTerminalDemoData: dataSchemaFor('terminal-demo'),
   validateLegacyWidgetData: dataSchemaFor('legacy-widget'),
 };
 // Ajv emits CommonJS require() for its runtime helpers even in ESM mode; turn them into imports.
