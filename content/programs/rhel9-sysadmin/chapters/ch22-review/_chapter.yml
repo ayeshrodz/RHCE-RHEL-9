@@ -1,8 +1,10 @@
 title: Review and practice
-goal: Prove the skills together, under realistic conditions.
+goal: Deliver a small service the way you would in real work, with proof for every requirement, find and repair faults with one method, and leave a tested recovery and a handover note.
 objectives:
-- Deliver a service with access, persistence and recovery evidence.
-- Investigate one fault systematically and produce a usable handover.
+  - Turn requirements into evidence and build a service layer by layer.
+  - Diagnose faults from the client's symptom with a fixed method.
+  - Restore data with its ACLs and labels, and write a handover note that states its limits.
 objectiveIds:
-- ch22.operations
-- ch22.verification
+  - ch22.evidence
+  - ch22.faults
+  - ch22.handover

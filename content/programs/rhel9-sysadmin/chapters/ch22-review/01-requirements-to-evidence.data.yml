@@ -1,0 +1,353 @@
+layers:
+  title: One requirement, one layer
+  caption: Select a requirement of the portal.
+  height: 330
+  mode: select
+  initial: identity
+  info:
+    identity:
+      tone: purple
+      title: Identity (chapters 6, 7)
+      text: 'The content belongs to the account portaladm and the group portal. The web server reads it through an ACL for the user apache. Proof: id, ls -l, getfacl.'
+    software:
+      tone: blue
+      title: Software (chapter 13)
+      text: 'httpd comes from the approved repositories. Proof: rpm -q httpd, dnf repolist.'
+    service:
+      tone: green
+      title: Service (chapter 9)
+      text: 'httpd runs now and starts at boot. Proof: systemctl is-active and is-enabled, plus a real request.'
+    selinux:
+      tone: coral
+      title: SELinux (chapter 16)
+      text: 'The content has the label httpd_sys_content_t through a stored mapping, the port 8090 is labelled http_port_t, and the system stays enforcing. Proof: ls -Z, semanage fcontext -l -C, semanage port -l, getenforce.'
+    network:
+      tone: amber
+      title: Network (chapters 12, 20)
+      text: 'Only the partner serverb may reach port 8090. Proof: firewall-cmd --list-all for the zone, and a request from serverb that works and one from workstation that does not.'
+    recovery:
+      tone: gray
+      title: Logs and recovery (chapters 11, 14, 15)
+      text: 'The journal is persistent and a timer saves the content daily. Proof: ls -d /var/log/journal, systemctl list-timers, and a restore that you actually tested.'
+  elements:
+  - kind: node
+    x: 6
+    y: 30
+    w: 210
+    h: 56
+    tone: purple
+    title: portaladm · portal
+    sub: who owns it
+    titleSize: 13
+    select: identity
+    active:
+    - identity
+  - kind: node
+    x: 230
+    y: 30
+    w: 210
+    h: 56
+    tone: blue
+    title: httpd
+    sub: from the repositories
+    titleSize: 13
+    select: software
+    active:
+    - software
+  - kind: node
+    x: 454
+    y: 30
+    w: 216
+    h: 56
+    tone: green
+    title: running + enabled
+    sub: now and at boot
+    titleSize: 13
+    select: service
+    active:
+    - service
+  - kind: node
+    x: 6
+    y: 110
+    w: 210
+    h: 56
+    tone: coral
+    title: labels + port 8090
+    sub: SELinux enforcing
+    titleSize: 13
+    select: selinux
+    active:
+    - selinux
+  - kind: node
+    x: 230
+    y: 110
+    w: 210
+    h: 56
+    tone: amber
+    title: partner only
+    sub: firewall zone
+    titleSize: 13
+    select: network
+    active:
+    - network
+  - kind: node
+    x: 454
+    y: 110
+    w: 216
+    h: 56
+    tone: gray
+    title: journal + backup
+    sub: and a tested restore
+    titleSize: 13
+    select: recovery
+    active:
+    - recovery
+build-order:
+  title: A good build order
+  caption: Step through delivering the portal.
+  height: 270
+  mode: steps
+  steps:
+  - title: 1. Write the contract
+    text: List every requirement and the proof you will accept for it. If you cannot name the proof, the requirement is not clear yet.
+  - title: 2. Identity and software
+    text: Create the group and account, install httpd. Nothing else depends on guesses about who owns what.
+  - title: 3. Files, labels, service
+    text: Create the content with the right owner, mode and ACL, then labels and the port label, then configure and start the service. Test locally first.
+  - title: 4. Network
+    text: Open exactly one port for exactly one caller, and test from that caller and from a stranger.
+  - title: 5. Persistence and recovery
+    text: Persistent journal, scheduled backup, a restore test, and a reboot. Only the same test after the reboot proves persistence.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 120
+    h: 56
+    tone: gray
+    title: contract
+    sub: requirements
+    titleSize: 13
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 150
+    y: 20
+    w: 120
+    h: 56
+    tone: purple
+    title: who + what
+    sub: accounts, rpm
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 290
+    y: 20
+    w: 120
+    h: 56
+    tone: green
+    title: data + service
+    sub: labels, httpd
+    titleSize: 13
+    active:
+    - 2
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 430
+    y: 20
+    w: 120
+    h: 56
+    tone: amber
+    title: network
+    sub: one caller
+    titleSize: 13
+    active:
+    - 3
+    visible:
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 56
+    tone: coral
+    title: recover
+    sub: reboot test
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 130
+      - 48
+    - - 150
+      - 48
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 270
+      - 48
+    - - 290
+      - 48
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 410
+      - 48
+    - - 430
+      - 48
+    visible:
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 550
+      - 48
+    - - 570
+      - 48
+    visible:
+    - 4
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: collect evidence'
+    prompt: '[root@servera ~]#'
+    commands:
+    - cmd: id portaladm
+      out: uid=3001(portaladm) gid=4800(portal) groups=4800(portal)
+    - cmd: rpm -q httpd
+      out: httpd-2.4.62-13.el9_8.6.x86_64
+    - cmd: systemctl is-active httpd; systemctl is-enabled httpd
+      out: 'active
+
+        enabled'
+    - cmd: ss -tlnp | grep 8090 | awk '{print $1,$4}'
+      out: LISTEN *:8090
+    - cmd: ls -dZ /srv/portal
+      out: system_u:object_r:httpd_sys_content_t:s0 /srv/portal
+    - cmd: getfacl -cp /srv/portal | head -3
+      out: 'user::rwx
+
+        user:apache:r-x
+
+        group::r-x'
+    - cmd: getenforce
+      out: Enforcing
+    - cmd: semanage port -l | grep ^http_port_t
+      out: http_port_t                    tcp      8090, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+    - cmd: firewall-cmd --get-active-zones
+      out: "portal\n  sources: 172.25.250.11\npublic\n  interfaces: enp1s0"
+    - cmd: firewall-cmd --zone=portal --list-ports
+      out: 8090/tcp
+    - cmd: curl -s localhost:8090
+      out: 'Portal status: OK'
+    - cmd: systemctl is-enabled portal-backup.timer
+      out: enabled
+    - cmd: ls -d /var/log/journal
+      out: /var/log/journal
+    tasks:
+    - text: Show who owns the content account and that httpd is installed.
+      commands:
+      - id portaladm
+      - rpm -q httpd
+    - text: Show that the service runs, starts at boot and listens on 8090.
+      commands:
+      - systemctl is-active httpd; systemctl is-enabled httpd
+      - ss -tlnp | grep 8090 | awk '{print $1,$4}'
+    - text: 'Show the SELinux evidence: mode, label of the content and port label.'
+      commands:
+      - getenforce
+      - ls -dZ /srv/portal
+      - semanage port -l | grep ^http_port_t
+    - text: Show the network evidence and the useful request.
+      commands:
+      - firewall-cmd --get-active-zones
+      - firewall-cmd --zone=portal --list-ports
+      - curl -s localhost:8090
+quick:
+  questions:
+  - id: q-0e0f61029f51
+    q: An active httpd service proves that...
+    options:
+    - The daemon runs; not that the content is right or reachable
+    - The page is correct
+    - The firewall is open
+    answer: 0
+    explain: You need a request to prove useful behaviour.
+  - id: q-6b45c64ea436
+    q: Which proof shows that a rule survives a reboot?
+    options:
+    - The same test after an actual reboot
+    - The permanent configuration file alone
+    - A successful reload
+    answer: 0
+    explain: Configuration shows intent; only a restart shows retention.
+  - id: q-daa7bf8069e3
+    q: Why test from the partner and from a stranger?
+    options:
+    - To prove the right caller is let in and others are not
+    - To warm the cache
+    - To test DNS
+    answer: 0
+    explain: A rule that lets everyone in also passes the first test.
+  - id: q-4f656bbb9b72
+    q: Which comes first when building a service?
+    options:
+    - A written contract with the proof for each requirement
+    - Opening the firewall
+    - Disabling SELinux
+    answer: 0
+    explain: No clear proof means no clear requirement.
+  - id: q-04a1232da962
+    q: The web server cannot read the content, though the owner and group are right. Which two layers do you check?
+    options:
+    - SELinux label and ACL/mode for the apache user
+    - The DNS and the NTP
+    - The disk space only
+    answer: 0
+    explain: Access is decided by mode, ACL and label together.
+  - id: q-09f37f8ccfa8
+    q: A backup exists. What else must you do before calling the recovery ready?
+    options:
+    - Restore it into a clean place and check the result
+    - Nothing
+    - Delete the live copy
+    answer: 0
+    explain: An untested backup is a hope.

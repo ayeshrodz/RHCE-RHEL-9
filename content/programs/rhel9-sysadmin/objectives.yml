@@ -649,19 +649,27 @@
   - ch21/exercise-service
   - ch21/lab
   challenges: []
-- id: ch22.operations
+- id: ch22.evidence
   chapter: ch22
   lessons:
-  - ch22/operational-review
-  - ch22/incident-and-handover
+  - ch22/requirements-to-evidence
   labs:
+  - ch22/exercise-portal
   - ch22/lab
   challenges: []
-- id: ch22.verification
+- id: ch22.faults
   chapter: ch22
   lessons:
-  - ch22/operational-review
-  - ch22/incident-and-handover
+  - ch22/diagnosing-faults
   labs:
+  - ch22/exercise-faults
+  - ch22/lab
+  challenges: []
+- id: ch22.handover
+  chapter: ch22
+  lessons:
+  - ch22/recovery-and-handover
+  labs:
+  - ch22/exercise-recovery
   - ch22/lab
   challenges: []

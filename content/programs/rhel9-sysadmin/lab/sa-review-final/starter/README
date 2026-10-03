@@ -1,0 +1,41 @@
+Exercise: sa-review-final (chapter 22 capstone)
+
+Deliver a read-only status page on servera for the partner serverb. Work with
+sudo or as root. Do not stop firewalld and do not leave SELinux permissive.
+
+Identity and software
+ 1. Group ops (GID 4900); account statusadm (UID 3100, primary group ops,
+    shell /sbin/nologin); account auditor (UID 3101).
+ 2. httpd installed, running and enabled.
+
+Content
+ 3. /srv/status owned by statusadm:ops, mode 2750. In it index.html with the
+    line: Status page: ready    (owner statusadm, group ops, mode 640)
+ 4. The web user (apache) and auditor may read the page and the directory
+    through ACL entries; new files in the directory inherit them.
+
+Service and labels
+ 5. httpd serves /srv/status on port 8095 (a file in /etc/httpd/conf.d/).
+ 6. The content type httpd_sys_content_t is stored as a mapping for
+    /srv/status and everything below, and applied. Port 8095 has the label
+    http_port_t. SELinux stays enforcing.
+
+Network
+ 7. A zone named statuspartners with serverb's address as its source and
+    port 8095/tcp. The default zone does not open that port.
+
+Logs and recovery
+ 8. The journal is persistent (drop-in 10-persistent.conf in
+    /etc/systemd/journald.conf.d/).
+ 9. status-backup.service (one-shot) saves /srv/status into
+    /srv/backups/status.tar.gz with tar, keeping ACLs and SELinux labels.
+    status-backup.timer runs it daily and is enabled. Run the service once.
+
+Prove it
+10. Check from serverb: curl http://servera:8095/ . Reboot servera, check again,
+    and grade again.
+
+On workstation
+11. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-review-final
