@@ -256,6 +256,8 @@ esac
             ({'kind': 'service', 'names': ['no-such-unit-xyz.service'], 'masked': True}, 1),
             ({'kind': 'swap', 'minSizeMiB': 99999999, 'persistent': False}, 1),
             ({'kind': 'volume-group', 'vg': 'no-such-vg-xyz'}, 1),
+            ({'kind': 'container', 'user': 'no-such-user-xyz', 'image': 'localhost/x:1'}, 1),
+            ({'kind': 'container', 'user': 'no-such-user-xyz', 'linger': False}, 0),
             ({'kind': 'commands', 'names': ['bash', 'ls']}, 0),
             ({'kind': 'commands', 'names': ['bash', 'no-such-cmd-xyz']}, 1),
         ]

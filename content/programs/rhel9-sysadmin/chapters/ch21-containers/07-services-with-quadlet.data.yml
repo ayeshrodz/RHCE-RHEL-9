@@ -1,0 +1,375 @@
+quadlet-flow:
+  title: From a file to a service
+  caption: Step through Quadlet.
+  height: 280
+  mode: steps
+  steps:
+  - title: A .container file
+    text: 'You describe the container in ~/.config/containers/systemd/web.container: the image, ports, volumes, and ordinary systemd settings such as Restart.'
+  - title: daemon-reload generates the unit
+    text: systemctl --user daemon-reload runs the Podman generator, which writes the real service web.service in /run/user/1000/systemd/generator/. Never edit that generated file; edit the .container file.
+  - title: Start it
+    text: 'systemctl --user start web.service starts the container. The Install section (WantedBy=default.target) makes it start with the user''s systemd, so do not run enable: the unit is generated.'
+  - title: Restart policy
+    text: 'Restart=always (or on-failure) restarts the container when it dies. Test it: podman kill systemd-web and look again a few seconds later.'
+  - title: Lingering for boot
+    text: A user service normally runs only while the user is logged in. loginctl enable-linger student keeps the user's systemd running from boot, so the container comes up after a reboot without a login.
+  elements:
+  - kind: node
+    x: 10
+    y: 20
+    w: 150
+    h: 60
+    tone: amber
+    title: web.container
+    sub: you write this
+    mono: true
+    titleSize: 12.5
+    active:
+    - 0
+    visible:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 210
+    y: 20
+    w: 150
+    h: 60
+    tone: blue
+    title: web.service
+    sub: generated unit
+    mono: true
+    titleSize: 13
+    active:
+    - 1
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 410
+    y: 20
+    w: 130
+    h: 60
+    tone: green
+    title: container
+    sub: systemd-web
+    mono: true
+    titleSize: 13
+    active:
+    - 2
+    - 3
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: node
+    x: 570
+    y: 20
+    w: 100
+    h: 60
+    tone: purple
+    title: boot
+    sub: linger
+    titleSize: 13
+    active:
+    - 4
+    visible:
+    - 4
+  - kind: arrow
+    points:
+    - - 160
+      - 50
+    - - 210
+      - 50
+    label: reload
+    labelDy: -6
+    visible:
+    - 1
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 360
+      - 50
+    - - 410
+      - 50
+    label: start
+    labelDy: -6
+    visible:
+    - 2
+    - 3
+    - 4
+  - kind: arrow
+    points:
+    - - 570
+      - 50
+    - - 540
+      - 50
+    visible:
+    - 4
+quadlet-file:
+  title: A Quadlet file
+  caption: Select a section or setting.
+  height: 300
+  mode: select
+  initial: image
+  info:
+    image:
+      tone: blue
+      title: Image=
+      text: The full image name to run. Pull it first (podman pull) so that a slow registry cannot make the service start time out.
+    port:
+      tone: green
+      title: PublishPort=8080:8080
+      text: The same host:container pair as -p. Allow the host port in the firewall for other machines.
+    volume:
+      tone: amber
+      title: Volume=%h/web:/var/www/html:ro,Z
+      text: A bind mount; %h is the home directory. Keep the :Z for SELinux.
+    restart:
+      tone: coral
+      title: '[Service] Restart=always'
+      text: Ordinary systemd settings go in [Service]. always restarts after any exit; on-failure only after an error.
+    install:
+      tone: purple
+      title: '[Install] WantedBy=default.target'
+      text: Starts the service with the user's systemd. default.target is the user manager's equivalent of multi-user.target.
+  elements:
+  - kind: node
+    x: 6
+    y: 24
+    w: 300
+    h: 40
+    tone: gray
+    title: '[Container]'
+    sub: ''
+    mono: true
+    titleSize: 13
+  - kind: node
+    x: 6
+    y: 70
+    w: 300
+    h: 40
+    tone: blue
+    title: Image=…/httpd-24:latest
+    sub: ''
+    mono: true
+    titleSize: 12.5
+    select: image
+    active:
+    - image
+  - kind: node
+    x: 6
+    y: 116
+    w: 300
+    h: 40
+    tone: green
+    title: PublishPort=8080:8080
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: port
+    active:
+    - port
+  - kind: node
+    x: 6
+    y: 162
+    w: 300
+    h: 40
+    tone: amber
+    title: Volume=%h/web:/var/www/html:ro,Z
+    sub: ''
+    mono: true
+    titleSize: 12
+    select: volume
+    active:
+    - volume
+  - kind: node
+    x: 366
+    y: 70
+    w: 300
+    h: 40
+    tone: coral
+    title: '[Service] Restart=always'
+    sub: ''
+    mono: true
+    titleSize: 13
+    select: restart
+    active:
+    - restart
+  - kind: node
+    x: 366
+    y: 116
+    w: 300
+    h: 40
+    tone: purple
+    title: '[Install] WantedBy=default.target'
+    sub: ''
+    mono: true
+    titleSize: 12
+    select: install
+    active:
+    - install
+practice:
+  text:
+    hint: Click here and type the commands. This terminal remembers nothing between commands, so it shows each command's result as it was on servera.
+    inputLabel: Command to run in the practice terminal
+    eventNotFound: 'bash: {value0}: event not found'
+    notHere: This practice terminal only knows the examples in this lesson. Try anything else on servera.
+    notFound: 'bash: {value0}: command not found'
+    searchPrompt: '(reverse-i-search)`{value0}'':'
+    noMatch: no match yet
+    tasksTitle: Your tasks
+    allDone: All done. Now try the same on servera.
+    doneLabel: done
+    reset: Start again
+  data: {}
+  props:
+    title: 'Practice terminal: a container as a user service'
+    prompt: '[student@servera ~]$'
+    commands:
+    - cmd: mkdir -p ~/.config/containers/systemd
+      out: ''
+    - cmd: 'cat > ~/.config/containers/systemd/web.container <<''EOT''
+
+        [Container]
+
+        Image=registry.access.redhat.com/ubi9/httpd-24:latest
+
+        PublishPort=8080:8080
+
+        Volume=%h/web:/var/www/html:ro,Z
+
+
+        [Service]
+
+        Restart=always
+
+
+        [Install]
+
+        WantedBy=default.target
+
+        EOT'
+      out: ''
+    - cmd: systemctl --user daemon-reload
+      out: ''
+    - cmd: systemctl --user start web.service
+      out: ''
+    - cmd: systemctl --user is-active web.service
+      out: active
+    - cmd: curl -s localhost:8080
+      out: hello from a container
+    - cmd: podman ps --format "{{.Names}} {{.Status}}"
+      out: systemd-web Up 3 seconds
+    - cmd: systemctl --user is-enabled web.service
+      out: generated
+    - cmd: podman kill systemd-web
+      out: systemd-web
+    - cmd: systemctl --user show web.service -p NRestarts
+      out: NRestarts=1
+    - cmd: loginctl show-user student -p Linger
+      out: Linger=no
+    - cmd: sudo loginctl enable-linger student
+      out: ''
+    - cmd: loginctl show-user student -p Linger
+      out: Linger=yes
+    - cmd: sudo firewall-cmd --permanent --add-port=8080/tcp; sudo firewall-cmd --reload
+      out: 'success
+
+        success'
+    tasks:
+    - text: Create the Quadlet directory and the file web.container.
+      commands:
+      - mkdir -p ~/.config/containers/systemd
+      - 'cat > ~/.config/containers/systemd/web.container <<''EOT''
+
+        [Container]
+
+        Image=registry.access.redhat.com/ubi9/httpd-24:latest
+
+        PublishPort=8080:8080
+
+        Volume=%h/web:/var/www/html:ro,Z
+
+
+        [Service]
+
+        Restart=always
+
+
+        [Install]
+
+        WantedBy=default.target
+
+        EOT'
+    - text: Generate the service, start it and check the page.
+      commands:
+      - systemctl --user daemon-reload
+      - systemctl --user start web.service
+      - curl -s localhost:8080
+    - text: Kill the container and see that systemd restarted it.
+      commands:
+      - podman kill systemd-web
+      - systemctl --user show web.service -p NRestarts
+    - text: Enable lingering and open the port for other hosts.
+      commands:
+      - sudo loginctl enable-linger student
+      - loginctl show-user student -p Linger
+      - sudo firewall-cmd --permanent --add-port=8080/tcp; sudo firewall-cmd --reload
+quick:
+  questions:
+  - id: q-9f9dfda33d80
+    q: Where do you put the definition of a rootless Quadlet container?
+    options:
+    - ~/.config/containers/systemd/NAME.container
+    - /etc/systemd/system/NAME.service
+    - /etc/containers/NAME.conf
+    answer: 0
+    explain: systemctl --user daemon-reload then generates NAME.service.
+  - id: q-087a5b9650b7
+    q: Which command makes systemd read a new or changed .container file?
+    options:
+    - systemctl --user daemon-reload
+    - podman reload
+    - systemctl --user enable
+    answer: 0
+    explain: The generator runs during the reload.
+  - id: q-20d5cdf1b39b
+    q: What does loginctl enable-linger student do?
+    options:
+    - Keeps student's user services running without a login, including after a reboot
+    - Logs student in automatically
+    - Gives student sudo
+    answer: 0
+    explain: Without it a rootless service starts only after a login.
+  - id: q-ffb2df02cc20
+    q: Restart=always is in the file. The container is killed. What happens?
+    options:
+    - systemd starts it again
+    - Nothing until reboot
+    - The unit is removed
+    answer: 0
+    explain: NRestarts counts the restarts.
+  - id: q-bc21ad66a181
+    q: Why pull the image before starting the service?
+    options:
+    - A slow pull can make the start time out
+    - Quadlet cannot pull
+    - It is faster to run
+    answer: 0
+    explain: podman pull first, then start.
+  - id: q-c9a6c27d6716
+    q: A rootless service works on the host but other machines cannot reach it. Which step is often missing?
+    options:
+    - The firewall port
+    - Another daemon-reload
+    - The SELinux boolean
+    answer: 0
+    explain: Publish with PublishPort and allow the port in firewalld.

@@ -617,6 +617,38 @@
   - ch20/exercise-diagnosis
   - ch20/lab
   challenges: []
+- id: ch21.containers
+  chapter: ch21
+  lessons:
+  - ch21/images-and-containers
+  labs:
+  - ch21/exercise-run
+  - ch21/lab
+  challenges: []
+- id: ch21.storage
+  chapter: ch21
+  lessons:
+  - ch21/ports-and-storage
+  labs:
+  - ch21/exercise-storage
+  - ch21/lab
+  challenges: []
+- id: ch21.build
+  chapter: ch21
+  lessons:
+  - ch21/building-images
+  labs:
+  - ch21/exercise-build
+  - ch21/lab
+  challenges: []
+- id: ch21.services
+  chapter: ch21
+  lessons:
+  - ch21/services-with-quadlet
+  labs:
+  - ch21/exercise-service
+  - ch21/lab
+  challenges: []
 - id: ch22.operations
   chapter: ch22
   lessons:
@@ -632,20 +664,4 @@
   - ch22/incident-and-handover
   labs:
   - ch22/lab
-  challenges: []
-- id: ch21.operations
-  chapter: ch21
-  lessons:
-  - ch21/podman-basics
-  - ch21/quadlet-and-systemd
-  labs:
-  - ch21/lab
-  challenges: []
-- id: ch21.verification
-  chapter: ch21
-  lessons:
-  - ch21/podman-basics
-  - ch21/quadlet-and-systemd
-  labs:
-  - ch21/lab
   challenges: []

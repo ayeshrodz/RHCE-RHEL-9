@@ -1,0 +1,82 @@
+chapter:
+  questions:
+  - id: q-482ed1178480
+    q: Which command runs a one-off container that is removed afterwards?
+    options:
+    - podman run --rm IMAGE command
+    - podman start IMAGE
+    - podman create IMAGE
+    answer: 0
+    explain: --rm deletes it when it exits.
+  - id: q-2565261617dc
+    q: Why can student not see an image that sudo podman pulled?
+    options:
+    - Rootless and root have separate storage
+    - Images are private to the registry
+    - It is a bug
+    answer: 0
+    explain: Run podman as the same user every time.
+  - id: q-c822a0a96b9f
+    q: Which option publishes container port 8080 on host port 8081?
+    options:
+    - -p 8081:8080
+    - -p 8080:8081
+    - --expose 8081
+    answer: 0
+    explain: The host port comes first.
+  - id: q-43ea4fdd433b
+    q: A bind-mounted directory is unreadable from a container because of SELinux. Which option fixes it?
+    options:
+    - :Z on the volume
+    - --privileged
+    - chmod 777
+    answer: 0
+    explain: Relabel instead of turning protections off.
+  - id: q-8bb7b0b2eb9f
+    q: What does COPY do in a Containerfile?
+    options:
+    - Puts build-context files into the image
+    - Copies files at run time from the host
+    - Pulls a base image
+    answer: 0
+    explain: Files are fixed at build time.
+  - id: q-efe758343568
+    q: Which file defines a rootless container service with Quadlet?
+    options:
+    - A .container file in ~/.config/containers/systemd
+    - A .service in /usr/lib
+    - A crontab entry
+    answer: 0
+    explain: The generator writes the unit.
+  - id: q-bdedaabc08fe
+    q: A rootless web service must start after a reboot with nobody logged in. What is needed?
+    options:
+    - loginctl enable-linger USER
+    - systemctl --user mask
+    - A bigger timeout
+    answer: 0
+    explain: Otherwise it waits for the first login.
+  - id: q-9c7d663e60e7
+    q: podman run fails with "Address already in use" on port 8080. What is the likely cause?
+    options:
+    - Another process or container already publishes 8080
+    - The image is missing
+    - SELinux
+    answer: 0
+    explain: ss -tlnp and podman ps show who uses it.
+  - id: q-8370ce1241bd
+    q: How do you pin an image so that a build always starts from the same content?
+    options:
+    - Use its digest (image@sha256:…) in FROM
+    - Use the latest tag
+    - Pull it twice
+    answer: 0
+    explain: A tag can move; a digest cannot.
+  - id: q-bc5d6d2bbbd8
+    q: A container exits at once after podman run -d. What do you try first?
+    options:
+    - podman logs NAME and podman ps -a
+    - Reinstall podman
+    - Reboot
+    answer: 0
+    explain: 'The main process ended: its output and exit code say why.'

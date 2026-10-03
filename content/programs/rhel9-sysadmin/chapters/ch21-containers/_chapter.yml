@@ -1,8 +1,12 @@
 title: Containers with Podman
-goal: Run services in containers and keep them running.
+goal: Run containers as an ordinary user, publish ports and keep data safely, build your own image, and run a container as a systemd service that survives a reboot.
 objectives:
-- Run and inspect rootless containers with intentional storage and ports.
-- Use version-supported systemd integration and verify restart behavior.
+  - Pull images by full name and run, inspect, stop and remove containers.
+  - Publish ports, pass settings, and keep data with bind mounts, volumes and the right SELinux option.
+  - Build and tag an image from a Containerfile.
+  - Run a container as a Quadlet user service with restarts, lingering and a firewall port.
 objectiveIds:
-- ch21.operations
-- ch21.verification
+  - ch21.containers
+  - ch21.storage
+  - ch21.build
+  - ch21.services

@@ -1,0 +1,27 @@
+Exercise: sa-containers-review (chapter 21 lab)
+
+Work on servera as the user student (log in with ssh; a real login is needed
+for user services). Use sudo only where noted. Install podman if needed.
+
+Image
+ 1. Create ~/portal with a file index.html that contains: Portal is up
+ 2. Write ~/portal/Containerfile: it starts FROM
+    registry.access.redhat.com/ubi9/httpd-24 and copies index.html to
+    /var/www/html/index.html. Build the image as localhost/portal:1.
+
+Service
+ 3. Write the Quadlet file ~/.config/containers/systemd/portal.container
+    for that image: publish 8080:8080, Restart=always, and
+    WantedBy=default.target in the Install section.
+ 4. Reload the user systemd and start portal.service. The container is
+    named systemd-portal and must be running.
+
+After a reboot, and for other hosts
+ 5. Enable lingering for student (sudo loginctl enable-linger student).
+ 6. Open 8080/tcp permanently in the firewall and reload.
+ 7. Check from serverb: curl http://servera:8080/
+
+On workstation
+ 8. Fill in answers.txt.
+
+Then, on workstation:  lab grade sa-containers-review

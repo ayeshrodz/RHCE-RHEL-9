@@ -1,0 +1,125 @@
+name: sa-containers-review
+title: Containers with Podman
+page: ch21/lab
+transport: ssh
+version: 1
+starter:
+- README
+- answers.txt
+checkpoints:
+  final:
+    files:
+    - README
+    - answers.txt
+    checks:
+    - id: page-source
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The Containerfile builds on the httpd-24 image and copies the page
+      paths:
+      - /home/student/portal/Containerfile
+      matches: ^FROM registry\.access\.redhat\.com/ubi9/httpd-24[:@]
+      contains:
+      - COPY index.html
+    - id: image
+      kind: container
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: student has the local image localhost/portal:1
+      user: student
+      image: localhost/portal:1
+    - id: quadlet-image
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The Quadlet file uses the image localhost/portal:1
+      paths:
+      - /home/student/.config/containers/systemd/portal.container
+      matches: ^Image=localhost/portal:1[[:space:]]*$
+    - id: quadlet-port
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The Quadlet file publishes 8080:8080
+      paths:
+      - /home/student/.config/containers/systemd/portal.container
+      matches: ^PublishPort=8080:8080[[:space:]]*$
+    - id: quadlet-policy
+      kind: file
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The service restarts always and is wanted by default.target
+      paths:
+      - /home/student/.config/containers/systemd/portal.container
+      matches: ^Restart=always[[:space:]]*$
+      contains:
+      - WantedBy=default.target
+    - id: running
+      kind: container
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: portal.service is active and systemd-portal is running
+      user: student
+      unit: portal.service
+      running: systemd-portal
+    - id: linger
+      kind: container
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: Lingering is enabled for student
+      user: student
+      linger: true
+    - id: firewall
+      kind: firewall
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: Port 8080/tcp is open permanently
+      port: 8080/tcp
+    - id: local
+      kind: http
+      'on': servera.lab.example.com
+      targets:
+      - servera.lab.example.com
+      message: The portal answers on servera itself
+      url: http://localhost:8080/
+      containsAny:
+      - Portal is up
+    - id: remote
+      kind: http
+      'on': serverb.lab.example.com
+      targets:
+      - serverb.lab.example.com
+      message: serverb reaches the portal on servera
+      url: http://servera.lab.example.com:8080/
+      containsAny:
+      - Portal is up
+    - id: answer-publish-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the podman run option that publishes a port'
+      paths:
+      - answers.txt
+      matches: ^PUBLISH_OPTION=-p[ \t]*$
+    - id: answer-linger-command
+      kind: file
+      'on': control
+      message: 'answers.txt: the loginctl command that keeps a user''s services running without a login'
+      paths:
+      - answers.txt
+      matches: ^LINGER_COMMAND=enable-linger[ \t]*$
+    - id: answer-label-option
+      kind: file
+      'on': control
+      message: 'answers.txt: the volume option that relabels a directory privately for one container'
+      paths:
+      - answers.txt
+      matches: ^LABEL_OPTION=Z[ \t]*$

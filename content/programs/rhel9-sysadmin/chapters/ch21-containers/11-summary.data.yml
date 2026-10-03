@@ -1,0 +1,26 @@
+flashcards:
+  cards:
+  - front: Pull and list images?
+    back: podman pull FULLNAME · podman images
+  - front: Run a one-off container?
+    back: podman run --rm IMAGE command
+  - front: Run a service container?
+    back: podman run -d --name NAME -p 8080:8080 IMAGE
+  - front: Look at running and stopped containers?
+    back: podman ps · podman ps -a · podman logs NAME · podman exec NAME cmd
+  - front: Stop and remove?
+    back: podman stop NAME · podman rm NAME · podman rm -f NAME · podman rmi IMAGE
+  - front: Publish a port?
+    back: '-p HOST:CONTAINER (rootless: host port 1024 or higher); allow it in firewalld'
+  - front: Share a host directory?
+    back: -v ~/web:/var/www/html:ro,Z  (Z = SELinux relabel, private)
+  - front: Keep data in a volume?
+    back: podman volume create V · -v V:/data
+  - front: Build an image?
+    back: 'Containerfile: FROM, COPY, CMD · podman build -t localhost/name:1 .'
+  - front: Quadlet file?
+    back: '~/.config/containers/systemd/web.container: [Container] Image= PublishPort= · [Service] Restart=always · [Install] WantedBy=default.target'
+  - front: Start a Quadlet service?
+    back: systemctl --user daemon-reload · systemctl --user start web.service
+  - front: Survive a reboot without a login?
+    back: sudo loginctl enable-linger student
