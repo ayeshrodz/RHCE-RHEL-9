@@ -1,0 +1,35 @@
+# Validation record
+
+Review date: 2026-10-03. This is an authoring and review record, not learner material. Production was inspected but not deployed. Nothing was merged.
+
+## Content and application
+
+The curriculum adds 105 lesson/lab/quiz/reference pages across chapters 2–22, preserving the nine existing chapter 1 pages. It includes 21 original diagrams, 105 quiz questions, 63 retrieval cards, 21 lab contracts and 46 mapped objectives. Application behavior comes from shared components; course text and configuration remain under this program.
+
+Every chapter branch was independently compiled and schema-validated against its actual committed snapshot. Full content, widget, schema generation and author support checks passed. Shared JavaScript tests, Python lab-tool tests, formatting and production build passed. The existing browser suite covered 130 legacy routes, 44 authored lab modes and the existing mobile and accessibility behaviors. A separate sysadmin browser check covered all 116 program routes at 1440 and 320 pixels, with no horizontal overflow or load failures. It imported a real passing sysadmin-02 grader report and checked the content-configured integrated-practice link.
+
+The finalized Ansible program has no source changes. Legacy short links retain their original program. Shared platform fixes support per-program grading catalogs, generic validation and authored progress pages; they are reviewed in their own prerequisite PR.
+
+## Rodzlab execution
+
+Read-only inventory established Rocky Linux 9.8, enforcing SELinux, a blank secondary disk and missing optional packages. Two disposable VMs and a separate 5 GiB test volume were created for exercises; existing six lab VMs were preserved. Rocky testing verifies the compatible commands used here, not RHEL subscription behavior.
+
+Executed checks:
+
+- Shell/files/help/text/process/archive project fixtures and real sysadmin-02 grading, with independent content and mode checks.
+- Account/group lifecycle, sudo fixture and ACL read permission with denied write; native systemd service failure and repair; timer execution.
+- Persistent journal across reboot, NetworkManager dummy profile persistence, time-service inspection.
+- Enforcing SELinux web-root denial followed by persistent label repair and successful HTTP retrieval; dedicated service account.
+- Blank-disk XFS creation, UUID mount and remount; LVM creation and growth to 1536 MiB, XFS growth and marker retention, mount persistence after reboot.
+- Rootless Podman through a normal student SSH session, Quadlet activation and lingering, persistent volume marker after logout and reboot; simple Containerfile build and run.
+- Read-only NFS export on the enforcing provider; autofs access and denied write from a separate client. The client was not enforcing, so its enforcing-policy matrix remains pending.
+- Remote HTTP denied with the service removed from saved firewall configuration; allowed by runtime-only addition with saved state absent; allowed after permanent addition and reload.
+- Swap-file creation and activation on the scratch root file system. Its final reboot check is recorded separately when completed.
+
+Logs and screenshots are retained in the author's local /tmp/sysadmin-* artifacts for this session. They are not durable CI evidence; reviewers should reproduce the relevant scenario before leaving draft status.
+
+## Remaining review gates
+
+All PRs remain draft. Before publishing, reproduce full lab solutions, deliberate failure, repeat execution and cleanup on the provided RHEL 9 environment. In particular verify console password/boot recovery, installation and Kickstart in a fresh VM, RHEL registration/repositories, SSH/network disconnect recovery, NFS expiry/outage/reboot with enforcing clients, and restore verification. Check the integrated chapter 22 scenario end to end. Observation files in the grader record investigation work; they do not independently prove live network, boot, clock or container behavior.
+
+Host-sensitive chapter PRs and the final activation PR must remain draft until their listed gates are satisfied. A validated build and the successful subset above do not imply every practical exercise has been executed.
